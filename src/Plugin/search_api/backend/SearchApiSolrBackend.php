@@ -3,6 +3,7 @@
 namespace Drupal\search_api_solr\Plugin\search_api\backend;
 
 use Drupal\Core\Config\Config;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -1243,11 +1244,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           break;
 
         case 'date':
-          $value = is_numeric($value) ? (int) $value : strtotime($value);
-          if ($value === FALSE) {
+          $date = is_numeric($value) ? DrupalDateTime::createFromTimestamp($value, 'UTC') : new DrupalDateTime($value, 'UTC');
+          if ($date->hasErrors()) {
             return;
           }
-          $value = format_date($value, 'custom', self::SOLR_DATE_FORMAT, 'UTC');
+          $value = $date->format(self::SOLR_DATE_FORMAT);
           break;
 
         case 'integer':
