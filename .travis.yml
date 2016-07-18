@@ -62,10 +62,8 @@ before_script:
   - composer config repositories.search_api_solr vcs $TRAVIS_BUILD_DIR
   - composer require drupal/core
   - composer require drupal/facets:1.x-dev
-  - composer require --no-update drupal/search_api_solr:999.0.0
+  - composer require drupal/search_api_solr:999.0.0
   - cat composer.json
-  - composer install --no-progress
-  - cd web
   # start the built-in php web server (mysql is already started)
   - php -S localhost:8888 &
   # Install the site
