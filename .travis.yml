@@ -67,7 +67,6 @@ before_script:
   # start the built-in php web server (mysql is already started)
   - php -S localhost:8888 &
   # Install the site
-  - mv modules/contrib/search_api_solr modules/search_api_solr
   - ../vendor/bin/drush -v site-install minimal --db-url=mysql://root:@localhost/drupal --yes
   - ../vendor/bin/drush en --yes simpletest
   # Install Solr
@@ -75,7 +74,7 @@ before_script:
 
 script:
   # Run the tests
-  - cd $TRAVIS_BUILD_DIR/../drupal/web/
+  - cd $TRAVIS_BUILD_DIR/../drupal
   - export SIMPLETEST_DB=mysql://root:@localhost/drupal
   - php core/scripts/run-tests.sh --verbose --color --concurrency 4 --php `which php` --url http://localhost:8888 --class "\Drupal\search_api_solr\Tests\IntegrationTest" | tee /tmp/test.txt ; export TEST_EXIT=${PIPESTATUS[0]} ; echo $TEST_EXIT
   # Check if we had fails in the run-tests.sh script
@@ -84,7 +83,7 @@ script:
   # bit.
   # Also make the grep case insensitive and fail on run-tests.sh regular fails as well on fatal errors.
   - TEST_OUTPUT=$(! egrep -i "([0-9]+ fails)|(Fatal erro)|([0-9]+ exceptions)" /tmp/test.txt > /dev/null)$?
-  - cd $TRAVIS_BUILD_DIR/../drupal/web/
+  - cd $TRAVIS_BUILD_DIR/../drupal
   - ./../vendor/bin/phpunit -c core --group search_api_solr --verbose --debug | tee ; export TEST_PHPUNIT=${PIPESTATUS[0]} ; echo $TEST_PHPUNIT
   #- ./vendor/bin/phpunit --group search_api_solr -c "../modules/search_api_solr/phpunit.xml.travis" --verbose --debug --coverage-text | tee ; export TEST_PHPUNIT=${PIPESTATUS[0]} ; echo $TEST_PHPUNIT
   # if the TEST_EXIT status is 0 AND the TEST_OUTPUT status is also 0 it means we succeeded, in all other cases we
