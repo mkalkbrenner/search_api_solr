@@ -54,14 +54,14 @@ install:
   # Forward the errors to the syslog so we can print them
   - echo "error_log=syslog" >> `php --ini | grep "Loaded Configuration" | awk '{print $4}'`
   # Get latest Drupal 8 core
-  - git clone --branch 8.x https://github.com/drupal-composer/drupal-project.git $TRAVIS_BUILD_DIR/../drupal
-  # Re-enable when trying to get CodeSniffer doesn't return a 403 anymore.
-  # - composer global require drupal/coder:\>7
+  - cp tests/core_composer.json $TRAVIS_BUILD_DIR/../drupal/composer.json
 
 before_script:
   - cd $TRAVIS_BUILD_DIR/../drupal
   - composer config repositories.search_api_solr vcs $TRAVIS_BUILD_DIR
-  - composer require --no-update drupal/search_api_solr:999.0.0 drupal/search_api:dev-8.x-1.x drupal/facets:dev-8.x-1.x
+  - composer require drupal/core
+  - composer require drupal/facets:1.x-dev
+  - composer require --no-update drupal/search_api_solr:999.0.0
   - cat composer.json
   - composer install --no-progress
   - cd web
