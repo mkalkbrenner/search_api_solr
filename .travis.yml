@@ -54,6 +54,7 @@ install:
   # Forward the errors to the syslog so we can print them
   - echo "error_log=syslog" >> `php --ini | grep "Loaded Configuration" | awk '{print $4}'`
   # Get latest Drupal 8 core
+  - mkdir $TRAVIS_BUILD_DIR/../drupal
   - cp tests/core_composer.json $TRAVIS_BUILD_DIR/../drupal/composer.json
 
 before_script:
