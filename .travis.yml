@@ -65,6 +65,7 @@ before_script:
   - composer require drupal/search_api_solr:999.0.0
   - composer require drush/drush
   - cat composer.json
+  - ls -l
   # start the built-in php web server (mysql is already started)
   - php -S localhost:8888 &
   # Install the site
