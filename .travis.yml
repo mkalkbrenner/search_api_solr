@@ -63,12 +63,13 @@ before_script:
   - composer require drupal/core
   - composer require drupal/facets:1.x-dev
   - composer require drupal/search_api_solr:999.0.0
+  - composer require drush/drush
   - cat composer.json
   # start the built-in php web server (mysql is already started)
   - php -S localhost:8888 &
   # Install the site
-  - ../vendor/bin/drush -v site-install minimal --db-url=mysql://root:@localhost/drupal --yes
-  - ../vendor/bin/drush en --yes simpletest
+  - ./vendor/bin/drush -v site-install minimal --db-url=mysql://root:@localhost/drupal --yes
+  - ./vendor/bin/drush en --yes simpletest
   # Install Solr
   - cat $TRAVIS_BUILD_DIR/travis-solr.sh | bash
 
