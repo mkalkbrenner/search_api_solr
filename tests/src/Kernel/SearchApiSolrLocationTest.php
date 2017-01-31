@@ -17,7 +17,6 @@ use Drupal\Tests\search_api\Kernel\BackendTestBase;
 class SearchApiSolrLocationTest extends BackendTestBase {
 
   use InvokeMethodTrait;
-  use ExampleContentTrait;
 
   /**
    * Modules to enable for this test.
