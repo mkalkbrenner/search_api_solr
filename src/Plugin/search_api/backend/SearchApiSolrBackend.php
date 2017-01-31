@@ -16,7 +16,9 @@ use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
 use Drupal\Core\Url;
+use Drupal\facets\Entity\Facet;
 use Drupal\search_api\Annotation\SearchApiBackend;
+use Drupal\search_api\Item\Field;
 use Drupal\search_api\Item\FieldInterface;
 use Drupal\search_api\Item\ItemInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
@@ -456,7 +458,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       //'search_api_mlt',
       'search_api_random_sort',
       //'search_api_spellcheck',
-      //'search_api_data_type_location',
+      'search_api_data_type_location',
       //'search_api_data_type_geohash',
     );
   }
@@ -862,6 +864,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $connector = $this->getSolrConnector();
     // Instantiate a Solarium select query.
     $solarium_query = $connector->getSelectQuery();
+    // Clear all the fields so we start with a clean slate.
+    $solarium_query->clearFields();
     $query_helper = $connector->getQueryHelper($solarium_query);
 
     // Extract keys.
@@ -958,19 +962,16 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
     }
 
-    /**
-     * @todo Make this more configurable so that views can choose which fields
-     * it wants to fetch
-     */
+    // @todo Make this more configurable so that views can choose which fields it wants to fetch
     if (!empty($this->configuration['retrieve_data'])) {
-      $solarium_query->setFields(['*', 'score']);
+      $solarium_query->addFields(['*', 'score']);
     }
     else {
       $returned_fields = [SEARCH_API_ID_FIELD_NAME, 'score'];
       if (!$this->configuration['site_hash']) {
         $returned_fields[] = 'hash';
       }
-      $solarium_query->setFields($returned_fields);
+      $solarium_query->addFields($returned_fields);
     }
 
     $this->applySearchWorkarounds($solarium_query, $query);
@@ -980,13 +981,14 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $this->moduleHandler->alter('search_api_solr_query', $solarium_query, $query);
       $this->preQuery($solarium_query, $query);
 
-
       // Send search request.
       $response = $connector->search($solarium_query);
+
       $body = $response->getBody();
       $this->alterSolrResponseBody($body, $query);
       $response = new Response($body, $response->getHeaders());
 
+      /** @var \Solarium\Core\Query\Result\Result $resultset */
       $resultset = $connector->createSearchResult($solarium_query, $response);
 
       // Extract results.
@@ -1108,6 +1110,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           }
           $name = $pref . '_' . $key;
           $ret[$key] = SearchApiSolrUtility::encodeSolrName($name);
+
+          // Add the distance pseudo field for location fields.
+          if ($type == 'location') {
+            $ret[$key . '__distance'] = SearchApiSolrUtility::encodeSolrName($name . '__distance');
+          }
         }
       }
 
@@ -1321,7 +1328,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $index = $query->getIndex();
     $backend_config = $index->getServerInstance()->getBackendConfig();
     $field_names = $this->getSolrFieldNames($index);
-    $fields = $index->getFields();
+    $fields = $index->getFields(TRUE);
     $site_hash = SearchApiSolrUtility::getSiteHash();
     // We can find the item ID and the score in the special 'search_api_*'
     // properties. Mappings are provided for these properties in
@@ -1509,7 +1516,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     if (isset($result_data['facet_counts']['facet_queries'])) {
       if ($spatials = $query->getOption('search_api_location')) {
         foreach ($result_data['facet_counts']['facet_queries'] as $key => $count) {
-          if (!preg_match('/^spatial-(.*)-(\d+(?:\.\d+)?)$/', $key, $m)) {
+          if (!preg_match('/^spatial-(.*)-(\d+(?:\.\d+)?)-(\d+(?:\.\d+)?)$/', $key, $m)) {
             continue;
           }
           if (empty($extract_facets[$m[1]])) {
@@ -1518,7 +1525,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           $facet = $extract_facets[$m[1]];
           if ($count >= $facet['min_count']) {
             $facets[$m[1]][] = array(
-              'filter' => "[* {$m[2]}]",
+              'filter' => "[{$m[2]} {$m[3]}]",
               'count' => $count,
             );
           }
@@ -2297,20 +2304,25 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   The search api query.
    * @param array $spatial_options
    *   The spatial options to add.
-   * @param $field_names
+   * @param array $field_names
    *   The field names, to add the spatial options for.
    */
   protected function setSpatial(Query $solarium_query, QueryInterface $query, $spatial_options = array(), $field_names = array()) {
+    $helper = $solarium_query->getHelper();
+
     foreach ($spatial_options as $i => $spatial) {
       // Reset radius for each option.
       unset($radius);
+      unset($min_radius);
 
       if (empty($spatial['field']) || empty($spatial['lat']) || empty($spatial['lon'])) {
         continue;
       }
 
       $field = $field_names[$spatial['field']];
-      $point = ((float) $spatial['lat']) . ',' . ((float) $spatial['lon']);
+      $distance_field = $field . '__distance';
+      $spatial['lat'] = (float) $spatial['lat'];
+      $spatial['lon'] = (float) $spatial['lon'];
 
       // Prepare the filter settings.
       if (isset($spatial['radius'])) {
@@ -2328,7 +2340,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         // If the fq consists only of a filter on this field, replace it with
         // a range.
         $preg_field = preg_quote($field, '/');
-        if (preg_match('/^' . $preg_field . ':\["?(\*|\d+(?:\.\d+)?)"? TO "?(\*|\d+(?:\.\d+)?)"?\]$/', $filter_query, $matches)) {
+        if (preg_match('/^' . $preg_field . ':\["?(\*|\d+(?:\.\d+)?)"? TO "?(\*|\d+(?:\.\d+)?)"?\]$/', $filter_query->getQuery(), $matches)) {
           unset($filter_queries[$key]);
           if ($matches[1] && is_numeric($matches[1])) {
             $min_radius = isset($min_radius) ? max($min_radius, $matches[1]) : $matches[1];
@@ -2339,56 +2351,67 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           }
         }
       }
+      $solarium_query->clearFilterQueries();
+      $solarium_query->addFilterQueries($filter_queries);
+
+      $geodist = $helper->geodist($field, $spatial['lat'], $spatial['lon']);
 
       // If either a radius was given in the option, or a filter was
       // encountered, set a filter for the lowest value. If a lower boundary
       // was set (too), we can only set a filter for that if the field name
       // doesn't contains any colons.
-      if (isset($min_radius) && strpos($field, ':') === FALSE) {
+      if (isset($min_radius)) {
         $upper = isset($radius) ? " u=$radius" : '';
-        $solarium_query->createFilterQuery($field)->setQuery("{!frange l=$min_radius$upper}geodist($field,$point)");
+        $solarium_query->createFilterQuery($field)->setQuery("{!frange l=$min_radius$upper}" . $geodist);
       }
       elseif (isset($radius)) {
-        $solarium_query->createFilterQuery($field)->setQuery("{!$spatial_method pt=$point sfield=$field d=$radius}");
+        $solarium_query->createFilterQuery($field)->setQuery($helper->{$spatial_method}($field, $spatial['lat'], $spatial['lon'], $radius));
       }
 
-      // @todo: Check if this object returns the correct value
+      $solarium_query->addField($distance_field . ':' . $geodist);
+
       $sorts = $solarium_query->getSorts();
       // Change sort on the field, if set (and not already changed).
-      if (isset($sorts[$spatial['field']]) && substr($sorts[$spatial['field']], 0, strlen($field)) === $field) {
-        $sorts[$spatial['field']] = str_replace($field, "geodist($field,$point)", $sorts[$spatial['field']]);
+      if (isset($sorts[$distance_field])) {
+        $solarium_query->setQuery('{!func}' . $geodist);
+        $sorts['score'] = $sorts[$distance_field];
+        unset($sorts[$distance_field]);
+        $solarium_query->clearSorts();
+        $solarium_query->addSorts($sorts);
       }
 
       // Change the facet parameters for spatial fields to return distance
       // facets.
-      $facets = $solarium_query->getFacetSet();
-      // @todo: Fix this so it takes it from the solarium query
-      if (!empty($facets)) {
-        if (!empty($facet_params['facet.field'])) {
-          $facet_params['facet.field'] = array_diff($facet_params['facet.field'], array($field));
-        }
+      $facet_set = $solarium_query->getFacetSet();
+      if (!empty($facet_set)) {
+        /** @var \Solarium\QueryType\Select\Query\Component\Facet\Field[] $facets */
+        $facets = $facet_set->getFacets();
         foreach ($facets as $delta => $facet) {
-          if ($facet['field'] != $spatial['field']) {
+          $facet_options = $facet->getOptions();
+          if ($facet_options['field'] != $distance_field) {
             continue;
           }
-          $steps = $facet['limit'] > 0 ? $facet['limit'] : 5;
-          $step = (isset($radius) ? $radius : 100) / $steps;
-          for ($k = $steps - 1; $k > 0; --$k) {
-            $distance = $step * $k;
-            $key = "spatial-$delta-$distance";
-            $facet_params['facet.query'][] = "{!$spatial_method pt=$point sfield=$field d=$distance key=$key}";
-          }
-          foreach (array('limit', 'mincount', 'missing') as $setting) {
-            unset($facet_params["f.$field.facet.$setting"]);
+          $facet_set->removeFacet($delta);
+
+          $limit = $facet->getLimit();
+
+          // @todo : Check if these defaults make any sense.
+          $steps = $limit > 0 ? $limit : 5;
+          $min = isset($min_radius) ? $min_radius : 0;
+          $max = isset($radius) ? $radius : 100;
+          $step = ($max - $min) / $steps;
+
+          for ($distance_min = $min; $distance_min <= $max - $step; $distance_min += $step) {
+            $distance_max = $distance_min + $step - 1;
+            $key = "spatial-{$spatial['field']}__distance-{$distance_min}-{$distance_max}";
+
+            // Due to a limitation/bug in Solarium, it is not possible to use
+            // setQuery method for geo facets.
+            // So the key is misused to get a correct query.
+            // @see https://github.com/solariumphp/solarium/issues/229
+            $facet_set->createFacetQuery($key . ' frange l=' . $distance_min . ' u=' . $distance_max)->setQuery($geodist);
           }
         }
-      }
-    }
-
-    // Normal sorting on location fields isn't possible.
-    foreach (array_keys($solarium_query->getSorts()) as $sort) {
-      if (substr($sort, 0, 3) === 'loc') {
-        $solarium_query->removeSort($sort);
       }
     }
   }
@@ -2496,6 +2519,38 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     foreach ($group_params as $param_id => $param_value) {
       $solarium_query->addParam($param_id, $param_value);
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function supportsDataType($type) {
+    $supported_data_types = [
+      'location',
+    ];
+    return in_array($type, $supported_data_types);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getBackendDefinedFields(IndexInterface $index) {
+    $location_distance_fields = array();
+
+    foreach ($index->getFields() as $field) {
+      if ($field->getType() == 'location') {
+        $distance_field_name = $field->getFieldIdentifier() . '__distance';
+        $distance_field = new Field($index, $distance_field_name);
+        $distance_field->setLabel($field->getLabel() . ' (distance)');
+        $distance_field->setType('decimal');
+        $distance_field->setDatasourceId($field->getDatasourceId());
+        $distance_field->setPropertyPath($distance_field_name);
+
+        $location_distance_fields[$distance_field_name] = $distance_field;
+      }
+    }
+
+    return $location_distance_fields;
   }
 
 }
