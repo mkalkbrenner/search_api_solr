@@ -28,7 +28,6 @@ class SearchApiSolrLocationTest extends BackendTestBase {
     'system',
     'search_api',
     'search_api_solr',
-    'search_api_location',
     'search_api_test_example_content',
     'search_api_solr_test',
     'entity_test',
