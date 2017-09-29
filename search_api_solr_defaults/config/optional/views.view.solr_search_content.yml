@@ -122,7 +122,10 @@ display:
       contexts:
         - 'languages:language_interface'
         - url
+        - url.query_args
       cacheable: false
+      max-age: -1
+      tags: {  }
   page_1:
     display_plugin: page
     id: page_1
@@ -135,4 +138,7 @@ display:
       contexts:
         - 'languages:language_interface'
         - url
+        - url.query_args
       cacheable: false
+      max-age: -1
+      tags: {  }
