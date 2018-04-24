@@ -94,24 +94,38 @@ function hook_search_api_solr_search_results_alter(\Drupal\search_api\Query\Resu
  * @see hook_search_api_data_type_info()
  */
 function search_api_solr_hook_search_api_data_type_info() {
-  return array(
+  return [
     // You can use any identifier you want here, but it makes sense to use the
     // field type name from schema.xml.
-    'edge_n2_kw_text' => array(
+    'edge_n2_kw_text' => [
       // Stock hook_search_api_data_type_info() info:
       'name' => t('Fulltext (w/ partial matching)'),
       'fallback' => 'text',
       // Dynamic field with name="te_*".
       'prefix' => 'te',
-    ),
-    'tlong' => array(
+    ],
+    'tlong' => [
       // Stock hook_search_api_data_type_info() info:
       'name' => t('TrieLong'),
       'fallback' => 'integer',
       // Dynamic fields with name="its_*" and name="itm_*".
       'prefix' => 'it',
-    ),
-  );
+    ],
+  ];
+}
+
+/**
+ * Apply any finalization commands to a solr index before the first search.
+ *
+ * This hook will be called every time any item within the index was updated or
+ * deleted. Not on every modification but before the first search happens on an
+ * updated index. This could be useful to apply late modifications to the items
+ * themselves within Solr which is much more faster.
+ *
+ * @param \Drupal\search_api\IndexInterface $index
+ */
+function hook_search_api_solr_finalize_index(\Drupal\search_api\IndexInterface $index) {
+
 }
 
 /**

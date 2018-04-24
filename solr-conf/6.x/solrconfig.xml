@@ -1,29 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!--
- Licensed to the Apache Software Foundation (ASF) under one or more
- contributor license agreements.  See the NOTICE file distributed with
- this work for additional information regarding copyright ownership.
- The ASF licenses this file to You under the Apache License, Version 2.0
- (the "License"); you may not use this file except in compliance with
- the License.  You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
--->
 <!DOCTYPE config [
   <!ENTITY spellcheck SYSTEM "solrconfig_spellcheck.xml">
+  <!ENTITY extra SYSTEM "solrconfig_extra.xml">
 ]>
 
 <!--
      For more details about configurations options that may appear in
      this file, see http://wiki.apache.org/solr/SolrConfigXml.
 -->
-<config name="drupal-5.4-solr-6.x" >
+<config name="drupal-6.4-solr-6.x" >
   <!-- In all configuration below, a prefix of "solr." for class names
        is an alias that causes solr to search appropriate packages,
        including org.apache.solr.(search|update|request|core|analysis)
@@ -791,14 +777,12 @@
          will be overridden by parameters in the request
       -->
     <lst name="defaults">
-      <str name="defType">edismax</str>
-      <str name="df">content</str>
+      <str name="defType">lucene</str>
+      <str name="df">id</str>
       <str name="echoParams">explicit</str>
       <bool name="omitHeader">true</bool>
-      <float name="tie">0.01</float>
       <!-- Don't abort searches for the /select request handler (set in solrcore.properties) -->
       <int name="timeAllowed">${solr.selectSearchHandler.timeAllowed:-1}</int>
-      <str name="q.alt">*:*</str>
 
       <!-- By default, don't spell check -->
       <str name="spellcheck">false</str>
@@ -1101,20 +1085,13 @@
     </arr>
   </requestHandler>
 
-  <searchComponent name="suggest" class="solr.SuggestComponent">
-    <lst name="suggester">
-      <str name="name">mySuggester</str>
-      <str name="lookupImpl">FuzzyLookupFactory</str>      <!-- org.apache.solr.spelling.suggest.fst -->
-      <str name="dictionaryImpl">DocumentDictionaryFactory</str>     <!-- org.apache.solr.spelling.suggest.HighFrequencyDictionaryFactory -->
-      <str name="field">cat</str>
-      <str name="weightField">price</str>
-      <str name="suggestAnalyzerFieldType">string</str>
-    </lst>
-  </searchComponent>
+  <!-- Following is a dynamic way to include other components or any customized solrconfig.xml stuff, added by other contrib modules -->
+  &extra;
 
   <requestHandler name="/suggest" class="solr.SearchHandler" startup="lazy">
     <lst name="defaults">
       <str name="suggest">true</str>
+      <str name="suggest.dictionary">und</str>
       <str name="suggest.count">10</str>
     </lst>
     <arr name="components">
@@ -1169,17 +1146,17 @@
     <lst name="defaults">
       <bool name="terms">false</bool>
       <bool name="distrib">false</bool>
-      <!-- By default, don't spell check -->
       <str name="spellcheck">false</str>
-      <!-- Defaults for the spell checker when used -->
       <str name="spellcheck.onlyMorePopular">true</str>
       <str name="spellcheck.extendedResults">false</str>
-      <!--  The number of suggestions to return -->
       <str name="spellcheck.count">1</str>
+      <str name="suggest">false</str>
+      <str name="suggest.count">10</str>
     </lst>
     <arr name="components">
       <str>terms</str>
       <str>spellcheck</str>
+      <str>suggest</str>
     </arr>
   </requestHandler>
 

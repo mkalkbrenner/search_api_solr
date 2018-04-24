@@ -5,6 +5,7 @@ namespace Drupal\search_api_solr;
 use Drupal\search_api\Backend\BackendInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Item\ItemInterface;
+use Drupal\search_api\Query\QueryInterface;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 
 /**
@@ -78,5 +79,66 @@ interface SolrBackendInterface extends BackendInterface {
    *   The text extracted from the file.
    */
   public function extractContentFromFile($filepath);
+
+  /**
+   * Returns the targeted content domain of the server.
+   *
+   * @return string
+   */
+  public function getDomain();
+
+  /**
+   * Indicates if the Solr server uses a managed schema.
+   *
+   * @return bool
+   *   True if the Solr server uses a managed schema, false if the Solr server
+   *   uses a classic schema.
+   */
+  public function isManagedSchema();
+
+  /**
+   * Returns a ready to use query string to filter results by index and site.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *
+   * @return string
+   */
+  public function getIndexFilterQueryString(IndexInterface $index);
+
+  /**
+   * Executes a streaming expression.
+   *
+   * @param \Drupal\search_api\Query\QueryInterface $query
+   *
+   * @return \Solarium\QueryType\Stream\Result
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function executeStreamingExpression(QueryInterface $query);
+
+  /**
+   * Executes a graph streaming expression.
+   *
+   * @param \Drupal\search_api\Query\QueryInterface $query
+   *
+   * @return \Solarium\QueryType\Graph\Result
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function executeGraphStreamingExpression(QueryInterface $query);
+
+  /**
+   * Apply any finalization commands to a solr index.
+   *
+   * Only if globally configured to do so and only the first time after changes
+   * to the index from the drupal side.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function finalizeIndex(IndexInterface $index);
 
 }

@@ -1,15 +1,11 @@
 <?php
 
-/**
- * @file
- * Provides a Solr-based service class for the Search API.
- */
-
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\search_api\Entity\Server;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\ServerInterface;
+use Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrAnySchemaBackend;
 use Drupal\search_api_solr\SolrBackendInterface;
 
 /**
@@ -35,49 +31,56 @@ function search_api_solr_help($route_name, RouteMatchInterface $route_match) {
  *
  * Used to execute an optimization operation on all enabled Solr servers once a
  * day.
+ *
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\search_api\SearchApiException
  */
 function search_api_solr_cron() {
+  $request_time = \Drupal::time()->getRequestTime();
   $action = \Drupal::config('search_api_solr.settings')->get('cron_action');
   // We treat all unknown action settings as "none". However, we turn a blind
   // eye for Britons and other people who can spell.
-  if (!in_array($action, array('spellcheck', 'optimize', 'optimise'))) {
+  if (!in_array($action, ['spellcheck', 'optimize', 'optimise'])) {
     return;
   }
   // 86400 seconds is one day. We use slightly less here to allow for some
   // variation in the request time of the cron run, so that the time of day will
   // (more or less) stay the same.
-  if (REQUEST_TIME - \Drupal::state()->get('search_api_solr.last_optimize') > 86340) {
-    \Drupal::state()->set('search_api_solr.last_optimize', REQUEST_TIME);
-
-    // Get the IDs of all enabled servers which use the Solr backend.
-    $ids = \Drupal::entityQuery('search_api_server')
-      ->condition('backend', 'search_api_solr')
-      ->condition('status', TRUE)
-      ->execute();
+  if ($request_time - \Drupal::state()->get('search_api_solr.last_optimize') > 86340) {
+    \Drupal::state()->set('search_api_solr.last_optimize', $request_time);
 
     $count = 0;
-    /** @var \Drupal\search_api\ServerInterface $server */
-    foreach (Server::loadMultiple($ids) as $server) {
+    foreach (search_api_solr_get_servers() as $server) {
       try {
         /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
         $backend = $server->getBackend();
         $connector = $backend->getSolrConnector();
+        $indexes = $server->getIndexes();
+        if (!$indexes) {
+          continue;
+        }
+
+        foreach ($indexes as $index) {
+          $backend->finalizeIndex($index);
+        }
+
         if ($action != 'spellcheck') {
           $connector->optimize();
         }
         else {
-          $solarium_query = $connector->getSelectQuery();
-          $solarium_query->setRows(0);
+          $autocomplete_query = $connector->getAutocompleteQuery();
 
-          $spellcheck = $solarium_query->getSpellcheck();
-          $spellcheck->setBuild(TRUE);
+          $spellcheck_component = $autocomplete_query->getSpellcheck();
+          $spellcheck_component->setBuild(TRUE);
 
-          $connector->execute($solarium_query);
+          // Terms don't need to be build. Suggesters are configured to be
+          // buildOnCommit.
+          $connector->execute($autocomplete_query);
         }
         ++$count;
       }
       catch (SearchApiException $e) {
-        watchdog_exception('search_api_solr', $e, '%type while optimizing Solr server @server: @message in %function (line %line of %file).', array('@server' => $server->label()));
+        watchdog_exception('search_api_solr', $e, '%type while optimizing Solr server @server: @message in %function (line %line of %file).', ['@server' => $server->label()]);
       }
     }
     if ($count) {
@@ -96,34 +99,70 @@ function search_api_solr_cron() {
 }
 
 /**
- * Implements hook_search_api_server_update().
- */
-function search_api_solr_search_api_server_update(ServerInterface $server) {
-  // @todo Do we still need to keep static and persistent caches?
-  //   if ($server->getBackendId() == 'search_api_solr') {
-  //    $server->getSolrConnection()->clearCache();
-  //  }
-}
-
-/**
- * Implements hook_entity_type_alter().
- */
-function search_api_solr_entity_type_alter(array &$entity_types) {
-  if (\Drupal::moduleHandler()->moduleExists('devel')) {
-    /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
-    foreach ($entity_types as $entity_type_id => $entity_type) {
-      if ($entity_type->hasViewBuilderClass() && $entity_type->hasLinkTemplate('canonical')) {
-        $entity_type->setLinkTemplate('devel-solr', "/devel/$entity_type_id/{{$entity_type_id}}/solr");
-      }
-    }
-  }
-}
-
-/**
  *
  */
 function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $form['server']['#element_validate'][] = 'search_api_solr_form_search_api_index_form_validate_server';
+  // We need to restrict by form ID here because this function is also called
+  // via hook_form_BASE_FORM_ID_alter (which is wrong, e.g. in the case of the
+  // form ID search_api_field_config).
+  if (in_array($form_id, ['search_api_index_form', 'search_api_index_edit_form'])) {
+    if (isset($form['server'])) {
+      $form['server']['#element_validate'][] = 'search_api_solr_form_search_api_index_form_validate_server';
+    }
+
+    $settings = [
+      'finalize' => FALSE,
+      'commit_before_finalize' => FALSE,
+      'commit_after_finalize' => FALSE,
+    ];
+    /** @var \Drupal\search_api\IndexInterface $index */
+    $index = $form_state->getFormObject()->getEntity();
+    if (!$index->isNew()) {
+      $settings = $index->getThirdPartySettings('search_api_solr') + $settings;
+    }
+
+    $form['third_party_settings']['search_api_solr'] = [
+      '#tree' => TRUE,
+      '#type' => 'details',
+      '#title' => t('Solr specific index options'),
+      '#collapsed' => TRUE,
+    ];
+
+    $form['third_party_settings']['search_api_solr']['finalize'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Finalize index before first search'),
+      '#description' => t('If enabled, other modules could hook in to apply "finalizations" to the index after updates or deletions happend to index items.'),
+      '#default_value' => $settings['finalize'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['commit_before_finalize'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Wait for commit before first finalization'),
+      '#description' => t('If enabled, Solr will be be forced to flush all commits before any "finalizations" will be applied.'),
+      '#default_value' => $settings['commit_before_finalize'],
+      '#states' => [
+        'invisible' => [
+          ':input[name="third_party_settings[search_api_solr][finalize]"]' => [
+            'checked' => FALSE,
+          ],
+        ],
+      ],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['commit_after_finalize'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Wait for commit after last finalization'),
+      '#description' => t('If enabled, Solr will be be forced to flush all commits after the last "finalizations" have been applied.'),
+      '#default_value' => $settings['commit_after_finalize'],
+      '#states' => [
+        'invisible' => [
+          ':input[name="third_party_settings[search_api_solr][finalize]"]' => [
+            'checked' => FALSE,
+          ],
+        ],
+      ],
+    ];
+  }
 }
 
 /**
@@ -146,16 +185,8 @@ function search_api_solr_form_search_api_index_form_validate_server(&$element, F
         }
       }
       if ($index_count > 0 && $form_state->getValue('status')) {
-        $msg = t('The concept of storing multiple "virtual" Search API indexes in one Solr index (aka core) is bad practice and randomly breaks a lot of advanced features like spell checking, suggestions, automplete and others. Create a second core within your Solr server and assign this "index" to that core.');
-        if ($this_index->isNew()) {
-          // Avoid creating multiple indexes on one server.
-          $form_state->setError($element, $msg);
-        }
-        else {
-          // Allow editing existing multiple indexes on one server for backward
-          // compatibility.
-          drupal_set_message($msg, 'error');
-        }
+        $msg = t("You're storing multiple indexes on the same Solr index (aka core). Take care if you use advanced Solr features like spell checking, suggesters, terms, autocomplete and others directly, because they aren't aware of these multiple indexes by default. Use Search API family modules like Autocomplete module instead which will help you to avoid issues.");
+        drupal_set_message($msg, 'warning');
       }
     }
   }
@@ -175,7 +206,9 @@ function search_api_solr_form_search_api_index_form_validate_server(&$element, F
  */
 function search_api_solr_search_api_views_handler_mapping_alter(&$mapping) {
   $mapping['solr_text_ngram'] =
+  $mapping['solr_text_omit_norms'] =
   $mapping['solr_text_phonetic'] =
+  $mapping['solr_text_suggester'] =
   $mapping['solr_text_unstemmed'] =
   $mapping['solr_text_wstoken'] = [
     'argument' => [
@@ -188,4 +221,101 @@ function search_api_solr_search_api_views_handler_mapping_alter(&$mapping) {
       'id' => 'search_api',
     ],
   ];
+
+  $mapping['solr_string_ngram'] = [
+    'argument' => [
+      'id' => 'search_api',
+    ],
+    'filter' => [
+      'id' => 'search_api_string',
+    ],
+    'sort' => [
+      'id' => 'search_api',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_views_data_alter().
+ *
+ * Remove fields from solr_document datasources from the views data. Datasource
+ * fields that have been added to the index would be duplicated in the Views Add
+ * fields list. Fields that aren't added to the index can't be displayed.
+ */
+function search_api_solr_views_data_alter(array &$data) {
+  // @todo check for a search_api based view first.
+  foreach ($data as $key => $fields) {
+    if (preg_match('/search_api_datasource_(.+)_solr_document/', $key)) {
+      unset($data[$key]);
+    }
+  }
+}
+
+/**
+ * Deletes all Solr Field Type and re-installs them from their yml files.
+ */
+function search_api_solr_delete_and_reinstall_all_field_types() {
+  $storage = \Drupal::entityTypeManager()->getStorage('solr_field_type');
+  $storage->delete($storage->loadMultiple());
+
+  /** @var \Drupal\Core\Config\ConfigInstallerInterface $config_installer */
+  $config_installer = \Drupal::service('config.installer');
+  $config_installer->installDefaultConfig('module', 'search_api_solr');
+  $restrict_by_dependency = [
+    'module' => 'search_api_solr',
+  ];
+  $config_installer->installOptionalConfig(NULL, $restrict_by_dependency);
+}
+
+/**
+ * Get all Search API servers that use a Solr backend.
+ *
+ * @param bool $only_active
+ *
+ * @return ServerInterface[]
+ *
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\search_api\SearchApiException
+ */
+function search_api_solr_get_servers($only_active = TRUE) {
+  $solr_servers = [];
+  $storage = \Drupal::entityTypeManager()->getStorage('search_api_server');
+  /** @var ServerInterface[] $servers */
+  $servers = $only_active ? $storage->loadByProperties(['status' => TRUE]) :
+    $storage->loadMultiple();
+  foreach ($servers as $server) {
+    if (
+      $server->hasValidBackend() &&
+      $server->getBackend() instanceof SolrBackendInterface
+    ) {
+      $solr_servers[] = $server;
+    }
+  }
+  return $solr_servers;
+}
+
+/**
+ * Implements hook_entity_operation().
+ *
+ * Adds an operation to Solr servers to directly generate and download a config.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $server
+ *
+ * @return array
+ * @throws \Drupal\search_api\SearchApiException
+ */
+function search_api_solr_entity_operation(\Drupal\Core\Entity\EntityInterface $server) {
+  $operations = [];
+  if (
+    $server instanceof Server &&
+    $server->getBackend() instanceof SolrBackendInterface &&
+    !($server->getBackend() instanceof SearchApiSolrAnySchemaBackend)
+  ) {
+    $operations['get_config_zip'] = [
+      'title' => t('Get config.zip'),
+      'url' => \Drupal\Core\Url::fromRoute('entity.solr_field_type.config_zip_collection', ['search_api_server' => $server->id()]),
+      'weight' => 50,
+    ];
+  }
+  return $operations;
 }

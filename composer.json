@@ -20,17 +20,24 @@
         "source": "http://git.drupal.org/project/search_api_solr.git"
     },
     "require": {
-        "solarium/solarium": "3.8.*",
-        "drupal/search_api": "~1.2"
+        "php": "^7.0",
+        "maennchen/zipstream-php": "0.4.*",
+        "solarium/solarium": "~4.0.0-rc.1",
+        "drupal/search_api": "~1.7"
     },
     "require-dev": {
+        "phayes/geophp": "^1.2",
         "drupal/facets": "1.x-dev",
         "drupal/geofield": "1.x-dev",
         "drupal/search_api_autocomplete": "1.x-dev",
         "drupal/search_api_location": "1.x-dev"
     },
+    "conflict": {
+        "drupal/search_api_solr_multilingual": "*"
+    },
     "suggest": {
         "drupal/facets": "Provides facetted search.",
-        "drupal/search_api_solr_multilingual": "Highly recommended if installation is multilingual or uses a language different than English."
+        "drupal/search_api_autocomplete": "Provides auto complete for search boxes.",
+        "drupal/search_api_location": "Provides location searches."
     }
 }

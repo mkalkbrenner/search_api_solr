@@ -2,18 +2,17 @@
 
 namespace Drupal\Tests\search_api_solr\Kernel;
 
-use Drupal\search_api\Entity\Index;
-use Drupal\search_api\Entity\Server;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\Tests\search_api\Kernel\BackendTestBase;
+use Drupal\search_api\Entity\Index;
+use Drupal\search_api\Entity\Server;
 
 /**
  * Tests location searches and distance facets using the Solr search backend.
  *
  * @group search_api_solr
  */
-class SearchApiSolrLocationTest extends BackendTestBase {
+class SearchApiSolrLocationTest extends SolrBackendTestBase {
 
   /**
    * Modules to enable for this test.
@@ -21,50 +20,22 @@ class SearchApiSolrLocationTest extends BackendTestBase {
    * @var string[]
    */
   public static $modules = [
-    'system',
-    'search_api',
-    'search_api_solr',
     'search_api_location',
     'search_api_test_example_content',
     'search_api_solr_test',
     'entity_test',
     'geofield',
-    'field',
   ];
-
-  /**
-   * A Search API server ID.
-   *
-   * @var string
-   */
-  protected $serverId = 'solr_search_server';
-
-  /**
-   * A Search API index ID.
-   *
-   * @var string
-   */
-  protected $indexId = 'solr_search_index';
-
-  /**
-   * Seconds to wait for a soft commit on Solr.
-   *
-   * @var int
-   */
-  protected $waitForCommit = 2;
 
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
-    parent::setUp();
+  protected function installConfigs() {
+    parent::installConfigs();
 
     $this->installConfig([
-      'search_api_solr',
       'search_api_solr_test',
     ]);
-
-    $this->commonSolrBackendSetUp();
   }
 
   /**
@@ -91,15 +62,24 @@ class SearchApiSolrLocationTest extends BackendTestBase {
     /** @var \Drupal\search_api\Entity\Index $index */
     $index = Index::load($this->indexId);
 
-    $info = [
+    $location_info = [
       'datasource_id' => 'entity:entity_test_mulrev_changed',
       'property_path' => 'location',
       'type' => 'location',
     ];
-
+    $rpt_info = [
+      'datasource_id' => 'entity:entity_test_mulrev_changed',
+      'property_path' => 'location',
+      'type' => 'rpt',
+    ];
     $fieldsHelper = $this->container->get('search_api.fields_helper');
 
-    $index->addField($fieldsHelper->createField($index, 'location', $info));
+    // Index location coordinates as location data type.
+    $index->addField($fieldsHelper->createField($index, 'location', $location_info));
+
+    // Index location coordinates as rpt data type.
+    $index->addField($fieldsHelper->createField($index, 'rpt', $rpt_info));
+
     $index->save();
 
     /** @var \Drupal\search_api\Entity\Server $server */
@@ -111,23 +91,6 @@ class SearchApiSolrLocationTest extends BackendTestBase {
     $server->save();
 
     $this->indexItems($this->indexId);
-  }
-
-  /**
-   * Clear the index after every test.
-   */
-  public function tearDown() {
-    $this->clearIndex();
-    parent::tearDown();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function indexItems($index_id) {
-    $index_status = parent::indexItems($index_id);
-    sleep($this->waitForCommit);
-    return $index_status;
   }
 
   /**
@@ -160,7 +123,6 @@ class SearchApiSolrLocationTest extends BackendTestBase {
    * Tests location searches and distance facets.
    */
   public function testBackend() {
-
     // Search 500km from Antwerp.
     $location_options = [
       [
@@ -269,7 +231,7 @@ class SearchApiSolrLocationTest extends BackendTestBase {
     ];
 
     $query = $this->buildSearch(NULL, [], NULL, FALSE)
-      ->addCondition('location',['100', '1000'], 'BETWEEN')
+      ->addCondition('location', ['100', '1000'], 'BETWEEN')
       ->sort('location__distance');
 
     $query->setOption('search_api_location', $location_options);
@@ -286,26 +248,99 @@ class SearchApiSolrLocationTest extends BackendTestBase {
     ];
 
     $this->assertEquals($expected, $facets, 'The correct location facets are returned');
+
+    // Tests the RPT data type of SearchApiSolrBackend.
+    $query = $this->buildSearch(NULL, [], NULL, FALSE);
+    $options = &$query->getOptions();
+    $options['search_api_facets']['rpt'] = [
+      'field' => 'rpt',
+      'limit' => 3,
+      'operator' => 'and',
+      'min_count' => 1,
+      'missing' => FALSE,
+    ];
+    $options['search_api_rpt']['rpt'] = [
+      'field' => 'rpt',
+      'geom' => '["-180 -90" TO "180 90"]',
+      'gridLevel' => '2',
+      'maxCells' => '35554432',
+      'distErrPct' => '',
+      'distErr' => '',
+      'format' => 'ints2D',
+    ];
+    $result = $query->execute();
+    $expected = [
+      [
+        'filter' => [
+          "gridLevel",
+          2,
+          "columns",
+          32,
+          "rows",
+          32,
+          "minX",
+          -180.0,
+          "maxX",
+          180.0,
+          "minY",
+          -90.0,
+          "maxY",
+          90.0,
+          "counts_ints2D",
+          [NULL, NULL, NULL, NULL, NULL, NULL, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], NULL, [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+        ],
+        'count' => 3,
+      ],
+    ];
+
+    $facets = $result->getExtraData('search_api_facets', [])['rpt'];
+    $this->assertEquals($expected, $facets, 'The correct location facets are returned');
+
+    $query = $this->buildSearch(NULL, [], NULL, FALSE);
+    $options = &$query->getOptions();
+    $options['search_api_facets']['rpt'] = [
+      'field' => 'rpt',
+      'limit' => 4,
+      'operator' => 'or',
+      'min_count' => 1,
+      'missing' => FALSE,
+    ];
+    $options['search_api_rpt']['rpt'] = [
+      'field' => 'rpt',
+      'geom' => '["-60 -85" TO "130 70"]',
+      'gridLevel' => '2',
+      'maxCells' => '35554432',
+      'distErrPct' => '',
+      'distErr' => '',
+      'format' => 'ints2D',
+    ];
+    $result = $query->execute();
+    $expected = [
+      [
+        'filter' => [
+          "gridLevel",
+          2,
+          "columns",
+          18,
+          "rows",
+          29,
+          "minX",
+          -67.5,
+          "maxX",
+          135.0,
+          "minY",
+          -90.0,
+          "maxY",
+          73.125,
+          "counts_ints2D",
+          [NULL, NULL, NULL, [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL],
+        ],
+        'count' => 2,
+      ],
+    ];
+
+    $facets = $result->getExtraData('search_api_facets', [])['rpt'];
+    $this->assertEquals($expected, $facets, 'The correct location facets are returned');
   }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function checkServerBackend() {}
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function updateIndex() {}
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function checkSecondServer() {}
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function checkModuleUninstall() {}
 
 }
