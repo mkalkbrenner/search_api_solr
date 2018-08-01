@@ -259,15 +259,18 @@ abstract class AbstractSearchApiSolrMultilingualBackend extends SearchApiSolrBac
               // any change for the other languages, too.
               return;
             }
-            $flat_keys = $this->flattenKeys($keys, explode(' ', $new_solr_fields), $query->getParseMode()->getPluginId());
-            if (
-              strpos($flat_keys, '(') !== 0 &&
-              strpos($flat_keys, '+(') !== 0 &&
-              strpos($flat_keys, '-(') !== 0
-            ) {
-              $flat_keys = '(' . $flat_keys . ')';
+            $new_solr_fields = explode(' ', $new_solr_fields);
+            foreach ($new_solr_fields as $solrField) {
+              $flat_keys = $this->flattenKeys($keys, [$solrField], $query->getParseMode()->getPluginId());
+              if (
+                strpos($flat_keys, '(') !== 0 &&
+                strpos($flat_keys, '+(') !== 0 &&
+                strpos($flat_keys, '-(') !== 0
+              ) {
+                $flat_keys = '(' . $flat_keys . ')';
+              }
+              $new_keys[] = $flat_keys;
             }
-            $new_keys[] = $flat_keys;
           }
 
           if (count($new_keys) > 1) {
