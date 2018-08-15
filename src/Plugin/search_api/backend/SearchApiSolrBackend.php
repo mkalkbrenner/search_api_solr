@@ -1368,7 +1368,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           // distance calculation results that way. Later we directly pass these
           // as "fields" to Drupal and especially Views.
           if ($type == 'location') {
-            $ret[$key . '__distance'] = Utility::encodeSolrName($name . '__distance');
+            $dist_info = Utility::getDataTypeInfo('decimal');
+            $dist_prefix = isset($dist_info['prefix']) ? $dist_info['prefix'] : 'ft';
+            $ret[$key . '__distance'] = Utility::encodeSolrName($dist_prefix . 's' . $key . '__distance');
           }
         }
       }
