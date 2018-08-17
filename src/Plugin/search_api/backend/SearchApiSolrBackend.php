@@ -1368,7 +1368,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           // distance calculation results that way. Later we directly pass these
           // as "fields" to Drupal and especially Views.
           if ($type == 'location') {
-            $ret[$key . '__distance'] = Utility::encodeSolrName($name . '__distance');
+            // Solr returns the calculated distance value as a single decimal
+            // value (even for multi-valued location fields). Therefore we have
+            // prefix the field name accordingly by fts_*. This ensures that this
+            // field works as for sorting, too.
+            $dist_info = Utility::getDataTypeInfo('decimal');
+            $ret[$key . '__distance'] = Utility::encodeSolrName($dist_info['prefix'] . 's_' . $key . '__distance');
           }
         }
       }
