@@ -100,7 +100,7 @@ script:
   - phpenv config-add /tmp/xdebug.ini
   # Run the tests within the drupal directory.
   - cd $TRAVIS_BUILD_DIR/../drupal
-  - ./vendor/bin/phpunit -c core --group search_api_solr --verbose --debug
+  - travis_wait 45 ./vendor/bin/phpunit -c core --group search_api_solr --verbose --debug
 
 matrix:
   exclude:
