@@ -30,6 +30,8 @@ services:
   - mysql
 
 before_install:
+  # Disable xdebug.
+  - cp $HOME/.phpenv/versions/$(phpenv global)/etc/conf.d/xdebug.ini /tmp
   - phpenv config-rm xdebug.ini
   - composer global require "hirak/prestissimo:^0.3"
   - mysql -e 'CREATE DATABASE drupal;'
@@ -94,6 +96,8 @@ before_script:
   - $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr create -c d8 -d $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf
 
 script:
+  # Re-enable xdebug to support code coverage.
+  - phpenv config-add /tmp/xdebug.ini
   # Run the tests within the drupal directory.
   - cd $TRAVIS_BUILD_DIR/../drupal
   - ./vendor/bin/phpunit -c core --group search_api_solr --verbose --debug
