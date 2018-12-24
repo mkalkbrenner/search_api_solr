@@ -206,7 +206,7 @@ class SearchApiSolrAnySchemaBackend extends SearchApiSolrBackend {
     }
 
     // Let modules adjust the field mappings.
-    $this->moduleHandler->alter('search_api_solr_field_mapping', $index, $ret);
+    $this->moduleHandler->alter('search_api_solr_field_mapping', $index, $this->fieldNames[$index->id()]);
 
     return $this->fieldNames[$index->id()];
   }
