@@ -29,6 +29,16 @@ field_settings:
     type: text
     datasource_id: 'entity:entity_test_mulrev_changed'
     property_path: body
+  body_unstemmed:
+    label: Body
+    type: solr_text_unstemmed
+    datasource_id: 'entity:entity_test_mulrev_changed'
+    property_path: body
+  body_suggest:
+    label: Body
+    type: solr_text_suggester
+    datasource_id: 'entity:entity_test_mulrev_changed'
+    property_path: body
   type:
     label: Type
     type: string
@@ -66,6 +76,16 @@ processor_settings:
   aggregated_field:
     weights:
       add_properties: 20
+  highlight:
+    highlight: server
+    highlight_partial: false
+    excerpt: true
+    excerpt_length: 256
+    exclude_fields: {  }
+    prefix: '<strong>'
+    suffix: '</strong>'
+    weights:
+      postprocess_query: 0
   rendered_item:
     weights:
       add_properties: 0
@@ -97,3 +117,25 @@ dependencies:
     - search_api.server.solr_multilingual_search_server
   module:
     - entity_test
+third_party_settings:
+  search_api_solr:
+    finalize: false
+    commit_before_finalize: false
+    commit_after_finalize: false
+    highlighter:
+      maxAnalyzedChars: 51200
+      fragmenter: regex
+      regex:
+        slop: 0.5
+        pattern: blank
+        maxAnalyzedChars: 10000
+      usePhraseHighlighter: true
+      highlightMultiTerm: true
+      preserveMulti: false
+      highlight:
+        mergeContiguous: false
+        requireFieldMatch: false
+        snippets: 3
+        fragsize: 0
+    advanced:
+      index_prefix: 'index_prefix'

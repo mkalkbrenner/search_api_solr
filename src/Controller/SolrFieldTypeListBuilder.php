@@ -8,6 +8,7 @@ use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\SolrMultilingualBackendInterface;
+use Drupal\search_api_solr\Utility\Utility;
 use ZipStream\ZipStream;
 
 /**
@@ -19,6 +20,11 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
    * @var \Drupal\search_api_solr\SolrMultilingualBackendInterface
    */
   protected $backend;
+
+  /**
+   * @var string
+   */
+  protected $serverId = '';
 
   /**
    * @var string
@@ -265,13 +271,11 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
   }
 
   /**
-   * @return \ZipStream\ZipStream
+   * @return array
    *
    * @throws \Drupal\search_api\SearchApiException
-   * @throws \ZipStream\Exception\FileNotFoundException
-   * @throws \ZipStream\Exception\FileNotReadableException
    */
-  public function getConfigZip() {
+  public function getConfigFiles() {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $this->getBackend();
     $connector = $backend->getSolrConnector();
@@ -279,10 +283,11 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
     $search_api_solr_conf_path = drupal_get_path('module', 'search_api_solr') . '/solr-conf/' . $solr_branch;
     $solrcore_properties = parse_ini_file($search_api_solr_conf_path . '/solrcore.properties', FALSE, INI_SCANNER_RAW);
 
-    $zip = new ZipStream('solr_' . $solr_branch . '_config.zip');
-    $zip->addFile('schema_extra_types.xml', $this->getSchemaExtraTypesXml());
-    $zip->addFile('schema_extra_fields.xml', $this->getSchemaExtraFieldsXml());
-    $zip->addFile('solrconfig_extra.xml', $this->getSolrconfigExtraXml());
+    $files = [
+      'schema_extra_types.xml' => $this->getSchemaExtraTypesXml(),
+      'schema_extra_fields.xml'=> $this->getSchemaExtraFieldsXml(),
+      'solrconfig_extra.xml' => $this->getSolrconfigExtraXml(),
+    ];
 
     // Add language specific text files.
     $solr_field_types = $this->load();
@@ -290,11 +295,8 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
     foreach ($solr_field_types as $solr_field_type) {
       $text_files = $solr_field_type->getTextFiles();
       foreach ($text_files as $text_file_name => $text_file) {
-        if ($custom_code = $solr_field_type->getCustomCode()) {
-          $text_file_name .= '_' . $custom_code;
-        }
-        $text_file_name .= '_' . $solr_field_type->getFieldTypeLanguageCode() . '.txt';
-        $zip->addFile($text_file_name, $text_file);
+        $text_file_name = Utility::completeTextFileName($text_file_name, $solr_field_type);
+        $files[$text_file_name] = $text_file;
         $solrcore_properties['solr.replication.confFiles'] .= ',' . $text_file_name;
       }
     }
@@ -306,22 +308,45 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
     foreach ($solrcore_properties as $property => $value) {
       $solrcore_properties_string .= $property . '=' . $value . "\n";
     }
-    $zip->addFile('solrcore.properties', $solrcore_properties_string);
-
-    // @todo provide a hook to add more things.
+    $files['solrcore.properties'] = $solrcore_properties_string;
 
     // Now add all remaining static files from the conf dir that have not been
     // generated dynamically above.
     foreach (scandir($search_api_solr_conf_path) as $file) {
       if (strpos($file, '.') !== 0) {
-        foreach ($zip->files as $zipped_file) {
-          /* @see \ZipStream\ZipStream::addToCdr() */
-          if ($file == $zipped_file[0]) {
+        foreach (array_keys($files) as $existing_file) {
+          if ($file == $existing_file) {
             continue(2);
           }
         }
-        $zip->addFileFromPath($file, $search_api_solr_conf_path . '/' . $file);
+        $files[$file] = file_get_contents($search_api_solr_conf_path . '/' . $file);
       }
+    }
+
+    $connector->alterConfigFiles($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
+    $this->moduleHandler->alter('search_api_solr_config_files', $files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
+    return $files;
+  }
+
+  /**
+   * @return \ZipStream\ZipStream
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \ZipStream\Exception\FileNotFoundException
+   * @throws \ZipStream\Exception\FileNotReadableException
+   */
+  public function getConfigZip() {
+    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+    $backend = $this->getBackend();
+    $connector = $backend->getSolrConnector();
+    $solr_branch = $connector->getSolrBranch($this->assumed_minimum_version);
+
+    $zip = new ZipStream('solr_' . $solr_branch . '_config.zip');
+
+    $files = $this->getConfigFiles();
+
+    foreach ($files as $name => $content) {
+      $zip->addFile($name, $content);
     }
 
     return $zip;
@@ -336,7 +361,7 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
    */
   public function setServer(ServerInterface $server) {
     $this->setBackend($server->getBackend());
-
+    $this->serverId = $server->id();
   }
 
   /**
@@ -346,7 +371,6 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
    */
   public function setBackend(SolrBackendInterface $backend) {
     $this->backend = $backend;
-
   }
 
   /**

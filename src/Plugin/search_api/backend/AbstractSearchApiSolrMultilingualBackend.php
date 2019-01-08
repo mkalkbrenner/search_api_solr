@@ -220,10 +220,27 @@ abstract class AbstractSearchApiSolrMultilingualBackend extends SearchApiSolrBac
         }
       }
 
-      if (empty($this->configuration['retrieve_data'])) {
-        // We need the language to be part of the result to modify the result
-        // accordingly in extractResults().
-        $solarium_query->addField($field_names[SEARCH_API_LANGUAGE_FIELD_NAME]);
+      if (!empty($this->configuration['retrieve_data'])) {
+        if ($fields_to_be_retrieved = $query->getOption('search_api_retrieved_field_values', [])) {
+          $language_specific_fields_to_retrieve = [];
+          $fields_to_retrieve = $solarium_query->getFields();
+          foreach ($fields_to_retrieve as $key => $field_name) {
+            $language_specific_name = FALSE;
+            foreach ($language_ids as $language_id) {
+              if (isset($language_specific_fields[$language_id][$field_name])) {
+                $language_specific_fields_to_retrieve[] = $language_specific_fields[$language_id][$field_name];
+                $language_specific_name = TRUE;
+              }
+            }
+            if ($language_specific_name) {
+              unset($fields_to_retrieve[$key]);
+            }
+          }
+
+          if ($language_specific_fields_to_retrieve) {
+            $solarium_query->setFields(array_merge($language_specific_fields_to_retrieve, $fields_to_retrieve));
+          }
+        }
       }
 
       if ($query->hasTag('mlt')) {
@@ -246,6 +263,19 @@ abstract class AbstractSearchApiSolrMultilingualBackend extends SearchApiSolrBac
         /** @var \Solarium\QueryType\Select\Query\Query $solarium_query */
         $edismax = $solarium_query->getEDisMax();
         if ($solr_fields = $edismax->getQueryFields()) {
+          $parse_mode_id = $query->getParseMode()->getPluginId();
+          if ('terms' == $parse_mode_id) {
+            // Using the 'phrase' parse mode, Search API provides one big phrase
+            // as keys. Using the 'terms' parse mode, Search API provides chunks
+            // of single terms as keys. But these chunks might contain not just
+            // real terms but again a phrase if you enter something like this in
+            // the search box: term1 "term2 as phrase" term3. This will be
+            // converted in this keys array: ['term1', 'term2 as phrase',
+            // 'term3']. To have Solr behave like the database backend, these
+            // three "terms" should be handled like three phrases.
+            $parse_mode_id = 'phrase';
+          }
+
           $new_keys = [];
 
           foreach ($language_ids as $language_id) {
@@ -259,7 +289,7 @@ abstract class AbstractSearchApiSolrMultilingualBackend extends SearchApiSolrBac
               // any change for the other languages, too.
               return;
             }
-            $flat_keys = $this->flattenKeys($keys, explode(' ', $new_solr_fields), $query->getParseMode()->getPluginId());
+            $flat_keys = $this->flattenKeys($keys, explode(' ', $new_solr_fields), $parse_mode_id);
             if (
               strpos($flat_keys, '(') !== 0 &&
               strpos($flat_keys, '+(') !== 0 &&
@@ -354,7 +384,7 @@ abstract class AbstractSearchApiSolrMultilingualBackend extends SearchApiSolrBac
 
     if (isset($data->response)) {
       foreach ($data->response->docs as $doc) {
-        $language_id = $doc_languages[$this->createId($index->id(), $doc->{$field_names['search_api_id']})] = $doc->{$field_names[SEARCH_API_LANGUAGE_FIELD_NAME]};
+        $language_id = $doc_languages[$this->createId($this->getIndexId($index), $doc->{$field_names['search_api_id']})] = $doc->{$field_names[SEARCH_API_LANGUAGE_FIELD_NAME]};
         foreach (array_keys(get_object_vars($doc)) as $language_specific_field_name) {
           $field_name = Utility::getSolrDynamicFieldNameForLanguageSpecificSolrDynamicFieldName($language_specific_field_name);
           if ($field_name != $language_specific_field_name) {

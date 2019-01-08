@@ -16,14 +16,15 @@
     ],
     "support": {
         "issues": "https://www.drupal.org/project/issues/search_api_solr",
-        "irc": "irc://irc.freenode.org/drupal-search-api",
+        "irc": "https://drupalchat.me/channel/search",
         "source": "http://git.drupal.org/project/search_api_solr.git"
     },
     "require": {
         "php": "^7.0",
+        "ext-json": "*",
         "maennchen/zipstream-php": "0.4.*",
-        "solarium/solarium": "~4.1.0",
-        "drupal/search_api": "~1.9"
+        "solarium/solarium": "~4.2.0",
+        "drupal/search_api": "~1.11"
     },
     "require-dev": {
         "phayes/geophp": "^1.2",

@@ -8,6 +8,7 @@ use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\Query\ResultSetInterface;
 use Drupal\search_api\Utility\Utility;
 use Drupal\search_api_autocomplete\Entity\Search;
+use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 use Drupal\search_api_solr\Utility\SolrCommitTrait;
@@ -64,6 +65,14 @@ class SearchApiSolrTest extends SolrBackendTestBase {
   protected function backendSpecificRegressionTests() {
     $this->regressionTest2888629();
     $this->regressionTest2850160();
+    $this->indexPrefixTest();
+  }
+
+  protected function indexPrefixTest() {
+    $backend = Server::load($this->serverId)->getBackend();
+    $index = $this->getIndex();
+    $prefixed_index_id = $this->invokeMethod($backend, 'getIndexId', [$index]);
+    $this->assertEquals('server_prefixindex_prefix' . $index->id(), $prefixed_index_id);
   }
 
   /**
@@ -235,6 +244,71 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     ];
 
     return [$fields, $mapping];
+  }
+
+  /**
+   * Tests the conversion of Search API queries into Solr queries.
+   */
+  public function testQueryParsers() {
+    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+    $backend = Server::load($this->serverId)->getBackend();
+
+    $query = $this->buildSearch('foo "apple pie" bar');
+
+    $flat = $this->invokeMethod($backend, 'flattenKeys', [
+      $query->getKeys(),
+      [],
+      'phrase',
+    ]);
+    $this->assertEquals('(+"foo" +"apple pie" +"bar")', $flat);
+
+    $flat = $this->invokeMethod($backend, 'flattenKeys', [
+      $query->getKeys(),
+      [],
+      'terms',
+    ]);
+    $this->assertEquals('(+foo +apple\ pie +bar)', $flat);
+
+    $exception = FALSE;
+    try {
+      $flat = $this->invokeMethod($backend, 'flattenKeys', [
+        $query->getKeys(),
+        [],
+        'direct',
+      ]);
+    }
+    catch (SearchApiSolrException $e) {
+      $exception = TRUE;
+    }
+    $this->assertTrue($exception);
+
+    $flat = $this->invokeMethod($backend, 'flattenKeys', [
+      $query->getKeys(),
+      ['solr_field'],
+      'phrase',
+    ]);
+    $this->assertEquals('(+solr_field:"foo" +solr_field:"apple pie" +solr_field:"bar")', $flat);
+
+    $flat = $this->invokeMethod($backend, 'flattenKeys', [
+      $query->getKeys(),
+      ['solr_field'],
+      'terms',
+    ]);
+    $this->assertEquals('(+solr_field:foo +solr_field:apple\ pie +solr_field:bar)', $flat);
+
+    $flat = $this->invokeMethod($backend, 'flattenKeys', [
+      $query->getKeys(),
+      ['solr_field_1', 'solr_field_2'],
+      'phrase',
+    ]);
+    $this->assertEquals('(+(solr_field_1:"foo" solr_field_2:"foo") +(solr_field_1:"apple pie" solr_field_2:"apple pie") +(solr_field_1:"bar" solr_field_2:"bar"))', $flat);
+
+    $flat = $this->invokeMethod($backend, 'flattenKeys', [
+      $query->getKeys(),
+      ['solr_field_1', 'solr_field_2'],
+      'terms',
+    ]);
+    $this->assertEquals('(+(solr_field_1:foo solr_field_2:foo) +(solr_field_1:apple\ pie solr_field_2:apple\ pie) +(solr_field_1:bar solr_field_2:bar))', $flat);
   }
 
   /**
@@ -420,34 +494,127 @@ class SearchApiSolrTest extends SolrBackendTestBase {
   }
 
   /**
-   * Tests highlight options.
+   * Tests retrieve_data options.
    */
-  public function testHighlight() {
-    $config = $this->getIndex()->getServerInstance()->getBackendConfig();
+  public function testRetrieveData() {
+    $server = $this->getIndex()->getServerInstance();
+    $config = $server->getBackendConfig();
+    $backend = $server->getBackend();
 
     $this->insertExampleContent();
     $this->indexItems($this->indexId);
 
-    $config['retrieve_data'] = TRUE;
-    $config['highlight_data'] = TRUE;
+    // Retrieve just required fields.
     $query = $this->buildSearch('foobar');
-    $query->getIndex()->getServerInstance()->setBackendConfig($config);
     $results = $query->execute();
-
     $this->assertEquals(1, $results->getResultCount(), 'Search for »foobar« returned correct number of results.');
     /** @var \Drupal\search_api\Item\ItemInterface $result */
     foreach ($results as $result) {
-      $this->assertContains('<strong>foobar</strong>', (string) $result->getExtraData('highlighted_fields', ['body' => ['']])['body'][0]);
+      /** @var \Solarium\QueryType\Select\Result\Document $solr_document */
+      $solr_document = $result->getExtraData('search_api_solr_document', NULL);
+      $fields = $solr_document->getFields();
+      $this->assertEquals('entity:entity_test_mulrev_changed/3:en', $fields['ss_search_api_id']);
+      $this->assertEquals('en', $fields['ss_search_api_language']);
+      $this->assertArrayHasKey('score', $fields);
+      $this->assertArrayNotHasKey('tm_body', $fields);
+      $this->assertArrayNotHasKey('id', $fields);
+      $this->assertArrayNotHasKey('its_id', $fields);
+      $this->assertArrayNotHasKey('twm_suggest', $fields);
     }
 
-    $config['highlight_data'] = FALSE;
+    // Retrieve all fields.
+    $config['retrieve_data'] = TRUE;
+    $server->setBackendConfig($config);
+    $server->save();
+
     $query = $this->buildSearch('foobar');
-    $query->getIndex()->getServerInstance()->setBackendConfig($config);
+    $results = $query->execute();
+    $this->assertEquals(1, $results->getResultCount(), 'Search for »foobar« returned correct number of results.');
+    /** @var \Drupal\search_api\Item\ItemInterface $result */
+    foreach ($results as $result) {
+      /** @var \Solarium\QueryType\Select\Result\Document $solr_document */
+      $solr_document = $result->getExtraData('search_api_solr_document', NULL);
+      $fields = $solr_document->getFields();
+      $this->assertEquals('entity:entity_test_mulrev_changed/3:en', $fields['ss_search_api_id']);
+      $this->assertEquals('en', $fields['ss_search_api_language']);
+      $this->assertArrayHasKey('score', $fields);
+      $this->assertArrayHasKey('tm_body', $fields);
+      $this->assertContains('search_index-entity:entity_test_mulrev_changed/3:en', $fields['id']);
+      $this->assertEquals('3', $fields['its_id']);
+      $this->assertArrayHasKey('twm_suggest', $fields);
+    }
+
+    // Retrieve list of fields in addition to required fields.
+    $query = $this->buildSearch('foobar');
+    $query->setOption('search_api_retrieved_field_values', ['body' => 'body']);
+    $results = $query->execute();
+    $this->assertEquals(1, $results->getResultCount(), 'Search for »foobar« returned correct number of results.');
+    /** @var \Drupal\search_api\Item\ItemInterface $result */
+    foreach ($results as $result) {
+      /** @var \Solarium\QueryType\Select\Result\Document $solr_document */
+      $solr_document = $result->getExtraData('search_api_solr_document', NULL);
+      $fields = $solr_document->getFields();
+      $this->assertEquals('entity:entity_test_mulrev_changed/3:en', $fields['ss_search_api_id']);
+      $this->assertEquals('en', $fields['ss_search_api_language']);
+      $this->assertArrayHasKey('score', $fields);
+      $this->assertArrayHasKey('tm_body', $fields);
+      $this->assertArrayNotHasKey('id', $fields);
+      $this->assertArrayNotHasKey('its_id', $fields);
+      $this->assertArrayNotHasKey('twm_suggest', $fields);
+    }
+
+    $this->assertEquals([
+      0 => 'name',
+      1 => 'body',
+      2 => 'body_unstemmed',
+      // body_suggest should be removed by getQueryFulltextFields().
+      // 3 => 'body_suggest',
+      4 => 'category_ngram',
+    ], $this->invokeMethod($backend, 'getQueryFulltextFields', [$query]));
+  }
+
+  /**
+   * Tests highlight options.
+   */
+  public function testHighlight() {
+    $server = $this->getIndex()->getServerInstance();
+    $config = $server->getBackendConfig();
+
+    $this->insertExampleContent();
+    $this->indexItems($this->indexId);
+
+    $query = $this->buildSearch('foobar');
     $results = $query->execute();
     $this->assertEquals(1, $results->getResultCount(), 'Search for »foobar« returned correct number of results.');
     /** @var \Drupal\search_api\Item\ItemInterface $result */
     foreach ($results as $result) {
       $this->assertEmpty($result->getExtraData('highlighted_fields', []));
+      $this->assertEmpty($result->getExtraData('highlighted_keys', []));
+    }
+
+    $config['highlight_data'] = TRUE;
+    $server->setBackendConfig($config);
+    $server->save();
+
+    $query = $this->buildSearch('foobar');
+    $results = $query->execute();
+    $this->assertEquals(1, $results->getResultCount(), 'Search for »foobar« returned correct number of results.');
+    /** @var \Drupal\search_api\Item\ItemInterface $result */
+    foreach ($results as $result) {
+      $this->assertContains('<strong>foobar</strong>', (string) $result->getExtraData('highlighted_fields', ['body' => ['']])['body'][0]);
+      $this->assertEquals(['foobar'], $result->getExtraData('highlighted_keys', []));
+      $this->assertEquals('… bar … test <strong>foobar</strong> Case …', $result->getExcerpt());
+    }
+
+    // Test highlghting with stemming.
+    $query = $this->buildSearch('foobars');
+    $results = $query->execute();
+    $this->assertEquals(1, $results->getResultCount(), 'Search for »foobar« returned correct number of results.');
+    /** @var \Drupal\search_api\Item\ItemInterface $result */
+    foreach ($results as $result) {
+      $this->assertContains('<strong>foobar</strong>', (string) $result->getExtraData('highlighted_fields', ['body' => ['']])['body'][0]);
+      $this->assertEquals(['foobar'], $result->getExtraData('highlighted_keys', []));
+      $this->assertEquals('… bar … test <strong>foobar</strong> Case …', $result->getExcerpt());
     }
   }
 
@@ -765,6 +932,92 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       ->addCondition('category_ngram_string', 'Dog')
       ->execute();
     $this->assertResults([1], $results, 'Ngram string "Dog".');
+  }
+
+  /**
+   * Test generation of Solr configuration files.
+   *
+   * @dataProvider configGenerationDataProvider
+   */
+  public function testConfigGeneration(string $language, array $files) {
+    $server = $this->getServer();
+    $backend_config = $server->getBackendConfig();
+
+    /** @var \Drupal\search_api_solr\Controller\SolrFieldTypeListBuilder $list_builder */
+    $list_builder = \Drupal::entityTypeManager()
+      ->getListBuilder('solr_field_type');
+
+    $list_builder->setServer($server);
+
+    $config_files = $list_builder->getConfigFiles();
+
+    foreach ($files as $file_name => $expected_strings) {
+      $this->assertArrayHasKey($file_name, $config_files);
+      foreach ($expected_strings as $string) {
+        $this->assertContains($string, $config_files[$file_name]);
+      }
+    }
+
+    $this->assertContains($server->id(), $config_files['test.txt']);
+    $this->assertNotContains('<jmx />', $config_files['solrconfig_extra.xml']);
+
+    $backend_config['connector_config']['jmx'] = TRUE;
+    $server->setBackendConfig($backend_config);
+    $server->save();
+
+    $config_files= $list_builder->getConfigFiles();
+    $this->assertContains('<jmx />', $config_files['solrconfig_extra.xml']);
+  }
+
+  /**
+   * Data provider for testConfigGeneration method.
+   *
+   * @return array
+   */
+  public function configGenerationDataProvider() {
+    return [
+      'und' => [
+        'und',
+        [
+          'schema_extra_types.xml' => [
+            # phonetic is currently not available vor Solr 6.x.
+            #'fieldType name="text_phonetic_und" class="solr.TextField"',
+            'fieldType name="text_und" class="solr.TextField"',
+          ],
+          'schema_extra_fields.xml' => [
+            # phonetic is currently not available vor Solr 6.x.
+            #'<dynamicField name="tcphonetics_*" type="text_phonetic_und" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />',
+            #'<dynamicField name="tcphoneticm_*" type="text_phonetic_und" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />',
+            #'<dynamicField name="tocphonetics_*" type="text_phonetic_und" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="true" />',
+            #'<dynamicField name="tocphoneticm_*" type="text_phonetic_und" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="true" />',
+          ],
+          'solrconfig_extra.xml' => [
+            '<str name="name">und</str>',
+          ],
+          # phonetic is currently not available vor Solr 6.x.
+          #'stopwords_phonetic_und.txt' => [],
+          #'protwords_phonetic_und.txt' => [],
+          'stopwords_und.txt' => [],
+          'synonyms_und.txt' => [
+            'drupal, durpal',
+          ],
+          'protwords_und.txt' => [],
+          'accents_und.txt' => [
+            '"\u00C4" => "A"',
+          ],
+          'mapping-ISOLatin1Accent.txt' => [
+            '"\u00c4" => "A"',
+          ],
+          'solrcore.properties' => [],
+          'elevate.xml' => [],
+          'schema.xml' => [],
+          'solrconfig.xml' => [],
+          'test.txt' => [
+            'hook_search_api_solr_config_files_alter() works',
+          ],
+        ],
+      ],
+    ];
   }
 
 }

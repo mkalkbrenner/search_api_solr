@@ -47,6 +47,11 @@ class StreamingExpressionBuilder extends Expression {
   /**
    * @var string[]
    */
+  protected $all_doc_value_fields_mapped;
+
+  /**
+   * @var string[]
+   */
   protected $sort_fields;
 
   /**
@@ -103,6 +108,17 @@ class StreamingExpressionBuilder extends Expression {
       }
       elseif (preg_match('/^([a-z]+)m(_.*)/', $solr_field, $matches) && strpos($solr_field, 'random_') !== 0) {
         $this->sort_fields['sort' . Utility::decodeSolrName($matches[2])] = $matches[1] . 's' . $matches[2];
+      }
+
+      if (
+        strpos($solr_field, 'sd') === 0 ||
+        strpos($solr_field, 'i') === 0 ||
+        strpos($solr_field, 'f') === 0 ||
+        strpos($solr_field, 'p') === 0 ||
+        strpos($solr_field, 'b') === 0 ||
+        strpos($solr_field, 'h') === 0
+      ) {
+        $this->all_doc_value_fields_mapped[$search_api_field] = $solr_field;
       }
     }
 
@@ -174,8 +190,26 @@ class StreamingExpressionBuilder extends Expression {
    */
   public function _all_fields_list(string $delimiter = ',', bool $include_sorts = TRUE, array $blacklist = []) {
     return implode($delimiter, array_diff_key(
-        ($include_sorts ? array_merge($this->all_fields_mapped, $this->sort_fields) : $this->all_fields_mapped),
-        array_flip($blacklist))
+      ($include_sorts ? array_merge($this->all_fields_mapped, $this->sort_fields) : $this->all_fields_mapped),
+      array_flip($blacklist))
+    );
+  }
+
+  /**
+   * Formats the list of all Search API fields as a string of Solr field names.
+   *
+   * @param string $delimiter
+   * @param bool $include_sorts
+   * @param array $blacklist
+   *
+   * @return string
+   *   A list of all Solr field names for the index.
+   */
+  public function _all_doc_value_fields_list(string $delimiter = ',', bool $include_sorts = TRUE, array $blacklist = []) {
+    return implode($delimiter, array_diff_key(
+      // All sort fields have docValues.
+      ($include_sorts ? array_merge($this->all_doc_value_fields_mapped, $this->sort_fields) : $this->all_doc_value_fields_mapped),
+      array_flip($blacklist))
     );
   }
 
@@ -238,6 +272,27 @@ class StreamingExpressionBuilder extends Expression {
    */
   public function _field_escaped_value(string $search_api_field_name, string $value, bool $single_term = TRUE) {
     return $this->_field($search_api_field_name) . ':' . $this->_escaped_value($value, $single_term, $search_api_field_name);
+  }
+
+  /**
+   * Calls _escaped_value on each array element and returns the imploded result.
+   *
+   * @param string $glue The string to put between the escaped values.
+   *   This can be used to create an "or" condition from the array of values,
+   *   for example, by passing the string ' || ' as glue.
+   * @param array $values The array of values to escape
+   * @param bool $single_term Whether to escape as a single term or as a phrase.
+   * @param string $search_api_field_name Passed on to _escaped_value();
+   *   influences whether processors act on the values.
+   *
+   * @return string The imploded string of escaped values.
+   */
+  public function _escape_and_implode(string $glue, array $values, $single_term = TRUE, string $search_api_field_name = NULL) {
+    $escaped_values = [];
+    foreach ($values as $value) {
+      $escaped_values[] = $this->_escaped_value($value, $single_term, $search_api_field_name);
+    }
+    return implode($glue, $escaped_values);
   }
 
   /**
@@ -367,11 +422,18 @@ class StreamingExpressionBuilder extends Expression {
    * @throws \Drupal\search_api\SearchApiException
    */
   public function _search_all() {
+    static $rows = 0;
+
+    if (!$rows) {
+      $rows = \Drupal::state()
+        ->get('search_api_solr.' . $this->index->id() . '.search_all_rows', 0);
+    }
+
     return
       $this->search(
         $this->_collection(),
         implode(', ', func_get_args()),
-        'rows=' . ($this->index->getTrackerInstance()->getTotalItemsCount() * 10)
+        'rows=' . $rows
       );
   }
 
