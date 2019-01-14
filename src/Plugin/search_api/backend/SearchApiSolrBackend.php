@@ -1236,7 +1236,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               $flat_keys = $this->flattenKeys($keys, [$solrField], $parse_mode_id);
               $new_keys[] = $flat_keys;
             }
-            $keys = $new_keys;
+            if (count($new_keys) > 1) {
+              $new_keys['#conjunction'] = 'OR';
+            }
+            $new_keys['#escaped'] = TRUE;
+            $keys = $this->flattenKeys($new_keys, [], $parse_mode_id);
           }
 
           if (!empty($keys)) {
