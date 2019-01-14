@@ -1230,7 +1230,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $keys = $this->flattenKeys($keys, [], $parse_mode_id);
           }
           else {
-            $keys = $this->flattenKeys($keys, explode(' ', $query_fields_boosted), $parse_mode_id);
+            $new_keys = [];
+            $new_solr_fields = explode(' ', $query_fields_boosted);
+            foreach ($new_solr_fields as $solrField) {
+              $flat_keys = $this->flattenKeys($keys, [$solrField], $parse_mode_id);
+              $new_keys[] = $flat_keys;
+            }
+            $keys = $new_keys;
           }
 
           if (!empty($keys)) {
