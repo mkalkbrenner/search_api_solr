@@ -125,10 +125,18 @@ function search_api_solr_requirements($phase) {
 
 /**
  * Implements hook_uninstall().
+ *
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\search_api\SearchApiException
  */
 function search_api_solr_uninstall() {
   \Drupal::state()->delete('search_api_solr.last_optimize');
   \Drupal::state()->delete('search_api_solr.endpoint.data');
+  foreach (search_api_solr_get_servers() as $server) {
+    foreach ($server->getIndexes() as $index) {
+      \Drupal::state()->delete('search_api_solr.' . $index->id() . '.last_update');
+    }
+  }
 }
 
 /**
@@ -234,14 +242,21 @@ function search_api_solr_update_helper_save_field_type_config($field_type_name, 
  * @param string $directory
  */
 function search_api_solr_update_helper_install_configs($directory = InstallStorage::CONFIG_OPTIONAL_DIRECTORY) {
+  /** @var \Drupal\Core\Config\ConfigInstallerInterface $config_installer */
+  $config_installer = \Drupal::service('config.installer');
+  $config_installer->installDefaultConfig('module', 'search_api_solr');
+
   $optional_install_path = \Drupal::moduleHandler()->getModule('search_api_solr')->getPath() . '/' . $directory;
   if (is_dir($optional_install_path)) {
     // Install any optional config the module provides.
     $storage = new FileStorage($optional_install_path, StorageInterface::DEFAULT_COLLECTION);
-    /** @var \Drupal\Core\Config\ConfigInstallerInterface $config_installer */
-    $config_installer = \Drupal::service('config.installer');
     $config_installer->installOptionalConfig($storage);
   }
+
+  $restrict_by_dependency = [
+    'module' => 'search_api_solr',
+  ];
+  $config_installer->installOptionalConfig(NULL, $restrict_by_dependency);
 }
 
 /**
@@ -504,7 +519,7 @@ function search_api_solr_update_8209() {
  * Install missing configs for 8.x-2.0-beta1.
  */
 function search_api_solr_update_8210() {
-  search_api_solr_update_helper_install_configs(InstallStorage::CONFIG_OPTIONAL_DIRECTORY);
+  // search_api_solr_update_helper_install_configs(InstallStorage::CONFIG_OPTIONAL_DIRECTORY);
 }
 
 /**
@@ -563,4 +578,49 @@ function search_api_solr_update_8213() {
 
   $config->setData($data);
   $config->save(TRUE);
+}
+
+/**
+ * All pre-configured Solr field type configurations will be re-installed as
+ * delivered by the module! Please export your existing config before running
+ * the update and compare the changes manually, if you modified these configs by
+ * yourself!
+ */
+function search_api_solr_update_8214() {
+  $config_factory = \Drupal::configFactory();
+  $settings = $config_factory->get('search_api_solr.settings');
+  $raw_data = $settings->getRawData();
+
+  // Unfortunately this function will overwrite search_api_solr.settings, too.
+  // Therfore we save it's values bafore and restore them afterwards. In 3.x
+  // this "config" is completely migrated to Drupal states.
+  search_api_solr_update_helper_install_configs();
+
+  $settings = $config_factory->getEditable('search_api_solr.settings');
+  $settings->setData($raw_data)->save(TRUE);
+
+  foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_name => $field_type_config) {
+    if (
+      version_compare($field_type_config['minimum_solr_version'], '7.0.0', '>=') &&
+      !empty($field_type_config['field_type']) &&
+      !empty($field_type_config['field_type']['analyzers'])
+    ) {
+      foreach ($field_type_config['field_type']['analyzers'] as &$component) {
+        foreach ($component['filters'] as &$filter) {
+          switch ($filter['class']) {
+            case 'solr.WordDelimiterFilterFactory':
+              $filter['class'] = 'solr.WordDelimiterGraphFilterFactory';
+              break;
+            case 'solr.SynonymFilterFactory':
+              $filter['class'] = 'solr.SynonymGraphFilterFactory';
+              break;
+            case 'solr.StopFilterFactory':
+              unset($filter['enablePositionIncrements']);
+              break;
+          }
+        }
+      }
+    }
+    search_api_solr_update_helper_save_field_type_config($field_type_name, $field_type_config);
+  }
 }
