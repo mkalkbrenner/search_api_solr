@@ -2008,7 +2008,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @param array $solr_fields
    *   The mapping from Drupal to Solr field names.
    * @param \Drupal\search_api\Item\FieldInterface[] $index_fields
-   *   The fields handled by the curent index.
+   *   The fields handled by the current index.
    * @param array $options
    *   The query options.
    *
@@ -2034,14 +2034,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         if (strpos($solr_fields[$field], 't') === 0 && $value) {
           // Fulltext fields.
           $parse_mode_id = $query->getParseMode()->getPluginId();
-          $keys['#conjunction'] = $query->getParseMode()->getConjunction();
-          $keys['#negation'] = $condition->getOperator() == '<>';
+          $keys = [
+            '#conjunction' => 'OR',
+            '#negation' => $condition->getOperator() == '<>',
+          ];
           switch ($parse_mode_id) {
-            // This is a hack.
+            // This is a hack. We assume that phrase is what users want but this
+            // prevents an explicit selection of terms.
             // @see https://www.drupal.org/project/search_api/issues/2991134
             case 'terms':
-              $keys += explode(' ', preg_replace('/\s+/', ' ', trim($value)));
-              break;
             case 'phrase':
               $keys[] = $value;
               break;
