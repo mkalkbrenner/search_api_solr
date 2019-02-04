@@ -28,3 +28,6 @@ plugin.plugin_configuration.search_api_backend.search_api_solr:
     optimize:
       type: boolean
       label: 'Optimize this backend'
+    bm25:
+      type: boolean
+      label: 'Use BM25 instead of TF-IDF.'
