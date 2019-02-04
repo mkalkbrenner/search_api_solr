@@ -40,12 +40,6 @@ function search_api_solr_help($route_name, RouteMatchInterface $route_match) {
  */
 function search_api_solr_cron() {
   $request_time = \Drupal::time()->getRequestTime();
-  $action = \Drupal::config('search_api_solr.settings')->get('cron_action');
-  // We treat all unknown action settings as "none". However, we turn a blind
-  // eye for Britons and other people who can spell.
-  if (!in_array($action, ['spellcheck', 'optimize', 'optimise'])) {
-    return;
-  }
   // 86400 seconds is one day. We use slightly less here to allow for some
   // variation in the request time of the cron run, so that the time of day will
   // (more or less) stay the same.
@@ -63,29 +57,18 @@ function search_api_solr_cron() {
         }
 
         foreach ($indexes as $index) {
-          $backend->finalizeIndex($index);
-          $backend->getLogger()->info('Finalized Solr server @server.', ['@server' => $server->label()]);
+          if ($backend->finalizeIndex($index)) {
+            $backend->getLogger()->info('Cron finalized Solr server @server.', ['@server' => $server->label()]);
+          }
         }
 
-        if ($action != 'spellcheck') {
+        if ($backend->isOptimizeEnabled()) {
           $connector->optimize();
           $backend->getLogger()->info('Optimized Solr server @server.', ['@server' => $server->label()]);
         }
-        else {
-          $autocomplete_query = $connector->getAutocompleteQuery();
-
-          $spellcheck_component = $autocomplete_query->getSpellcheck();
-          $spellcheck_component->setBuild(TRUE);
-
-          // Terms don't need to be build. Suggesters are configured to be
-          // buildOnCommit.
-          $connector->execute($autocomplete_query);
-          $backend->getLogger()->info('Rebuilt spellcheck dictionary on Solr server @server.', ['@server' => $server->label()]);
-        }
-
       }
       catch (SearchApiException $e) {
-        watchdog_exception('search_api', $e, '%type while optimizing Solr server @server: @message in %function (line %line of %file).', ['@server' => $server->label()]);
+        watchdog_exception('search_api', $e, '%type while maintaining Solr server @server: @message in %function (line %line of %file).', ['@server' => $server->label()]);
       }
     }
 
@@ -124,6 +107,10 @@ function search_api_solr_default_index_third_party_settings() {
     ],
     'advanced' => [
       'index_prefix' => '',
+    ],
+    'multilingual' => [
+      'limit_to_content_language' => FALSE,
+      'include_language_independent' => TRUE,
     ],
   ];
 }
@@ -188,6 +175,26 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
           ],
         ],
       ],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['multilingual'] = [
+      '#type' => 'details',
+      '#title' => t('Multilingual'),
+      '#tree' => TRUE,
+    ];
+
+    $form['third_party_settings']['search_api_solr']['multilingual']['limit_to_content_language'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Limit to current content language.'),
+      '#description' => t('Limit all search results for custom queries or search pages not managed by Views to current content language if no language is specified in the query.'),
+      '#default_value' => $settings['multilingual']['limit_to_content_language'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['multilingual']['include_language_independent'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Include language independent content in search results.'),
+      '#description' => t('This option will include content without a language assigned in the results of custom queries or search pages not managed by Views. For example, if you search for English content, but have an article with languague of "undefined", you will see those results as well. If you disable this option, you will only see content that matches the language.'),
+      '#default_value' => $settings['multilingual']['include_language_independent'],
     ];
 
     $form['third_party_settings']['search_api_solr']['highlighter'] = [
@@ -393,19 +400,11 @@ function search_api_solr_views_data_alter(array &$data) {
 }
 
 /**
- * Deletes all Solr Field Type and re-installs them from their yml files.
+ * Re-install all default Solr Field Types from their yml files.
  */
-function search_api_solr_delete_and_reinstall_all_field_types() {
-  $storage = \Drupal::entityTypeManager()->getStorage('solr_field_type');
-  $storage->delete($storage->loadMultiple());
-
-  /** @var \Drupal\Core\Config\ConfigInstallerInterface $config_installer */
-  $config_installer = \Drupal::service('config.installer');
-  $config_installer->installDefaultConfig('module', 'search_api_solr');
-  $restrict_by_dependency = [
-    'module' => 'search_api_solr',
-  ];
-  $config_installer->installOptionalConfig(NULL, $restrict_by_dependency);
+function search_api_solr_reinstall_all_field_types() {
+  module_load_include('install', 'search_api_solr');
+  search_api_solr_update_helper_install_configs();
 }
 
 /**
@@ -479,26 +478,6 @@ function search_api_solr_entity_operation(\Drupal\Core\Entity\EntityInterface $e
     }
   }
   return $operations;
-}
-
-/**
- * Implements function hook_search_api_items_indexed().
- *
- * @param \Drupal\search_api\Entity\Index $index
- * @param string[] $processed_ids
- *
- * @throws \Drupal\search_api\SearchApiException
- */
-function search_api_solr_search_api_items_indexed($index, $processed_ids) {
-  if ($index->getServerInstance()->getBackend() instanceof SolrBackendInterface) {
-    // The _search_all() streaming expression needs a row limit that much higher
-    // then the real number of rows. Therefore we set a 10 times higher row
-    // limit as indexed documents. To increase the number of query result cache
-    // hits we set "normalize" the nearest higher power of 2.
-    $rows = $index->getTrackerInstance()->getIndexedItemsCount() * 10;
-    for ($i = pow(2,14); $i < $rows; $i *= 2) {}
-    \Drupal::state()->set('search_api_solr.' . $index->id() . '.search_all_rows', $i);
-  }
 }
 
 function search_api_solr_entity_type_alter(array &$entity_types) {

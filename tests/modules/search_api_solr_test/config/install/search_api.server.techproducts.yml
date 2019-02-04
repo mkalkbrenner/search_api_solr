@@ -13,7 +13,7 @@ backend_config:
   connector_config:
     scheme: http
     host: localhost
-    port: '8983'
+    port: 8983
     path: /solr
     core: techproducts
     timeout: 5
@@ -24,8 +24,7 @@ backend_config:
     http_method: AUTO
     commit_within: 1000
     jmx: false
-  sasm_limit_search_page_to_content_language: false
-  sasm_search_page_include_language_independent: false
+  optimize: false
 status: true
 langcode: en
 dependencies:

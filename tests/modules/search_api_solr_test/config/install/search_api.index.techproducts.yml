@@ -26,6 +26,9 @@ third_party_settings:
         requireFieldMatch: false
         snippets: 3
         fragsize: 0
+    multilingual:
+      limit_to_content_language: false
+      include_language_independent: true
 id: techproducts
 name: techproducts
 description: ''
@@ -57,6 +60,16 @@ datasource_settings:
 processor_settings:
   add_url: {  }
   aggregated_field: {  }
+  highlight:
+    highlight: server
+    highlight_partial: false
+    excerpt: true
+    excerpt_length: 256
+    exclude_fields: {  }
+    prefix: '<strong>'
+    suffix: '</strong>'
+    weights:
+      postprocess_query: 0
   rendered_item: {  }
 tracker_settings:
   default: {  }

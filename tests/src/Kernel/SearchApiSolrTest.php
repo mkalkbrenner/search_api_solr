@@ -208,6 +208,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $this->checkQueryParsers();
     $this->checkQueryConditions();
     $this->checkHighlight();
+    $this->checkSearchResultGrouping();
     $this->clearIndex();
     $this->checkDatasourceAdditionAndDeletion();
     $this->clearIndex();
@@ -237,7 +238,14 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       [],
       'terms',
     ]);
-    $this->assertEquals('(+foo +apple\ pie +bar)', $flat);
+    $this->assertEquals('(+"foo" +"apple pie" +"bar")', $flat);
+
+    $flat = $this->invokeMethod($backend, 'flattenKeys', [
+      $query->getKeys(),
+      [],
+      'edismax',
+    ]);
+    $this->assertEquals('({!edismax qf=\'\'}+"foo" +"apple pie" +"bar")', $flat);
 
     $exception = FALSE;
     try {
@@ -257,28 +265,42 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       ['solr_field'],
       'phrase',
     ]);
-    $this->assertEquals('(+solr_field:"foo" +solr_field:"apple pie" +solr_field:"bar")', $flat);
+    $this->assertEquals('solr_field:(+"foo" +"apple pie" +"bar")', $flat);
 
     $flat = $this->invokeMethod($backend, 'flattenKeys', [
       $query->getKeys(),
       ['solr_field'],
       'terms',
     ]);
-    $this->assertEquals('(+solr_field:foo +solr_field:apple\ pie +solr_field:bar)', $flat);
+    $this->assertEquals('((+(solr_field:"foo") +(solr_field:"apple pie") +(solr_field:"bar")) solr_field:(+"foo" +"apple pie" +"bar"))', $flat);
+
+    $flat = $this->invokeMethod($backend, 'flattenKeys', [
+      $query->getKeys(),
+      ['solr_field'],
+      'edismax',
+    ]);
+    $this->assertEquals('({!edismax qf=\'solr_field\'}+"foo" +"apple pie" +"bar")', $flat);
 
     $flat = $this->invokeMethod($backend, 'flattenKeys', [
       $query->getKeys(),
       ['solr_field_1', 'solr_field_2'],
       'phrase',
     ]);
-    $this->assertEquals('(+(solr_field_1:"foo" solr_field_2:"foo") +(solr_field_1:"apple pie" solr_field_2:"apple pie") +(solr_field_1:"bar" solr_field_2:"bar"))', $flat);
+    $this->assertEquals('(solr_field_1:(+"foo" +"apple pie" +"bar") solr_field_2:(+"foo" +"apple pie" +"bar"))', $flat);
 
     $flat = $this->invokeMethod($backend, 'flattenKeys', [
       $query->getKeys(),
       ['solr_field_1', 'solr_field_2'],
       'terms',
     ]);
-    $this->assertEquals('(+(solr_field_1:foo solr_field_2:foo) +(solr_field_1:apple\ pie solr_field_2:apple\ pie) +(solr_field_1:bar solr_field_2:bar))', $flat);
+    $this->assertEquals('((+(solr_field_1:"foo" solr_field_2:"foo") +(solr_field_1:"apple pie" solr_field_2:"apple pie") +(solr_field_1:"bar" solr_field_2:"bar")) solr_field_1:(+"foo" +"apple pie" +"bar") solr_field_2:(+"foo" +"apple pie" +"bar"))', $flat);
+
+    $flat = $this->invokeMethod($backend, 'flattenKeys', [
+      $query->getKeys(),
+      ['solr_field_1', 'solr_field_2'],
+      'edismax',
+    ]);
+    $this->assertEquals('({!edismax qf=\'solr_field_1 solr_field_2\'}+"foo" +"apple pie" +"bar")', $flat);
   }
 
   /**
@@ -384,7 +406,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $condition_group->addCondition('type', [1, 2, 3], 'NOT IN');
     $query->addConditionGroup($condition_group);
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('(+its_id:"5" +(*:* -ss_type:"1" -ss_type:"2" -ss_type:"3"))', $fq[0]['query']);
+    $this->assertEquals('(+its_id:"5" +(*:* -ss_type:("1" "2" "3")))', $fq[0]['query']);
     $this->assertFalse(isset($fq[1]));
 
     $query = $this->buildSearch();
@@ -396,7 +418,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $condition_group->addConditionGroup($inner_condition_group);
     $query->addConditionGroup($condition_group);
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('(+its_id:"5" +(*:* -ss_type:"1" -ss_type:"2" -ss_type:"3"))', $fq[0]['query']);
+    $this->assertEquals('(+its_id:"5" +(*:* -ss_type:("1" "2" "3")))', $fq[0]['query']);
     $this->assertFalse(isset($fq[1]));
 
     // Test tagging of a single filter query of a facet query.
@@ -461,7 +483,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $condition_group->addConditionGroup($inner_condition_group);
     $query->addConditionGroup($condition_group);
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('(+its_id:"5" +(*:* -ss_type:"1" -ss_type:"2" -ss_type:"3"))', $fq[0]['query']);
+    $this->assertEquals('(+its_id:"5" +(*:* -ss_type:("1" "2" "3")))', $fq[0]['query']);
     $this->assertFalse(isset($fq[1]));
 
     $query = $this->buildSearch();
@@ -474,14 +496,14 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $condition_group->addConditionGroup($inner_condition_group);
     $query->addConditionGroup($condition_group);
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('(+its_id:"5" +ss_search_api_language:"de" +(*:* -ss_type:"1" -ss_type:"2" -ss_type:"3"))', $fq[0]['query']);
+    $this->assertEquals('(+its_id:"5" +ss_search_api_language:"de" +(*:* -ss_type:("1" "2" "3")))', $fq[0]['query']);
     $this->assertFalse(isset($fq[1]));
 
     $query = $this->buildSearch();
     $query->setLanguages(['en']);
     $query->addCondition('body', 'some text', '=');
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('tm_X3b_en_body:some\ text', $fq[0]['query']);
+    $this->assertEquals('tm_X3b_en_body:("some text")', $fq[0]['query']);
     $this->assertFalse(isset($fq[1]));
 
     $parse_mode_manager = \Drupal::service('plugin.manager.search_api.parse_mode');
@@ -492,7 +514,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $query->setParseMode($parse_mode_phrase);
     $query->addCondition('body', 'some text', '=');
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('tm_X3b_en_body:"some text"', $fq[0]['query']);
+    $this->assertEquals('tm_X3b_en_body:("some text")', $fq[0]['query']);
     $this->assertFalse(isset($fq[1]));
 
     $query = $this->buildSearch();
@@ -500,7 +522,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $query->setParseMode($parse_mode_phrase);
     $query->addCondition('body', ['some', 'text'], '=');
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('(+tm_X3b_en_body:"some" +tm_X3b_en_body:"text")', $fq[0]['query']);
+    $this->assertEquals('tm_X3b_en_body:("some" "text")', $fq[0]['query']);
     $this->assertFalse(isset($fq[1]));
   }
 
@@ -728,6 +750,26 @@ class SearchApiSolrTest extends SolrBackendTestBase {
   }
 
   /**
+   * Tests search result groping
+   */
+  public function checkSearchResultGrouping() {
+    $query = $this->buildSearch(NULL, [], [], FALSE);
+    $query->setOption('search_api_grouping', [
+      'use_grouping' => TRUE,
+      'fields' => [
+        'type',
+      ],
+    ]);
+    $results = $query->execute();
+
+    $this->assertEquals(2, $results->getResultCount(), 'Get the results count grouping by type.');
+    $data = $results->getExtraData('search_api_solr_response');
+    $this->assertEquals(5, $data['grouped']['ss_type']['matches'], 'Get the total documents after grouping.');
+    $this->assertEquals(2, $data['grouped']['ss_type']['ngroups'], 'Get the number of groups after grouping.');
+    $this->assertResults([1, 4], $results, 'Grouping by type');
+  }
+
+  /**
    * Tests search result sorts.
    */
   protected function checkSearchResultSorts() {
@@ -883,12 +925,14 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $this->assertEquals(1, $suggestions[3]->getResultsCount());
 
     // @todo spellcheck tests
-    #$query = $this->buildSearch(['articel doks'], [], ['body'], FALSE);
+    #$query = $this->buildSearch(['articel cats doks'], [], ['body'], FALSE);
+    #$query->setLanguages(['en']);
     #$suggestions = $backend->getSpellcheckSuggestions($query, $autocompleteSearch, 'doks', 'articel doks');
     #$this->assertEquals(1, count($suggestions));
     #$this->assertEquals('article dogs', $suggestions[0]->getSuggestedKeys());
 
     #$query = $this->buildSearch(['articel tre'], [], ['body'], FALSE);
+    #$query->setLanguages(['en']);
     #$suggestions = $backend->getAutocompleteSuggestions($query, $autocompleteSearch, 'tre', 'articel tre');
     #$this->assertEquals(5, count($suggestions));
     #$this->assertEquals('e', $suggestions[0]->getSuggestionSuffix());
@@ -984,8 +1028,8 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $this->insertMultilingualExampleContent();
     $this->indexItems($this->indexId);
 
-    $server = $this->getIndex()->getServerInstance();
-    $connector = $server->getBackend()->getSolrConnector();
+    $index = $this->getIndex();
+    $connector = $index->getServerInstance()->getBackend()->getSolrConnector();
 
     $results = $this->buildSearch()->execute();
     $this->assertEquals(6, $results->getResultCount(), 'Number of indexed entities is correct.');
@@ -1001,9 +1045,8 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $query->setLanguages(['en', 'de']);
     $results = $query->execute();
     $this->assertEquals(2, $results->getResultCount(), 'Two results for "Gen" in German entities. No results for "Gen" in English entities.');
-    /** @var \Solarium\Core\Client\Request $request */
-    $request = $connector->getRequest();
-    $this->assertEquals('(ss_search_api_language:"en" ss_search_api_language:"de")', $request->getParam('fq')[1]);
+    $params = $connector->getRequestParams();
+    $this->assertEquals('ss_search_api_language:("en" "de")', $params['fq'][1]);
 
     $query = $this->buildSearch('Gene');
     $query->setLanguages(['en', 'de']);
@@ -1019,20 +1062,16 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $query->setLanguages(['de-at']);
     $results = $query->execute();
     $this->assertEquals(2, $results->getResultCount(), 'Two results for "Gene" in Austrian entities.');
-    /** @var \Solarium\Core\Client\Request $request */
-    $request = $connector->getRequest();
-    $this->assertEquals('ss_search_api_language:"de-at"', $request->getParam('fq')[1]);
+    $params = $connector->getRequestParams();
+    $this->assertEquals('ss_search_api_language:"de-at"', $params['fq'][1]);
 
-    // Tests language limiting via options.
-    $config = $server->getBackendConfig();
-
-    $config['sasm_limit_search_page_to_content_language'] = FALSE;
-    $server->setBackendConfig($config)->save();
-    $this->assertFalse($this->getIndex()->getServerInstance()->getBackendConfig()['sasm_limit_search_page_to_content_language']);
-
-    $config['sasm_search_page_include_language_independent'] = FALSE;
-    $server->setBackendConfig($config)->save();
-    $this->assertFalse($this->getIndex()->getServerInstance()->getBackendConfig()['sasm_search_page_include_language_independent']);
+    $settings = $index->getThirdPartySettings('search_api_solr');
+    $settings['multilingual']['limit_to_content_language'] = FALSE;
+    $settings['multilingual']['include_language_independent'] = FALSE;
+    $index->setThirdPartySetting('search_api_solr', 'multilingual', $settings['multilingual']);
+    $index->save();
+    $this->assertFalse($this->getIndex()->getThirdPartySetting('search_api_solr', 'multilingual')['limit_to_content_language']);
+    $this->assertFalse($this->getIndex()->getThirdPartySetting('search_api_solr', 'multilingual')['include_language_independent']);
 
     // Stemming "en":
     // gene => gene
@@ -1044,9 +1083,10 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $results = $this->buildSearch('gene', [], ['body'])->execute();
     $this->assertResults([1 => 'en', 2 => 'en', 3 => 'de', 4 => 'de', 5 => 'de-at', 6 => 'de-at'], $results, 'Search all languages for "gene".');
 
-    $config['sasm_limit_search_page_to_content_language'] = TRUE;
-    $server->setBackendConfig($config)->save();
-    $this->assertTrue($this->getIndex()->getServerInstance()->getBackendConfig()['sasm_limit_search_page_to_content_language']);
+    $settings['multilingual']['limit_to_content_language'] = TRUE;
+    $index->setThirdPartySetting('search_api_solr', 'multilingual', $settings['multilingual']);
+    $index->save();
+    $this->assertTrue($this->getIndex()->getThirdPartySetting('search_api_solr', 'multilingual')['limit_to_content_language']);
 
     // Current content language is "en".
     $results = $this->buildSearch('gene', [], ['body'])->execute();
@@ -1056,16 +1096,18 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $results = $this->buildSearch('gene', [], ['body'])->addTag('views')->execute();
     $this->assertResults([1 => 'en', 2 => 'en', 3 => 'de', 4 => 'de', 5 => 'de-at', 6 => 'de-at'], $results, 'Search all languages for "gene".');
 
-    $config['sasm_search_page_include_language_independent'] = TRUE;
-    $server->setBackendConfig($config)->save();
-    $this->assertTrue($this->getIndex()->getServerInstance()->getBackendConfig()['sasm_search_page_include_language_independent']);
+    $settings['multilingual']['include_language_independent'] = TRUE;
+    $index->setThirdPartySetting('search_api_solr', 'multilingual', $settings['multilingual']);
+    $index->save();
+    $this->assertTrue($this->getIndex()->getThirdPartySetting('search_api_solr', 'multilingual')['include_language_independent']);
 
     $results = $this->buildSearch('gene', [], ['body'])->execute();
     $this->assertResults([1 => 'en', 2 => 'en', 7 => LanguageInterface::LANGCODE_NOT_SPECIFIED, 8 => LanguageInterface::LANGCODE_NOT_APPLICABLE], $results, 'Search content and unspecified language for "gene".');
 
-    $config['sasm_limit_search_page_to_content_language'] = FALSE;
-    $server->setBackendConfig($config)->save();
-    $this->assertFalse($this->getIndex()->getServerInstance()->getBackendConfig()['sasm_limit_search_page_to_content_language']);
+    $settings['multilingual']['limit_to_content_language'] = FALSE;
+    $index->setThirdPartySetting('search_api_solr', 'multilingual', $settings['multilingual']);
+    $index->save();
+    $this->assertFalse($this->getIndex()->getThirdPartySetting('search_api_solr', 'multilingual')['limit_to_content_language']);
 
     $results = $this->buildSearch('gene', [], ['body'])->execute();
     $this->assertResults([1 => 'en', 2 => 'en', 3 => 'de', 4 => 'de', 5 => 'de-at', 6 => 'de-at', 7 => LanguageInterface::LANGCODE_NOT_SPECIFIED, 8 => LanguageInterface::LANGCODE_NOT_APPLICABLE], $results, 'Search all and unspecified languages for "gene".');
@@ -1250,5 +1292,4 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       ],
     ];
   }
-
 }
