@@ -186,6 +186,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'connector' => NULL,
       'connector_config' => [],
       'optimize' => FALSE,
+      'bm25' => FALSE,
     ];
   }
 
@@ -198,6 +199,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $configuration['skip_schema_check'] = (bool) $configuration['skip_schema_check'];
     $configuration['site_hash'] = (bool) $configuration['site_hash'];
     $configuration['optimize'] = (bool) $configuration['optimize'];
+    $configuration['bm25'] = (bool) $configuration['bm25'];
 
     parent::setConfiguration($configuration);
 
@@ -290,6 +292,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#states' => [
         'invisible' => [':input[name="advanced][i_know_what_i_do"]' => ['checked' => FALSE]]
       ],
+    ];
+
+    $form['advanced']['bm25'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Use BM25 instead of TF-IDF.'),
+      '#default_value' => $this->configuration['bm25'],
+      '#description' => $this->t('Improve relevance ranking using <a href="https://lucene.apache.org/core/7_0_1/core/org/apache/lucene/search/similarities/BM25Similarity.html">BM25 similarity</a>.'),
     ];
 
     $form['multisite'] = [
