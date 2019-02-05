@@ -98,6 +98,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       'http_method' => 'AUTO',
       'commit_within' => 1000,
       'jmx' => FALSE,
+      'bm25' => FALSE,
       'solr_install_dir' => '../../..',
     ];
   }
@@ -113,6 +114,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     $configuration['finalize_timeout'] = (int) $configuration['finalize_timeout'];
     $configuration['commit_within'] = (int) $configuration['commit_within'];
     $configuration['jmx'] = (bool) $configuration['jmx'];
+    $configuration['bm25'] = (bool) $configuration['bm25'];
 
     parent::setConfiguration($configuration);
   }
@@ -251,6 +253,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       '#title' => $this->t('Enable JMX'),
       '#description' => $this->t('Enable JMX based monitoring.'),
       '#default_value' => isset($this->configuration['jmx']) ? $this->configuration['jmx'] : FALSE,
+    ];
+
+    $form['advanced']['bm25'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable BM25 similarity (instead of TF-IDF).'),
+      '#default_value' => $this->configuration['bm25'],
+      '#description' => $this->t('Improve relevance with <a href="https://lucene.apache.org/core/7_0_1/core/org/apache/lucene/search/similarities/BM25Similarity.html">BM25 similarity</a>.'),
     ];
 
     $form['advanced']['solr_install_dir'] = [
@@ -1077,6 +1086,9 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   public function alterConfigFiles(array &$files, string $lucene_match_version, string $server_id = '') {
     if (!empty($this->configuration['jmx'])) {
       $files['solrconfig_extra.xml'] .= "<jmx />\n";
+    }
+    if (!empty($this->configuration['bm25'])) {
+      $files['solrconfig_extra.xml'] .= "<similarity class=\"org.apache.lucene.search.similarities.BM25Similarity\" />\n";
     }
     if (!empty($this->configuration['solr_install_dir'])) {
       $files['solrcore.properties'] = preg_replace("/solr\.install\.dir.*$/", 'solr.install.dir=' . $this->configuration['solr_install_dir'], $files['solrcore.properties']);
