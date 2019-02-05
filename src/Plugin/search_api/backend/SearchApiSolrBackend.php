@@ -73,8 +73,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInterface, SolrAutocompleteInterface, PluginFormInterface {
 
   use PluginFormTrait {
-    su
-      itConfigurationForm as traitSubmitConfigurationForm;
+    submitConfigurationForm as traitSubmitConfigurationForm;
   }
 
   use SolrCommitTrait;
