@@ -194,6 +194,14 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
   /**
    *
    */
+  public function getSchemaExtraXml() {
+    $xml = '';
+    return $xml;
+  }
+
+  /**
+   *
+   */
   public function getSchemaExtraTypesXml() {
     $xml = '';
     /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
@@ -276,6 +284,7 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
     $solrcore_properties = parse_ini_file($search_api_solr_conf_path . '/solrcore.properties', FALSE, INI_SCANNER_RAW);
 
     $files = [
+      'schema_extra.xml' => $this->getSchemaExtraXml(),
       'schema_extra_types.xml' => $this->getSchemaExtraTypesXml(),
       'schema_extra_fields.xml'=> $this->getSchemaExtraFieldsXml(),
       'solrconfig_extra.xml' => $this->getSolrconfigExtraXml(),
