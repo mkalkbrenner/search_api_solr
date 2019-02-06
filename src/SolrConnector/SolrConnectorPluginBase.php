@@ -1084,11 +1084,11 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function alterConfigFiles(array &$files, string $lucene_match_version, string $server_id = '') {
+    if (!empty($this->configuration['bm25'])) {
+      $files['schema_extra.xml'] .= "<similarity class=\"org.apache.lucene.search.similarities.BM25Similarity\" />\n";
+    }
     if (!empty($this->configuration['jmx'])) {
       $files['solrconfig_extra.xml'] .= "<jmx />\n";
-    }
-    if (!empty($this->configuration['bm25'])) {
-      $files['solrconfig_extra.xml'] .= "<similarity class=\"org.apache.lucene.search.similarities.BM25Similarity\" />\n";
     }
     if (!empty($this->configuration['solr_install_dir'])) {
       $files['solrcore.properties'] = preg_replace("/solr\.install\.dir.*$/", 'solr.install.dir=' . $this->configuration['solr_install_dir'], $files['solrcore.properties']);
