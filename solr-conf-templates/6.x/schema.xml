@@ -16,6 +16,7 @@
  limitations under the License.
 -->
 <!DOCTYPE schema [
+  <!ENTITY extra SYSTEM "schema_extra.xml">
   <!ENTITY extrafields SYSTEM "schema_extra_fields.xml">
   <!ENTITY extratypes SYSTEM "schema_extra_types.xml">
 ]>
@@ -466,13 +467,16 @@
   -->
 <!--  <fieldType name="currency" class="solr.CurrencyField" precisionStep="8" defaultCurrency="USD" currencyConfig="currency.xml" /> -->
 
-  <!-- Following is a dynamic way to include other fields, added by other contrib modules -->
+  <!-- Following is a dynamic way to include other global schema declarations -->
+  &extra;
+
+  <!-- Following is a dynamic way to include other fields -->
   &extrafields;
 
-  <!-- Following is a dynamic way to include other types, added by other contrib modules -->
+  <!-- Following is a dynamic way to include other types -->
   &extratypes;
 
- <!-- Field to use to determine and enforce document uniqueness.
+  <!-- Field to use to determine and enforce document uniqueness.
        Unless this field is marked with required="false", it will be a required field
     -->
   <uniqueKey>id</uniqueKey>
