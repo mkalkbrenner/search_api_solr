@@ -50,7 +50,7 @@ install:
   - composer install
   - composer config repositories.search_api_solr vcs $TRAVIS_BUILD_DIR
   - composer require drupal/search_api:1.x-dev drupal/search_api_autocomplete:1.x-dev drupal/search_api_solr:999.1.0 drupal/search_api_location:1.x-dev drupal/facets:1.x-dev drupal/geofield:1.x-dev drush/drush:$DRUSH_VERSION
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "5.6" ]]; then composer run-script drupal-phpunit-upgrade; fi
+  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.3" ]]; then composer run-script drupal-phpunit-upgrade; fi
   # Patch template.
   #########################################
   # to be removed once #2824932 is resolved
@@ -69,7 +69,7 @@ before_script:
   - php -S localhost:8888 >& /dev/null &
   # Start Solr
   - $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr start -e techproducts || travis_terminate 1;
-  - $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr create -c d8 -d $TRAVIS_BUILD_DIR/../drupal/modulues/contrib/search_api_solr/solr-conf/${SOLR_VERSION} || travis_terminate 1;
+  - $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr create -c d8 -d $TRAVIS_BUILD_DIR/../drupal/modulues/contrib/search_api_solr/solr-conf/${SEARCH_API_SOLR_CONF} || travis_terminate 1;
 
 script:
   # Run the tests
