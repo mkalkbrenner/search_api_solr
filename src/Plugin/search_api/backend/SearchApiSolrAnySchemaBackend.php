@@ -47,12 +47,6 @@ class SearchApiSolrAnySchemaBackend extends SearchApiSolrBackend {
   protected function preQuery(SolariumQueryInterface $solarium_query, QueryInterface $query) {
     parent::preQuery($solarium_query, $query);
 
-    // Do not modify 'Server index status' queries.
-    // @see https://www.drupal.org/node/2668852
-    if ($query->hasTag('server_index_status')) {
-      return;
-    }
-
     // Do not alter the query if the index does not use the solr_document
     // datasource.
     $index = $query->getIndex();
