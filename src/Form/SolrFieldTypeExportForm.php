@@ -119,13 +119,6 @@ class SolrFieldTypeExportForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function save(array $form, FormStateInterface $form_state) {
     /** @var \Drupal\search_api_solr\Entity\SolrFieldType $solr_field_type */
     $solr_field_type = $this->entity;

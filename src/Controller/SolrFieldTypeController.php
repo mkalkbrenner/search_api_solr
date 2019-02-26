@@ -43,6 +43,7 @@ class SolrFieldTypeController extends ControllerBase {
    * Provides the listing page.
    *
    * @param \Drupal\search_api\ServerInterface $search_api_server
+   *   The Search API server entity.
    *
    * @return array
    *   A render array as expected by drupal_render().
@@ -57,8 +58,10 @@ class SolrFieldTypeController extends ControllerBase {
    * Provides an XML snippet containing all extra Solr field types.
    *
    * @param \Drupal\search_api\ServerInterface $search_api_server
+   *   The Search API server entity.
    *
    * @return \Symfony\Component\HttpFoundation\Response
+   *   The HTTP response object.
    *
    * @throws \Drupal\search_api\SearchApiException
    */
@@ -77,8 +80,10 @@ class SolrFieldTypeController extends ControllerBase {
    * Provides an XML snippet containing all extra Solr fields.
    *
    * @param \Drupal\search_api\ServerInterface $search_api_server
+   *   The Search API server entity.
    *
    * @return \Symfony\Component\HttpFoundation\Response
+   *   The HTTP response object.
    *
    * @throws \Drupal\search_api\SearchApiException
    */
@@ -97,6 +102,7 @@ class SolrFieldTypeController extends ControllerBase {
    * Provides a zip archive containing a complete Solr configuration.
    *
    * @param \Drupal\search_api\ServerInterface $search_api_server
+   *   The Search API server entity.
    *
    * @return array
    *   A render array as expected by drupal_render().
@@ -126,8 +132,10 @@ class SolrFieldTypeController extends ControllerBase {
    * Ensures that the list builder uses the correct Solr backend.
    *
    * @param \Drupal\search_api\ServerInterface $search_api_server
+   *   The Search API server entity.
    *
    * @return \Drupal\search_api_solr\Controller\SolrFieldTypeListBuilder
+   *   The SolrFieldType list builder object.
    *
    * @throws \Drupal\search_api\SearchApiException
    */
