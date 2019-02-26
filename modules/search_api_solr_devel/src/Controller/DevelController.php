@@ -71,7 +71,7 @@ class DevelController extends ControllerBase {
    *
    * @var \Drupal\Component\Datetime\TimeInterface
    */
-  protected $timeService;
+  protected $time;
 
   /**
    * Constructs a DevelController object.
