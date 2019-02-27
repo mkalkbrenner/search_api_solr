@@ -259,4 +259,9 @@
   <!-- Zend sniffs -->
   <rule ref="Zend.Files.ClosingTag"/>
 
+  <!-- Specific exclusions for Search API Solr. -->
+  <rule ref="Drupal.Methods.MethodDeclaration.Underscore">
+    <exclude-pattern>*/src/Utility/StreamingExpressionBuilder.php</exclude-pattern>
+  </rule>
+
 </ruleset>
