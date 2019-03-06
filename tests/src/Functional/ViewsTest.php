@@ -63,12 +63,12 @@ class ViewsTest extends \Drupal\Tests\search_api\Functional\ViewsTest {
   /**
    * {@inheritdoc}
    */
-  public function testView() {
+  public function testSearchView() {
     // @see https://www.drupal.org/node/2773019
     $query = ['language' => ['***LANGUAGE_language_interface***']];
     $this->checkResults($query, [1, 2, 3, 4, 5], 'Search with interface language as filter');
 
-    parent::testView();
+    parent::testSearchView();
   }
 
   /**
