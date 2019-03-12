@@ -906,20 +906,6 @@ function search_api_solr_update_8308() {
 }
 
 /**
- * Use solarium 4.3.
- */
-function search_api_solr_update_8309() {
-  // Remove the V1 API endpoint from the path.
-  foreach (search_api_solr_update_helper_get_backend_configs() as $server_name => $backend_config) {
-    $backend_config['connector_config']['path'] = preg_replace('@/solr$@', '/', $backend_config['connector_config']['path']);
-    search_api_solr_update_helper_save_backend_config($server_name, $backend_config);
-  }
-
-  // Reset the states.
-  \Drupal::state()->delete('search_api_solr.endpoint.data');
-}
-
-/**
  * Enable language-specific collations
  */
 function search_api_solr_update_8310()
@@ -952,4 +938,18 @@ function search_api_solr_update_8310()
 
     search_api_solr_update_helper_save_field_type_config($field_type_name, $field_type_config);
   }
+}
+
+/**
+ * Use solarium 4.3.
+ */
+function search_api_solr_update_8311() {
+  // Remove the V1 API endpoint from the path.
+  foreach (search_api_solr_update_helper_get_backend_configs() as $server_name => $backend_config) {
+    $backend_config['connector_config']['path'] = preg_replace('@/solr@', '/', $backend_config['connector_config']['path']);
+    search_api_solr_update_helper_save_backend_config($server_name, $backend_config);
+  }
+
+  // Reset the states.
+  \Drupal::state()->delete('search_api_solr.endpoint.data');
 }
