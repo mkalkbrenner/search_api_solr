@@ -33,6 +33,8 @@ class StreamingExpressionQueryHelper extends QueryHelper {
    *   The Search API query.
    * @param string $streaming_expression
    *   The streaming expression to set for this query.
+   * @param string $comment
+   *   (optional) The streaming expression comment to set for this query.
    */
   public function setStreamingExpression(QueryInterface $query, string $streaming_expression, string $comment = '') {
     if ($comment) {

@@ -95,6 +95,8 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @param string $indexId
    *   (optional) A search index ID, or NULL to index items for all enabled
    *   indexes.
+   * @param array $options
+   *   (optional) An array of options.
    *
    * @command search-api-solr:finalize-index
    *
@@ -122,12 +124,13 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
   /**
    * Executes a streaming expression from STDIN.
    *
-   * @command search-api-solr:execute-raw-streaming-expression
-   *
    * @param string $indexId
    *   A search index ID.
    * @param mixed $expression
    *   The streaming expression. Use '-' to read from STDIN.
+   *
+   * @command search-api-solr:execute-raw-streaming-expression
+   *
    * @usage drush search-api-solr:execute-streaming-expression node_index - < streaming_expression.txt
    *  Execute the raw streaming expression in streaming_expression.txt
    *
@@ -139,8 +142,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    * @throws \Drupal\search_api\SearchApiException
    */
-  public function executeRawStreamingExpression($indexId, $expression)
-  {
+  public function executeRawStreamingExpression($indexId, $expression) {
     // Special flag indicating that the value has been passed via STDIN.
     if ($expression === '-') {
       $expression = $this->stdin()->contents();

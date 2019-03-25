@@ -1,135 +1,177 @@
+# @file
+# .travis.yml - Drupal for Travis CI Integration
+#
+# Template provided by https://github.com/LionsAd/drupal_ti.
+#
+# Based for simpletest upon:
+#   https://github.com/sonnym/travis-ci-drupal-module-example
+
 language: php
 
-dist: trusty
+sudo: false
 
 php:
   - 7.1
   - 7.3
-
-env:
-  - SOLR_VERSION=8.0.0 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=true
-  - SOLR_VERSION=8.0.0 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=false
-  - SOLR_VERSION=8.0.0 DRUPAL_BRANCH=8.6.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=true
-  - SOLR_VERSION=8.0.0 DRUPAL_BRANCH=8.6.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=false
-  - SOLR_VERSION=7.7.1 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=true
-  - SOLR_VERSION=7.7.1 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=false
-  - SOLR_VERSION=7.7.1 DRUPAL_BRANCH=8.6.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=true
-  - SOLR_VERSION=7.7.1 DRUPAL_BRANCH=8.6.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=false
-  - SOLR_VERSION=6.6.5 DRUPAL_BRANCH=8.6.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=false
-
-git:
-  # The depth needs to be increased. The default of 50 leads to fatal: reference
-  # repository '/home/travis/.cache/composer/vcs/-home-travis-build-mkalkbrenner
-  # -search-api-solr/' is shallow.
-  depth: 10000
 
 cache:
   directories:
     - $HOME/.composer/cache
     - solr_downloads
 
-services:
-  - mysql
+stages:
+  - phpcs
+  - test
 
-before_install:
-  - phpenv config-rm xdebug.ini || true
-  - composer global require "hirak/prestissimo:^0.3"
-  - ls solr_downloads/
-  - wget -nc --continue -v --tries=3 --directory-prefix=solr_downloads "http://archive.apache.org/dist/lucene/solr/${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz"
-  - tar -xzf solr_downloads/solr-${SOLR_VERSION}.tgz
-  - mysql -e 'CREATE DATABASE drupal;'
-
-install:
-  - git tag 999.3.0
-  # Make sure we don't fail when checking out projects.
-  - echo -e "Host github.com\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-  - echo -e "Host git.drupal.org\n\tStrictHostKeyChecking no\n" >> ~/.ssh/config
-  # Set sendmail so drush doesn't throw an error during site install.
-  - echo "sendmail_path='true'" >> `php --ini | grep "Loaded Configuration" | awk '{print $4}'`
-  # Forward the errors to the syslog so we can print them
-  - echo "error_log=syslog" >> `php --ini | grep "Loaded Configuration" | awk '{print $4}'`
-  # Get the Drupal core.
-  - cd $TRAVIS_BUILD_DIR/..
-  - git clone --depth=1 --branch $DRUPAL_BRANCH https://git.drupal.org/project/drupal.git
-  - cd $TRAVIS_BUILD_DIR/../drupal
-  - composer install
-  - composer config repositories.search_api_solr vcs $TRAVIS_BUILD_DIR
-  - composer require drupal/search_api:1.x-dev drupal/search_api_autocomplete:1.x-dev drupal/search_api_solr:999.3.0 drupal/search_api_location:1.x-dev drupal/facets:1.x-dev drupal/geofield:1.x-dev drupal/composer_deploy drush/drush:$DRUSH_VERSION drupal/drush_language:1.x-dev
-  - composer run-script drupal-phpunit-upgrade
-  # Patch template.
-  #########################################
-  # to be removed once #2824932 is resolved
-  #- cd modules/contrib/search_api
-  #- curl https://www.drupal.org/files/issues/2018-12-20/3021717.patch | patch -p1
-  #- cd $TRAVIS_BUILD_DIR/../drupal
-  #########################################
-
-before_script:
-  - export SOLR_INDEX_WAIT=4
-  - export SYMFONY_DEPRECATIONS_HELPER=disabled
-  - export SIMPLETEST_DB=mysql://root:@localhost/drupal
-  - export SIMPLETEST_BASE_URL=http://localhost:8888
-  # Start the built-in php web server (mysql is already started) and suppress
-  # web server access logs output.
-  - php -S localhost:8888 >& /dev/null &
-  # Install the site.
-  - ./vendor/bin/drush -v site-install minimal --db-url=mysql://root:@localhost/drupal --yes
-  - ./vendor/bin/drush en --yes drush_language
-  - ./vendor/bin/drush language-add de
-  # Let dev versions fullfill module version dependencies.
-  - ./vendor/bin/drush en composer_deploy --yes
-  # Generate a multilingual Solr configuration. Therefore we have to install the
-  # test modules before the tests.
-  - cp -a core/modules/system/tests/modules/entity_test core/modules/system/entity_test
-  - cp -a modules/contrib/search_api/tests/search_api_test_example_content modules/contrib/search_api/search_api_test_example_content
-  - cp -a modules/contrib/search_api_solr/tests/modules/search_api_solr_test modules/contrib/search_api_solr/search_api_solr_test
-  - ./vendor/bin/drush en --yes search_api_solr_test
-  - ./vendor/bin/drush solr-gsc solr_search_server conf.zip $SOLR_VERSION
-  - rm -rf core/modules/system/entity_test modules/contrib/search_api/search_api_test_example_content modules/contrib/search_api_solr/search_api_solr_test
-  - mkdir $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8
-  - mkdir $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf
-  - unzip -o conf.zip -d $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf
-  - echo "solr.install.dir=$TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}" >> $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf/solrcore.properties
-  - ls -lh $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf
-  - |
-    if [ ${SOLR_CLOUD} == "true" ]; then
-       $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr start -e cloud -noprompt || travis_terminate 1;
-       $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr delete -c gettingstarted || travis_terminate 1;
-       $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr create -c techproducts -s 2 -rf 2 -d $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/configsets/sample_techproducts_configs/conf -n sample_techproducts_configs || travis_terminate 1;
-       $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/post -c techproducts $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/example/exampledocs/*.xml || travis_terminate 1;
-       $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr create -c d8 -s 2 -rf 2 -d $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf -n d8 || travis_terminate 1;
-       $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr create -c checkpoints -s 1 -rf 2 || travis_terminate 1;
-     else
-       $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr start -e techproducts || travis_terminate 1;
-       $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr create -c d8 -d $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf || travis_terminate 1;
-    fi
-
-script:
-  # Run the tests within the drupal directory.
-  - cd $TRAVIS_BUILD_DIR/../drupal
-  - |
-    if [ ${SOLR_CLOUD} == "true" ]; then
-      vendor/bin/phpunit -c core --group search_api_solr --verbose --debug --exclude-group solr_no_cloud modules/contrib/search_api_solr/tests/src || travis_terminate 1;
-    else
-      vendor/bin/phpunit -c core --group search_api_solr --verbose --debug --exclude-group solr_cloud modules/contrib/search_api_solr/tests/src || travis_terminate 1;
-    fi
+jobs:
+  include:
+    - stage: phpcs
+      php: 7.1
+      env: DRUPAL_TI_RUNNERS="custom-phpcs"
 
 matrix:
+  fast_finish: true
   exclude:
     - php: 7.1
-      env: SOLR_VERSION=8.0.0 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=true
+      env: DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.7.x" SOLR_VERSION="8.0.0" SOLR_CLOUD="true"
     - php: 7.1
-      env: SOLR_VERSION=8.0.0 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=false
+      env: DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.7.x" SOLR_VERSION="8.0.0" SOLR_CLOUD="false"
     - php: 7.1
-      env: SOLR_VERSION=7.7.1 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=true
+      env: DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.7.x" SOLR_VERSION="7.7.1" SOLR_CLOUD="true"
     - php: 7.1
-      env: SOLR_VERSION=7.7.1 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=false
+      env: DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.7.x" SOLR_VERSION="7.7.1" SOLR_CLOUD="false"
   allow_failures:
     - php: 7.3
-      env: SOLR_VERSION=8.0.0 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=true
+      env: DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.7.x" SOLR_VERSION="8.0.0" SOLR_CLOUD="true"
     - php: 7.3
-      env: SOLR_VERSION=8.0.0 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=false
+      env: DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.7.x" SOLR_VERSION="8.0.0" SOLR_CLOUD="false"
     - php: 7.3
-      env: SOLR_VERSION=7.7.1 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=true
+      env: DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.7.x" SOLR_VERSION="7.7.1" SOLR_CLOUD="true"
     - php: 7.3
-      env: SOLR_VERSION=7.7.1 DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0 SOLR_CLOUD=false
+      env: DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.7.x" SOLR_VERSION="7.7.1" SOLR_CLOUD="false"
+
+env:
+  matrix:
+    - DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.7.x" SOLR_VERSION="8.0.0" SOLR_CLOUD="true"
+    - DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.7.x" SOLR_VERSION="8.0.0" SOLR_CLOUD="false"
+    - DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.6.x" SOLR_VERSION="8.0.0" SOLR_CLOUD="true"
+    - DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.6.x" SOLR_VERSION="8.0.0" SOLR_CLOUD="false"
+    - DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.7.x" SOLR_VERSION="7.7.1" SOLR_CLOUD="true"
+    - DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.7.x" SOLR_VERSION="7.7.1" SOLR_CLOUD="false"
+    - DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.6.x" SOLR_VERSION="7.7.1" SOLR_CLOUD="true"
+    - DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.6.x" SOLR_VERSION="7.7.1" SOLR_CLOUD="false"
+    - DRUPAL_TI_RUNNERS="custom-phpunit-core" DRUPAL_TI_CORE_BRANCH="8.6.x" SOLR_VERSION="6.6.5" SOLR_CLOUD="false"
+  global:
+    # Add composer's global bin directory to the path
+    # see: https://github.com/drush-ops/drush#install---composer
+    - PATH="$PATH:$HOME/.composer/vendor/bin"
+    # Force composer 1.8+ to use a specific folder as home
+    - COMPOSER_HOME="$HOME/.composer/"
+
+    # Configuration variables.
+    - DRUPAL_TI_MODULE_NAME="search_api_solr"
+    - DRUPAL_TI_SIMPLETEST_GROUP="search_api_solr"
+    - COMPOSER_EXTRA_DEPENDENCIES="drupal/facets:1.x-dev
+                                   drupal/geofield:1.x-dev
+                                   drupal/search_api_autocomplete:1.x-dev
+                                   drupal/search_api_location:1.x-dev
+                                   drupal/composer_deploy
+                                   drupal/drush_language:1.x-dev"
+
+    # Define runners and environment vars to include before and after the
+    # main runners / environment vars.
+    #- DRUPAL_TI_SCRIPT_DIR_BEFORE="./.drupal_ti/before"
+    - DRUPAL_TI_SCRIPT_DIR_AFTER="./.drupal_ti"
+
+    # The environment to use, supported are: drupal-7, drupal-8
+    - DRUPAL_TI_ENVIRONMENT="drupal-8"
+
+    # The drush version to use, by default: drush/drush:8.0.*
+    - DRUPAL_TI_DRUSH_VERSION="drush/drush:~9.0"
+
+    # The installation profile to use:
+    #- DRUPAL_TI_INSTALL_PROFILE="testing"
+
+    # Drupal specific variables.
+    - DRUPAL_TI_DB="drupal_travis_db"
+    - DRUPAL_TI_DB_URL="mysql://root:@127.0.0.1/drupal_travis_db"
+    # Note: Do not add a trailing slash here.
+    - DRUPAL_TI_WEBSERVER_URL="http://127.0.0.1"
+    - DRUPAL_TI_WEBSERVER_PORT="8080"
+
+    # Simpletest specific commandline arguments, the DRUPAL_TI_SIMPLETEST_GROUP is appended at the end.
+    - DRUPAL_TI_SIMPLETEST_ARGS="--verbose --color --concurrency 4 --url $DRUPAL_TI_WEBSERVER_URL:$DRUPAL_TI_WEBSERVER_PORT"
+
+    # === Behat specific variables.
+    # This is relative to $TRAVIS_BUILD_DIR
+    - DRUPAL_TI_BEHAT_DIR="./tests/behat"
+    # These arguments are passed to the bin/behat command.
+    - DRUPAL_TI_BEHAT_ARGS=""
+    # Specify the filename of the behat.yml with the $DRUPAL_TI_DRUPAL_DIR variables.
+    - DRUPAL_TI_BEHAT_YML="behat.yml.dist"
+    # This is used to setup Xvfb.
+    - DRUPAL_TI_BEHAT_SCREENSIZE_COLOR="1280x1024x16"
+    # The version of selenium that should be used.
+    - DRUPAL_TI_BEHAT_SELENIUM_VERSION="2.48.2"
+    # Set DRUPAL_TI_BEHAT_DRIVER to "selenium" to use "firefox" or "chrome" here.
+    - DRUPAL_TI_BEHAT_DRIVER="phantomjs"
+    - DRUPAL_TI_BEHAT_BROWSER="firefox"
+
+    # PHPUnit specific commandline arguments.
+    - DRUPAL_TI_PHPUNIT_ARGS=""
+    # Specifying the phpunit-core src/ directory is useful when e.g. a vendor/
+    # directory is present in the module directory, which phpunit would then
+    # try to find tests in. This option is relative to $TRAVIS_BUILD_DIR.
+    - DRUPAL_TI_PHPUNIT_CORE_SRC_DIRECTORY="./tests/src"
+
+    # Code coverage via coveralls.io
+    #- DRUPAL_TI_COVERAGE="satooshi/php-coveralls:0.6.*"
+    - DRUPAL_TI_COVERAGE=""
+    # This needs to match your .coveralls.yml file.
+    - DRUPAL_TI_COVERAGE_FILE="build/logs/clover.xml"
+
+    # === PHPCS specific variables.
+    # These arguments are passed to the phpcs command.
+    - SEARCH_API_SOLR_PHPCS_ARGS="-s -p"
+    # The version of drupal/coder that should be used.
+    - SEARCH_API_SOLR_DRUPAL_CODER_VERSION="drupal/coder:^8.2"
+
+    # Debug options
+    #- DRUPAL_TI_DEBUG="-x -v"
+    # Set to "all" to output all files, set to e.g. "xvfb selenium" or "selenium",
+    # etc. to only output those channels.
+    #- DRUPAL_TI_DEBUG_FILE_OUTPUT="selenium xvfb webserver"
+
+    # Other env vars.
+    - SOLR_INDEX_WAIT=4
+    - SYMFONY_DEPRECATIONS_HELPER=disabled
+
+mysql:
+  database: drupal_travis_db
+  username: root
+  encoding: utf8
+
+before_install:
+  # Disable xdebug.
+  - phpenv config-rm xdebug.ini || true
+  # Composer global requirements.
+  - composer global require "hirak/prestissimo:^0.3"
+  # Using master branch (later version than 1.4.4).
+  - composer global require "lionsad/drupal_ti:dev-master#e66a53fc6225869a70188bdb2b90c8f4ae4cac6e"
+  # Run drupal-ti scripts.
+  - drupal-ti before_install
+
+install:
+  - drupal-ti install
+
+before_script:
+  - drupal-ti before_script
+
+script:
+  - drupal-ti script
+
+after_script:
+  - drupal-ti after_script
+
+notifications:
+  email: false

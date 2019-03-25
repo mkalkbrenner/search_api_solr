@@ -34,7 +34,8 @@ abstract class AbstractSearchApiSolrTechproducts extends SolrBackendTestBase {
   public function testBackend() {
     try {
       $this->firstSearch();
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->markTestSkipped('Techproducts example not reachable.');
     }
 
@@ -97,4 +98,5 @@ abstract class AbstractSearchApiSolrTechproducts extends SolrBackendTestBase {
       "solr_document/GBP",
     ], array_keys($result->getResultItems()), 'Search for all tech products');
   }
+
 }

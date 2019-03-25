@@ -55,7 +55,7 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
    * @param array $field_type
    *   The Solr Field Type definition as nested associative array.
    *
-   * @return self
+   * @return $this
    */
   public function setFieldType(array $field_type);
 
@@ -82,7 +82,7 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
    * @param string $field_type
    *   The Solr Field Type definition as JSON.
    *
-   * @return self
+   * @return $this
    */
   public function setFieldTypeAsJson($field_type);
 
@@ -115,7 +115,7 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
    * @param array $spellcheck_field_type
    *   The Solr SpellcheckField Type definition as nested associative array.
    *
-   * @return self
+   * @return $this
    */
   public function setSpellcheckFieldType(array $spellcheck_field_type);
 
@@ -143,7 +143,7 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
    *   The Solr Spellcheck Field Type definition as JSON, might be empty if it
    *   doesn't exist.
    *
-   * @return self
+   * @return $this
    */
   public function setSpellcheckFieldTypeAsJson($spellcheck_field_type);
 
@@ -177,7 +177,7 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
    * @param array $collated_field_type
    *   The Solr Collated Type definition as nested associative array.
    *
-   * @return self
+   * @return $this
    */
   public function setCollatedFieldType(array $collated_field_type);
 
@@ -205,7 +205,7 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
    *   The Solr Spellcheck Field Type definition as JSON, might be empty if it
    *   doesn't exist.
    *
-   * @return self
+   * @return $this
    */
   public function setCollatedFieldTypeAsJson($collated_field_type);
 
@@ -227,7 +227,7 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
   /**
    * Gets the Solr Unstemmed Field Type definition as nested associative array.
    *
-   * @return array|NULL
+   * @return array|null
    *   The Solr Unstemmed Field Type definition as nested associative array or
    *   NULL if it doesn't exist.
    */
@@ -239,7 +239,7 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
    * @param array $unstemmed_field_type
    *   The Solr Unstemmed Field Type definition as nested associative array.
    *
-   * @return self
+   * @return $this
    */
   public function setUnstemmedFieldType(array $unstemmed_field_type);
 
@@ -267,7 +267,7 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
    *   The Solr Unstemmed Field Type definition as JSON, might be empty if it
    *   doesn't exist.
    *
-   * @return self
+   * @return $this
    */
   public function setUnstemmedFieldTypeAsJson($unstemmed_field_type);
 
@@ -281,8 +281,8 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
    *   Solr Field Type.
    *
    * @return string
-   *    The Solr Unstemmed Field Type definition as XML, might be empty if it
-   *    doesn't exist.
+   *   The Solr Unstemmed Field Type definition as XML, might be empty if it
+   *   doesn't exist.
    */
   public function getUnstemmedFieldTypeAsXml($add_comment = TRUE);
 
@@ -326,7 +326,7 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
    *   The Solr Field Type specific additions to solrconfig.xml as nested
    *   associative array.
    *
-   * @return self
+   * @return $this
    */
   public function setSolrConfigs(array $solr_configs);
 
@@ -369,7 +369,7 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
    *   An associative array using the file names as keys and the file contents
    *   as values.
    *
-   * @return self
+   * @return $this
    */
   public function setTextFiles(array $text_files);
 
@@ -395,7 +395,7 @@ interface SolrFieldTypeInterface extends ConfigEntityInterface {
    * @param string $minimum_solr_version
    *   A Solr version string.
    *
-   * @return self
+   * @return $this
    */
   public function setMinimumSolrVersion($minimum_solr_version);
 

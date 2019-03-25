@@ -2,12 +2,12 @@
 
 namespace Drupal\search_api_solr\Utility;
 
-use Drupal\search_api\Entity\Server;
+use Drupal\search_api\Utility\CommandHelper as SearchApiCommandHelper;
 
 /**
  * Provides functionality to be used by CLI tools.
  */
-class CommandHelper extends \Drupal\search_api\Utility\CommandHelper {
+class CommandHelper extends SearchApiCommandHelper {
 
   /**
    * Re-install all Solr Field Types from their yml files.

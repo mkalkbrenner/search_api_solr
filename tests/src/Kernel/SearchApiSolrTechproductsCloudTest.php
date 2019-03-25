@@ -30,10 +30,14 @@ class SearchApiSolrTechproductsCloudTest extends AbstractSearchApiSolrTechproduc
     ]);
   }
 
+  /**
+   * Tests topic() streaming expressions.
+   */
   public function testTopicStreamingExpressions() {
     try {
       $this->firstSearch();
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->markTestSkipped('Techproducts example not reachable.');
     }
 

@@ -24,13 +24,15 @@ class StreamingExpressionBuilder extends Expression {
   protected $collection;
 
   /**
-   * The query string to filter results by index and site.
+   * The Solr collection name for the topic checkpoints.
    *
    * @var string
    */
   protected $checkpoints_collection;
 
   /**
+   * The query string to filter results by index and site.
+   *
    * @var string
    */
   protected $index_filter_query;
@@ -99,6 +101,8 @@ class StreamingExpressionBuilder extends Expression {
   protected $query_helper;
 
   /**
+   * The row limit for _search_all() and _topic().
+   *
    * The _search_all() and _topic() streaming expressions need a row limit that
    * is much higher then the real number of rows. Therefore we set the max 32bit
    * integer as default. To maximize the number of query result cache hits it is
@@ -680,7 +684,7 @@ class StreamingExpressionBuilder extends Expression {
    * Eases topic() expressions if there's no specific checkpoint collection.
    *
    * @return string
-   *  A chainable streaming expression as string.
+   *   A chainable streaming expression as string.
    */
   public function _topic() {
     return $this->topic(
@@ -695,7 +699,7 @@ class StreamingExpressionBuilder extends Expression {
    * Eases topic() expressions if there's no specific checkpoint collection.
    *
    * @return string
-   *  A chainable streaming expression as string.
+   *   A chainable streaming expression as string.
    */
   public function _topic_all() {
     return $this->topic(
@@ -713,9 +717,11 @@ class StreamingExpressionBuilder extends Expression {
    * The checkpoint name gets suffixed by targeted index and site hash to avoid
    * collisions.
    *
-   * @param $checkpoint
+   * @param string $checkpoint
+   *   The checkpoint name.
    *
    * @return string
+   *   The formatted checkpoint parameter.
    */
   public function _checkpoint($checkpoint) {
     return 'id="' . $checkpoint . '-' . $this->targeted_index_id . '-' . $this->targeted_site_hash . '"';

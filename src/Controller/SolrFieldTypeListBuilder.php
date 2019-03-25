@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
+use Drupal\search_api_solr\SolrFieldTypeInterface;
 use Drupal\search_api_solr\Utility\Utility;
 use ZipStream\ZipStream;
 
@@ -181,10 +182,14 @@ class SolrFieldTypeListBuilder extends ConfigEntityListBuilder {
   }
 
   /**
+   * Merges the source Solr field type into the target.
+   *
    * @param \Drupal\search_api_solr\SolrFieldTypeInterface $target
+   *   The target Solr field type.
    * @param \Drupal\search_api_solr\SolrFieldTypeInterface $source
+   *   The source Solr field type.
    */
-  protected function mergeFieldTypes($target, $source) {
+  protected function mergeFieldTypes(SolrFieldTypeInterface $target, SolrFieldTypeInterface $source) {
     if (empty($target->getCollatedFieldType()) && !empty($source->getCollatedFieldType())) {
       $target->setCollatedFieldType($source->getCollatedFieldType());
     }

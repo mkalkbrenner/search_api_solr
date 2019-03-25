@@ -86,7 +86,7 @@ class SolrFieldType extends ConfigEntityBase implements SolrFieldTypeInterface {
   /**
    * Solr Unstemmed Field Type definition.
    *
-   * @var  array
+   * @var array
    */
   protected $unstemmed_field_type = NULL;
 
@@ -207,7 +207,7 @@ class SolrFieldType extends ConfigEntityBase implements SolrFieldTypeInterface {
   }
 
   /**
-   * Get all available domains form solr filed type configs.
+   * Get all available domains from Solr field type configs.
    *
    * @return string[]
    *   An array of domains as strings.
@@ -394,13 +394,19 @@ class SolrFieldType extends ConfigEntityBase implements SolrFieldTypeInterface {
   }
 
   /**
-   * Serializes a filed type as XML fragment as required by Solr.
+   * Serializes a field type as XML fragment as required by Solr.
    *
    * @param array $field_type
+   *   The Solr field type definition.
    * @param string $additional_label
+   *   (optional) An additional label to print in the comment section.
    * @param bool $add_comment
+   *   (optional) If TRUE, adds a comment at the start of the XML to identify
+   *   the field.
+   *   Defaults to TRUE.
    *
    * @return string
+   *   The formatted XML string.
    */
   protected function getSubFieldTypeAsXml(array $field_type, string $additional_label = '', bool $add_comment = TRUE) {
     $formatted_xml_string = $this->buildXmlFromArray('fieldType', $field_type);
