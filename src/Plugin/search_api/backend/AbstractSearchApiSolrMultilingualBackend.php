@@ -4,6 +4,7 @@ namespace Drupal\search_api_solr\Plugin\search_api\backend;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\search_api\Backend\BackendPluginBase;
 use Drupal\search_api_autocomplete\SearchInterface;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api\IndexInterface;
@@ -608,13 +609,15 @@ abstract class AbstractSearchApiSolrMultilingualBackend extends SearchApiSolrBac
     $fl = [];
     $solr_field_names = $this->getSolrFieldNames($query->getIndex());
     foreach ($query->getLanguages() as $langcode) {
-      $fulltext_fields = $this->getQueryFulltextFields($query);
+      // We explicit allow to get terms from twm_suggest. Therefore we call
+      // BackendPluginBase::getQueryFulltextFields() to not filter twm_suggest.
+      $fulltext_fields = BackendPluginBase::getQueryFulltextFields($query);
       $language_specific_fulltext_fields = $this->getLanguageSpecificSolrFieldNames($langcode, $solr_field_names, $query->getIndex());
       foreach ($fulltext_fields as $fulltext_field) {
         $fl[] = $language_specific_fulltext_fields[$fulltext_field];
       }
     }
-    return $fl;
+    return array_unique($fl);
   }
 
   /**

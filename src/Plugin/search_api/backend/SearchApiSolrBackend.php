@@ -2517,11 +2517,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   protected function getAutocompleteFields(QueryInterface $query) {
     $fl = [];
     $solr_field_names = $this->getSolrFieldNames($query->getIndex());
-    $fulltext_fields = $this->getQueryFulltextFields($query);
+    // We explicit allow to get terms from twm_suggest. Therefore we call
+    // parent::getQueryFulltextFields() to not filter twm_suggest.
+    $fulltext_fields = parent::getQueryFulltextFields($query);
     foreach ($fulltext_fields as $fulltext_field) {
       $fl[] = $solr_field_names[$fulltext_field];
     }
-    return $fl;
+    return array_unique($fl);
   }
 
   /**
