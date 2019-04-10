@@ -16,7 +16,7 @@ function search_api_solr_defaults_requirements($phase) {
   if ($phase == 'install') {
     $node_types = NodeType::loadMultiple();
     $required_types = [
-      'article' => ['body', 'comment', 'field_tags', 'field_image'],
+      'article' => ['body', 'field_comment', 'field_tags', 'field_image'],
       'page' => ['body'],
     ];
 
