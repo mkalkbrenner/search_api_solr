@@ -3,14 +3,14 @@ language: php
 dist: trusty
 
 php:
-  - 5.6
+  - 7.1
   - 7.3
 
 env:
-  - SOLR_VERSION=4.5.1 SOLR_CORE=d8 SEARCH_API_SOLR_CONF=4.x DRUPAL_BRANCH=8.6.x DRUSH_VERSION=~9.4.0
-  - SOLR_VERSION=5.5.4 SOLR_CORE=d8 SEARCH_API_SOLR_CONF=5.x DRUPAL_BRANCH=8.6.x DRUSH_VERSION=~9.4.0
-  - SOLR_VERSION=6.6.5 SOLR_CORE=d8 SEARCH_API_SOLR_CONF=6.x DRUPAL_BRANCH=8.6.x DRUSH_VERSION=~9.4.0
-  - SOLR_VERSION=6.6.5 SOLR_CORE=d8 SEARCH_API_SOLR_CONF=6.x DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.4.0
+  - SOLR_VERSION=4.5.1 SOLR_CORE=d8 SEARCH_API_SOLR_CONF=4.x DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0
+  - SOLR_VERSION=5.5.4 SOLR_CORE=d8 SEARCH_API_SOLR_CONF=5.x DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0
+  - SOLR_VERSION=6.6.6 SOLR_CORE=d8 SEARCH_API_SOLR_CONF=6.x DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.6.0
+  - SOLR_VERSION=6.6.6 SOLR_CORE=d8 SEARCH_API_SOLR_CONF=6.x DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~9.6.0
 
 git:
   # The depth needs to be increased. The default of 50 leads to fatal: reference
@@ -49,8 +49,11 @@ install:
   - cd $TRAVIS_BUILD_DIR/../drupal
   - composer install
   - composer config repositories.search_api_solr vcs $TRAVIS_BUILD_DIR
-  - composer require drupal/search_api:1.x-dev drupal/search_api_autocomplete:1.x-dev drupal/search_api_solr:999.1.0 drupal/search_api_location:1.x-dev drupal/facets:1.x-dev drupal/geofield:1.x-dev drush/drush:$DRUSH_VERSION
-  - if [[ ${TRAVIS_PHP_VERSION:0:3} == "7.3" ]]; then composer run-script drupal-phpunit-upgrade; fi
+  - composer require drupal/search_api:1.x-dev drupal/search_api_autocomplete:1.x-dev drupal/search_api_solr:999.1.0 drupal/facets:1.x-dev drupal/geofield:1.x-dev drush/drush:$DRUSH_VERSION
+  - |
+    if [ ${DRUPAL_BRANCH} != "8.8.x" ]; then
+      composer run-script drupal-phpunit-upgrade
+    fi
   # Patch template.
   #########################################
   # to be removed once #2824932 is resolved
@@ -69,7 +72,7 @@ before_script:
   - php -S localhost:8888 >& /dev/null &
   # Start Solr
   - $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr start -e techproducts || travis_terminate 1;
-  - $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr create -c d8 -d $TRAVIS_BUILD_DIR/../drupal/modulues/contrib/search_api_solr/solr-conf/${SEARCH_API_SOLR_CONF} || travis_terminate 1;
+  - $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr create -c d8 -d $TRAVIS_BUILD_DIR/solr-conf/${SEARCH_API_SOLR_CONF} || travis_terminate 1;
 
 script:
   # Run the tests
@@ -78,7 +81,5 @@ script:
 
 matrix:
   allow_failures:
-    - php: 5.6
-      env: SOLR_VERSION=6.6.5 SOLR_CORE=d8 SEARCH_API_SOLR_CONF=6.x DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.4.0
-    - php: 7.3
-      env: SOLR_VERSION=6.6.5 SOLR_CORE=d8 SEARCH_API_SOLR_CONF=6.x DRUPAL_BRANCH=8.7.x DRUSH_VERSION=~9.4.0
+    - php: 7.1
+      env: SOLR_VERSION=6.6.6 SOLR_CORE=d8 SEARCH_API_SOLR_CONF=6.x DRUPAL_BRANCH=8.8.x DRUSH_VERSION=~9.6.0
