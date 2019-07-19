@@ -1383,7 +1383,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $solarium_query->setStart($options['offset']);
       }
 
-      if (!isNull($query->getOption('limit'))) {
+      if (!is_null($query->getOption('limit'))) {
         $solarium_query->setRows($query->getOption('limit', 10) ?? 10);
         // In previous versions we set a high value for rows if no limit was set
         // in the options. The intention was to retrieve "all" results instead of
