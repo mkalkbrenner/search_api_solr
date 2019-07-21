@@ -28,7 +28,9 @@ class SolrDocumentDefinition extends ComplexDataDefinitionBase implements SolrDo
   public static function create($index_id = NULL) {
     $definition['type'] = $index_id ? 'solr_document:' . $index_id : 'solr_document';
     $document_definition = new static($definition);
-    $document_definition->setIndexId($index_id);
+    if ($index_id) {
+      $document_definition->setIndexId($index_id);
+    }
     return $document_definition;
   }
 
