@@ -4,6 +4,8 @@ namespace Drupal\search_api_solr\Plugin\DataType\Deriver;
 
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+use Drupal\search_api_solr\SolrBackendInterface;
+use Drupal\search_api_solr\Utility\Utility;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManager;
 
@@ -66,7 +68,8 @@ class SolrDocumentDeriver extends DeriverBase implements ContainerDeriverInterfa
     $indexes = $this->entityTypeManager->getStorage('search_api_index')->loadMultiple();
     /* @var \Drupal\search_api\Entity\Index $entity */
     foreach ($indexes as $index_id => $entity) {
-      if ($entity->getServerInstance()->getBackendId() == 'search_api_solr') {
+      if ($entity->getServerInstance()->getBackend() instanceof SolrBackendInterface
+        && Utility::hasIndexSolrDatasources($entity)) {
         // Does it make sense to get constraints from index entity?
         $this->derivatives[$index_id] = [
           'label' => $base_plugin_definition['label'] . ':' . $entity->label(),
