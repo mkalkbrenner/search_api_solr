@@ -529,7 +529,16 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function pingServer() {
-    return $this->getServerInfo(TRUE);
+    try {
+      return $this->getCoreInfo(TRUE);
+    }
+    catch (\Exception $e) {
+      try {
+        return $this->getServerInfo(TRUE);
+      }
+      catch (SearchApiSolrException $e) {
+      }
+    }
   }
 
   /**
