@@ -1321,11 +1321,9 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $server = $this->getServer();
     $solr_major_version = $server->getBackend()->getSolrConnector()->getSolrMajorVersion();
     $solr_version = $server->getBackend()->getSolrConnector()->getSolrVersion();
-    $solr_install_dir = '/opt/solr-' . $solr_version;
 
     $backend_config = $server->getBackendConfig();
     // Relative path for official docker image.
-    $backend_config['connector_config']['solr_install_dir'] = $solr_install_dir;
     $server->setBackendConfig($backend_config);
     $server->save();
 
@@ -1371,7 +1369,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
 
     $config_files = $solr_configset_controller->getConfigFiles();
     $this->assertContains('<jmx />', $config_files['solrconfig_extra.xml']);
-    $this->assertContains('solr.install.dir=' . $solr_install_dir, $config_files['solrcore.properties']);
+    $this->assertNotContains('solr.install.dir', $config_files['solrcore.properties']);
     $this->assertContains('text_en', $config_files['schema_extra_types.xml']);
     $this->assertNotContains('text_foo_en', $config_files['schema_extra_types.xml']);
     $this->assertNotContains('text_de', $config_files['schema_extra_types.xml']);

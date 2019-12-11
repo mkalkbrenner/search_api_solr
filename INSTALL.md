@@ -29,13 +29,16 @@ own Solr server on your web server (if you have the necessary rights to do so).
 If you want to use a hosted solution, a number of companies are listed on the
 module's [project page](https://drupal.org/project/search_api_solr). Otherwise,
 please follow the instructions below.
-A more detailed set of instructions might be available at
-https://drupal.org/node/1999310 .
+A more detailed set of instructions is available at:
+
+* https://lucene.apache.org/solr/guide/8_2/installing-solr.html
+* https://lucene.apache.org/solr/guide/8_2/taking-solr-to-production.html
+* https://lucene.apache.org/solr/guide/ - list of other version specific guides
 
 As a pre-requisite for running your own Solr server, you'll need a Java JRE.
 
 Download the latest version of Solr 7.x or 8.x from
-http://www.apache.org/dyn/closer.cgi/lucene/solr/ and unpack the archive
+https://lucene.apache.org/solr/downloads.html and unpack the archive
 somewhere outside of your web server's document tree. The unpacked Solr
 directory is named `$SOLR` in these instructions.
 
@@ -43,22 +46,7 @@ NB: Solr 6.x is still supported by search_api_solr but strongly discouraged.
 That version has been declared end-of-life by the Apache Solr project and is
 thus no longer supported by them.
 
-First you have to create a Solr core for Drupal. Therefore you have to create
-two directories (replace `$SOLR` and `$CORE` according to your needs):
-
-```
-mkdir $SOLR/server/solr/$CORE
-mkdir $SOLR/server/solr/$CORE/conf
-```
-
-Afterwards, you have to tell SOLR about the new core by creating a
-`core.properties` file:
-
-```
-echo "name=$CORE" > $SOLR/server/solr/$CORE/core.properties
-```
-
-Before starting the Solr server you will have to make sure it uses the proper
+Before creating the Solr core ($CORE) you will have to make sure it uses the proper
 configuration files. They aren't always static but vary on your Drupal setup.
 But the Search API Solr Search module will create the correct configs for you!
 
@@ -66,25 +54,39 @@ But the Search API Solr Search module will create the correct configs for you!
    "Solr" as Backend and the connector that meets your setup.
 2. Download the config.zip from the server's details page or by using
    `drush solr-gsc`
-3. Extract the config.zip to the conf directory of your new core.
+3. Copy config.zip to the Solr server and extract. The unpacked configuration
+directory is named `$CONF` in these instructions.
 
 ```
-unzip config.zip -d $SOLR/server/solr/$CORE/conf
+sudo -u solr $SOLR/bin/solr create_core -c $CORE -d $CONF
 ```
 
-NOTE: You have to repeat steps 2 and 3 every time you add a new language to your
-Drupal instance or add a custom Solr Field Type! The UI should inform you about
-that.
+You will something like this
+
+```
+$ sudo -u solr /opt/solr/bin/solr create_core -c test-core -d /vagrant/config/solr/6.x/
+
+Copying configuration to new core instance directory:
+/var/solr/data/test-core
+
+Creating new core 'test-core' using command:
+http://localhost:8983/solr/admin/cores?action=CREATE&name=test-core&instanceDir=test-core
+
+{
+  "responseHeader":{
+    "status":0,
+    "QTime":1491},
+  "core":"test-core"}
+```
+
+N.B.: Every time you add a new language to your Drupal instance or add a custom Solr Field Type
+you have to update your core configuration files. They will be located in /var/solr/data/test-core/conf
+in the example above. The UI should inform you about updating configuration. Reload the core after
+updating the config `curl -k http://localhost:8983/solr/admin/cores?action=RELOAD&core=$CORE`.
 
 NOTE: There's file called `solrcore.properties` within the set of generated
 config files. If you need to fine tune some setting you should do it within this
 file if possible instead of modifying `solrconf.xml`.
-
-Now you can start your Solr server:
-
-```
-$SOLR/bin/solr start
-```
 
 Afterwards, go to `http://localhost:8983/solr/#/$CORE` in your web browser to
 ensure Solr is running correctly.
@@ -118,14 +120,6 @@ instance. To do so you have to read the Solr handbook.
 
 Using Linux specific Solr Packages
 ----------------------------------
-
-There's file called `solrcore.properties` within the set of generated
-config files. In most cases you have to adjust the `solr.install.dir` property
-to match your distribution specifics path, for example
-
-```
-solr.install.dir=/opt/solr
-```
 
 Note: The paths where the config.zip needs to be extracted to might differ from
 the instructions above as well. For some distributions a directory like
