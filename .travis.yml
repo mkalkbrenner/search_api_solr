@@ -34,7 +34,6 @@ before_install:
   - wget -nc --continue -v --tries=3 --directory-prefix=solr_downloads "http://archive.apache.org/dist/lucene/solr/${SOLR_VERSION}/solr-${SOLR_VERSION}.tgz"
   - tar -xzf solr_downloads/solr-${SOLR_VERSION}.tgz
   - mysql -e 'CREATE DATABASE drupal;'
-  - git commit -m 'no deps' search_api_solr.info.yml
   - git tag 1.99
 
 install:
