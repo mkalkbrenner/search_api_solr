@@ -77,6 +77,8 @@ before_script:
       mkdir -p multicore/d8
       ln -s $TRAVIS_BUILD_DIR/solr-conf/${SEARCH_API_SOLR_CONF} multicore/d8/conf
       java -Djetty.port=8983 -Dsolr.solr.home=multicore -jar start.jar > /dev/null 2>&1 &
+      sleep 20
+      curl "http://localhost:8983/solr/admin/cores?action=CREATE&name=d8&instanceDir=d8&config=solrconfig.xml&schema=schema.xml&dataDir=data"
       cd -
     else
       $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/bin/solr start -e techproducts || travis_terminate 1;
