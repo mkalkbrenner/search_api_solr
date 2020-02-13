@@ -75,7 +75,7 @@ before_script:
     if [ ${SOLR_VERSION} == "4.5.1" ]; then
       cd $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/example
       mkdir -p multicore/d8
-      ln -s cp -R $TRAVIS_BUILD_DIR/solr-conf/${SEARCH_API_SOLR_CONF} multicore/d8/conf
+      ln -s $TRAVIS_BUILD_DIR/solr-conf/${SEARCH_API_SOLR_CONF} multicore/d8/conf
       java -Djetty.port=8983 -Dsolr.solr.home=multicore -jar start.jar > /dev/null 2>&1 &
       cd -
     else
