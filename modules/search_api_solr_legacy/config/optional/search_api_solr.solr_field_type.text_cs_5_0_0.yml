@@ -5,15 +5,15 @@ dependencies:
     - search_api_solr
     - language
   config:
-    - language.entity.el
-id: text_el_6_0_0
-label: 'Greek Text Field'
-minimum_solr_version: 6.0.0
+    - language.entity.cs
+id: text_cs_5_0_0
+label: 'Czech Text Field'
+minimum_solr_version: 5.0.0
 custom_code: ''
-field_type_language_code: el
+field_type_language_code: cs
 domains: {}
 field_type:
-  name: text_el
+  name: text_cs
   class: solr.TextField
   positionIncrementGap: 100
   analyzers:
@@ -22,28 +22,36 @@ field_type:
       charFilters:
         -
           class: solr.MappingCharFilterFactory
-          mapping: accents_el.txt
+          mapping: accents_cs.txt
       tokenizer:
         class: solr.WhitespaceTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterFilterFactory
-          catenateNumbers: 1
-          generateNumberParts: 1
-          protected: protwords_el.txt
-          splitOnCaseChange: 1
+          protected: protwords_cs.txt
+          # If non-zero, splits words at delimiters. For example:"CamelCase", "hot-spot" -> "Camel", "Case", "hot", "spot"
           generateWordParts: 1
-          preserveOriginal: 1
-          catenateAll: 0
+          # If non-zero, splits numeric strings at delimiters:"1947-32" -> "1947", "32"
+          generateNumberParts: 1
+          splitOnCaseChange: 0
+          splitOnNumerics: 1
           catenateWords: 1
+          catenateNumbers: 1
+          catenateAll: 0
+          stemEnglishPossessive: 0
+          preserveOriginal: 1
         -
-          class: solr.GreekLowerCaseFilterFactory
+          class: solr.LengthFilterFactory
+          min: 2
+          max: 100
+        -
+          class: solr.LowerCaseFilterFactory
         -
           class: solr.StopFilterFactory
           ignoreCase: true
-          words: stopwords_el.txt
+          words: stopwords_cs.txt
         -
-          class: solr.GreekStemFilterFactory
+          class: solr.CzechStemFilterFactory
         -
           class: solr.RemoveDuplicatesTokenFilterFactory
     -
@@ -51,37 +59,41 @@ field_type:
       charFilters:
         -
           class: solr.MappingCharFilterFactory
-          mapping: accents_el.txt
+          mapping: accents_cs.txt
       tokenizer:
         class: solr.WhitespaceTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterFilterFactory
           catenateNumbers: 0
-          generateNumberParts: 0
-          protected: protwords_el.txt
-          splitOnCaseChange: 1
+          generateNumberParts: 1
+          protected: protwords_cs.txt
+          splitOnCaseChange: 0
           generateWordParts: 1
           preserveOriginal: 1
           catenateAll: 0
           catenateWords: 0
         -
-          class: solr.GreekLowerCaseFilterFactory
+          class: solr.LengthFilterFactory
+          min: 2
+          max: 100
+        -
+          class: solr.LowerCaseFilterFactory
         -
           class: solr.SynonymFilterFactory
-          synonyms: synonyms_el.txt
+          synonyms: synonyms_cs.txt
           expand: true
           ignoreCase: true
         -
           class: solr.StopFilterFactory
           ignoreCase: true
-          words: stopwords_el.txt
+          words: stopwords_cs.txt
         -
-          class: solr.GreekStemFilterFactory
+          class: solr.CzechStemFilterFactory
         -
           class: solr.RemoveDuplicatesTokenFilterFactory
 unstemmed_field_type:
-  name: text_unstemmed_el
+  name: text_unstemmed_cs
   class: solr.TextField
   positionIncrementGap: 100
   analyzers:
@@ -90,26 +102,34 @@ unstemmed_field_type:
       charFilters:
         -
           class: solr.MappingCharFilterFactory
-          mapping: accents_el.txt
+          mapping: accents_cs.txt
       tokenizer:
         class: solr.WhitespaceTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterFilterFactory
-          catenateNumbers: 1
-          generateNumberParts: 1
-          protected: protwords_el.txt
-          splitOnCaseChange: 1
+          protected: protwords_cs.txt
+          # If non-zero, splits words at delimiters. For example:"CamelCase", "hot-spot" -> "Camel", "Case", "hot", "spot"
           generateWordParts: 1
-          preserveOriginal: 1
-          catenateAll: 0
+          # If non-zero, splits numeric strings at delimiters:"1947-32" -> "1947", "32"
+          generateNumberParts: 1
+          splitOnCaseChange: 0
+          splitOnNumerics: 1
           catenateWords: 1
+          catenateNumbers: 1
+          catenateAll: 0
+          stemEnglishPossessive: 0
+          preserveOriginal: 1
         -
-          class: solr.GreekLowerCaseFilterFactory
+          class: solr.LengthFilterFactory
+          min: 2
+          max: 100
+        -
+          class: solr.LowerCaseFilterFactory
         -
           class: solr.StopFilterFactory
           ignoreCase: true
-          words: stopwords_el.txt
+          words: stopwords_cs.txt
         -
           class: solr.RemoveDuplicatesTokenFilterFactory
     -
@@ -117,37 +137,41 @@ unstemmed_field_type:
       charFilters:
         -
           class: solr.MappingCharFilterFactory
-          mapping: accents_el.txt
+          mapping: accents_cs.txt
       tokenizer:
         class: solr.WhitespaceTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterFilterFactory
           catenateNumbers: 0
-          generateNumberParts: 0
-          protected: protwords_el.txt
-          splitOnCaseChange: 1
+          generateNumberParts: 1
+          protected: protwords_cs.txt
+          splitOnCaseChange: 0
           generateWordParts: 1
           preserveOriginal: 1
           catenateAll: 0
           catenateWords: 0
         -
-          class: solr.GreekLowerCaseFilterFactory
+          class: solr.LengthFilterFactory
+          min: 2
+          max: 100
+        -
+          class: solr.LowerCaseFilterFactory
         -
           class: solr.SynonymFilterFactory
-          synonyms: synonyms_el.txt
+          synonyms: synonyms_cs.txt
           expand: true
           ignoreCase: true
         -
           class: solr.StopFilterFactory
           ignoreCase: true
-          words: stopwords_el.txt
+          words: stopwords_cs.txt
         -
           class: solr.RemoveDuplicatesTokenFilterFactory
 collated_field_type:
-  name: collated_el
+  name: collated_cs
   class: solr.ICUCollationField
-  locale: el
+  locale: cs
   strength: primary
   caseLevel: false
 solr_configs:
@@ -161,10 +185,10 @@ solr_configs:
           str:
             -
               name: name
-              VALUE: el
+              VALUE: cs
             -
               name: field
-              VALUE: spellcheck_el
+              VALUE: spellcheck_cs
             -
               name: classname
               VALUE: solr.DirectSolrSpellChecker
@@ -204,7 +228,7 @@ solr_configs:
           str:
             -
               name: name
-              VALUE: el
+              VALUE: cs
             -
               name: lookupImpl
               VALUE: AnalyzingInfixLookupFactory
@@ -216,7 +240,7 @@ solr_configs:
               VALUE: twm_suggest
             -
               name: suggestAnalyzerFieldType
-              VALUE: text_el
+              VALUE: text_cs
             -
               name: contextField
               VALUE: sm_context_tags
@@ -228,84 +252,146 @@ solr_configs:
               VALUE: 'false'
 text_files:
   stopwords: |
-    ο
-    η
-    το
-    οι
-    τα
-    του
-    τησ
-    των
-    τον
-    την
-    και
-    κι
-    κ
-    ειμαι
-    εισαι
-    ειναι
-    ειμαστε
-    ειστε
-    στο
-    στον
-    στη
-    στην
-    μα
-    αλλα
-    απο
-    για
-    προσ
-    με
-    σε
-    ωσ
-    παρα
-    αντι
-    κατα
-    μετα
-    θα
-    να
-    δε
-    δεν
-    μη
-    μην
-    επι
-    ενω
-    εαν
-    αν
-    τοτε
-    που
-    πωσ
-    ποιοσ
-    ποια
-    ποιο
-    ποιοι
-    ποιεσ
-    ποιων
-    ποιουσ
-    αυτοσ
-    αυτη
-    αυτο
-    αυτοι
-    αυτων
-    αυτουσ
-    αυτεσ
-    αυτα
-    εκεινοσ
-    εκεινη
-    εκεινο
-    εκεινοι
-    εκεινεσ
-    εκεινα
-    εκεινων
-    εκεινουσ
-    οπωσ
-    ομωσ
-    ισωσ
-    οσο
-    οτι
+    dnes
+    cz
+    timto
+    budes
+    budem
+    byli
+    jses
+    muj
+    svym
+    ta
+    tomto
+    tohle
+    tuto
+    tyto
+    jej
+    zda
+    proc
+    mate
+    tato
+    kam
+    tohoto
+    kdo
+    kteri
+    mi
+    nam
+    tom
+    tomuto
+    mit
+    nic
+    proto
+    kterou
+    byla
+    toho
+    protoze
+    asi
+    ho
+    nasi
+    napiste
+    re
+    coz
+    tim
+    takze
+    svych
+    jeji
+    svymi
+    jste
+    aj
+    tu
+    tedy
+    teto
+    bylo
+    kde
+    ke
+    prave
+    ji
+    nad
+    nejsou
+    ci
+    pod
+    tema
+    mezi
+    pres
+    ty
+    pak
+    vam
+    ani
+    kdyz
+    vsak
+    ne
+    jsem
+    tento
+    clanku
+    clanky
+    aby
+    jsme
+    pred
+    pta
+    jejich
+    byl
+    jeste
+    az
+    bez
+    take
+    pouze
+    prvni
+    vase
+    ktera
+    nas
+    novy
+    tipy
+    pokud
+    muze
+    design
+    strana
+    jeho
+    sve
+    jine
+    zpravy
+    nove
+    neni
+    vas
+    jen
+    podle
+    zde
+    clanek
+    uz
+    email
+    byt
+    vice
+    bude
+    jiz
+    nez
+    ktery
+    by
+    ktere
+    co
+    nebo
+    ten
+    tak
+    ma
+    pri
+    od
+    po
+    jsou
+    jak
+    dalsi
+    ale
+    si
+    ve
+    to
+    jako
+    za
+    zpet
+    ze
+    do
+    pro
+    je
+    na
   synonyms: |
     drupal, durpal
-  nouns: |
   protwords: |
   accents: |
     # À => A
@@ -472,3 +558,17 @@ text_files:
     "\uFB05" => "st"
     # ﬆ => st
     "\uFB06" => "st"
+    # š => s
+    "\u0161" => "s"
+    # ě => e
+    "\u011B" => "e"
+    # č => c
+    "\u010D" => "c"
+    # ř => r
+    "\u0159" => "r"
+    # ž => z
+    "\u017E" => "z"
+    # ť => t
+    "\u0165" => "t"
+    # ď => d
+    "\u010F" => "d"

@@ -6,9 +6,9 @@ dependencies:
     - language
   config:
     - language.entity.el
-id: text_el_6_0_0
+id: text_el_4_5_0
 label: 'Greek Text Field'
-minimum_solr_version: 6.0.0
+minimum_solr_version: 4.5.0
 custom_code: ''
 field_type_language_code: el
 domains: {}
@@ -195,37 +195,6 @@ solr_configs:
             -
               name: onlyMorePopular
               VALUE: 'true'
-    -
-      name: suggest
-      class: solr.SuggestComponent
-      lst:
-        -
-          name: suggester
-          str:
-            -
-              name: name
-              VALUE: el
-            -
-              name: lookupImpl
-              VALUE: AnalyzingInfixLookupFactory
-            -
-              name: dictionaryImpl
-              VALUE: DocumentDictionaryFactory
-            -
-              name: field
-              VALUE: twm_suggest
-            -
-              name: suggestAnalyzerFieldType
-              VALUE: text_el
-            -
-              name: contextField
-              VALUE: sm_context_tags
-            -
-              name: buildOnCommit
-              VALUE: 'true'
-            -
-              name: buildOnStartup
-              VALUE: 'false'
 text_files:
   stopwords: |
     ο
