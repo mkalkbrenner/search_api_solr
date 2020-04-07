@@ -72,10 +72,6 @@ install:
       composer require --no-suggest symfony/event-dispatcher:"4.3.4 as 3.4.99"
     fi
   - composer require --no-suggest solarium/solarium:"dev-master as 5.1.99" drupal/search_api:1.x-dev drupal/search_api_autocomplete:1.x-dev drupal/search_api_solr:3.99 drupal/search_api_location:1.x-dev drupal/facets:1.x-dev drupal/geofield:1.x-dev drupal/composer_deploy drush/drush:$DRUSH_VERSION drupal/drush_language:1.x-dev drupal/devel monolog/monolog
-  - |
-    if [ ${SOLR_VERSION} == "5.5.5" ] || [ ${SOLR_VERSION} == "4.5.1" ]; then
-      composer require --no-suggest drupal/search_api_solr_legacy:3.99
-    fi
   # Patch template.
   #########################################
   # to be removed once #2824932 is resolved
@@ -134,6 +130,10 @@ before_script:
   - ./vendor/bin/drush en composer_deploy --yes
   # Generate a multilingual Solr configuration. Therefore we have to install the
   # test modules before the tests.
+  - |
+    if [ ${SOLR_VERSION} == "5.5.5" ] || [ ${SOLR_VERSION} == "4.5.1" ]; then
+      ./vendor/bin/drush en --yes search_api_solr_legacy
+    fi
   - cp -a core/modules/system/tests/modules/entity_test core/modules/system/entity_test
   - cp -a modules/contrib/search_api/tests/search_api_test_example_content modules/contrib/search_api/search_api_test_example_content
   - cp -a modules/contrib/search_api_solr/tests/modules/search_api_solr_test modules/contrib/search_api_solr/search_api_solr_test
