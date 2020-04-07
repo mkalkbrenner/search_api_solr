@@ -774,7 +774,7 @@
        of SearchComponents (see below) and supports distributed
        queries across multiple shards
     -->
-  <!--<requestHandler name="/select" class="solr.SearchHandler">-->
+  <requestHandler name="/select" class="solr.SearchHandler">
     <!-- default values for query parameters can be specified, these
          will be overridden by parameters in the request
       -->
