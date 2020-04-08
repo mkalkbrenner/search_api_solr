@@ -1417,11 +1417,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
         'fieldType name="text_en" class="solr.TextField"',
         'fieldType name="text_de" class="solr.TextField"',
         '<fieldType name="collated_und" class="solr.ICUCollationField" locale="en" strength="primary" caseLevel="false"/>',
-'<!--
-  Fulltext Foo English
-  6.0.0
--->
-<fieldType name="text_foo_en" class="solr.TextField" positionIncrementGap="100">
+'<fieldType name="text_foo_en" class="solr.TextField" positionIncrementGap="100">
   <analyzer type="index">
     <tokenizer class="solr.WhitespaceTokenizerFactory"/>
     <filter class="solr.LengthFilterFactory" min="2" max="100"/>
@@ -1434,12 +1430,6 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     <filter class="solr.LowerCaseFilterFactory"/>
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
-  <similarity class="solr.DFRSimilarityFactory">
-    <str name="basicModel">I(F)</str>
-    <str name="afterEffect">B</str>
-    <str name="normalization">H3</str>
-    <float name="mu">900</float>
-  </similarity>
 </fieldType>',
       ],
       'schema_extra_fields.xml' => [

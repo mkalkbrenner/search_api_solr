@@ -6,9 +6,9 @@ dependencies:
     - language
   config:
     - language.entity.en
-id: text_foo_en_4_5_0
+id: text_foo_en_6_0_0
 label: 'Fulltext Foo English'
-minimum_solr_version: 4.5.0
+minimum_solr_version: 6.0.0
 custom_code: foo
 field_type_language_code: en
 domains: {}
@@ -43,5 +43,21 @@ field_type:
           class: solr.LowerCaseFilterFactory
         -
           class: solr.RemoveDuplicatesTokenFilterFactory
+  similarity:
+    class: solr.DFRSimilarityFactory
+    str:
+      -
+        name: basicModel
+        VALUE: I(F)
+      -
+        name: afterEffect
+        VALUE: B
+      -
+        name: normalization
+        VALUE: H3
+    float:
+      -
+        name: mu
+        VALUE: '900'
 solr_configs: {}
 text_files: {}
