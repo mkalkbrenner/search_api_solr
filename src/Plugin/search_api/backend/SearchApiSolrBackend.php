@@ -1533,7 +1533,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $relevance_field = reset($field_names['search_api_relevance']);
             if (isset($sorts[$relevance_field])) {
               $flatten_query[] = '{!boost b=boost_document}';
-              $flatten_query[] = Utility::flattenKeysToPayloadScore($keys, $parse_mode_id);
+              // @todo Remove condition together with search_api_solr_legacy.
+              if (version_compare($connector->getSolrMajorVersion(), '6', '>=')) {
+                // Since Solr 6 we could use payload_score!
+                $flatten_query[] = Utility::flattenKeysToPayloadScore($keys, $parse_mode_id);
+              }
             }
           }
 
@@ -2335,17 +2339,27 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             if (is_array($tokens) && !empty($tokens)) {
               foreach ($tokens as $token) {
                 if ($value = $token->getText()) {
-                  $doc->addField($key, $value);
+                  $connector = $this->getSolrConnector();
+                  if (version_compare($connector->getSolrMajorVersion(), '6', '<')) {
+                    // Boosting field values at index time is only supported in
+                    // old Solr versions.
+                    // @todo Remove together with search_api_solr_legacy.
+                    $doc->addField($key, $value, $token->getBoost());
+                  }
+                  else {
+                    $doc->addField($key, $value);
+
+                    $boost = $token->getBoost();
+                    if (0.0 != $boost && 1.0 != $boost) {
+                      // @todo This regex is a first approach to isolate the
+                      //   terms to be boosted. We should consider to re-use the
+                      //   logic of the tokenizer processor. But this might
+                      //   require to turn some methods to public.
+                      $doc->addField('boost_term', preg_replace('/([^\s]{2,})/', '$1|' . sprintf('%.1f', $boost), str_replace('|', ' ', $value)));
+                    }
+                  }
                   if (!$first_value) {
                     $first_value = $value;
-                  }
-                  $boost = $token->getBoost();
-                  if (0.0 != $boost && 1.0 != $boost) {
-                    // @todo This regex is a first approach to isolate the terms
-                    //   to be boosted. We should consider to re-use the logic
-                    //   of the tokenizer processor. But this might require to
-                    //   turn some methods to public.
-                    $doc->addField('boost_term', preg_replace('/([^\s]{2,})/', '$1|' . sprintf('%.1f', $boost), str_replace('|', ' ', $value)));
                   }
                 }
               }

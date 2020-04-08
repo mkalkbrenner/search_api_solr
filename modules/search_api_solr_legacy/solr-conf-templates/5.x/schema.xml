@@ -148,7 +148,6 @@
   <field name="hash" type="string" indexed="true" stored="true"/>
 
   <field name="boost_document" type="float" indexed="true" stored="true" multiValued="false"/>
-  <field name="boost_term" type="boost_term_payload" indexed="true" stored="false" multiValued="true"/>
 
   <!-- Dynamic field definitions.  If a field name is not found, dynamicFields
        will be used if the name matches any of the patterns.

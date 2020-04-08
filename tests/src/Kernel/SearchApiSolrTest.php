@@ -38,6 +38,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
   public static $modules = [
     'language',
     'search_api_autocomplete',
+    'search_api_solr_legacy',
     'user',
   ];
 
@@ -1030,26 +1031,29 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     // $this->assertEquals('es', $suggestions[1]->getSuggestionSuffix());
     // @codingStandardsIgnoreEnd
 
-    // @todo Add more suggester tests.
-    $query = $this->buildSearch(['artic'], [], ['body'], FALSE);
-    $query->setLanguages(['en']);
-    $suggestions = $backend->getSuggesterSuggestions($query, $autocompleteSearch, 'artic', 'artic');
-    $this->assertEquals(2, count($suggestions));
+    $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
+    if (version_compare($solr_major_version, '6', '>=')) {
+      // @todo Add more suggester tests.
+      $query = $this->buildSearch(['artic'], [], ['body'], FALSE);
+      $query->setLanguages(['en']);
+      $suggestions = $backend->getSuggesterSuggestions($query, $autocompleteSearch, 'artic', 'artic');
+      $this->assertEquals(2, count($suggestions));
 
-    // Since we don't specify the result weights explicitly for this suggester
-    // we need to deal with a random order and need predictable array keys.
-    foreach ($suggestions as $suggestion) {
-      $suggestions[$suggestion->getSuggestedKeys()] = $suggestion;
+      // Since we don't specify the result weights explicitly for this suggester
+      // we need to deal with a random order and need predictable array keys.
+      foreach ($suggestions as $suggestion) {
+        $suggestions[$suggestion->getSuggestedKeys()] = $suggestion;
+      }
+      $this->assertEquals('artic', $suggestions['The test <b>artic</b>le number 1 about cats, dogs and trees.']->getUserInput());
+      $this->assertEquals('The test <b>', $suggestions['The test <b>artic</b>le number 1 about cats, dogs and trees.']->getSuggestionPrefix());
+      $this->assertEquals('</b>le number 1 about cats, dogs and trees.', $suggestions['The test <b>artic</b>le number 1 about cats, dogs and trees.']->getSuggestionSuffix());
+      $this->assertEquals('The test <b>artic</b>le number 1 about cats, dogs and trees.', $suggestions['The test <b>artic</b>le number 1 about cats, dogs and trees.']->getSuggestedKeys());
+
+      $this->assertEquals('artic', $suggestions['The test <b>artic</b>le number 2 about a tree.']->getUserInput());
+      $this->assertEquals('The test <b>', $suggestions['The test <b>artic</b>le number 2 about a tree.']->getSuggestionPrefix());
+      $this->assertEquals('</b>le number 2 about a tree.', $suggestions['The test <b>artic</b>le number 2 about a tree.']->getSuggestionSuffix());
+      $this->assertEquals('The test <b>artic</b>le number 2 about a tree.', $suggestions['The test <b>artic</b>le number 2 about a tree.']->getSuggestedKeys());
     }
-    $this->assertEquals('artic', $suggestions['The test <b>artic</b>le number 1 about cats, dogs and trees.']->getUserInput());
-    $this->assertEquals('The test <b>', $suggestions['The test <b>artic</b>le number 1 about cats, dogs and trees.']->getSuggestionPrefix());
-    $this->assertEquals('</b>le number 1 about cats, dogs and trees.', $suggestions['The test <b>artic</b>le number 1 about cats, dogs and trees.']->getSuggestionSuffix());
-    $this->assertEquals('The test <b>artic</b>le number 1 about cats, dogs and trees.', $suggestions['The test <b>artic</b>le number 1 about cats, dogs and trees.']->getSuggestedKeys());
-
-    $this->assertEquals('artic', $suggestions['The test <b>artic</b>le number 2 about a tree.']->getUserInput());
-    $this->assertEquals('The test <b>', $suggestions['The test <b>artic</b>le number 2 about a tree.']->getSuggestionPrefix());
-    $this->assertEquals('</b>le number 2 about a tree.', $suggestions['The test <b>artic</b>le number 2 about a tree.']->getSuggestionSuffix());
-    $this->assertEquals('The test <b>artic</b>le number 2 about a tree.', $suggestions['The test <b>artic</b>le number 2 about a tree.']->getSuggestedKeys());
 
     // Tests NGram and Edge NGram search result.
     foreach (['category_ngram', 'category_edge'] as $field) {
