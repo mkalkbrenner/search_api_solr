@@ -1369,7 +1369,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $this->assertContains('text_en', $config_files['schema_extra_types.xml']);
     $this->assertNotContains('text_foo_en', $config_files['schema_extra_types.xml']);
     $this->assertNotContains('text_de', $config_files['schema_extra_types.xml']);
-    if (6 !== $solr_major_version) {
+    if (version_compare($solr_major_version, '7', '>=')) {
       $this->assertNotContains('documentCache', $config_files['solrconfig_query.xml']);
       $this->assertNotContains('filterCache', $config_files['solrconfig_query.xml']);
       $this->assertContains('httpCaching', $config_files['solrconfig_requestdispatcher.xml']);
@@ -1386,13 +1386,13 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $backend = $server->getBackend();
     if ($backend->getSolrConnector()->isCloud()) {
       $this->assertNotContains('solr.replication', $config_files['solrcore.properties']);
-      $this->assertNotContains('"/replication"', $config_files[(6 !== $solr_major_version) ? 'solrconfig_extra.xml' : 'solrconfig.xml']);
-      $this->assertNotContains('"/get"', $config_files[(6 !== $solr_major_version) ? 'solrconfig_extra.xml' : 'solrconfig.xml']);
+      $this->assertNotContains('"/replication"', $config_files[(version_compare($solr_major_version, '7', '>=')) ? 'solrconfig_extra.xml' : 'solrconfig.xml']);
+      $this->assertNotContains('"/get"', $config_files[(version_compare($solr_major_version, '7', '>=')) ? 'solrconfig_extra.xml' : 'solrconfig.xml']);
     }
     else {
       $this->assertContains('solr.replication', $config_files['solrcore.properties']);
-      $this->assertContains('"/replication"', $config_files[(6 !== $solr_major_version) ? 'solrconfig_extra.xml' : 'solrconfig.xml']);
-      if (6 !== $solr_major_version) {
+      $this->assertContains('"/replication"', $config_files[(version_compare($solr_major_version, '7', '>=')) ? 'solrconfig_extra.xml' : 'solrconfig.xml']);
+      if (version_compare($solr_major_version, '7', '>=')) {
         $this->assertNotContains('"/get"', $config_files['solrconfig_extra.xml']);
       }
       else {

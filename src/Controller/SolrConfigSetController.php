@@ -250,7 +250,7 @@ class SolrConfigSetController extends ControllerBase {
       'solrconfig_extra.xml' => $this->getSolrconfigExtraXml(),
     ];
 
-    if (version_compare($solr_major_version, '7.0.0', '>=')) {
+    if (version_compare($solr_major_version, '7', '>=')) {
       $files['solrconfig_query.xml'] = $this->getSolrconfigQueryXml();
       $files['solrconfig_requestdispatcher.xml'] = $this->getSolrconfigRequestDispatcherXml();
     }

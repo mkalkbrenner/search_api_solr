@@ -213,9 +213,17 @@ solr_configs:
             -
               name: distanceMeasure
               VALUE: internal
+          float:
             -
               name: accuracy
               VALUE: '0.5'
+            -
+              name: maxQueryFrequency
+              VALUE: '0.01'
+            -
+              name: thresholdTokenFrequency
+              VALUE: '0.01'
+          int:
             -
               name: maxEdits
               VALUE: '2'
@@ -228,12 +236,7 @@ solr_configs:
             -
               name: minQueryLength
               VALUE: '4'
-            -
-              name: maxQueryFrequency
-              VALUE: '0.01'
-            -
-              name: thresholdTokenFrequency
-              VALUE: '.01'
+          bool:
             -
               name: onlyMorePopular
               VALUE: 'true'
