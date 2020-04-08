@@ -1412,7 +1412,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     // @codingStandardsIgnoreStart
     return [[[
       'schema_extra_types.xml' => [
-        # phonetic is currently not available vor Solr 6.x.
+        # phonetic is currently not available for Solr <= 7.x.
         #'fieldType name="text_phonetic_en" class="solr.TextField"',
         'fieldType name="text_en" class="solr.TextField"',
         'fieldType name="text_de" class="solr.TextField"',
@@ -1443,7 +1443,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
 </fieldType>',
       ],
       'schema_extra_fields.xml' => [
-        # phonetic is currently not available vor Solr 6.x.
+        # phonetic is currently not available for Solr <= 7.x.
         #'<dynamicField name="tcphonetics_X3b_en_*" type="text_phonetic_en" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />',
         #'<dynamicField name="tcphoneticm_X3b_en_*" type="text_phonetic_en" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />',
         #'<dynamicField name="tocphonetics_X3b_en_*" type="text_phonetic_en" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="true" />',

@@ -786,7 +786,7 @@
       <!-- Don't abort searches for the /select request handler (set in solrcore.properties) -->
       <int name="timeAllowed">${solr.selectSearchHandler.timeAllowed:-1}</int>
       <!-- By default, don't spell check -->
-      <str name="spellcheck">false</str>
+      <bool name="spellcheck">false</bool>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -799,7 +799,7 @@
      <lst name="defaults">
        <str name="echoParams">explicit</str>
        <str name="wt">json</str>
-       <str name="indent">true</str>
+       <bool name="indent">true</bool>
        <str name="df">text</str>
      </lst>
   </requestHandler>
@@ -841,9 +841,9 @@
   <requestHandler name="/mlt" class="solr.MoreLikeThisHandler">
     <lst name="defaults">
       <str name="df">id</str>
-      <str name="mlt.mintf">1</str>
-      <str name="mlt.mindf">1</str>
-      <str name="mlt.match.include">false</str>
+      <int name="mlt.mintf">1</int>
+      <int name="mlt.mindf">1</int>
+      <bool name="mlt.match.include">false</bool>
       <!-- Abort any searches longer than 2 seconds (set in solrcore.properties) -->
       <int name="timeAllowed">${solr.mlt.timeAllowed:2000}</int>
     </lst>
@@ -873,11 +873,11 @@
                   startup="lazy"
                   class="solr.extraction.ExtractingRequestHandler" >
     <lst name="defaults">
-      <str name="lowernames">true</str>
+      <bool name="lowernames">true</bool>
       <str name="uprefix">ignored_</str>
 
       <!-- capture link hrefs but ignore div attributes -->
-      <str name="captureAttr">true</str>
+      <bool name="captureAttr">true</bool>
       <str name="fmap.a">links</str>
       <str name="fmap.div">ignored_</str>
     </lst>
@@ -945,7 +945,7 @@
   <requestHandler name="/debug/dump" class="solr.DumpRequestHandler" >
     <lst name="defaults">
      <str name="echoParams">explicit</str>
-     <str name="echoHandler">true</str>
+     <bool name="echoHandler">true</bool>
     </lst>
   </requestHandler>
 
@@ -962,13 +962,13 @@
   -->
   <requestHandler name="/replication" class="solr.ReplicationHandler" >
     <lst name="master">
-      <str name="enable">${solr.replication.master:false}</str>
+      <bool name="enable">${solr.replication.master:false}</bool>
       <str name="replicateAfter">commit</str>
       <str name="replicateAfter">startup</str>
       <str name="confFiles">${solr.replication.confFiles:schema.xml,elevate.xml}</str>
     </lst>
     <lst name="slave">
-      <str name="enable">${solr.replication.slave:false}</str>
+      <bool name="enable">${solr.replication.slave:false}</bool>
       <str name="masterUrl">${solr.replication.masterUrl:http://localhost:8983/solr}/replication</str>
       <str name="pollInterval">${solr.replication.pollInterval:00:00:60}</str>
     </lst>
@@ -980,9 +980,9 @@
   -->
   <requestHandler name="/get" class="solr.RealTimeGetHandler">
     <lst name="defaults">
-      <str name="omitHeader">true</str>
+      <bool name="omitHeader">true</bool>
       <str name="wt">json</str>
-      <str name="indent">true</str>
+      <bool name="indent">true</bool>
     </lst>
   </requestHandler>
 
@@ -1050,15 +1050,15 @@
       <str name="df">id</str>
       <str name="spellcheck.dictionary">und</str>
       <str name="spellcheck">on</str>
-      <str name="spellcheck.onlyMorePopular">false</str>
-      <str name="spellcheck.extendedResults">false</str>
-      <str name="spellcheck.count">1</str>
-      <str name="spellcheck.alternativeTermCount">5</str>
-      <str name="spellcheck.maxResultsForSuggest">5</str>
-      <str name="spellcheck.collate">true</str>
-      <str name="spellcheck.collateExtendedResults">true</str>
-      <str name="spellcheck.maxCollationTries">10</str>
-      <str name="spellcheck.maxCollations">5</str>
+      <bool name="spellcheck.onlyMorePopular">false</bool>
+      <bool name="spellcheck.extendedResults">false</bool>
+      <int name="spellcheck.count">1</int>
+      <int name="spellcheck.alternativeTermCount">5</int>
+      <int name="spellcheck.maxResultsForSuggest">5</int>
+      <bool name="spellcheck.collate">true</bool>
+      <bool name="spellcheck.collateExtendedResults">true</bool>
+      <int name="spellcheck.maxCollationTries">10</int>
+      <int name="spellcheck.maxCollations">5</int>
     </lst>
     <arr name="last-components">
       <str>spellcheck</str>
@@ -1067,9 +1067,9 @@
 
   <requestHandler name="/suggest" class="solr.SearchHandler" startup="lazy">
     <lst name="defaults">
-      <str name="suggest">true</str>
+      <bool name="suggest">true</bool>
       <str name="suggest.dictionary">und</str>
-      <str name="suggest.count">10</str>
+      <int name="suggest.count">10</int>
     </lst>
     <arr name="components">
       <str>suggest</str>
@@ -1124,11 +1124,11 @@
       <bool name="terms">false</bool>
       <bool name="distrib">false</bool>
       <str name="spellcheck">false</str>
-      <str name="spellcheck.onlyMorePopular">true</str>
-      <str name="spellcheck.extendedResults">false</str>
-      <str name="spellcheck.count">1</str>
-      <str name="suggest">false</str>
-      <str name="suggest.count">10</str>
+      <bool name="spellcheck.onlyMorePopular">true</bool>
+      <bool name="spellcheck.extendedResults">false</bool>
+      <int name="spellcheck.count">1</int>
+      <bool name="suggest">false</bool>
+      <int name="suggest.count">10</int>
     </lst>
     <arr name="components">
       <str>terms</str>
@@ -1245,7 +1245,7 @@
                        default="true"
                        class="solr.highlight.SimpleBoundaryScanner">
         <lst name="defaults">
-          <str name="hl.bs.maxScan">10</str>
+          <int name="hl.bs.maxScan">10</int>
           <str name="hl.bs.chars">.,!? &#9;&#10;&#13;</str>
         </lst>
       </boundaryScanner>
