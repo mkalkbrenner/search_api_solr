@@ -2339,8 +2339,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             if (is_array($tokens) && !empty($tokens)) {
               foreach ($tokens as $token) {
                 if ($value = $token->getText()) {
-                  $connector = $this->getSolrConnector();
-                  if (version_compare($connector->getSolrMajorVersion(), '6', '<')) {
+                  $legacy_solr_version = FALSE;
+                  try {
+                    $connector = $this->getSolrConnector();
+                    $legacy_solr_version = version_compare($connector->getSolrMajorVersion(), '6', '<')  && version_compare($connector->getSolrMajorVersion(), '4', '>=');
+                  }
+                  catch (\Exception $e) {}
+                  if ($legacy_solr_version) {
                     // Boosting field values at index time is only supported in
                     // old Solr versions.
                     // @todo Remove together with search_api_solr_legacy.
