@@ -149,7 +149,7 @@ before_script:
   - mkdir $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf
   - unzip -o conf.zip -d $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf
   # - ls -lh $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf
-  # - cat $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf/solrconfig_extra.xml
+  - cat $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/server/solr/d8/conf/*.xml
   - |
     if [ ${SOLR_VERSION} == "4.5.1" ]; then
       cd $TRAVIS_BUILD_DIR/solr-${SOLR_VERSION}/example
@@ -183,6 +183,14 @@ after_script:
     if [ -f $TRAVIS_BUILD_DIR/solr.error.log ]; then
         cat $TRAVIS_BUILD_DIR/solr.error.log;
     fi
+
+#deploy:
+#  provider: releases
+#  api_key:
+#    secure: "KIrsokvCttxcZQ36uUy+iLyRqyCG6sOVqq7/pZma1F6z5mpKkZChQV1yUWtVw52f1fDCKloRlj42foNCTE2JXg9/nej4qHtp9iSUklaq5+YpQRMTw2J+AWX9EiUvAl1YESOGskzk81aaahjon0Ckks6AHTF1qB+kgM/Dnmrut7A="
+#  file: 'release.zip'
+#  skip_cleanup: true
+#  draft: true
 
 matrix:
   exclude:
