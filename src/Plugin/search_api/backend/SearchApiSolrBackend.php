@@ -2337,19 +2337,26 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             /** @var \Drupal\search_api\Plugin\search_api\data_type\value\TextValueInterface $value */
             $tokens = $value->getTokens();
             if (is_array($tokens) && !empty($tokens)) {
+              // @todo Remove together with search_api_solr_legacy.
+              $legacy_solr_version = FALSE;
+              try {
+                $connector = $this->getSolrConnector();
+                if ($legacy_solr_version = (version_compare($connector->getSolrMajorVersion(), '6', '<')  && version_compare($connector->getSolrMajorVersion(), '4', '>='))) {
+                  $boost = 0.0;
+                }
+              }
+              catch (\Exception $e) {}
+
               foreach ($tokens as $token) {
                 if ($value = $token->getText()) {
-                  $legacy_solr_version = FALSE;
-                  try {
-                    $connector = $this->getSolrConnector();
-                    $legacy_solr_version = version_compare($connector->getSolrMajorVersion(), '6', '<')  && version_compare($connector->getSolrMajorVersion(), '4', '>=');
-                  }
-                  catch (\Exception $e) {}
                   if ($legacy_solr_version) {
                     // Boosting field values at index time is only supported in
                     // old Solr versions.
                     // @todo Remove together with search_api_solr_legacy.
-                    $doc->addField($key, $value, $token->getBoost());
+                    if ($token->getBoost() > $boost) {
+                      $boost = $token->getBoost();
+                    }
+                    $doc->addField($key, $value, $boost);
                   }
                   else {
                     $doc->addField($key, $value);
