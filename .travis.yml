@@ -7,7 +7,7 @@ php:
   - 7.3
 
 env:
-  - SOLR_VERSION=8.5.0 DRUPAL_BRANCH=9.0.x DRUSH_VERSION=~10.1.0 SOLR_CLOUD=true
+  - SOLR_VERSION=8.5.0 DRUPAL_BRANCH=9.0.x DRUSH_VERSION=^10.2.2 SOLR_CLOUD=true
 
 git:
   # The depth needs to be increased. The default of 50 leads to fatal: reference
