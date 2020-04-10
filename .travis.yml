@@ -69,6 +69,9 @@ before_script:
   # web server access logs output.
   - php -S localhost:8888 >& /dev/null &
   # Install the site.
+  - cd modules/contrib/drush_language
+  - curl https://www.drupal.org/files/issues/2020-04-10/drush_language-d9-3.patch| patch -p1
+  - cd ../../..
   - ./vendor/bin/drush -v site-install minimal --db-url=mysql://root:@localhost/drupal --yes
   - ./vendor/bin/drush en --yes drush_language
   - ./vendor/bin/drush language-add ar
