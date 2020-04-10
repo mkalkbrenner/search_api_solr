@@ -36,28 +36,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>${solr.luceneMatchVersion:LUCENE_50}</luceneMatchVersion>
-
-  <!-- <lib/> directives can be used to instruct Solr to load any Jars
-       identified and use them to resolve any "plugins" specified in
-       your solrconfig.xml or schema.xml (ie: Analyzers, Request
-       Handlers, etc...).
-
-       All directories and paths are resolved relative to the
-       instanceDir.
-
-       Please note that <lib/> directives are processed in the order
-       that they appear in your solrconfig.xml file, and are "stacked"
-       on top of each other when building a ClassLoader - so if you have
-       plugin jars with dependencies on other jars, the "lower level"
-       dependency jars should be loaded first.
-
-       If a "./lib" directory exists in your instanceDir, all files
-       found in it are included as if you had used the following
-       syntax...
-
-              <lib dir="./lib" />
-    -->
+  <luceneMatchVersion>${solr.luceneMatchVersion:LUCENE_40}</luceneMatchVersion>
 
   <!-- A 'dir' option by itself adds any files found in the directory
        to the classpath, this is useful for including all jars in a
@@ -105,72 +84,43 @@
 
   <!-- The DirectoryFactory to use for indexes.
 
-       solr.StandardDirectoryFactory is filesystem
+       solr.StandardDirectoryFactory, the default, is filesystem
        based and tries to pick the best implementation for the current
-       JVM and platform.  solr.NRTCachingDirectoryFactory, the default,
-       wraps solr.StandardDirectoryFactory and caches small files in memory
-       for better NRT performance.
-
-       One can force a particular implementation via solr.MMapDirectoryFactory,
-       solr.NIOFSDirectoryFactory, or solr.SimpleFSDirectoryFactory.
+       JVM and platform.  One can force a particular implementation
+       via solr.MMapDirectoryFactory, solr.NIOFSDirectoryFactory, or
+       solr.SimpleFSDirectoryFactory.
 
        solr.RAMDirectoryFactory is memory based, not
        persistent, and doesn't work with replication.
     -->
   <directoryFactory name="DirectoryFactory"
-                    class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/>
+                    class="${solr.directoryFactory:solr.StandardDirectoryFactory}"/>
 
-  <!-- The CodecFactory for defining the format of the inverted index.
-       The default implementation is SchemaCodecFactory, which is the official Lucene
-       index format, but hooks into the schema to provide per-field customization of
-       the postings lists and per-document values in the fieldType element
-       (postingsFormat/docValuesFormat). Note that most of the alternative implementations
-       are experimental, so if you choose to customize the index format, it's a good
-       idea to convert back to the official format e.g. via IndexWriter.addIndexes(IndexReader)
-       before upgrading to a newer version to avoid unnecessary reindexing.
-  -->
-  <codecFactory class="solr.SchemaCodecFactory"/>
+  <!-- Index Defaults
 
-  <!-- To enable dynamic schema REST APIs, remove the following <schemaFactory>.
-  -->
-  <schemaFactory class="ClassicIndexSchemaFactory"/>
+       Values here affect all index writers and act as a default
+       unless overridden.
 
-  <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-       Index Config - These settings control low-level behavior of indexing
-       Most example settings here show the default value, but are commented
-       out, to more easily see where customizations have been made.
-
-       Note: This replaces <indexDefaults> and <mainIndex> from older versions
-       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ -->
-  <indexConfig>
-    <!-- maxFieldLength was removed in 4.0. To get similar behavior, include a
-         LimitTokenCountFilterFactory in your fieldType definition. E.g.
-     <filter class="solr.LimitTokenCountFilterFactory" maxTokenCount="10000"/>
+       WARNING: See also the <mainIndex> section below for parameters
+       that overfor Solr's main Lucene index.
     -->
-    <!-- Maximum time to wait for a write lock (ms) for an IndexWriter. Default: 1000 -->
-    <!-- <writeLockTimeout>1000</writeLockTimeout>  -->
+  <indexConfig>
 
-    <!-- The maximum number of simultaneous threads that may be
-         indexing documents at once in IndexWriter; if more than this
-         many threads arrive they will wait for others to finish.
-         Default in Solr/Lucene is 8. -->
-    <!-- <maxIndexingThreads>8</maxIndexingThreads>  -->
+    <useCompoundFile>false</useCompoundFile>
 
-    <!-- Expert: Enabling compound file will use less files for the index,
-         using fewer file descriptors on the expense of performance decrease.
-         Default in Lucene is "true". Default in Solr is "false" (since 3.6) -->
-    <!-- <useCompoundFile>false</useCompoundFile> -->
-
-    <!-- ramBufferSizeMB sets the amount of RAM that may be used by Lucene
-         indexing for buffering added documents and deletions before they are
-         flushed to the Directory.
-         maxBufferedDocs sets a limit on the number of documents buffered
-         before flushing.
-         If both ramBufferSizeMB and maxBufferedDocs is set, then
-         Lucene will flush based on whichever limit is hit first.
-         The default is 100 MB.  -->
+    <mergeFactor>4</mergeFactor>
+    <!-- Sets the amount of RAM that may be used by Lucene indexing
+         for buffering added documents and deletions before they are
+         flushed to the Directory.  -->
     <ramBufferSizeMB>32</ramBufferSizeMB>
+    <!-- If both ramBufferSizeMB and maxBufferedDocs is set, then
+         Lucene will flush based on whichever limit is hit first.
+      -->
     <!-- <maxBufferedDocs>1000</maxBufferedDocs> -->
+
+    <maxMergeDocs>2147483647</maxMergeDocs>
+    <maxFieldLength>100000</maxFieldLength>
+    <writeLockTimeout>1000</writeLockTimeout>
 
     <!-- Expert: Merge Policy
 
@@ -200,15 +150,6 @@
        <mergeScheduler class="org.apache.lucene.index.ConcurrentMergeScheduler"/>
        -->
 
-    <!-- Merge Factor
-         The merge factor controls how many segments will get merged at a time.
-         For TieredMergePolicy, mergeFactor is a convenience parameter which
-         will set both MaxMergeAtOnce and SegmentsPerTier at once.
-         For LogByteSizeMergePolicy, mergeFactor decides how many new segments
-         will be allowed before they are merged into one.
-      -->
-    <mergeFactor>4</mergeFactor>
-
     <!-- LockFactory
 
          This option specifies which Lucene LockFactory implementation
@@ -222,13 +163,13 @@
                   JVM are attempting to share a single index.
          simple = SimpleFSLockFactory  - uses a plain file for locking
 
-         Defaults: 'native' is default for Solr3.6 and later, otherwise
-                   'simple' is the default
+         (For backwards compatibility with Solr 1.2, 'simple' is the
+         default if not specified.)
 
          More details on the nuances of each LockFactory...
          http://wiki.apache.org/lucene-java/AvailableLockFactories
     -->
-    <lockType>${solr.lock.type:native}</lockType>
+    <lockType>single</lockType>
 
     <!-- Expert: Controls how often Lucene loads terms into memory
          Default is 128 and is likely good for most everyone.
@@ -240,9 +181,9 @@
          If true, unlock any held write or commit locks on startup.
          This defeats the locking mechanism that allows multiple
          processes to safely access a lucene index, and should be used
-         with care. Default is "false".
+         with care.
 
-         This is not needed if lock type is 'single'
+         This is not needed if lock type is 'none' or 'single'
      -->
     <unlockOnStartup>false</unlockOnStartup>
 
@@ -253,12 +194,12 @@
 
     <!-- Commit Deletion Policy
 
-         Custom deletion policies can be specified here. The class must
+         Custom deletion policies can specified here. The class must
          implement org.apache.lucene.index.IndexDeletionPolicy.
 
          http://lucene.apache.org/java/2_9_1/api/all/org/apache/lucene/index/IndexDeletionPolicy.html
 
-         The default Solr IndexDeletionPolicy implementation supports
+         The standard Solr IndexDeletionPolicy implementation supports
          deleting index commit points on number of commits, age of
          commit point and optimized status.
 
@@ -285,11 +226,10 @@
          To aid in advanced debugging, Lucene provides an "InfoStream"
          of detailed information when indexing.
 
-         Setting the value to true will instruct the underlying Lucene
-         IndexWriter to write its info stream to solr's log. By default,
-         this is enabled here, and controlled through log4j.properties.
+         Setting The value to true will instruct the underlying Lucene
+         IndexWriter to write its debugging info the specified file
       -->
-     <infoStream>true</infoStream>
+     <infoStream file="INFOSTREAM.txt">false</infoStream>
 
     <!-- Let the config generator easily inject additional stuff. -->
     &index;
@@ -317,16 +257,6 @@
 
   <!-- The default high-performance update handler -->
   <updateHandler class="solr.DirectUpdateHandler2">
-
-    <!-- Enables a transaction log, used for real-time get, durability, and
-         and solr cloud replica recovery.  The log can grow as big as
-         uncommitted changes to the index, so use of a hard autoCommit
-         is recommended (see below).
-         "dir" - the target directory for transaction logs, defaults to the
-                solr data directory.  -->
-    <updateLog>
-      <str name="dir">${solr.ulog.dir:}</str>
-    </updateLog>
 
     <!-- AutoCommit
 
@@ -389,7 +319,17 @@
          <arr name="env"> <str>MYVAR=val1</str> </arr>
        </listener>
       -->
-
+    <!-- Enables a transaction log, currently used for real-time get.
+         "dir" - the target directory for transaction logs, defaults to the
+         solr data directory.  -->
+    <updateLog>
+      <str name="dir">${solr.data.dir:}</str>
+      <!-- if you want to take control of the synchronization you may specify
+           the syncLevel as one of the following where ''flush'' is the default.
+           Fsync will reduce throughput.
+           <str name="syncLevel">flush|fsync|none</str>
+      -->
+    </updateLog>
   </updateHandler>
 
   <!-- IndexReaderFactory
@@ -419,6 +359,15 @@
     <str name="someArg">Some Value</str>
   </indexReaderFactory >
   -->
+  <!-- By explicitly declaring the Factory, the termIndexDivisor can
+       be specified.
+    -->
+  <!--
+     <indexReaderFactory name="IndexReaderFactory"
+                         class="solr.StandardIndexReaderFactory">
+       <int name="setTermIndexDivisor">12</int>
+     </indexReaderFactory >
+    -->
 
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
        Query section - these settings control query time things like caches
@@ -439,15 +388,6 @@
       -->
     <maxBooleanClauses>1024</maxBooleanClauses>
 
-    <!-- Slow Query Threshold (in millis)
-
-         At high request rates, logging all requests can become a bottleneck
-         and therefore INFO logging is often turned off. However, it is still
-         useful to be able to set a latency threshold above which a request
-         is considered "slow" and log that request at WARN level so we can
-         easily identify slow queries.
-    -->
-    <slowQueryThresholdMillis>-1</slowQueryThresholdMillis>
 
     <!-- Solr Internal Query Caches
 
@@ -665,20 +605,8 @@
          enableRemoteStreaming - enables use of the stream.file
          and stream.url parameters for specifying remote streams.
 
-         multipartUploadLimitInKB - specifies the max size (in KiB) of
+         multipartUploadLimitInKB - specifies the max size of
          Multipart File Uploads that Solr will allow in a Request.
-
-         formdataUploadLimitInKB - specifies the max size (in KiB) of
-         form data (application/x-www-form-urlencoded) sent via
-         POST. You can use POST to pass request parameters not
-         fitting into the URL.
-
-         addHttpRequestToContext - if set to true, it will instruct
-         the requestParsers to include the original HttpServletRequest
-         object in the context map of the SolrQueryRequest under the
-         key "httpRequest". It will not be used by any of the existing
-         Solr components, but may be useful when developing custom
-         plugins.
 
          *** WARNING ***
          The settings below authorize Solr to fetch remote files, You
@@ -687,9 +615,7 @@
 
       -->
     <requestParsers enableRemoteStreaming="true"
-                    multipartUploadLimitInKB="2048000"
-                    formdataUploadLimitInKB="2048"
-                    addHttpRequestToContext="false"/>
+                    multipartUploadLimitInKB="2048000" />
 
     <!-- HTTP Caching
 
@@ -750,16 +676,16 @@
 
        http://wiki.apache.org/solr/SolrRequestHandler
 
-       Incoming queries will be dispatched to a specific handler by name
-       based on the path specified in the request.
+       incoming queries will be dispatched to the correct handler
+       based on the path or the qt (query type) param.
 
-       Legacy behavior: If the request path uses "/select" but no Request
-       Handler has that name, and if handleSelect="true" has been specified in
-       the requestDispatcher, then the Request Handler is dispatched based on
-       the qt parameter.  Handlers without a leading '/' are accessed this way
-       like so: http://host/app/[core/]select?qt=name  If no qt is
-       given, then the requestHandler that declares default="true" will be
-       used or the one named "standard".
+       Names starting with a '/' are accessed with the a path equal to
+       the registered name.  Names without a leading '/' are accessed
+       with: http://host/app/[core/]select?qt=name
+
+       If a /select request is processed with out a qt param
+       specified, the requestHandler that declares default="true" will
+       be used.
 
        If a Request Handler is declared with startup="lazy", then it will
        not be initialized until the first request that uses it.
@@ -858,11 +784,48 @@
      </lst>
   </requestHandler>
 
-  <initParams path="/update/**,/query,/select,/tvrh,/elevate,/spell,/browse">
-    <lst name="defaults">
-      <str name="df">id</str>
-    </lst>
-  </initParams>
+  <!-- XML Update Request Handler.
+
+       http://wiki.apache.org/solr/UpdateXmlMessages
+
+       The canonical Request Handler for Modifying the Index through
+       commands specified using XML.
+
+       Note: Since solr1.1 requestHandlers requires a valid content
+       type header if posted in the body. For example, curl now
+       requires: -H 'Content-type:text/xml; charset=utf-8'
+    -->
+  <requestHandler name="/update"
+                  class="solr.UpdateRequestHandler">
+    <!-- See below for information on defining
+         updateRequestProcessorChains that can be used by name
+         on each Update Request
+      -->
+    <!--
+       <lst name="defaults">
+         <str name="update.chain">dedupe</str>
+       </lst>
+       -->
+    </requestHandler>
+  <!-- Binary Update Request Handler
+       http://wiki.apache.org/solr/javabin
+    -->
+  <requestHandler name="/update/javabin"
+                  class="solr.UpdateRequestHandler" />
+
+  <!-- CSV Update Request Handler
+       http://wiki.apache.org/solr/UpdateCSV
+    -->
+  <requestHandler name="/update/csv"
+                  class="solr.CSVRequestHandler"
+                  startup="lazy" />
+
+  <!-- JSON Update Request Handler
+       http://wiki.apache.org/solr/UpdateJSON
+    -->
+  <requestHandler name="/update/json"
+                  class="solr.JsonUpdateRequestHandler"
+                  startup="lazy" />
 
   <!-- Solr Cell Update Request Handler
 
@@ -873,16 +836,25 @@
                   startup="lazy"
                   class="solr.extraction.ExtractingRequestHandler" >
     <lst name="defaults">
-      <bool name="lowernames">true</bool>
+      <!-- All the main content goes into "text"... if you need to return
+           the extracted text or do highlighting, use a stored field. -->
+      <str name="fmap.content">text</str>
+      <str name="lowernames">true</str>
       <str name="uprefix">ignored_</str>
 
       <!-- capture link hrefs but ignore div attributes -->
-      <bool name="captureAttr">true</bool>
+      <str name="captureAttr">true</str>
       <str name="fmap.a">links</str>
       <str name="fmap.div">ignored_</str>
     </lst>
   </requestHandler>
 
+  <!-- XSLT Update Request Handler
+       Transforms incoming XML with stylesheet identified by tr=
+  -->
+  <requestHandler name="/update/xslt"
+                   startup="lazy"
+                   class="solr.XsltUpdateRequestHandler"/>
 
   <!-- Field Analysis Request Handler
 
@@ -941,11 +913,50 @@
                   class="solr.DocumentAnalysisRequestHandler"
                   startup="lazy" />
 
+  <!-- Admin Handlers
+
+       Admin Handlers - This will register all the standard admin
+       RequestHandlers.
+    -->
+  <requestHandler name="/admin/" class="solr.admin.AdminHandlers" />
+  <!-- This single handler is equivalent to the following... -->
+  <!--
+     <requestHandler name="/admin/luke"       class="solr.admin.LukeRequestHandler" />
+     <requestHandler name="/admin/system"     class="solr.admin.SystemInfoHandler" />
+     <requestHandler name="/admin/plugins"    class="solr.admin.PluginInfoHandler" />
+     <requestHandler name="/admin/threads"    class="solr.admin.ThreadDumpHandler" />
+     <requestHandler name="/admin/properties" class="solr.admin.PropertiesRequestHandler" />
+     <requestHandler name="/admin/file"       class="solr.admin.ShowFileRequestHandler" >
+    -->
+  <!-- If you wish to hide files under ${solr.home}/conf, explicitly
+       register the ShowFileRequestHandler using:
+    -->
+  <!--
+     <requestHandler name="/admin/file"
+                     class="solr.admin.ShowFileRequestHandler" >
+       <lst name="invariants">
+         <str name="hidden">synonyms.txt</str>
+         <str name="hidden">anotherfile.txt</str>
+       </lst>
+     </requestHandler>
+    -->
+
+  <!-- ping/healthcheck -->
+  <requestHandler name="/admin/ping" class="solr.PingRequestHandler">
+    <lst name="invariants">
+      <str name="qt">pinkPony</str>
+      <str name="q">solrpingquery</str>
+    </lst>
+    <lst name="defaults">
+      <str name="echoParams">all</str>
+    </lst>
+  </requestHandler>
+
   <!-- Echo the request contents back to the client -->
   <requestHandler name="/debug/dump" class="solr.DumpRequestHandler" >
     <lst name="defaults">
      <str name="echoParams">explicit</str>
-     <bool name="echoHandler">true</bool>
+     <str name="echoHandler">true</str>
     </lst>
   </requestHandler>
 
@@ -959,7 +970,7 @@
        In the example below, remove the <lst name="master"> section if
        this is just a slave and remove  the <lst name="slave"> section
        if this is just a master.
-  -->
+    -->
   <requestHandler name="/replication" class="solr.ReplicationHandler" >
     <lst name="master">
       <bool name="enable">${solr.replication.master:false}</bool>
@@ -1087,6 +1098,115 @@
       <str>tvComponent</str>
     </arr>
   </requestHandler>
+
+  <!-- Clustering Component
+
+       http://wiki.apache.org/solr/ClusteringComponent
+
+       This relies on third party jars which are notincluded in the
+       release.  To use this component (and the "/clustering" handler)
+       Those jars will need to be downloaded, and you'll need to set
+       the solr.cluster.enabled system property when running solr...
+
+          java -Dsolr.clustering.enabled=true -jar start.jar
+    -->
+  <!-- <searchComponent name="clustering"
+                   enable="${solr.clustering.enabled:false}"
+                   class="solr.clustering.ClusteringComponent" > -->
+    <!-- Declare an engine -->
+    <!--<lst name="engine">-->
+      <!-- The name, only one can be named "default" -->
+      <!--<str name="name">default</str>-->
+
+      <!-- Class name of Carrot2 clustering algorithm.
+
+           Currently available algorithms are:
+
+           * org.carrot2.clustering.lingo.LingoClusteringAlgorithm
+           * org.carrot2.clustering.stc.STCClusteringAlgorithm
+           * org.carrot2.clustering.kmeans.BisectingKMeansClusteringAlgorithm
+
+           See http://project.carrot2.org/algorithms.html for the
+           algorithm's characteristics.
+        -->
+      <!--<str name="carrot.algorithm">org.carrot2.clustering.lingo.LingoClusteringAlgorithm</str>-->
+
+      <!-- Overriding values for Carrot2 default algorithm attributes.
+
+           For a description of all available attributes, see:
+           http://download.carrot2.org/stable/manual/#chapter.components.
+           Use attribute key as name attribute of str elements
+           below. These can be further overridden for individual
+           requests by specifying attribute key as request parameter
+           name and attribute value as parameter value.
+        -->
+      <!--<str name="LingoClusteringAlgorithm.desiredClusterCountBase">20</str>-->
+
+      <!-- Location of Carrot2 lexical resources.
+
+           A directory from which to load Carrot2-specific stop words
+           and stop labels. Absolute or relative to Solr config directory.
+           If a specific resource (e.g. stopwords.en) is present in the
+           specified dir, it will completely override the corresponding
+           default one that ships with Carrot2.
+
+           For an overview of Carrot2 lexical resources, see:
+           http://download.carrot2.org/head/manual/#chapter.lexical-resources
+        -->
+      <!--<str name="carrot.lexicalResourcesDir">clustering/carrot2</str>-->
+
+      <!-- The language to assume for the documents.
+
+           For a list of allowed values, see:
+           http://download.carrot2.org/stable/manual/#section.attribute.lingo.MultilingualClustering.defaultLanguage
+       -->
+      <!--<str name="MultilingualClustering.defaultLanguage">ENGLISH</str>
+    </lst>
+    <lst name="engine">
+      <str name="name">stc</str>
+      <str name="carrot.algorithm">org.carrot2.clustering.stc.STCClusteringAlgorithm</str>
+    </lst>
+  </searchComponent>-->
+
+  <!-- A request handler for demonstrating the clustering component
+
+       This is purely as an example.
+
+       In reality you will likely want to add the component to your
+       already specified request handlers.
+    -->
+  <!--<requestHandler name="/clustering"
+                  startup="lazy"
+                  enable="${solr.clustering.enabled:false}"
+                  class="solr.SearchHandler">
+    <lst name="defaults">
+      <bool name="clustering">true</bool>
+      <str name="clustering.engine">default</str>
+      <bool name="clustering.results">true</bool>-->
+      <!-- The title field -->
+      <!--<str name="carrot.title">name</str>-->
+      <!--<str name="carrot.url">id</str>-->
+      <!-- The field to cluster on -->
+       <!--<str name="carrot.snippet">features</str>-->
+       <!-- produce summaries -->
+       <!--<bool name="carrot.produceSummary">true</bool>-->
+       <!-- the maximum number of labels per cluster -->
+       <!--<int name="carrot.numDescriptions">5</int>-->
+       <!-- produce sub clusters -->
+       <!--<bool name="carrot.outputSubClusters">false</bool>-->
+
+       <!--<str name="defType">edismax</str>
+       <str name="qf">
+          text^0.5 features^1.0 name^1.2 sku^1.5 id^10.0 manu^1.1 cat^1.4
+       </str>
+       <str name="q.alt">*:*</str>
+       <str name="rows">10</str>
+       <str name="fl">*,score</str>
+    </lst>
+    <arr name="last-components">
+      <str>clustering</str>
+    </arr>
+  </requestHandler>-->
 
   <!-- Terms Component
 
@@ -1283,8 +1403,7 @@
      </updateRequestProcessorChain>
     -->
 
-  <!-- Language identification
-
+    <!--
        This example update chain identifies the language of the incoming
        documents using the langid contrib. The detected language is
        written to field language_s. No field name mapping is done.
@@ -1356,7 +1475,7 @@
 
   <!-- Query Parsers
 
-       https://cwiki.apache.org/confluence/display/solr/Query+Syntax+and+Parsing
+       http://wiki.apache.org/solr/SolrQuerySyntax
 
        Multiple QParserPlugins can be registered by name, and then
        used in either the "defType" param for the QueryComponent (used
