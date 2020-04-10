@@ -367,7 +367,7 @@
       http://wiki.apache.org/solr/SolrAdaptersForLuceneSpatial4
     -->
     <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
-        geo="true" distErrPct="0.025" maxDistErr="0.001" distanceUnits="kilometers" />
+        geo="true" distErrPct="0.025" maxDistErr="0.001" distanceUnits="kilometers" units="degrees" />
 
     <!-- A Geohash is a compact representation of a latitude longitude pair in a single field.
        See http://wiki.apache.org/solr/SpatialSearch
