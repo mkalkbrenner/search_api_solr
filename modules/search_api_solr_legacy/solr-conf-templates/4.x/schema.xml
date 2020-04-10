@@ -147,8 +147,6 @@
   <dynamicField name="ds_*"  type="tdate"   indexed="true"  stored="true" multiValued="false"/>
   <dynamicField name="dm_*"  type="tdate"   indexed="true"  stored="true" multiValued="true"/>
   <!-- This field is used to store date ranges -->
-  <dynamicField name="drs_*" type="date_range" indexed="true" stored="true" multiValued="false" />
-  <dynamicField name="drm_*" type="date_range" indexed="true" stored="true" multiValued="true" />
   <dynamicField name="its_*" type="tlong"   indexed="true"  stored="true" multiValued="false"/>
   <dynamicField name="itm_*" type="tlong"   indexed="true"  stored="true" multiValued="true"/>
   <dynamicField name="fts_*" type="tfloat"  indexed="true"  stored="true" multiValued="false"/>
@@ -298,9 +296,6 @@
 
     <!-- A Trie based date field for faster date range queries and date faceting. -->
     <fieldType name="tdate" class="solr.TrieDateField" omitNorms="true" precisionStep="6" positionIncrementGap="0"/>
-
-    <!-- A date range field -->
-    <fieldType name="date_range" class="solr.DateRangeField"/>
 
     <!--Binary data type. The data should be sent/retrieved in as Base64 encoded Strings -->
     <fieldType name="binary" class="solr.BinaryField"/>
