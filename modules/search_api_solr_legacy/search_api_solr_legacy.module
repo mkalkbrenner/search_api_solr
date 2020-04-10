@@ -11,7 +11,7 @@ function search_api_solr_legacy_form_search_api_server_form_alter(&$form, FormSt
   // form ID search_api_field_config).
   if (in_array($form_id, ['search_api_server_form', 'search_api_server_edit_form'])) {
     $versions = $form['backend_config']['connector_config']['workarounds']['solr_version']['#options'] + [
-      '4' => '4.x',
+      '4.5' => '4.x',
       '5' => '5.x',
     ];
     ksort($versions);
