@@ -1463,7 +1463,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
         '<dynamicField name="sort_X3b_en_*" type="collated_en" stored="false" indexed="false" docValues="true" />',
         '<dynamicField name="sort_X3b_de_*" type="collated_de" stored="false" indexed="false" docValues="true" />',
         '<dynamicField name="sort_X3b_und_*" type="collated_und" stored="false" indexed="false" docValues="true" />',
-        '<dynamicField name="sort_*" type="collated_und" stored="false" indexed="false" docValues="true" />',
+        '<dynamicField name="sort_*" type="collated_und" stored="false" ',
       ],
       'solrconfig_extra.xml' => [
         '<str name="name">en</str>',
