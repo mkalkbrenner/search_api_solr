@@ -178,8 +178,6 @@
   <dynamicField name="locm_*" type="location" indexed="true"  stored="true" multiValued="true"/>
   <dynamicField name="geos_*" type="geohash" indexed="true"  stored="true" multiValued="false"/>
   <dynamicField name="geom_*" type="geohash" indexed="true"  stored="true" multiValued="true"/>
-  <dynamicField name="bboxs_*" type="bbox" indexed="true" stored="true" multiValued="false" />
-  <dynamicField name="bboxm_*" type="bbox" indexed="true" stored="true" multiValued="true" />
   <dynamicField name="rpts_*" type="location_rpt" indexed="true" stored="true" multiValued="false" />
   <dynamicField name="rptm_*" type="location_rpt" indexed="true" stored="true" multiValued="true" />
 
@@ -375,13 +373,6 @@
        See http://wiki.apache.org/solr/SpatialSearch
      -->
     <fieldtype name="geohash" class="solr.GeoHashField"/>
-
-  <!-- Spatial rectangle (bounding box) field. It supports most spatial predicates, and has
-   special relevancy modes: score=overlapRatio|area|area2D (local-param to the query).  DocValues is recommended for
-   relevancy. -->
-    <fieldType name="bbox" class="solr.BBoxField"
-               geo="true" distanceUnits="kilometers" numberType="_bbox_coord" />
-    <fieldType name="_bbox_coord" class="solr.TrieDoubleField" precisionStep="8" docValues="true" stored="false"/>
 
   <!-- Money/currency field type. See http://wiki.apache.org/solr/MoneyFieldType
        Parameters:
