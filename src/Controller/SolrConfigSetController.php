@@ -71,9 +71,16 @@ class SolrConfigSetController extends ControllerBase {
    * @throws \Drupal\search_api\SearchApiException
    */
   public function getSchemaExtraFieldsXml(?ServerInterface $search_api_server = NULL): string {
+    $solr_major_version = NULL;
+    if ($search_api_server) {
+      /** @var SolrBackendInterface $backend */
+      $backend = $search_api_server->getBackend();
+      $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
+    }
+
     /** @var \Drupal\search_api_solr\Controller\SolrFieldTypeListBuilder $list_builder */
     $list_builder = $this->getListBuilder('solr_field_type', $search_api_server);
-    return $list_builder->getSchemaExtraFieldsXml();
+    return $list_builder->getSchemaExtraFieldsXml($solr_major_version);
   }
 
   /**
@@ -246,7 +253,7 @@ class SolrConfigSetController extends ControllerBase {
 
     $files = [
       'schema_extra_types.xml' => $this->getSchemaExtraTypesXml(),
-      'schema_extra_fields.xml' => $this->getSchemaExtraFieldsXml(),
+      'schema_extra_fields.xml' => $this->getSchemaExtraFieldsXml($backend->getServer()),
       'solrconfig_extra.xml' => $this->getSolrconfigExtraXml(),
     ];
 
