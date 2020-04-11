@@ -139,7 +139,10 @@ before_script:
   - ./vendor/bin/drush language-add zh-hans
   - ./vendor/bin/drush language-add zh-hant
   # Let dev versions fulfill module version dependencies.
-  - ./vendor/bin/drush en composer_deploy --yes
+  - |
+    if [ ${DRUPAL_BRANCH} != "9.0.x" ]; then
+      ./vendor/bin/drush en composer_deploy --yes
+    fi
   # Generate a multilingual Solr configuration. Therefore we have to install the
   # test modules before the tests.
   - |
