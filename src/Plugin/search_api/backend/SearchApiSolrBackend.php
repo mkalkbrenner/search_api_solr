@@ -4222,6 +4222,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     if (!empty($spellcheck_options['collate'])) {
       $spellcheck->setCollate($spellcheck_options['collate']);
     }
+
+    if (version_compare($this->getSolrConnector()->getSolrMajorVersion(), '5', '<')) {
+      $spellcheck->setBuild(TRUE);
+    }
   }
 
   /**
