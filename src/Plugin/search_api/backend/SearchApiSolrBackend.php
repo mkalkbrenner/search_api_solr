@@ -3174,6 +3174,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   protected function setFacets(QueryInterface $query, Query $solarium_query) {
     static $index_fulltext_fields = [];
 
+    $facet_key = Client::checkMinimal('5.2') ? 'local_key' : 'key';
+
     $facets = $query->getOption('search_api_facets', []);
     if (empty($facets)) {
       return;
@@ -3202,7 +3204,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       switch ($info['query_type']) {
         case 'search_api_granular':
           $facet_field = $facet_set->createFacetRange([
-            'key' => $solr_field,
+            $facet_key => $solr_field,
             'field' => $solr_field,
             'start' => $info['min_value'],
             'end' => $info['max_value'],
@@ -4420,10 +4422,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   protected function doDocumentCounts(Endpoint $endpoint): array {
     $connector = $this->getSolrConnector();
 
+    $facet_key = Client::checkMinimal('5.2') ? 'local_key' : 'key';
+
     try {
       $query = $connector->getSelectQuery()
         ->addFilterQuery(new FilterQuery([
-          'key' => 'search_api',
+          $facet_key => 'search_api',
           'query' => '+hash:* +index_id:*',
         ]))
         ->setRows(1)
@@ -4432,13 +4436,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $facet_set = $query->getFacetSet();
 
       $json_facet_query = $facet_set->createJsonFacetTerms([
-        'key' => 'siteHashes',
+        $facet_key => 'siteHashes',
         'limit' => -1,
         'field' => 'hash',
       ]);
 
       $nested_json_facet_terms = $facet_set->createJsonFacetTerms([
-        'key' => 'numDocsPerIndex',
+        $facet_key => 'numDocsPerIndex',
         'limit' => -1,
         'field' => 'index_id',
       ], /* Don't add to top level => nested. */ FALSE);
@@ -4456,7 +4460,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $query = $connector->getSelectQuery()->setRows(1);
       $facet_set = $query->getFacetSet();
       $facet_set->createJsonFacetAggregation([
-        'key' => 'maxVersion',
+        $facet_key => 'maxVersion',
         'function' => 'max(_version_)',
       ]);
 
@@ -4549,10 +4553,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#total' => 0,
     ];
 
+    $facet_key = Client::checkMinimal('5.2') ? 'local_key' : 'key';
+
     try {
       $query = $connector->getSelectQuery()
         ->addFilterQuery(new FilterQuery([
-          'key' => 'search_api',
+          $facet_key => 'search_api',
           'query' => '+hash:* +index_id:*',
         ]))
         ->setRows(1)
@@ -4561,30 +4567,30 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $facet_set = $query->getFacetSet();
 
       $facet_set->createJsonFacetAggregation([
-        'key' => 'maxVersion',
+        $facet_key => 'maxVersion',
         'function' => 'max(_version_)',
       ]);
 
       $siteHashes = $facet_set->createJsonFacetTerms([
-        'key' => 'siteHashes',
+        $facet_key => 'siteHashes',
         'limit' => -1,
         'field' => 'hash',
       ]);
 
       $indexes = $facet_set->createJsonFacetTerms([
-        'key' => 'indexes',
+        $facet_key => 'indexes',
         'limit' => -1,
         'field' => 'index_id',
       ], /* Don't add to top level => nested. */ FALSE);
 
       $dataSources = $facet_set->createJsonFacetTerms([
-        'key' => 'dataSources',
+        $facet_key => 'dataSources',
         'limit' => -1,
         'field' => 'ss_search_api_datasource',
       ], /* Don't add to top level => nested. */ FALSE);
 
       $maxVersionPerDataSource = $facet_set->createJsonFacetAggregation([
-        'key' => 'maxVersionPerDataSource',
+        $facet_key => 'maxVersionPerDataSource',
         'function' => 'max(_version_)',
       ], /* Don't add to top level => nested. */ FALSE);
 
@@ -4599,7 +4605,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $query = $connector->getSelectQuery()->setRows(1);
       $facet_set = $query->getFacetSet();
       $facet_set->createJsonFacetAggregation([
-        'key' => 'maxVersion',
+        $facet_key => 'maxVersion',
         'function' => 'max(_version_)',
       ]);
       /** @var \Solarium\QueryType\Select\Result\Result $result */
