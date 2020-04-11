@@ -1431,8 +1431,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     <filter class="solr.LengthFilterFactory" min="2" max="100"/>
     <filter class="solr.LowerCaseFilterFactory"/>
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
-  </analyzer>
-</fieldType>',
+  </analyzer>',
       ],
       'schema_extra_fields.xml' => [
         # phonetic is currently not available for Solr <= 7.x.
