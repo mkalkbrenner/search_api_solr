@@ -73,7 +73,7 @@ install:
       composer require --no-suggest symfony/event-dispatcher:"4.3.4 as 3.4.99"
       composer run-script drupal-phpunit-upgrade
     fi
-  - composer require --no-suggest solarium/solarium:"dev-master as 5.1.99" drupal/search_api:1.x-dev drupal/search_api_autocomplete:1.x-dev drupal/search_api_solr:3.99 drupal/facets:1.x-dev drupal/composer_deploy drush/drush:$DRUSH_VERSION drupal/drush_language:1.x-dev drupal/devel monolog/monolog
+  - composer require --no-suggest solarium/solarium:"dev-master as 5.1.99" drupal/search_api:1.x-dev drupal/search_api_autocomplete:1.x-dev drupal/search_api_solr:3.99 drupal/facets:1.x-dev drupal/composer_deploy drush/drush:$DRUSH_VERSION drupal/drush_language:1.x-dev drupal/devel:3.x-dev monolog/monolog
   # search_api_solr_location is not yet Drupal 9 ready
   # Solr 4 lacks the required features for search_api_location
   - |
@@ -86,6 +86,10 @@ install:
   #- cd modules/contrib/search_api
   #- curl https://www.drupal.org/files/issues/2018-12-20/3021717.patch | patch -p1
   #- cd $TRAVIS_BUILD_DIR/../drupal
+  #########################################
+  - cd modules/contrib/drush_language
+  - curl https://www.drupal.org/files/issues/2020-04-10/drush_language-d9-3.patch| patch -p1
+  - cd $TRAVIS_BUILD_DIR/../drupal
   #########################################
   - cp $TRAVIS_BUILD_DIR/tests/travis.phpunit.xml $TRAVIS_BUILD_DIR/../drupal/core/phpunit.xml.dist
 
