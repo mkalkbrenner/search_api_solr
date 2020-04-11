@@ -26,7 +26,7 @@ env:
   - SOLR_VERSION=5.5.5 DRUPAL_BRANCH=9.0.x DRUSH_VERSION=^10.2.2 SOLR_CLOUD=false
 #  - SOLR_VERSION=5.5.5 DRUPAL_BRANCH=8.9.x DRUSH_VERSION=^10.2.2 SOLR_CLOUD=false
 #  - SOLR_VERSION=5.5.5 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=^10.2.2 SOLR_CLOUD=false
-#  - SOLR_VERSION=4.5.1 DRUPAL_BRANCH=8.9.x DRUSH_VERSION=^10.2.2 SOLR_CLOUD=false
+  - SOLR_VERSION=4.5.1 DRUPAL_BRANCH=8.9.x DRUSH_VERSION=^10.2.2 SOLR_CLOUD=false
 #  - SOLR_VERSION=4.5.1 DRUPAL_BRANCH=8.8.x DRUSH_VERSION=^10.2.2 SOLR_CLOUD=false
 
 git:
@@ -73,7 +73,13 @@ install:
       composer require --no-suggest symfony/event-dispatcher:"4.3.4 as 3.4.99"
       composer run-script drupal-phpunit-upgrade
     fi
-  - composer require --no-suggest solarium/solarium:"dev-master as 5.1.99" drupal/search_api:1.x-dev drupal/search_api_autocomplete:1.x-dev drupal/search_api_solr:3.99 drupal/search_api_location:1.x-dev drupal/facets:1.x-dev drupal/geofield:1.x-dev drupal/composer_deploy drush/drush:$DRUSH_VERSION drupal/drush_language:1.x-dev drupal/devel monolog/monolog
+  - composer require --no-suggest solarium/solarium:"dev-master as 5.1.99" drupal/search_api:1.x-dev drupal/search_api_autocomplete:1.x-dev drupal/search_api_solr:3.99 drupal/facets:1.x-dev drupal/composer_deploy drush/drush:$DRUSH_VERSION drupal/drush_language:1.x-dev drupal/devel monolog/monolog
+  # search_api_solr_location is not yet Drupal 9 ready
+  # Solr 4 lacks the required features for search_api_location
+  - |
+    if [ ${DRUPAL_BRANCH} != "9.0.x" ] && [ ${SOLR_VERSION} != "4.5.1" ]; then
+      composer require --no-suggest drupal/geofield:1.x-dev drupal/search_api_location:1.x-dev
+    fi
   # Patch template.
   #########################################
   # to be removed once #2824932 is resolved
@@ -180,7 +186,14 @@ script:
   # Run the tests within the drupal directory.
   - cd $TRAVIS_BUILD_DIR/../drupal
   - vendor/bin/phpunit --version
-  - vendor/bin/phpunit -c core --group search_api_solr modules/contrib/search_api_solr
+  - |
+    if [ ${SOLR_VERSION} == "4.5.1" ]; then
+      vendor/bin/phpunit -c core --group search_api_solr --exclude-group min_solr_5 modules/contrib/search_api_solr
+    elif [ ${DRUPAL_BRANCH} == "9.0.x" ]; then
+      vendor/bin/phpunit -c core --group search_api_solr --exclude-group not_drupal_9_ready modules/contrib/search_api_solr
+    else
+      vendor/bin/phpunit -c core --group search_api_solr modules/contrib/search_api_solr
+    fi
 
 after_script:
   - |
