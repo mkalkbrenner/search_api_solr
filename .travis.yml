@@ -41,7 +41,7 @@ cache:
     - solr_downloads
 
 addons:
-  mariadb: '10.2'
+  mariadb: '10.4'
 
 before_install:
   - phpenv config-rm xdebug.ini || true

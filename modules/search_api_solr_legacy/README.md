@@ -11,3 +11,8 @@ Installation
 ------------
 
 todo
+
+Suggester based Autocomplete Solr 4 + 5
+Spellcheck based Autocomplete Solr 4
+search_api_location Solr 4
+date_range  Solr 4

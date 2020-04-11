@@ -977,6 +977,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
 
     /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend $backend */
     $backend = Server::load($this->serverId)->getBackend();
+    $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
     $autocompleteSearch = new Search([], 'search_api_autocomplete_search');
 
     $query = $this->buildSearch(['artic'], [], ['body_unstemmed'], FALSE);
@@ -994,12 +995,14 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $this->assertEquals('l', $suggestions[0]->getSuggestionSuffix());
     $this->assertEquals(2, $suggestions[0]->getResultsCount());
 
-    $query = $this->buildSearch(['articel'], [], ['body'], FALSE);
-    $query->setLanguages(['en']);
-    $suggestions = $backend->getSpellcheckSuggestions($query, $autocompleteSearch, 'articel', 'articel');
-    $this->assertEquals(1, count($suggestions));
-    $this->assertEquals('article', $suggestions[0]->getSuggestedKeys());
-    $this->assertEquals(0, $suggestions[0]->getResultsCount());
+    if (version_compare($solr_major_version, '5', '>=')) {
+      $query = $this->buildSearch(['articel'], [], ['body'], FALSE);
+      $query->setLanguages(['en']);
+      $suggestions = $backend->getSpellcheckSuggestions($query, $autocompleteSearch, 'articel', 'articel');
+      $this->assertEquals(1, count($suggestions));
+      $this->assertEquals('article', $suggestions[0]->getSuggestedKeys());
+      $this->assertEquals(0, $suggestions[0]->getResultsCount());
+    }
 
     $query = $this->buildSearch(['article tre'], [], ['body_unstemmed'], FALSE);
     $query->setLanguages(['en']);
@@ -1031,7 +1034,6 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     // $this->assertEquals('es', $suggestions[1]->getSuggestionSuffix());
     // @codingStandardsIgnoreEnd
 
-    $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
     if (version_compare($solr_major_version, '6', '>=')) {
       // @todo Add more suggester tests.
       $query = $this->buildSearch(['artic'], [], ['body'], FALSE);
