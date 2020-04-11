@@ -3,7 +3,7 @@ About
 
 The Search API Solr Legacy module allows to connect to older/unsupported Solr
 versions.
-It is not guaranteed to be supported for a long time but should enabled an
+It is not guaranteed to be supported for a long time but should provide an
 easier migration to recent Solr versions throughout 2020.
 
 
@@ -19,8 +19,8 @@ features could still be configured and will then lead to runtime errors or
 unexpected results.
 In a multilingual setup, all languages are supported but some aren't working as
 good compared to Solr 6 and above.
-But over all you get more features compared to Search API Solr 1.x and Seach API
-Solr Multilingual 1.x.
+But over all you get more features compared to Search API Solr 1.x and Search
+API Solr Multilingual 1.x.
 
 Solr 5 doesn't support ...
 * suggesters
