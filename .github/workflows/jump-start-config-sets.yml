@@ -40,8 +40,9 @@ jobs:
 
             - name: Install  
               run: |
-                ls -l
+                ls -l vendor
                 ls -l vendor/bin
+                ls -l modules/contrib
                 vendor/bin/drush
                 vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/.ht.sqlite --yes
                 vendor/bin/drush en --yes drush_language
