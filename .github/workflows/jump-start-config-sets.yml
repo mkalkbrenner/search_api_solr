@@ -30,11 +30,12 @@ jobs:
             - name: Checkout search_api_solr
               uses: actions/checkout@v2
               with:
-                path: repositories/search_api_solr
+                path: ../repositories/search_api_solr
+                fetch-depth: 0
 
             - name: Install dependencies
               run: |
-                composer config repositories.search_api_solr path repositories/search_api_solr
+                composer config repositories.search_api_solr path ../repositories/search_api_solr
                 composer require "drupal/search_api_solr @dev" drush/drush drupal/drush_language:1.x-dev --ignore-platform-reqs --no-interaction --no-suggest
                 ls -l modules/contrib
                 ls -l modules/contrib/search_api_solr/modules
