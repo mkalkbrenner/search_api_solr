@@ -40,9 +40,8 @@ jobs:
 
             - name: Install  
               run: |
+                  vendor/bin/drush
                   vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/.ht.sqlite --yes
-                  vendor/bin/phpunit
-                  vendor/bin/drush -v site-install minimal --db-url=mysql://root:@localhost/drupal --yes
                   vendor/bin/drush en --yes drush_language
                   vendor/bin/drush language-add ar
                   vendor/bin/drush language-add bg
