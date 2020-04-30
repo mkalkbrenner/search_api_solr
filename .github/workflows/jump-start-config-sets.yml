@@ -30,7 +30,7 @@ jobs:
             - name: Checkout search_api_solr
               uses: actions/checkout@v2
               with:
-                  path: repositories
+                  path: repositories/search_api_solr
 
             - name: Install dependencies
               run: |
