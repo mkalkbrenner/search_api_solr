@@ -1,0 +1,87 @@
+name: Jump Start Config-Sets
+
+on:
+    push:
+
+jobs:
+    php-tests:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                solr: [4.5.0, 5.0.0, 6.4.0, 7.0.0, 8.0.0]
+
+        name: Solr ${{ matrix.solr }}
+
+        steps:
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 7.3
+                  extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick
+                  coverage: none
+
+            - name: Checkout drupal
+              uses: actions/checkout@v2
+              with:
+                  repository: drupal/drupal
+            - run: git checkout 9.0.x
+
+            - name: Checkout search_api_solr
+              uses: actions/checkout@v2
+              with:
+                  path: repositories
+
+            - name: Install dependencies
+              run: |
+                  composer config repositories.search_api_solr vcs repositories/search_api_solr
+                  composer install --ignore-platform-reqs  --no-interaction  --no-suggest
+                  composer require drupal/search_api_solr:4.x-dev drush/drush drupal/drush_language --ignore-platform-reqs --no-interaction --no-update
+
+            - name: Install  
+              run: |
+                  vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/.ht.sqlite --yes
+                  vendor/bin/phpunit
+                  vendor/bin/drush -v site-install minimal --db-url=mysql://root:@localhost/drupal --yes
+                  vendor/bin/drush en --yes drush_language
+                  vendor/bin/drush language-add ar
+                  vendor/bin/drush language-add bg
+                  vendor/bin/drush language-add ca
+                  vendor/bin/drush language-add cs
+                  vendor/bin/drush language-add da
+                  vendor/bin/drush language-add de
+                  vendor/bin/drush language-add el
+                  vendor/bin/drush language-add es
+                  vendor/bin/drush language-add et
+                  vendor/bin/drush language-add fa
+                  vendor/bin/drush language-add fi
+                  vendor/bin/drush language-add fr
+                  vendor/bin/drush language-add ga
+                  vendor/bin/drush language-add hi
+                  vendor/bin/drush language-add hr
+                  vendor/bin/drush language-add id
+                  vendor/bin/drush language-add it
+                  vendor/bin/drush language-add ja
+                  vendor/bin/drush language-add lv
+                  vendor/bin/drush language-add nb
+                  vendor/bin/drush language-add nl
+                  vendor/bin/drush language-add nn
+                  vendor/bin/drush language-add no
+                  vendor/bin/drush language-add pl
+                  vendor/bin/drush language-add pt-pt
+                  vendor/bin/drush language-add pt-br
+                  vendor/bin/drush language-add ro
+                  vendor/bin/drush language-add ru
+                  vendor/bin/drush language-add sk
+                  vendor/bin/drush language-add sr
+                  vendor/bin/drush language-add sv
+                  vendor/bin/drush language-add th
+                  vendor/bin/drush language-add tr
+                  vendor/bin/drush language-add uk
+                  vendor/bin/drush language-add zh-hans
+                  vendor/bin/drush language-add zh-hant
+                  vendor/bin/drush en --yes search_api_solr_legacy
+
+            - name: Generate config-set
+              run: |
+                  vendor/bin/drush -v solr-gsc solr_search_server conf.zip ${{ matrix.solr }}
