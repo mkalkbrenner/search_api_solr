@@ -86,7 +86,7 @@ jobs:
                 vendor/bin/drush language-add zh-hans
                 vendor/bin/drush language-add zh-hant
                 vendor/bin/drush en search_api_solr_legacy --yes
-                vendor/bin/drupal cis --file="modules/contrib/search_api_solr/tests/modules/search_api_solr_test/config/install/search_api.server.solr_search_server.yml" --yes
+                vendor/bin/drush cim --partial --source=modules/search_api_solr/tests/modules/search_api_solr_test/config/install --yes
 
             - name: Generate config-set
               run: |
