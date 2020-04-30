@@ -25,7 +25,7 @@ jobs:
               uses: actions/checkout@v2
               with:
                 repository: drupal/drupal
-                ref: 9.0.x
+                ref: 8.8.x
 
             - name: Checkout search_api_solr
               uses: actions/checkout@v2
@@ -39,9 +39,8 @@ jobs:
 
             - name: Install drupal
               run: |
-                vendor/bin/drush
                 vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/.ht.sqlite --yes
-                vendor/bin/drush en --yes drush_language
+                vendor/bin/drush en drush_language --yes
                 vendor/bin/drush language-add ar
                 vendor/bin/drush language-add bg
                 vendor/bin/drush language-add ca
