@@ -26,25 +26,20 @@ jobs:
               with:
                 repository: drupal/drupal
                 ref: 8.8.x
-                path: drupal
                 
             - name: Checkout search_api_solr
               uses: actions/checkout@v2
               with:
-                path: repositories/search_api_solr
+                path: modules/contrib/search_api_solr
                 fetch-depth: 0
 
             - name: Install dependencies
               run: |
-                cd drupal
-                composer config repositories.search_api_solr '{"type": "path", "url": "../repositories/search_api_solr"}'
-                ls -l ../repositories/search_api_solr
-                cat composer.json
-                composer require drupal/search_api_solr:@dev drush/drush drupal/drush_language:1.x-dev --ignore-platform-reqs --no-interaction --no-suggest
+                composer config repositories.search_api_solr '{"type": "path", "url": "modules/contrib/search_api_solr"}'
+                composer require drupal/search_api_solr drush/drush drupal/drush_language:1.x-dev --ignore-platform-reqs --no-interaction --no-suggest
                 
             - name: Install drupal
               run: |
-                cd drupal
                 vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/.ht.sqlite --yes
                 vendor/bin/drush en drush_language --yes
                 vendor/bin/drush language-add ar
@@ -87,5 +82,4 @@ jobs:
 
             - name: Generate config-set
               run: |
-                cd drupal
                 vendor/bin/drush -v solr-gsc solr_search_server conf.zip ${{ matrix.solr }}
