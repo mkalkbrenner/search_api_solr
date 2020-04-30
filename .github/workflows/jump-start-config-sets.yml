@@ -36,7 +36,9 @@ jobs:
               run: |
                 composer config repositories.search_api_solr path repositories/search_api_solr
                 composer require "drupal/search_api_solr @dev" drush/drush drupal/drush_language:1.x-dev --ignore-platform-reqs --no-interaction --no-suggest
-
+                ls -l modules/contrib
+                ls -l modules/contrib/search_api_solr/modules
+                
             - name: Install drupal
               run: |
                 vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/.ht.sqlite --yes
@@ -77,7 +79,7 @@ jobs:
                 vendor/bin/drush language-add uk
                 vendor/bin/drush language-add zh-hans
                 vendor/bin/drush language-add zh-hant
-                vendor/bin/drush en --yes search_api_solr_legacy
+                vendor/bin/drush en search_api_solr_legacy --yes
 
             - name: Generate config-set
               run: |
