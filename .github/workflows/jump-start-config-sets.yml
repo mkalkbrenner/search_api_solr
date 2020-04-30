@@ -72,7 +72,6 @@ jobs:
                 vendor/bin/drush language-add nb
                 vendor/bin/drush language-add nl
                 vendor/bin/drush language-add nn
-                vendor/bin/drush language-add no
                 vendor/bin/drush language-add pl
                 vendor/bin/drush language-add pt-pt
                 vendor/bin/drush language-add pt-br
@@ -87,6 +86,7 @@ jobs:
                 vendor/bin/drush language-add zh-hans
                 vendor/bin/drush language-add zh-hant
                 vendor/bin/drush en search_api_solr_legacy --yes
+                vendor/bin/drush cim --partial --source=modules/search_api_solr/tests/modules/search_api_solr_test/config/install --yes
 
             - name: Generate config-set
               run: |
