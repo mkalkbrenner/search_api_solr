@@ -37,9 +37,6 @@ jobs:
                 composer config repositories.search_api_solr path repositories/search_api_solr
                 composer install --ignore-platform-reqs  --no-interaction  --no-suggest
                 composer require "drupal/search_api_solr @dev" drush/drush drupal/drush_language --ignore-platform-reqs --no-interaction --no-update
-
-            - name: Install  
-              run: |
                 ls -l vendor
                 ls -l vendor/bin
                 ls -l modules/contrib
