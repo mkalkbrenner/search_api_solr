@@ -13,6 +13,12 @@ jobs:
 
         name: Solr ${{ matrix.solr }}
 
+        services:
+          solr:
+            image: solr:${{ matrix.solr }}
+            ports:
+              - 8983
+
         steps:
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
