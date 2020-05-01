@@ -18,12 +18,6 @@ jobs:
             image: solr:${{ matrix.solr }}
             ports:
               - 8983:8983
-            entrypoint:
-              - docker-entrypoint.sh
-              - solr
-              - start
-              - -c
-              - -f
 
         steps:
             - name: Setup PHP
