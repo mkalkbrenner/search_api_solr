@@ -94,7 +94,10 @@ jobs:
                 vendor/bin/drush en search_api_solr_legacy,config --yes
                 vendor/bin/drush cim --partial --source=modules/contrib/search_api_solr/jump-start/drupal_configs --yes
 
-            - name: Generate config-set
+            - name: Generate and upload config-set
+              env:
+                PORT: ${{ job.services.solr.ports[3306] }}
               run: |
                 cd drupal
-                vendor/bin/drush -v solr-gsc solr_search_server conf.zip ${{ matrix.solr }}
+                vendor/bin/drush -v solr-gsc solr_search_server config.zip ${{ matrix.solr }}
+                curl -X POST --header "Content-Type:application/octet-stream" --data-binary @config.zip "http://localhost:8983/solr/admin/configs?action=UPLOAD&name=d8"
