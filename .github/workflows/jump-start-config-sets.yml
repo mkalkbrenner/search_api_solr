@@ -17,7 +17,7 @@ jobs:
           solr:
             image: solr:${{ matrix.solr }}
             ports:
-              - 8983
+              - 8983:8983
 
         steps:
             - name: Setup PHP
