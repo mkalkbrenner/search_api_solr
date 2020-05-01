@@ -9,7 +9,7 @@ jobs:
 
         strategy:
             matrix:
-                solr: [4.5, 5, 6, 7, 8]
+                solr: [5, 6, 7, 8]
 
         name: Solr ${{ matrix.solr }}
 
