@@ -14,7 +14,12 @@ jobs:
         name: Solr ${{ matrix.solr }}
 
         steps:
-            - name: Setup PHP
+          - name: Start Solr
+            run: |
+              cd search_api_solr/jump-start/solr${{ matrix.solr }}
+              docker-compose up -d
+
+          - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
                 php-version: 7.3
@@ -87,11 +92,6 @@ jobs:
                 vendor/bin/drush language-add zh-hant
                 vendor/bin/drush en search_api_solr_legacy,config --yes
                 vendor/bin/drush cim --partial --source=modules/contrib/search_api_solr/jump-start/drupal_configs --yes
-
-            - name: Start Solr
-              run: |
-                cd search_api_solr/jump-start/solr${{ matrix.solr }}
-                docker-compose up -d
 
             - name: Generate and upload config-set
               run: |
