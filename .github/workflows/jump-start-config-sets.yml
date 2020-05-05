@@ -102,11 +102,14 @@ jobs:
 
             - name: Commit config-set
               run: |
+                cd search_api_solr/jump-start/solr${{ matrix.solr }}/config-set
                 git config --local user.email "action@github.com"
                 git config --local user.name "GitHub Action"
-                git commit -m "Solr jump-start config-set change" -a
+                git add *
+                git commit -m "Solr jump-start config-set change"
 
             - name: Push config-set
               uses: ad-m/github-push-action@master
               with:
                 github_token: ${{ secrets.GITHUB_TOKEN }}
+                directory: search_api_solr
