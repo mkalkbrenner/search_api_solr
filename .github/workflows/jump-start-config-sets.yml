@@ -91,7 +91,7 @@ jobs:
             - name: Start Solr
               run: |
                 cd search_api_solr/jump-start/solr${{ matrix.solr }}
-                docker-compose up
+                docker-compose up -d
 
             - name: Generate and upload config-set
               run: |
