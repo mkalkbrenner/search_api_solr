@@ -14,11 +14,6 @@ jobs:
         name: Solr ${{ matrix.solr }}
 
         steps:
-          - name: Start Solr
-            run: |
-              cd search_api_solr/jump-start/solr${{ matrix.solr }}
-              docker-compose up -d
-
           - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
@@ -43,6 +38,11 @@ jobs:
               run: |
                 cd search_api_solr
                 git tag 4.99.0
+
+            - name: Start Solr
+              run: |
+                cd search_api_solr/jump-start/solr${{ matrix.solr }}
+                docker-compose up -d
 
             - name: Install dependencies
               run: |
