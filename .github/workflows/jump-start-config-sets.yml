@@ -98,3 +98,15 @@ jobs:
                 cd drupal
                 vendor/bin/drush -v solr-gsc solr_search_server config.zip ${{ matrix.solr }}
                 curl -v -X POST --header "Content-Type:application/octet-stream" --data-binary @config.zip "http://localhost:8983/solr/admin/configs?action=UPLOAD&name=d8"
+                unzip -d ../search_api_solr/jump-start/solr${{ matrix.solr }}/config-set config.zip
+
+            - name: Commit config-set
+              run: |
+                git config --local user.email "action@github.com"
+                git config --local user.name "GitHub Action"
+                git commit -m "Solr jump-start config-set change" -a
+
+            - name: Push config-set
+              uses: ad-m/github-push-action@master
+              with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
