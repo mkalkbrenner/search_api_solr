@@ -7,11 +7,7 @@ jobs:
     php-tests:
         runs-on: ubuntu-latest
 
-        strategy:
-            matrix:
-                solr: [4, 5, 6, 7, 8]
-
-        name: Solr ${{ matrix.solr }}
+        name: Generate Solr jump-start config-sets
 
         steps:
             - name: Setup PHP
@@ -38,11 +34,6 @@ jobs:
               run: |
                 cd search_api_solr
                 git tag 4.99.0
-
-            - name: Start Solr
-              run: |
-                cd search_api_solr/jump-start/solr${{ matrix.solr }}
-                docker-compose up -d
 
             - name: Install dependencies
               run: |
@@ -93,23 +84,30 @@ jobs:
                 vendor/bin/drush en search_api_solr_legacy,config --yes
                 vendor/bin/drush cim --partial --source=modules/contrib/search_api_solr/jump-start/drupal_configs --yes
 
-            - name: Generate and upload config-set
+            - name: Generate config-sets
               run: |
                 cd drupal
-                vendor/bin/drush -v solr-gsc solr_search_server config.zip ${{ matrix.solr }}
-                curl -v -X POST --header "Content-Type:application/octet-stream" --data-binary @config.zip "http://localhost:8983/solr/admin/configs?action=UPLOAD&name=d8"
-                unzip -d ../search_api_solr/jump-start/solr${{ matrix.solr }}/config-set config.zip
+                vendor/bin/drush -v solr-gsc solr_search_server config.zip 4.5
+                unzip -d ../search_api_solr/jump-start/solr4/config-set config.zip
+                vendor/bin/drush -v solr-gsc solr_search_server config.zip 5
+                unzip -d ../search_api_solr/jump-start/solr5/config-set config.zip
+                vendor/bin/drush -v solr-gsc solr_search_server config.zip 6
+                unzip -d ../search_api_solr/jump-start/solr6/config-set config.zip
+                vendor/bin/drush -v solr-gsc solr_search_server config.zip 7
+                unzip -d ../search_api_solr/jump-start/solr7/config-set config.zip
+                vendor/bin/drush -v solr-gsc solr_search_server config.zip 8
+                unzip -d ../search_api_solr/jump-start/solr8/config-set config.zip
 
-            - name: Commit config-set
+            - name: Commit config-sets
               run: |
-                cd search_api_solr/jump-start/solr${{ matrix.solr }}/config-set
+                cd search_api_solr
                 git config --local user.email "action@github.com"
                 git config --local user.name "GitHub Action"
                 git pull
                 git add *
                 git commit -m "Solr jump-start config-set change"
 
-            - name: Push config-set
+            - name: Push config-sets
               uses: ad-m/github-push-action@master
               with:
                 github_token: ${{ secrets.GITHUB_TOKEN }}
