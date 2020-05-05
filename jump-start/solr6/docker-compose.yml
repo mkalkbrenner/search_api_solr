@@ -1,6 +1,6 @@
 version: '3'
 services:
-  solr:
+  solr6:
     image: solr:6
     ports:
       - "8983:8983"
