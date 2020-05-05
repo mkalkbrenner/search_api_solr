@@ -9,15 +9,9 @@ jobs:
 
         strategy:
             matrix:
-                solr: [5, 6, 7, 8]
+                solr: [4, 5, 6, 7, 8]
 
         name: Solr ${{ matrix.solr }}
-
-        services:
-          solr:
-            image: solr:${{ matrix.solr }}
-            ports:
-              - 8983:8983
 
         steps:
             - name: Setup PHP
@@ -49,7 +43,7 @@ jobs:
               run: |
                 cd drupal
                 composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
-                composer require drupal/search_api_solr:4.99.0 drush/drush drupal/drush_language:1.x-dev drupal/console --ignore-platform-reqs --no-interaction --no-suggest
+                composer require drupal/search_api_solr:4.99.0 drush/drush drupal/drush_language:1.x-dev --ignore-platform-reqs --no-interaction --no-suggest
 
             - name: Install drupal
               run: |
@@ -94,9 +88,12 @@ jobs:
                 vendor/bin/drush en search_api_solr_legacy,config --yes
                 vendor/bin/drush cim --partial --source=modules/contrib/search_api_solr/jump-start/drupal_configs --yes
 
+            - name: Start Solr
+              run: |
+                cd search_api_solr/jump-start/solr${{ matrix.solr }}
+                docker-compose up
+
             - name: Generate and upload config-set
-              env:
-                PORT: ${{ job.services.solr.ports[3306] }}
               run: |
                 cd drupal
                 vendor/bin/drush -v solr-gsc solr_search_server config.zip ${{ matrix.solr }}
