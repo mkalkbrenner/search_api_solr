@@ -88,15 +88,15 @@ jobs:
               run: |
                 cd drupal
                 vendor/bin/drush -v solr-gsc solr_search_server config.zip 4.5
-                unzip -u -d ../search_api_solr/jump-start/solr4/config-set config.zip
+                unzip -o -d ../search_api_solr/jump-start/solr4/config-set config.zip
                 vendor/bin/drush -v solr-gsc solr_search_server config.zip 5
-                unzip -u -d ../search_api_solr/jump-start/solr5/config-set config.zip
+                unzip -o -d ../search_api_solr/jump-start/solr5/config-set config.zip
                 vendor/bin/drush -v solr-gsc solr_search_server config.zip 6
-                unzip -u -d ../search_api_solr/jump-start/solr6/config-set config.zip
+                unzip -o -d ../search_api_solr/jump-start/solr6/config-set config.zip
                 vendor/bin/drush -v solr-gsc solr_search_server config.zip 7
-                unzip -u -d ../search_api_solr/jump-start/solr7/config-set config.zip
+                unzip -o -d ../search_api_solr/jump-start/solr7/config-set config.zip
                 vendor/bin/drush -v solr-gsc solr_search_server config.zip 8
-                unzip -u -d ../search_api_solr/jump-start/solr8/config-set config.zip
+                unzip -o -d ../search_api_solr/jump-start/solr8/config-set config.zip
 
             - name: Commit config-sets
               run: |
