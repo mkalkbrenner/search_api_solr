@@ -49,7 +49,7 @@ jobs:
             - name: Install drupal
               run: |
                 cd drupal
-                vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/.ht.sqlite --yes
+                vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/db.sqlite --yes
                 vendor/bin/drush en drush_language --yes
                 vendor/bin/drush language-add ar
                 vendor/bin/drush language-add bg
@@ -177,11 +177,11 @@ jobs:
             env:
               SOLR_INDEX_WAIT: 4
               SYMFONY_DEPRECATIONS_HELPER: disabled
-              MARIADB_PORT: ${{ job.services.mariadb.ports[3306] }}
+              SIMPLETEST_DB: sqlite://sites/default/files/dbtest.sqlite
             run: |
               cp search_api_solr/tests/travis.phpunit.xml drupal/core/phpunit.xml.dist
               cd drupal
               php -S localhost:8888 >& /dev/null &
-              vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/.ht.sqlite --yes
+              vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/db.sqlite --yes
               vendor/bin/drush en search_api_solr_admin,search_api_solr_defaults,search_api_solr_devel,search_api_solr_legacy --yes
               vendor/bin/phpunit -c core --group search_api_solr modules/contrib/search_api_solr
