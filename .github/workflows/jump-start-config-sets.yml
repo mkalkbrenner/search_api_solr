@@ -10,6 +10,10 @@ jobs:
         name: Generate Solr jump-start config-sets
 
         steps:
+            - name: Setup sqlite
+              run: |
+                sudo apt-get install sqlite3 libsqlite3-dev
+
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
@@ -126,6 +130,10 @@ jobs:
       name: Test with Solr ${{ matrix.solr }}
 
       steps:
+        - name: Setup sqlite
+          run: |
+            sudo apt-get install sqlite3 libsqlite3-dev
+
         - name: Setup PHP
           uses: shivammathur/setup-php@v2
           with:
