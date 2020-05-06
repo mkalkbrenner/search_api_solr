@@ -125,6 +125,15 @@ jobs:
 
       name: Test with Solr ${{ matrix.solr }}
 
+      services:
+          mariadb:
+              image: mariadb:latest
+              ports:
+                  - 3306
+              env:
+                  MYSQL_ROOT_PASSWORD: root
+              options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+
       steps:
         - name: Setup PHP
           uses: shivammathur/setup-php@v2
