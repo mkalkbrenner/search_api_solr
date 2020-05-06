@@ -197,7 +197,7 @@ script:
   - vendor/bin/phpunit --version
   - |
     if [ ${SOLR} == "4.5.1" ]; then
-      vendor/bin/phpunit -c core --group search_api_solr --exclude-group min_solr_5 modules/contrib/search_api_solr
+      vendor/bin/phpunit -c core --group search_api_solr --exclude-group not_solr4 modules/contrib/search_api_solr
     elif [ ${DRUPAL} == "9.0.x" ]; then
       vendor/bin/phpunit -c core --group search_api_solr --exclude-group not_drupal_9_ready modules/contrib/search_api_solr
     else
