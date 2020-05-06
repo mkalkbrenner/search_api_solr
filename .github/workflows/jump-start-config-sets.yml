@@ -4,7 +4,7 @@ on:
     push:
 
 jobs:
-    php-tests:
+    generate-config-sets:
         runs-on: ubuntu-latest
 
         name: Generate Solr jump-start config-sets
@@ -113,3 +113,57 @@ jobs:
                 github_token: ${{ secrets.GITHUB_TOKEN }}
                 directory: search_api_solr
                 branch: ${{ github.ref }}
+
+    tests:
+      runs-on: ubuntu-latest
+
+      needs: generate-config-sets
+      
+      strategy:
+        matrix:
+          solr: [4, 5, 6, 7, 8]
+
+      name: Solr ${{ matrix.solr }}
+
+      steps:
+        - name: Setup PHP
+          uses: shivammathur/setup-php@v2
+          with:
+            php-version: 7.3
+            extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, bcmath, intl, gd, iconv, json, simplexml
+            coverage: none
+
+        - name: Checkout search_api_solr
+          uses: actions/checkout@v2
+          with:
+            path: search_api_solr
+            fetch-depth: 0
+
+        - name: Start Solr
+          run: |
+            cd search_api_solr/jump-start/solr${{ matrix.solr }}
+            docker-compose up -d
+
+        - name: Tag search_api_solr
+          run: |
+            cd search_api_solr
+            git tag 4.99.0
+
+        - name: Checkout drupal
+          uses: actions/checkout@v2
+          with:
+            repository: drupal/drupal
+            ref: 8.8.x
+            path: drupal
+
+        - name: Install dependencies
+          run: |
+            cd drupal
+            composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
+            composer require symfony/event-dispatcher:"4.3.4 as 3.4.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete drupal/facets drupal/devel drupal/geofield drupal/search_api_location monolog/monolog --ignore-platform-reqs --no-interaction --no-suggest
+
+        - name: Run tests
+          run: |
+            cp search_api_solr/tests/travis.phpunit.xml drupal/core/phpunit.xml.dist
+            cd drupal
+            vendor/bin/phpunit -c core --group search_api_solr modules/contrib/search_api_solr
