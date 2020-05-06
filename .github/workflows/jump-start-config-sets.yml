@@ -180,6 +180,9 @@ jobs:
           run: |
             cp search_api_solr/tests/travis.phpunit.xml drupal/core/phpunit.xml.dist
             cd drupal
+            while ! mysqladmin ping -h127.0.0.1 -P$MARIADB_PORT --silent; do
+              sleep 1
+            done
             vendor/bin/drush -v site-install minimal --db-url=mysql://root:root@localhost:$MARIADB_PORT/drupal --yes
             vendor/bin/drush en search_api_solr_admin,search_api_solr_defaults,search_api_solr_devel,search_api_solr_legacy
             vendor/bin/phpunit -c core --group search_api_solr modules/contrib/search_api_solr
