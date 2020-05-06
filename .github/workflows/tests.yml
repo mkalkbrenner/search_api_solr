@@ -1,0 +1,117 @@
+name: Jump Start Config-Sets
+
+on:
+    push:
+
+jobs:
+    php-tests:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                solr: [4, 5, 6, 7, 8]
+
+        name: Solr ${{ matrix.solr }}
+
+        steps:
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: 7.3
+                extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, bcmath, intl, gd, iconv, json, simplexml
+                coverage: none
+
+            - name: Checkout drupal
+              uses: actions/checkout@v2
+              with:
+                repository: drupal/drupal
+                ref: 8.8.x
+                path: drupal
+
+            - name: Checkout search_api_solr
+              uses: actions/checkout@v2
+              with:
+                path: search_api_solr
+                fetch-depth: 0
+
+            - name: Tag search_api_solr
+              run: |
+                cd search_api_solr
+                git tag 4.99.0
+
+            - name: Start Solr
+              run: |
+                cd search_api_solr/jump-start/solr${{ matrix.solr }}
+                docker-compose up -d
+
+            - name: Install dependencies
+              run: |
+                cd drupal
+                composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
+                composer require drupal/search_api_solr:4.99.0 drush/drush drupal/drush_language:1.x-dev --ignore-platform-reqs --no-interaction --no-suggest
+
+            - name: Install drupal
+              run: |
+                cd drupal
+                vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/.ht.sqlite --yes
+                vendor/bin/drush en drush_language --yes
+                vendor/bin/drush language-add ar
+                vendor/bin/drush language-add bg
+                vendor/bin/drush language-add ca
+                vendor/bin/drush language-add cs
+                vendor/bin/drush language-add da
+                vendor/bin/drush language-add de
+                vendor/bin/drush language-add el
+                vendor/bin/drush language-add es
+                vendor/bin/drush language-add et
+                vendor/bin/drush language-add fa
+                vendor/bin/drush language-add fi
+                vendor/bin/drush language-add fr
+                vendor/bin/drush language-add ga
+                vendor/bin/drush language-add hi
+                vendor/bin/drush language-add hr
+                vendor/bin/drush language-add id
+                vendor/bin/drush language-add it
+                vendor/bin/drush language-add ja
+                vendor/bin/drush language-add lv
+                vendor/bin/drush language-add nb
+                vendor/bin/drush language-add nl
+                vendor/bin/drush language-add nn
+                vendor/bin/drush language-add pl
+                vendor/bin/drush language-add pt-pt
+                vendor/bin/drush language-add pt-br
+                vendor/bin/drush language-add ro
+                vendor/bin/drush language-add ru
+                vendor/bin/drush language-add sk
+                vendor/bin/drush language-add sr
+                vendor/bin/drush language-add sv
+                vendor/bin/drush language-add th
+                vendor/bin/drush language-add tr
+                vendor/bin/drush language-add uk
+                vendor/bin/drush language-add zh-hans
+                vendor/bin/drush language-add zh-hant
+                vendor/bin/drush en search_api_solr_legacy,config --yes
+                vendor/bin/drush cim --partial --source=modules/contrib/search_api_solr/jump-start/drupal_configs --yes
+
+            - name: Generate and upload config-set
+              run: |
+                cd drupal
+                vendor/bin/drush -v solr-gsc solr_search_server config.zip ${{ matrix.solr }}
+                curl -v -X POST --header "Content-Type:application/octet-stream" --data-binary @config.zip "http://localhost:8983/solr/admin/configs?action=UPLOAD&name=drupal"
+                unzip -d ../search_api_solr/jump-start/solr${{ matrix.solr }}/config-set config.zip
+
+            - name: Commit config-set
+              run: |
+                cd search_api_solr/jump-start/solr${{ matrix.solr }}/config-set
+                git config --local user.email "action@github.com"
+                git config --local user.name "GitHub Action"
+                git pull
+                git add *
+                git commit -m "Solr jump-start config-set change"
+
+            - name: Push config-set
+              uses: ad-m/github-push-action@master
+              with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+                directory: search_api_solr
+                branch: ${{ github.ref }}
