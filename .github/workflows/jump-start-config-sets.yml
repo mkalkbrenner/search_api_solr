@@ -139,7 +139,7 @@ jobs:
             path: search_api_solr
             fetch-depth: 0
 
-        - name: Start Solr
+        - name: Start Solr ${{ matrix.solr }}
           run: |
             cd search_api_solr/jump-start/solr${{ matrix.solr }}
             docker-compose up -d
@@ -160,11 +160,16 @@ jobs:
           run: |
             cd drupal
             composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
-            composer require symfony/event-dispatcher:"4.3.4 as 3.4.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete drupal/facets drupal/devel drupal/geofield drupal/search_api_location monolog/monolog --ignore-platform-reqs --no-interaction --no-suggest
+            composer require symfony/event-dispatcher:"4.3.4 as 3.4.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete drupal/facets drupal/devel drupal/geofield drupal/search_api_location drush/drush monolog/monolog --ignore-platform-reqs --no-interaction --no-suggest
             composer run-script drupal-phpunit-upgrade
 
         - name: Run tests
+          env:
+            SOLR_INDEX_WAIT: 4
+            SYMFONY_DEPRECATIONS_HELPER: disabled
           run: |
             cp search_api_solr/tests/travis.phpunit.xml drupal/core/phpunit.xml.dist
             cd drupal
+            vendor/bin/drush -v site-install minimal --db-url=mysql://root:root@localhost/drupal --yes
+            vendor/bin/drush en search_api_solr_admin,search_api_solr_defaults,search_api_solr_devel,search_api_solr_legacy
             vendor/bin/phpunit -c core --group search_api_solr modules/contrib/search_api_solr
