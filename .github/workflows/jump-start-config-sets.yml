@@ -123,7 +123,7 @@ jobs:
         matrix:
           solr: [4, 5, 6, 7, 8]
 
-      name: Solr ${{ matrix.solr }}
+      name: Test with Solr ${{ matrix.solr }}
 
       steps:
         - name: Setup PHP
@@ -161,6 +161,7 @@ jobs:
             cd drupal
             composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
             composer require symfony/event-dispatcher:"4.3.4 as 3.4.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete drupal/facets drupal/devel drupal/geofield drupal/search_api_location monolog/monolog --ignore-platform-reqs --no-interaction --no-suggest
+            composer run-script drupal-phpunit-upgrade
 
         - name: Run tests
           run: |
