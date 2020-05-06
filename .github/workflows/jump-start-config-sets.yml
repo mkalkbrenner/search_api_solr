@@ -179,6 +179,7 @@ jobs:
           run: |
             cp search_api_solr/tests/travis.phpunit.xml drupal/core/phpunit.xml.dist
             cd drupal
+            php -S localhost:8888 >& /dev/null &
             vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/.ht.sqlite --yes
             vendor/bin/drush en search_api_solr_admin,search_api_solr_defaults,search_api_solr_devel,search_api_solr_legacy --yes
             vendor/bin/phpunit -c core --group search_api_solr modules/contrib/search_api_solr
