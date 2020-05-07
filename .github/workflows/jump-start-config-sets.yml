@@ -167,9 +167,16 @@ jobs:
               composer require symfony/event-dispatcher:"4.3.4 as 3.4.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete drupal/facets drupal/devel drupal/geofield drupal/search_api_location drush/drush monolog/monolog --ignore-platform-reqs --no-interaction --no-suggest
               composer run-script drupal-phpunit-upgrade
 
+          - name: Create Solr collections
+            run: |
+              docker exec -it solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bin/solr create -c techproducts -s 2 -rf 2 -d server/solr/configsets/sample_techproducts_configs/conf -n sample_techproducts_configs
+              docker exec -it solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bash -c "bin/post -c techproducts example/exampledocs/*.xml"
+              docker exec -it solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bin/solr create -c checkpoints -s 1 -rf 2
+
           - name: Run tests
             env:
               SOLR_INDEX_WAIT: 4
+              SOLR_CLOUD: true
               SYMFONY_DEPRECATIONS_HELPER: disabled
             run: |
               cp search_api_solr/tests/github.phpunit.xml drupal/core/phpunit.xml.dist
@@ -239,9 +246,16 @@ jobs:
                 composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
                 composer require drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/facets:1.x-dev drupal/devel:3.x-dev drush/drush monolog/monolog --ignore-platform-reqs --no-interaction --no-suggest
 
+            - name: Create Solr collections
+              run: |
+                docker exec -it solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bin/solr create -c techproducts -s 2 -rf 2 -d server/solr/configsets/sample_techproducts_configs/conf -n sample_techproducts_configs
+                docker exec -it solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bash -c "bin/post -c techproducts example/exampledocs/*.xml"
+                docker exec -it solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bin/solr create -c checkpoints -s 1 -rf 2
+
             - name: Run tests
               env:
                 SOLR_INDEX_WAIT: 4
+                SOLR_CLOUD: true
                 SYMFONY_DEPRECATIONS_HELPER: disabled
               run: |
                 cp search_api_solr/tests/github.phpunit.xml drupal/core/phpunit.xml.dist
