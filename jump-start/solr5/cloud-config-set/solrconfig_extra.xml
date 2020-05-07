@@ -179,3 +179,4 @@
       <bool name="onlyMorePopular">true</bool>
     </lst>
   </searchComponent>
+<statsCache class="org.apache.solr.search.stats.LRUStatsCache" />

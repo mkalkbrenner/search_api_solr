@@ -378,3 +378,4 @@
       <str name="buildOnStartup">false</str>
     </lst>
   </searchComponent>
+<statsCache class="org.apache.solr.search.stats.LRUStatsCache" />

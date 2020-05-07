@@ -1008,3 +1008,4 @@
   7.0.0
 -->
   <searchComponent name="tvComponent" class="solr.TermVectorComponent"/>
+<statsCache class="org.apache.solr.search.stats.LRUStatsCache" />

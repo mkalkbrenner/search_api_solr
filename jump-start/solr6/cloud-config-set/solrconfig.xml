@@ -963,31 +963,13 @@
        this is just a slave and remove  the <lst name="slave"> section
        if this is just a master.
   -->
-  <requestHandler name="/replication" class="solr.ReplicationHandler" >
-    <lst name="master">
-      <str name="enable">${solr.replication.master:false}</str>
-      <str name="replicateAfter">commit</str>
-      <str name="replicateAfter">startup</str>
-      <str name="confFiles">${solr.replication.confFiles:schema.xml,elevate.xml}</str>
-    </lst>
-    <lst name="slave">
-      <str name="enable">${solr.replication.slave:false}</str>
-      <str name="masterUrl">${solr.replication.masterUrl:http://localhost:8983/solr}/replication</str>
-      <str name="pollInterval">${solr.replication.pollInterval:00:00:60}</str>
-    </lst>
-  </requestHandler>
+  
 
   <!-- Realtime get handler, guaranteed to return the latest stored fields of
        any document, without the need to commit or open a new searcher.  The
        current implementation relies on the updateLog feature being enabled.
   -->
-  <requestHandler name="/get" class="solr.RealTimeGetHandler">
-    <lst name="defaults">
-      <str name="omitHeader">true</str>
-      <str name="wt">json</str>
-      <str name="indent">true</str>
-    </lst>
-  </requestHandler>
+  
 
   <!-- Search Components
 
