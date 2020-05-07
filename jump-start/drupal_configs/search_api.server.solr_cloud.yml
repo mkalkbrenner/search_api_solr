@@ -1,5 +1,5 @@
-id: solr_search_server
-name: 'Solr search server'
+id: solr_cloud
+name: 'Solr server'
 description: 'A server used jump-start configs.'
 backend: search_api_solr
 backend_config:
@@ -9,7 +9,7 @@ backend_config:
   skip_schema_check: false
   domain: generic
   server_prefix: ''
-  connector: standard
+  connector: solr_cloud
   connector_config:
     scheme: http
     host: localhost

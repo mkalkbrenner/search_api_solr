@@ -92,16 +92,26 @@ jobs:
             - name: Generate config-sets
               run: |
                 cd drupal
-                vendor/bin/drush -v solr-gsc solr_search_server config.zip 4.5
+                vendor/bin/drush -v solr-gsc solr config.zip 4.5
                 unzip -o -d ../search_api_solr/jump-start/solr4/config-set config.zip
-                vendor/bin/drush -v solr-gsc solr_search_server config.zip 5
+                vendor/bin/drush -v solr-gsc solr config.zip 5
                 unzip -o -d ../search_api_solr/jump-start/solr5/config-set config.zip
-                vendor/bin/drush -v solr-gsc solr_search_server config.zip 6
+                vendor/bin/drush -v solr-gsc solr config.zip 6
                 unzip -o -d ../search_api_solr/jump-start/solr6/config-set config.zip
-                vendor/bin/drush -v solr-gsc solr_search_server config.zip 7
+                vendor/bin/drush -v solr-gsc solr config.zip 7
                 unzip -o -d ../search_api_solr/jump-start/solr7/config-set config.zip
-                vendor/bin/drush -v solr-gsc solr_search_server config.zip 8
+                vendor/bin/drush -v solr-gsc solr config.zip 8
                 unzip -o -d ../search_api_solr/jump-start/solr8/config-set config.zip
+                vendor/bin/drush -v solr-gsc solr_cloud config.zip 4.5
+                unzip -o -d ../search_api_solr/jump-start/solr4/cloud-config-set config.zip
+                vendor/bin/drush -v solr-gsc solr_cloud config.zip 5
+                unzip -o -d ../search_api_solr/jump-start/solr5/cloud-config-set config.zip
+                vendor/bin/drush -v solr-gsc solr_cloud config.zip 6
+                unzip -o -d ../search_api_solr/jump-start/solr6/cloud-config-set config.zip
+                vendor/bin/drush -v solr-gsc solr_cloud config.zip 7
+                unzip -o -d ../search_api_solr/jump-start/solr7/cloud-config-set config.zip
+                vendor/bin/drush -v solr-gsc solr_cloud config.zip 8
+                unzip -o -d ../search_api_solr/jump-start/solr8/vconfig-set config.zip
 
             - uses: actions/upload-artifact@v2
               with:
