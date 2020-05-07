@@ -56,7 +56,7 @@ before_install:
   - wget -nc --continue -v --tries=3 --directory-prefix=solr_downloads "http://archive.apache.org/dist/lucene/solr/${SOLR}/solr-${SOLR}.tgz"
   - tar -xzf solr_downloads/solr-${SOLR}.tgz
   - mysql -e 'CREATE DATABASE drupal;'
-  - patch -p1 < tests/travis_no_deps.patch
+  - patch -p1 < tests/no_deps.patch
   - git commit -m 'no deps' search_api_solr.info.yml
   - git tag 4.99.0
 

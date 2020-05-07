@@ -250,6 +250,8 @@ jobs:
             - name: Tag search_api_solr
               run: |
                 cd search_api_solr
+                patch -p1 < tests/no_deps.patch
+                git commit -m 'no deps' search_api_solr.info.yml
                 git tag 4.99.0
 
             - name: Install dependencies
