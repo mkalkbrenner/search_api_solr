@@ -489,7 +489,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   public function getSchemaTargetedSolrBranch($reset = FALSE) {
     $parts = explode('-', $this->getSchemaVersionString($reset));
-    return $parts[2];
+    return $parts[3];
   }
 
   /**

@@ -103,23 +103,12 @@ jobs:
                 vendor/bin/drush -v solr-gsc solr_search_server config.zip 8
                 unzip -o -d ../search_api_solr/jump-start/solr8/config-set config.zip
 
-            - name: Commit config-sets
-              run: |
-                cd search_api_solr
-                git config --local user.email "action@github.com"
-                git config --local user.name "GitHub Action"
-                git pull
-                git add *
-                git commit -m "Solr jump-start config-set change" || echo "Nothing to update"
-
-            - name: Push config-sets
-              uses: ad-m/github-push-action@master
+            - uses: actions/upload-artifact@v2
               with:
-                github_token: ${{ secrets.GITHUB_TOKEN }}
-                directory: search_api_solr
-                branch: ${{ github.ref }}
+                name: jump-start-config-sets
+                path: search_api_solr/jump-start
 
-    tests:
+    run-tests:
       runs-on: ubuntu-latest
 
       needs: generate-config-sets
@@ -143,21 +132,15 @@ jobs:
               ini-values: memory_limit=256M,post_max_size=256M
               coverage: none
 
-          - name: Checkout search_api_solr
-            uses: actions/checkout@v2
+          - uses: actions/download-artifact@v2
             with:
-              path: search_api_solr
-              fetch-depth: 0
+              name: jump-start-config-sets
+              path: solr
 
           - name: Start Solr ${{ matrix.solr }}
             run: |
-              cd search_api_solr/jump-start/solr${{ matrix.solr }}
+              cd solr/jump-start/solr${{ matrix.solr }}
               docker-compose up -d
-
-          - name: Tag search_api_solr
-            run: |
-              cd search_api_solr
-              git tag 4.99.0
 
           - name: Checkout drupal
             uses: actions/checkout@v2
@@ -165,6 +148,17 @@ jobs:
               repository: drupal/drupal
               ref: 8.8.x
               path: drupal
+
+          - name: Checkout search_api_solr
+            uses: actions/checkout@v2
+            with:
+              path: search_api_solr
+              fetch-depth: 0
+
+          - name: Tag search_api_solr
+            run: |
+              cd search_api_solr
+              git tag 4.99.0
 
           - name: Install dependencies
             run: |
@@ -184,3 +178,41 @@ jobs:
               vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/db.sqlite --yes
               vendor/bin/drush en search_api_solr_admin,search_api_solr_defaults,search_api_solr_devel,search_api_solr_legacy --yes
               vendor/bin/phpunit -c core --group search_api_solr --exclude-group not_solr${{ matrix.solr }} modules/contrib/search_api_solr
+
+    push-config-sets:
+        runs-on: ubuntu-latest
+
+        name: Push updated Solr jump-start config-sets
+
+        steps:
+            - name: Checkout search_api_solr
+              uses: actions/checkout@v2
+              with:
+                path: search_api_solr
+                fetch-depth: 0
+
+            - name: Remove old config-sets
+              run: |
+                cd search_api_solr
+                rm -rf jump-start
+
+            - uses: actions/download-artifact@v2
+              with:
+                name: jump-start-config-sets
+                path: search_api_solr
+
+            - name: Commit new config-sets
+              run: |
+                cd search_api_solr
+                git config --local user.email "action@github.com"
+                git config --local user.name "GitHub Action"
+                git pull
+                git add *
+                git commit -m "Solr jump-start config-set change" || echo "Nothing to update"
+
+            - name: Push config-sets
+              uses: ad-m/github-push-action@master
+              with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+                directory: search_api_solr
+                branch: ${{ github.ref }}
