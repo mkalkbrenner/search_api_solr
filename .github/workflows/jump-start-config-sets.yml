@@ -117,7 +117,7 @@ jobs:
          matrix:
             solr: [4, 5, 6, 7, 8]
 
-      name: Test Drupal 8 with Solr ${{ matrix.solr }}
+      name: Test Drupal 8.8 with Solr ${{ matrix.solr }}
 
       steps:
           - name: Setup sqlite
@@ -188,11 +188,13 @@ jobs:
             matrix:
                 solr: [4, 5, 6, 7, 8]
 
-        name: Test Drupal 9 with Solr ${{ matrix.solr }}
+        name: Test Drupal 9.0 with Solr ${{ matrix.solr }}
 
         steps:
             - name: Setup sqlite
               run: |
+                sudo add-apt-repository ppa:sergey-dryabzhinsky/packages
+                sudo apt-get update
                 sudo apt-get install sqlite3 libsqlite3-dev
 
             - name: Setup PHP
