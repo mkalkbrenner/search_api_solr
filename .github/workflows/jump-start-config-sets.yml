@@ -184,6 +184,8 @@ jobs:
 
         name: Push updated Solr jump-start config-sets
 
+        needs: run-tests
+
         steps:
             - name: Checkout search_api_solr
               uses: actions/checkout@v2
