@@ -1381,7 +1381,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
 
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $server->getBackend();
-    if ($backend->getSolrConnector()->isCloud()) {
+    if ($backend->getSolrConnector()->isCloud() && '4.x' !== $backend->getSolrConnector()->getSchemaTargetedSolrBranch()) {
       $this->assertStringNotContainsString('solr.replication', $config_files['solrcore.properties']);
       $this->assertStringNotContainsString('"/replication"', $config_files[(version_compare($solr_major_version, '7', '>=')) ? 'solrconfig_extra.xml' : 'solrconfig.xml']);
       $this->assertStringNotContainsString('"/get"', $config_files[(version_compare($solr_major_version, '7', '>=')) ? 'solrconfig_extra.xml' : 'solrconfig.xml']);
