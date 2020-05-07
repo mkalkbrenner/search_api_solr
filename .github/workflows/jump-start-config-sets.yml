@@ -196,7 +196,7 @@ jobs:
                 php -S localhost:8888 >& /dev/null &
                 vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/db.sqlite --yes
                 vendor/bin/drush en search_api_solr_admin,search_api_solr_defaults,search_api_solr_devel,search_api_solr_legacy --yes
-                vendor/bin/phpunit -c core --group search_api_solr --exclude-group not_solr${{ matrix.solr }} modules/contrib/search_api_solr
+                vendor/bin/phpunit -v -c core --group search_api_solr --exclude-group not_solr${{ matrix.solr }} modules/contrib/search_api_solr
 
     run-tests-drupal9:
         runs-on: ubuntu-latest
@@ -281,7 +281,7 @@ jobs:
                 php -S localhost:8888 >& /dev/null &
                 vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/db.sqlite --yes
                 vendor/bin/drush en search_api_solr_admin,search_api_solr_defaults,search_api_solr_devel,search_api_solr_legacy --yes
-                vendor/bin/phpunit -c core --group search_api_solr --exclude-group not_drupal9,not_solr${{ matrix.solr }} modules/contrib/search_api_solr
+                vendor/bin/phpunit -v -c core --group search_api_solr --exclude-group not_drupal9,not_solr${{ matrix.solr }} modules/contrib/search_api_solr
 
     push-config-sets:
         runs-on: ubuntu-latest
