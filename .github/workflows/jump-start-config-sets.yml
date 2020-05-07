@@ -137,13 +137,9 @@ jobs:
               name: jump-start-config-sets
               path: solr
 
-          - name: ls
-            run: |
-              ls -lR
-
           - name: Start Solr ${{ matrix.solr }}
             run: |
-              cd solr/jump-start/solr${{ matrix.solr }}
+              cd solr/solr${{ matrix.solr }}
               docker-compose up -d
 
           - name: Checkout drupal
@@ -212,13 +208,9 @@ jobs:
                 name: jump-start-config-sets
                 path: solr
 
-            - name: ls
-              run: |
-                ls -lR
-
             - name: Start Solr ${{ matrix.solr }}
               run: |
-                cd solr/jump-start/solr${{ matrix.solr }}
+                cd solr/solr${{ matrix.solr }}
                 docker-compose up -d
 
             - name: Checkout drupal
@@ -273,14 +265,26 @@ jobs:
 
             - name: Remove old config-sets
               run: |
-                cd search_api_solr
-                rm -rf jump-start
+                cd search_api_solr/jump-start
+                rm -rf *
 
             - uses: actions/download-artifact@v2
               with:
                 name: jump-start-config-sets
-                path: search_api_solr
+                path: search_api_solr/jump-start
 
-            - name: ls
+            - name: Commit new config-sets
               run: |
-                ls -lR
+                cd search_api_solr
+                git config --local user.email "action@github.com"
+                git config --local user.name "GitHub Action"
+                git pull
+                git add *
+                git commit -m "Solr jump-start config-set change" || echo "Nothing to update"
+
+            - name: Push config-sets
+              uses: ad-m/github-push-action@master
+              with:
+                github_token: ${{ secrets.GITHUB_TOKEN }}
+                directory: search_api_solr
+                branch: ${{ github.ref }}
