@@ -251,6 +251,8 @@ jobs:
               run: |
                 cd search_api_solr
                 patch -p1 < tests/no_deps.patch
+                git config --local user.email "action@github.com"
+                git config --local user.name "GitHub Action"
                 git commit -m 'no deps' search_api_solr.info.yml
                 git tag 4.99.0
 
