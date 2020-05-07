@@ -169,6 +169,7 @@ jobs:
 
           - name: Create Solr collections
             run: |
+              docker ps
               docker exec -it solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bin/solr create -c techproducts -s 2 -rf 2 -d server/solr/configsets/sample_techproducts_configs/conf -n sample_techproducts_configs
               docker exec -it solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bash -c "bin/post -c techproducts example/exampledocs/*.xml"
               docker exec -it solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bin/solr create -c checkpoints -s 1 -rf 2
@@ -248,6 +249,7 @@ jobs:
 
             - name: Create Solr collections
               run: |
+                docker ps
                 docker exec -it solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bin/solr create -c techproducts -s 2 -rf 2 -d server/solr/configsets/sample_techproducts_configs/conf -n sample_techproducts_configs
                 docker exec -it solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bash -c "bin/post -c techproducts example/exampledocs/*.xml"
                 docker exec -it solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bin/solr create -c checkpoints -s 1 -rf 2
