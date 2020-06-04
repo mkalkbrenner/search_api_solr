@@ -3,12 +3,13 @@
 namespace Drupal\search_api_solr\Solarium\EventDispatcher;
 
 use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
  * A helper to decorate the legacy EventDispatcherInterface::dispatch().
  */
-final class Psr14Bridge extends ContainerAwareEventDispatcher {
+final class Psr14Bridge extends ContainerAwareEventDispatcher implements EventDispatcherInterface {
 
   /**
    * @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
