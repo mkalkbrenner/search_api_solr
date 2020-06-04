@@ -7,6 +7,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 /**
  * A helper to decorate the legacy EventDispatcherInterface::dispatch().
  *
+ * @method dispatch(...$args)
  * @method addListener(...$args)
  * @method addSubscriber(...$args)
  * @method removeListener(...$args)
@@ -26,16 +27,14 @@ final class DrupalPsr14Bridge implements EventDispatcherInterface {
     $this->dispatcher = \Drupal::service('event_dispatcher');
   }
 
-  public function dispatch($event) {
-    if (\is_object($event)) {
-      return $this->dispatcher->dispatch(\get_class($event), $event);
-    }
-  }
-
   /**
    * Proxies all method calls to the original event dispatcher.
    */
   public function __call($method, $args) {
+    if ('dispatch' === $method && \is_object($args[0])) {
+      return $this->dispatcher->dispatch(\get_class($args[0]), $args[0]);
+    }
+
     return $this->dispatcher->{$method}(...$args);
   }
 }
