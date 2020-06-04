@@ -875,10 +875,14 @@ class Utility {
           switch ($parse_mode_id) {
             case 'terms':
             case "sloppy_terms":
-            case 'phrase':
-            case "sloppy_phrase":
             case 'edismax':
               $k[] = $queryHelper->escapePhrase(trim($key));
+              break;
+
+            case 'phrase':
+            case "sloppy_phrase":
+              // It makes no sense to search for a phrase within the
+              // boost_terms.
               break;
 
             default:
