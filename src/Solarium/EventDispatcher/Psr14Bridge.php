@@ -8,7 +8,7 @@ use Symfony\Component\EventDispatcher\Event;
 /**
  * A helper to decorate the legacy EventDispatcherInterface::dispatch().
  */
-final class DrupalPsr14Bridge extends ContainerAwareEventDispatcher {
+final class Psr14Bridge extends ContainerAwareEventDispatcher {
 
   /**
    * @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
@@ -21,7 +21,7 @@ final class DrupalPsr14Bridge extends ContainerAwareEventDispatcher {
 
   public function dispatch($event, Event $null = NULL) {
     if (\is_object($event)) {
-      return $this->dispatcher->dispatch(\get_class($event), $event);
+      return $this->dispatcher->dispatch(\get_class($event), new EventProxy($event));
     }
     return $this->dispatcher->dispatch($event, $null);
   }
