@@ -846,10 +846,12 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       // @see http://wiki.apache.org/solr/NearRealtimeSearch
       /** @var \Solarium\Plugin\CustomizeRequest\CustomizeRequest $request */
       $request = $this->customizeRequest();
-      $request->createCustomization('id')
-        ->setType('param')
-        ->setName('commitWithin')
-        ->setValue($this->configuration['commit_within']);
+      if (!$request->getCustomization('commitWithin')) {
+        $request->createCustomization('commitWithin')
+          ->setType('param')
+          ->setName('commitWithin')
+          ->setValue($this->configuration['commit_within']);
+      }
     }
 
     return $this->execute($query, $endpoint);
