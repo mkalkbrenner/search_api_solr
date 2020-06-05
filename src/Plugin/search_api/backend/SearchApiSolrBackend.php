@@ -1542,13 +1542,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $relevance_field = reset($field_names['search_api_relevance']);
             if (isset($sorts[$relevance_field])) {
               $flatten_query[] = '{!boost b=boost_document}';
-              if (
-                'OR' === $parse_mode->getConjunction()
-                // @todo Remove condition together with search_api_solr_legacy.
-                && version_compare($connector->getSolrMajorVersion(), '6', '>=')
-              ) {
+              // @todo Remove condition together with search_api_solr_legacy.
+              if (version_compare($connector->getSolrMajorVersion(), '6', '>=')) {
                 // Since Solr 6 we could use payload_score!
-                $flatten_query[] = Utility::flattenKeysToPayloadScore($keys, $parse_mode_id);
+                $flatten_query[] = Utility::flattenKeysToPayloadScore($keys, $parse_mode);
               }
             }
           }
