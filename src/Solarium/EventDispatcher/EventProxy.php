@@ -19,6 +19,16 @@ class EventProxy extends LegacyEvent
     $this->event = $event;
   }
 
+  public function isPropagationStopped()
+  {
+    return $this->event->isPropagationStopped();
+  }
+
+  public function stopPropagation()
+  {
+    $this->event->stopPropagation();
+  }
+
   /**
    * Proxies all method calls to the original event.
    */
