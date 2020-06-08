@@ -194,7 +194,9 @@ jobs:
                 composer run-script drupal-phpunit-upgrade
 
             - if: matrix.drupal == '8.8'
-              run: composer require drupal/search_api_location
+              run: |
+                cd drupal
+                composer require drupal/search_api_location
 
             - name: Create Solr collections
               run: |
