@@ -27,6 +27,7 @@ use Solarium\QueryType\Extract\Result as ExtractResult;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 use Solarium\QueryType\Select\Query\Query;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use ZipStream\ZipStream;
 
 /**
  * Defines a base class for Solr connector plugins.
@@ -1202,4 +1203,9 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function alterConfigZip(ZipStream $zip, string $lucene_match_version, string $server_id = '') {
+  }
 }

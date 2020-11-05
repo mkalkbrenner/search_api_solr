@@ -249,5 +249,19 @@ function hook_search_api_solr_config_files_alter(array &$files, string $lucene_m
 }
 
 /**
+ * Alter the zip archive of newly assembled Solr configuration files.
+ *
+ * @param \ZipStream\ZipStream $files
+ *   Zip archive.
+ * @param string $lucene_match_version
+ *   Lucene (Solr) minor version string.
+ * @param string $server_id
+ *   Optional Search API server id. Will be set in most cases but might be
+ *   empty when the config generation is triggered via UI or drush.
+ */
+function hook_search_api_solr_config_zip_alter(\ZipStream\ZipStream $zip, string $lucene_match_version, string $server_id = '') {
+}
+
+/**
  * @} End of "addtogroup hooks".
  */

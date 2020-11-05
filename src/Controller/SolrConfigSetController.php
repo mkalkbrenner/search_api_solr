@@ -366,6 +366,7 @@ class SolrConfigSetController extends ControllerBase {
     $backend = $this->getBackend();
     $connector = $backend->getSolrConnector();
     $solr_branch = $connector->getSolrBranch($this->assumedMinimumVersion);
+    $lucene_match_version = $connector->getLuceneMatchVersion($this->assumedMinimumVersion ?: '');
 
     $zip = new ZipStream('solr_' . $solr_branch . '_config.zip', $archive_options);
 
@@ -374,6 +375,9 @@ class SolrConfigSetController extends ControllerBase {
     foreach ($files as $name => $content) {
       $zip->addFile($name, $content);
     }
+
+    $connector->alterConfigZip($zip, $lucene_match_version, $this->serverId);
+    $this->moduleHandler()->alter('search_api_solr_config_zip', $zip, $lucene_match_version, $this->serverId);
 
     return $zip;
   }

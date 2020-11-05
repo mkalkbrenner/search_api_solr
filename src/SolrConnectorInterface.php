@@ -11,6 +11,7 @@ use Solarium\Core\Query\QueryInterface;
 use Solarium\QueryType\Extract\Result as ExtractResult;
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
+use ZipStream\ZipStream;
 
 /**
  * The Solr connector interface.
@@ -630,5 +631,18 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *   empty when the config generation is triggered via UI or drush.
    */
   public function alterConfigFiles(array &$files, string $lucene_match_version, string $server_id = '');
+
+  /**
+   * Alter the zip archive of newly assembled Solr configuration files.
+   *
+   * @param ZipStream $zip
+   *   Zip archive.
+   * @param string $lucene_match_version
+   *   Lucene (Solr) minor version string.
+   * @param string $server_id
+   *   Optional Search API server id. Will be set in most cases but might be
+   *   empty when the config generation is triggered via UI or drush.
+   */
+  public function alterConfigZip(ZipStream $zip, string $lucene_match_version, string $server_id = '');
 
 }
