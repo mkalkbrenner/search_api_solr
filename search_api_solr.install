@@ -1351,7 +1351,7 @@ function search_api_solr_update_8317() {
 
   foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_name => $field_type_config) {
     if ('search_api_solr.solr_field_type.text_sv_7_0_0' === $field_type_name) {
-      search_api_solr_update_helper_save_field_type_config($field_type_name, $sv);
+      search_api_solr_update_helper_save_field_type_config($field_type_name, ['uuid' => $field_type_config['uuid']] + $sv);
       break;
     }
   }
@@ -1939,7 +1939,7 @@ function search_api_solr_update_8401() {
 
     foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_name => $field_type_config) {
       if ('search_api_solr.solr_field_type.text_pt-' . $locale . '_7_0_0' === $field_type_name) {
-        search_api_solr_update_helper_save_field_type_config($field_type_name, $pt);
+        search_api_solr_update_helper_save_field_type_config($field_type_name, ['uuid' => $field_type_config['uuid']] + $pt);
         break;
       }
     }
@@ -1954,6 +1954,23 @@ function search_api_solr_update_8402() {
     if (!isset($backend_config['index_single_documents_fallback_count'])) {
       $backend_config['index_single_documents_fallback_count'] = 10;
       search_api_solr_update_helper_save_backend_config($server_name, $backend_config);
+    }
+  }
+}
+
+/**
+ * Solve German umlaut edge cases for plural forms.
+ */
+function search_api_solr_update_8403() {
+  foreach (['6_0_0', '7_0_0', 'scientific_6_0_0', 'scientific_7_0_0'] as $version) {
+    $filename = __DIR__ . '/config/optional/search_api_solr.solr_field_type.text_de_' . $version . '.yml';
+    $config = Yaml::decode(file_get_contents($filename));
+
+    foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_name => $field_type_config) {
+      if ('search_api_solr.solr_field_type.text_de_' . $version === $field_type_name) {
+        search_api_solr_update_helper_save_field_type_config($field_type_name, ['uuid' => $field_type_config['uuid']] + $config);
+        break;
+      }
     }
   }
 }

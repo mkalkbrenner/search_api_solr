@@ -57,6 +57,11 @@ field_type:
           class: solr.StopFilterFactory
           ignoreCase: true
           words: stopwords_de.txt
+        -
+          class: solr.SynonymFilterFactory
+          synonyms: synonyms_de.txt
+          expand: true
+          ignoreCase: true
         # GermanNormalizationFilter is not needed if German2 Porter stemmer is
         # used.
         #-
@@ -92,11 +97,6 @@ field_type:
           max: 100
         -
           class: solr.LowerCaseFilterFactory
-        -
-          class: solr.SynonymFilterFactory
-          synonyms: synonyms_de.txt
-          expand: true
-          ignoreCase: true
         -
           class: solr.StopFilterFactory
           ignoreCase: true
@@ -4763,6 +4763,37 @@ text_files:
     zwölf
     zylinder
   protwords: |
+    dufte
+    glas
+    gläser
+    glaser
+    küche
+    küchen
+    kuchen
+    loch
+    löcher
+    locher
+    pläne
+    pläne
+    plane
+    planen
+    schloss
+    schlösser
+    schlosser
+    schrank
+    schränke
+    schranke
+    schranken
+    volker
+  synonyms: |
+    glas, gläser
+    küche, küchen
+    loch, löcher
+    plan, pläne
+    plane, planen
+    schloss, schlösser
+    schrank, schränke
+    schranke, schranken
   accents: |
     # À => A
     "\u00C0" => "A"
