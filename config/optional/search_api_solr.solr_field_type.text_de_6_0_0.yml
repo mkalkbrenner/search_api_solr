@@ -889,8 +889,6 @@ text_files:
     zweites
     zwischen
     zwölf
-  synonyms: |
-    drupal, durpal
   nouns: |
     ähren
     ältesten
@@ -4786,6 +4784,7 @@ text_files:
     schranken
     volker
   synonyms: |
+    drupal, durpal
     glas, gläser
     küche, küchen
     loch, löcher
