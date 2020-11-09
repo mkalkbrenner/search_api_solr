@@ -24,7 +24,7 @@ function search_api_solr_help($route_name, RouteMatchInterface $route_match) {
     foreach ($reqs as $req) {
       if (isset($req['description'])) {
         $type = $req['severity'] == REQUIREMENT_ERROR ? 'error' : ($req['severity'] == REQUIREMENT_WARNING ? 'warning' : 'status');
-        drupal_set_message($req['description'], $type);
+        \Drupal::messenger()->addMessage($req['description'], $type);
       }
     }
   }
@@ -160,7 +160,7 @@ function search_api_solr_form_search_api_index_form_validate_server(&$element, F
         else {
           // Allow editing existing multiple indexes on one server for backward
           // compatibility.
-          drupal_set_message($msg, 'error');
+          \Drupal::messenger()->addError($msg);
         }
       }
     }

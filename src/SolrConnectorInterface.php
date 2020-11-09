@@ -2,7 +2,6 @@
 
 namespace Drupal\search_api_solr;
 
-use Drupal\Component\Plugin\ConfigurablePluginInterface;
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
@@ -14,7 +13,7 @@ use Solarium\QueryType\Select\Query\Query;
 /**
  *
  */
-interface SolrConnectorInterface extends ConfigurablePluginInterface {
+interface SolrConnectorInterface {
 
   /**
    * Returns a link to the Solr server.

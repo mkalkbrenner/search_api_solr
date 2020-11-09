@@ -14,10 +14,12 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Plugin\PluginDependencyTrait;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Url;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\search_api\Item\Field;
 use Drupal\search_api\Item\FieldInterface;
 use Drupal\search_api\Item\ItemInterface;
@@ -69,6 +71,8 @@ define('SEARCH_API_ID_FIELD_NAME', 'ss_search_api_id');
  * )
  */
 class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInterface, PluginFormInterface {
+
+  use PluginDependencyTrait;
 
   use PluginFormTrait {
     submitConfigurationForm as traitSubmitConfigurationForm;
@@ -181,7 +185,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    drupal_set_message($this->t('Search API Solr 8.x-1.x support ends 2020-12-31. Ensure to upgrade to 8.x-3.x or newer.'), 'warning');
+    $this->messenger()->addWarning('Search API Solr 8.x-1.x support ends 2020-12-31. Ensure to upgrade to 8.x-3.x or newer.');
 
     if (!$this->server->isNew()) {
       // Editing this server.
@@ -321,7 +325,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       if ($connector instanceof PluginFormInterface) {
         $form_state->set('connector', $connector_id);
         if ($form_state->isRebuilding()) {
-          drupal_set_message($this->t('Please configure the selected Solr connector.'), 'warning');
+          $this->messenger()->addWarning('Please configure the selected Solr connector.');
         }
         // Attach the Solr connector plugin configuration form.
         $connector_form_state = SubformState::createForSubform($form['connector_config'], $form, $form_state);
@@ -586,14 +590,14 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $status = 'ok';
             if (empty($this->configuration['skip_schema_check'])) {
               if (substr($stats_summary['@schema_version'], 0, 10) == 'search-api') {
-                drupal_set_message($this->t('Your schema.xml version is too old. Please replace all configuration files with the ones packaged with this module and re-index you data.'), 'error');
+                $this->messenger()->addError('Your schema.xml version is too old. Please replace all configuration files with the ones packaged with this module and re-index you data.');
                 $status = 'error';
               }
               elseif (!preg_match('/drupal-[' . SEARCH_API_SOLR_MIN_SCHEMA_VERSION . '-9]\./', $stats_summary['@schema_version'])) {
                 $variables['@url'] = Url::fromUri('internal:/' . drupal_get_path('module', 'search_api_solr') . '/INSTALL.txt')
                   ->toString();
                 $message = $this->t('You are using an incompatible schema.xml configuration file. Please follow the instructions in the <a href="@url">INSTALL.txt</a> file for setting up Solr.', $variables);
-                drupal_set_message($message, 'error');
+                $this->messenger()->addError($message);
                 $status = 'error';
               }
             }
@@ -800,7 +804,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             // 32 characters should be enough for sorting and it makes no sense
             // to heavily increase the index size. The DB backend limits the
             // sort strings to 32 characters, too.
-            if ($first_value instanceof TextValue && Unicode::strlen($first_value->getText()) > 32) {
+            if ($first_value instanceof TextValue && mb_strlen($first_value->getText()) > 32) {
               $first_value = new TextValue(Unicode::truncate($first_value->getText(), 32));
             }
             if (strpos($field_names[$name], 't') === 0 || strpos($field_names[$name], 's') === 0) {
@@ -1920,7 +1924,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @return bool|string
    */
   protected function formatDate($input) {
-    $input = is_numeric($input) ? (int) $input : new \DateTime($input, timezone_open(DATETIME_STORAGE_TIMEZONE));
+    $input = is_numeric($input) ? (int) $input : new \DateTime($input, timezone_open(DateTimeItemInterface::STORAGE_TIMEZONE));
     return $this->getSolrConnector()->getQueryHelper()->formatDate($input);
   }
 
@@ -2090,8 +2094,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
         // Make the input lowercase as the indexed data is (usually) also all
         // lowercase.
-        $incomplete_key = Unicode::strtolower($incomplete_key);
-        $user_input = Unicode::strtolower($user_input);
+        $incomplete_key = mb_strtolower($incomplete_key);
+        $user_input = mb_strtolower($user_input);
 
         $solarium_query->setFields($fl);
         $solarium_query->setPrefix($incomplete_key);
