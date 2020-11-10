@@ -1703,9 +1703,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     if ($settings['multilingual']['include_language_independent']) {
       $language_ids[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
-      // 'zxx' never appears in Search API at the moment. For example we don't
-      // build dictionaries.
-      // $language_ids[] = LanguageInterface::LANGCODE_NOT_APPLICABLE;
+      // LanguageInterface::LANGCODE_NOT_APPLICABLE never appears in Search API
+      // at the moment.
     }
 
     $query->setLanguages(array_unique($language_ids));
