@@ -635,8 +635,8 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
         }
         $summary['@deletes_by_id'] = (int) $update_handler_stats['UPDATE.updateHandler.deletesById'];
         $summary['@deletes_by_query'] = (int) $update_handler_stats['UPDATE.updateHandler.deletesByQuery'];
-        $summary['@core_name'] = $stats['solr-mbeans']['CORE']['core']['stats']['CORE.coreName'];
-        $summary['@index_size'] = $stats['solr-mbeans']['CORE']['core']['stats']['INDEX.size'];
+        $summary['@core_name'] = $stats['solr-mbeans']['CORE']['core']['stats']['CORE.coreName'] ?? $this->t('No information available.');
+        $summary['@index_size'] = $stats['solr-mbeans']['CORE']['core']['stats']['INDEX.size'] ?? $this->t('No information available.');
       }
       else {
         $update_handler_stats = $stats['solr-mbeans']['UPDATEHANDLER']['updateHandler']['stats'];
@@ -644,13 +644,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
         $max_time = (int) $update_handler_stats['autocommit maxTime'];
         $summary['@deletes_by_id'] = (int) $update_handler_stats['deletesById'];
         $summary['@deletes_by_query'] = (int) $update_handler_stats['deletesByQuery'];
-        $summary['@core_name'] = $stats['solr-mbeans']['CORE']['core']['stats']['coreName'];
+        $summary['@core_name'] = $stats['solr-mbeans']['CORE']['core']['stats']['coreName'] ?? $this->t('No information available.');;
         if (version_compare($solr_version, '6.4', '>=')) {
           // @see https://issues.apache.org/jira/browse/SOLR-3990
-          $summary['@index_size'] = $stats['solr-mbeans']['CORE']['core']['stats']['size'];
+          $summary['@index_size'] = $stats['solr-mbeans']['CORE']['core']['stats']['size'] ?? $this->t('No information available.');;
         }
         else {
-          $summary['@index_size'] = $stats['solr-mbeans']['QUERYHANDLER']['/replication']['stats']['indexSize'];
+          $summary['@index_size'] = $stats['solr-mbeans']['QUERYHANDLER']['/replication']['stats']['indexSize'] ?? $this->t('No information available.');;
         }
       }
 
