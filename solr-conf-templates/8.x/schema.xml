@@ -154,6 +154,10 @@
   <field name="boost_document" type="pfloat" indexed="true" stored="false" multiValued="false" docValues="true"/>
   <field name="boost_term" type="boost_term_payload" indexed="true" stored="false" multiValued="true"/>
 
+  <!-- Currently the suggester context filter query (suggest.cfq) accesses the tags using the stored values, neither the indexed terms nor the docValues.
+       Therefore the dynamicField sm_* isn't suitable at the moment -->
+  <field name="sm_context_tags" type="string" indexed="true" stored="true" multiValued="true" docValues="false"/>
+
   <!-- Dynamic field definitions.  If a field name is not found, dynamicFields
        will be used if the name matches any of the patterns.
        RESTRICTION: the glob-like pattern in the name attribute must have

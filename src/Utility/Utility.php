@@ -448,7 +448,12 @@ class Utility {
   public static function buildSuggesterContextFilterQuery(array $tags) {
     $cfg = [];
     foreach ($tags as $tag) {
-      $cfg[] = '+' . self::encodeSolrName($tag);
+      if (self::decodeSolrName($tag) === $tag) {
+        $cfg[] = '+' . self::encodeSolrName($tag);
+      }
+      else {
+        $cfg[] = '+' . $tag;
+      }
     }
     return implode(' ', $cfg);
   }

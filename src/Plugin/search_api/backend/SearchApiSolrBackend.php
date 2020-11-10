@@ -1134,32 +1134,38 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         // Enable sorts in some special cases.
         if ($first_value && !array_key_exists($name, $special_fields)) {
           if (
-            (strpos($field_names[$name], 't') === 0 && strpos($field_names[$name], 'twm_suggest') !== 0) ||
-            (strpos($field_names[$name], 's') === 0 && strpos($field_names[$name], 'spellcheck') !== 0)
+            strpos($field_names[$name], 't') === 0 ||
+            strpos($field_names[$name], 's') === 0
           ) {
-            // Truncate the string to avoid Solr string field limitation.
-            // @see https://www.drupal.org/node/2809429
-            // @see https://www.drupal.org/node/2852606
-            // 128 characters should be enough for sorting and it makes no
-            // sense to heavily increase the index size. The DB backend limits
-            // the sort strings to 32 characters. But for example a
-            // search_api_id quickly exceeds 32 characters and the interesting
-            // ID is at the end of the string:
-            // 'entity:entity_test_mulrev_changed/2:en'.
-            if (mb_strlen($first_value) > 128) {
-              $first_value = Unicode::truncate($first_value, 128);
-            }
+            if (
+              strpos($field_names[$name], 'twm_suggest') !== 0 &&
+              strpos($field_names[$name], 'spellcheck') !== 0
+            ) {
+              // Truncate the string to avoid Solr string field limitation.
+              // @see https://www.drupal.org/node/2809429
+              // @see https://www.drupal.org/node/2852606
+              // 128 characters should be enough for sorting and it makes no
+              // sense to heavily increase the index size. The DB backend limits
+              // the sort strings to 32 characters. But for example a
+              // search_api_id quickly exceeds 32 characters and the interesting
+              // ID is at the end of the string:
+              // 'entity:entity_test_mulrev_changed/2:en'.
+              if (mb_strlen($first_value) > 128) {
+                $first_value = Unicode::truncate($first_value, 128);
+              }
 
-            // Always copy fulltext and string fields to a dedicated sort fields
-            // for faster sorts and language specific collations. To allow
-            // sorted multilingual searches we need to fill *all*
-            // language-specific sort fields!
-            $sort_languages = array_keys(\Drupal::languageManager()->getLanguages());
-            $sort_languages[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
-            foreach ($sort_languages as $sort_language_id) {
-              $key = Utility::encodeSolrName('sort' . SolrBackendInterface::SEARCH_API_SOLR_LANGUAGE_SEPARATOR . $sort_language_id . '_' . $name);
-              if (!$doc->{$key}) {
-                $doc->addField($key, $first_value);
+              // Always copy fulltext and string fields to a dedicated sort
+              // fields for faster sorts and language specific collations. To
+              // allow sorted multilingual searches we need to fill *all*
+              // language-specific sort fields!
+              $sort_languages = array_keys(\Drupal::languageManager()
+                ->getLanguages());
+              $sort_languages[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
+              foreach ($sort_languages as $sort_language_id) {
+                $key = Utility::encodeSolrName('sort' . SolrBackendInterface::SEARCH_API_SOLR_LANGUAGE_SEPARATOR . $sort_language_id . '_' . $name);
+                if (!$doc->{$key}) {
+                  $doc->addField($key, $first_value);
+                }
               }
             }
           }
@@ -1697,7 +1703,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     if ($settings['multilingual']['include_language_independent']) {
       $language_ids[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
-      $language_ids[] = LanguageInterface::LANGCODE_NOT_APPLICABLE;
+      // 'zxx' never appears in Search API at the moment. For example we don't
+      // build dictionaries.
+      // $language_ids[] = LanguageInterface::LANGCODE_NOT_APPLICABLE;
     }
 
     $query->setLanguages(array_unique($language_ids));
@@ -3599,16 +3607,37 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   e.g: 'dictionary' as string, 'context_filter_tags' as array of strings.
    */
   protected function setAutocompleteSuggesterQuery(QueryInterface $query, AutocompleteQuery $solarium_query, $user_input, array $options = []) {
-    if (isset($options['context_filter_tags']) && in_array('drupal/langcode:multilingual', $options['context_filter_tags'])) {
-      $langcodes = $this->ensureLanguageCondition($query);
-      if ($langcodes && count($langcodes) == 1) {
-        $langcode = reset($langcodes);
-        $options['context_filter_tags'] = str_replace('drupal/langcode:multilingual', 'drupal/langcode:' . $langcode, $options['context_filter_tags']);
-        $options['dictionary'] = $langcode;
+    $langcodes = $this->ensureLanguageCondition($query);
+
+    if (isset($options['context_filter_tags'])) {
+      if (in_array('drupal/langcode:multilingual', $options['context_filter_tags'])) {
+        if ($langcodes && count($langcodes) === 1) {
+          $langcode = reset($langcodes);
+          $options['context_filter_tags'] = str_replace('drupal/langcode:multilingual', 'drupal/langcode:' . $langcode, $options['context_filter_tags']);
+          $options['dictionary'] = $langcode;
+        }
+        else {
+          // Use multiple dictionaries and langcodes.
+          $tag_name = Utility::encodeSolrName('drupal/langcode:');
+          $options['context_filter_tags'] = str_replace('drupal/langcode:multilingual', '(' . $tag_name . implode(' ' . $tag_name, $langcodes) . ')', $options['context_filter_tags']);
+          $options['dictionary'] = $langcodes;
+        }
       }
       else {
         foreach ($options['context_filter_tags'] as $key => $tag) {
-          if ('drupal/langcode:multilingual' === $tag) {
+          if (strpos($tag, 'drupal/langcode:') === 0) {
+            $langcode_array = explode(':', $tag);
+            if (isset($langcode_array[1]) && 'any' !== $langcode_array[1]) {
+              $options['dictionary'] = $langcode_array[1] ?: LanguageInterface::LANGCODE_NOT_SPECIFIED;
+              break;
+            }
+          }
+        }
+      }
+
+      if (empty($options['dictionary'])) {
+        foreach ($options['context_filter_tags'] as $key => $tag) {
+          if (strpos($tag, 'drupal/langcode:') === 0) {
             unset($options['context_filter_tags'][$key]);
             break;
           }
