@@ -3721,9 +3721,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $autocomplete_terms = [];
       foreach ($terms_results as $fields) {
         foreach ($fields as $term => $count) {
-          if ($term != $incomplete_key) {
-            $autocomplete_terms[$term] = $count;
-          }
+          $autocomplete_terms[$term] = $count;
         }
       }
 
