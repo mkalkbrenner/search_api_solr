@@ -30,7 +30,7 @@ plugin.plugin_configuration.search_api_solr_connector.standard:
       type: integer
       label: 'Timeout for finalize requests'
     skip_schema_check:
-      type: integer
+      type: boolean
       label: 'Do not validate if the schema is correct'
     solr_version:
       type: string

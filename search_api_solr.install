@@ -1974,3 +1974,14 @@ function search_api_solr_update_8403() {
     }
   }
 }
+
+/**
+ * Migrate skip_schema_check configuration from server to connector plugin.
+ */
+function search_api_solr_update_8404() {
+  foreach (search_api_solr_update_helper_get_backend_configs() as $server_name => $backend_config) {
+    $backend_config['connector_config']['skip_schema_check'] = $backend_config['skip_schema_check'];
+    unset($backend_config['skip_schema_check']);
+    search_api_solr_update_helper_save_backend_config($server_name, $backend_config);
+  }
+}

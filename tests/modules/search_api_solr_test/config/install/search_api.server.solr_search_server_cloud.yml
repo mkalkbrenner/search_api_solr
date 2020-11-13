@@ -6,7 +6,6 @@ backend_config:
   site_hash: true
   retrieve_data: false
   highlight_data: false
-  skip_schema_check: false
   domain: generic
   server_prefix: 'server_prefix'
   index_single_documents_fallback_count: 0
@@ -29,6 +28,7 @@ backend_config:
     jmx: false
     solr_install_dir: ''
     checkpoints_collection: checkpoints
+    skip_schema_check: false
   optimize: false
 status: true
 langcode: en

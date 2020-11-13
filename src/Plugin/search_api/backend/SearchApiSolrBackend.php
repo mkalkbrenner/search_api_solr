@@ -200,7 +200,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     return [
       'retrieve_data' => FALSE,
       'highlight_data' => FALSE,
-      'skip_schema_check' => FALSE,
       'site_hash' => FALSE,
       'server_prefix' => '',
       'domain' => 'generic',
@@ -254,7 +253,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   public function setConfiguration(array $configuration) {
     $configuration['retrieve_data'] = (bool) $configuration['retrieve_data'];
     $configuration['highlight_data'] = (bool) $configuration['highlight_data'];
-    $configuration['skip_schema_check'] = (bool) $configuration['skip_schema_check'];
     $configuration['site_hash'] = (bool) $configuration['site_hash'];
     $configuration['optimize'] = (bool) $configuration['optimize'];
     $configuration['rows'] = (int) ($configuration['rows'] ?? 10);
@@ -330,13 +328,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#title' => $this->t('Retrieve highlighted snippets'),
       '#description' => $this->t('Return a highlighted version of the indexed fulltext fields. These will be used by the "Highlighting Processor" directly instead of applying its own PHP algorithm.'),
       '#default_value' => $this->configuration['highlight_data'],
-    ];
-
-    $form['advanced']['skip_schema_check'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Skip schema verification'),
-      '#description' => $this->t('Skip the automatic check for schema-compatibillity. Use this override if you are seeing an error-message about an incompatible schema.xml configuration file, and you are sure the configuration is compatible.'),
-      '#default_value' => $this->configuration['skip_schema_check'],
     ];
 
     $form['advanced']['server_prefix'] = [
@@ -4807,7 +4798,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * {@inheritdoc}
    */
   public function isNonDrupalOrOutdatedConfigSetAllowed(): bool {
-    return (bool) $this->configuration['skip_schema_check'];
+    $connector = $this->getSolrConnector();
+    $configuration = $connector->getConfiguration();
+    return (bool) ($configuration['skip_schema_check'] ?? FALSE);
   }
 
   /**

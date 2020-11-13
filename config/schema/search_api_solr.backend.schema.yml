@@ -8,9 +8,6 @@ plugin.plugin_configuration.search_api_backend.search_api_solr:
     highlight_data:
       type: boolean
       label: 'Highlight retrieved data'
-    skip_schema_check:
-      type: boolean
-      label: 'Skip schema verification'
     site_hash:
       type: boolean
       label: 'Restrict searches to current site'
