@@ -209,6 +209,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'connector' => NULL,
       'connector_config' => [],
       'optimize' => FALSE,
+      'fallback_multiple' => FALSE,
       // 10 is Solr's default limit if rows is not set.
       'rows' => 10,
       'index_single_documents_fallback_count' => 10,
@@ -255,6 +256,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $configuration['highlight_data'] = (bool) $configuration['highlight_data'];
     $configuration['site_hash'] = (bool) $configuration['site_hash'];
     $configuration['optimize'] = (bool) $configuration['optimize'];
+    $configuration['fallback_multiple'] = (bool) $configuration['fallback_multiple'];
     $configuration['rows'] = (int) ($configuration['rows'] ?? 10);
     $configuration['index_single_documents_fallback_count'] = (int) ($configuration['index_single_documents_fallback_count'] ?? 10);
 
@@ -328,6 +330,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#title' => $this->t('Retrieve highlighted snippets'),
       '#description' => $this->t('Return a highlighted version of the indexed fulltext fields. These will be used by the "Highlighting Processor" directly instead of applying its own PHP algorithm.'),
       '#default_value' => $this->configuration['highlight_data'],
+    ];
+
+    $form['advanced']['fallback_multiple'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Fallback to multiValued field types'),
+      '#description' => $this->t('If the cardinality of a field or a property could not be detected (due to incomplete custom module implementations), a single value field type will be used within the Solr index for better performance. If this leads to "multiple values encountered for non multiValued field" exceptions you can set this option to change the fallback to multiValued.'),
+      '#default_value' => $this->configuration['fallback_multiple'],
     ];
 
     $form['advanced']['server_prefix'] = [
@@ -2128,14 +2137,21 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                   try {
                     $datasource = $field->getDatasource();
                     if (!$datasource) {
+                      // Be paranoid: getDatasource() should have thrown the
+                      // exception already.
                       throw new SearchApiException();
                     }
                     $pref .= $this->getPropertyPathCardinality($field->getPropertyPath(), $datasource->getPropertyDefinitions()) != 1 ? 'm' : 's';
                   }
                   catch (SearchApiException $e) {
-                    // Thrown by $field->getDatasource(). Assume multi value to
-                    // be safe.
-                    $pref .= 'm';
+                    // Thrown by $field->getDatasource(). As all conditions for
+                    // multiple values are not met, it seems to be a single
+                    // value field. Note: If the assumption is wrong, Solr will
+                    // throw exceptions when indexing this field. In this case
+                    // you should add an explicit 'isList' => TRUE to your
+                    // property or data definition! Or activate
+                    // fallback_multiple in the advanced server settings.
+                    $pref .= empty($this->configuration['fallback_multiple']) ? 's' : 'm';
                   }
                 }
               }

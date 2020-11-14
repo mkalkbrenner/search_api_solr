@@ -30,6 +30,7 @@ backend_config:
     checkpoints_collection: checkpoints
     skip_schema_check: false
   optimize: false
+  fallback_multiple: true
 status: true
 langcode: en
 dependencies:

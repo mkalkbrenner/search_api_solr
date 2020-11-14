@@ -26,6 +26,7 @@ backend_config:
     solr_install_dir: ''
     skip_schema_check: false
   optimize: false
+  fallback_multiple: true
 status: true
 langcode: en
 dependencies:

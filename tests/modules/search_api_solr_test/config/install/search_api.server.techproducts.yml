@@ -25,6 +25,7 @@ backend_config:
     jmx: false
     skip_schema_check: true
   optimize: false
+  fallback_multiple: true
 status: true
 langcode: en
 dependencies:

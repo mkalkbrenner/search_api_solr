@@ -28,6 +28,9 @@ plugin.plugin_configuration.search_api_backend.search_api_solr:
     optimize:
       type: boolean
       label: 'Optimize this backend'
+    fallback_multiple:
+      type: boolean
+      label: 'Fallback to mulltiple field type if cardinality could not be detected'
     disabled_field_types:
       type: sequence
       label: 'Disabled Solr Field Types'

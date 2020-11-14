@@ -1985,3 +1985,14 @@ function search_api_solr_update_8404() {
     search_api_solr_update_helper_save_backend_config($server_name, $backend_config);
   }
 }
+
+/**
+ * Make fallback field type cardinality configurable.
+ */
+function search_api_solr_update_8405() {
+  foreach (search_api_solr_update_helper_get_backend_configs() as $server_name => $backend_config) {
+    // BC: the hardcoded fallback was 'multiple'.
+    $backend_config['fallback_multiple'] = TRUE;
+    search_api_solr_update_helper_save_backend_config($server_name, $backend_config);
+  }
+}
