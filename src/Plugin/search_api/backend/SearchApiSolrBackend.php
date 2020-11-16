@@ -2135,13 +2135,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                 }
                 else {
                   try {
-                    $datasource = $field->getDatasource();
-                    if (!$datasource) {
-                      // Be paranoid: getDatasource() should have thrown the
-                      // exception already.
-                      throw new SearchApiException();
-                    }
-                    $pref .= $this->getPropertyPathCardinality($field->getPropertyPath(), $datasource->getPropertyDefinitions()) != 1 ? 'm' : 's';
+                    // Returns the correct list of field definitions including
+                    // processor-added properties.
+                    $index_properties = $index->getPropertyDefinitions($field->getDatasourceId());
+                    $pref .= $this->getPropertyPathCardinality($field->getPropertyPath(), $index_properties) != 1 ? 'm' : 's';
                   }
                   catch (SearchApiException $e) {
                     // Thrown by $field->getDatasource(). As all conditions for
@@ -2251,6 +2248,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     [$key, $nested_path] = SearchApiUtility::splitPropertyPath($property_path, FALSE);
     if (isset($properties[$key])) {
       $property = $properties[$key];
+      if ($property instanceof ListDataDefinitionInterface || $property->isList()) {
+        // Lists have unspecified cardinality.
+        return FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED;
+      }
+
       if ($property instanceof FieldDefinitionInterface) {
         $storage = $property->getFieldStorageDefinition();
         if ($storage instanceof FieldStorageDefinitionInterface) {
@@ -2261,13 +2263,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           $cardinality *= $storage->getCardinality();
         }
       }
-      elseif ($property instanceof ListDataDefinitionInterface) {
-        // Lists have unpecified cardinality.
-        return FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED;
-      }
-      elseif ($property->isList()) {
-        return FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED;
-      }
 
       if (isset($nested_path)) {
         $property = $this->fieldsHelper->getInnerProperty($property);
@@ -2276,6 +2271,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         }
       }
     }
+
     return $cardinality;
   }
 
