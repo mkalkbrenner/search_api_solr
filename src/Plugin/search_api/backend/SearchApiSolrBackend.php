@@ -2248,11 +2248,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     [$key, $nested_path] = SearchApiUtility::splitPropertyPath($property_path, FALSE);
     if (isset($properties[$key])) {
       $property = $properties[$key];
-      if ($property instanceof ListDataDefinitionInterface || $property->isList()) {
-        // Lists have unspecified cardinality.
-        return FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED;
-      }
-
       if ($property instanceof FieldDefinitionInterface) {
         $storage = $property->getFieldStorageDefinition();
         if ($storage instanceof FieldStorageDefinitionInterface) {
@@ -2262,6 +2257,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           }
           $cardinality *= $storage->getCardinality();
         }
+      }
+      elseif ($property->isList() || $property instanceof ListDataDefinitionInterface) {
+        // Lists have unspecified cardinality. Unfortunately BaseFieldDefinition
+        // implements ListDataDefinitionInterface. So the safety net check for
+        // this interface needs to be the last one!
+        return FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED;
       }
 
       if (isset($nested_path)) {
