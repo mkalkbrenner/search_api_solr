@@ -3751,10 +3751,16 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   protected function getAutocompleteSuggesterSuggestions(ResultInterface $result, SuggestionFactory $suggestion_factory) {
     $suggestions = [];
     if ($phrases_result = $result->getComponent(ComponentAwareQueryInterface::COMPONENT_SUGGESTER)) {
-      foreach ($phrases_result->getAll() as $phrases) {
+      /** @var \Solarium\Component\Result\Suggester\Result $phrases_result */
+      $dictionaries = array_keys($phrases_result->getResults());
+      foreach ($phrases_result->getAll() as $dictionary_index => $phrases) {
         /** @var \Solarium\QueryType\Suggester\Result\Term $phrases */
         foreach ($phrases->getSuggestions() as $phrase) {
-          $suggestions[] = $suggestion_factory->createFromSuggestedKeys($phrase['term']);
+          $suggestion = $suggestion_factory->createFromSuggestedKeys($phrase['term']);
+          if (method_exists($suggestion, 'setDictionary')) {
+            $suggestion->setDictionary($dictionaries[$dictionary_index]);
+          }
+          $suggestions[] = $suggestion;
         }
       }
     }
