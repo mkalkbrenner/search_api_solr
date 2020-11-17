@@ -524,15 +524,16 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   protected function getCollatedField(?int $solr_major_version = NULL) {
     $collated_field = NULL;
 
+    // Solr 3 and 4 need the sort field to be indexed and no docValues.
     if ($this->collated_field_type) {
       $collated_field = [
         'name' => SearchApiSolrUtility::encodeSolrName('sort' . SolrBackendInterface::SEARCH_API_SOLR_LANGUAGE_SEPARATOR . $this->field_type_language_code) . '_*',
         'type' => $this->collated_field_type['name'],
         'stored' => FALSE,
-        'indexed' => $solr_major_version === 4,
+        'indexed' => version_compare($solr_major_version, '5', '<'),
       ];
 
-      if ($solr_major_version !== 4) {
+      if (version_compare($solr_major_version, '5', '>=')) {
         $collated_field['docValues'] = TRUE;
       }
     }

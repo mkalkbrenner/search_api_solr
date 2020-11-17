@@ -4,6 +4,7 @@ namespace Drupal\Tests\search_api_solr\Functional;
 
 use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\search_api\Entity\Index;
+use Drupal\search_api\Utility\Utility;
 use Drupal\Tests\search_api\Functional\SearchApiBrowserTestBase;
 use Drupal\Tests\search_api\Functional\ViewsTest as SearchApiViewsTest;
 use Drupal\search_api_solr\Utility\SolrCommitTrait;
@@ -51,10 +52,17 @@ class ViewsTest extends SearchApiViewsTest {
       ->addItemsAll(Index::load($this->indexId));
     $this->insertExampleContent();
     $this->indexItems($this->indexId);
+
+    // Do not use a batch for tracking the initial items after creating an
+    // index when running the tests via the GUI. Otherwise, it seems Drupal's
+    // Batch API gets confused and the test fails.
+    if (!Utility::isRunningInCli()) {
+      \Drupal::state()->set('search_api_use_tracking_batch', FALSE);
+    }
   }
 
   /**
-   * Allow 3rd party SOlr connectors to manipulate the config.
+   * Allow 3rd party Solr connectors to manipulate the config.
    */
   protected function adjustBackendConfig() {}
 

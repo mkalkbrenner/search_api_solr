@@ -271,7 +271,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
   }
 
   /**
-   * Tests the conversion of Search API queries into Solr queries.
+   * Tests if all supported languages are deployed correctly.
    */
   protected function checkSchemaLanguages() {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
@@ -1018,35 +1018,43 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       ->execute();
     $this->assertResults([1, 2, 3, 4, 5, 6, 7], $results, 'Sort by type descending.');
 
-    // Type multi-value string. Uses first value.
-    $results = $this->buildSearch(NULL, [], [], FALSE)
-      ->sort('keywords')
-      // Force an expected order for identical keywords.
-      ->sort('search_api_id')
-      ->execute();
-    $this->assertResults([3, 6, 7, 4, 1, 2, 5], $results, 'Sort by keywords.');
+    /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend $backend */
+    $backend = Server::load($this->serverId)->getBackend();
+    $targeted_branch = $backend->getSolrConnector()->getSchemaTargetedSolrBranch();
+    if ('3.x' !== $targeted_branch) {
+      // There's no real collated field for Solr 3.x. Therefore the sorting of
+      // of "non existing" values differ.
 
-    $results = $this->buildSearch(NULL, [], [], FALSE)
-      ->sort('keywords', QueryInterface::SORT_DESC)
-      // Force an expected order for identical keywords.
-      ->sort('search_api_id')
-      ->execute();
-    $this->assertResults([1, 2, 5, 4, 3, 6, 7], $results, 'Sort by keywords descending.');
+      // Type multi-value string. Uses first value.
+      $results = $this->buildSearch(NULL, [], [], FALSE)
+        ->sort('keywords')
+        // Force an expected order for identical keywords.
+        ->sort('search_api_id')
+        ->execute();
+      $this->assertResults([3, 6, 7, 4, 1, 2, 5], $results, 'Sort by keywords.');
 
-    // Type decimal.
-    $results = $this->buildSearch(NULL, [], [], FALSE)
-      ->sort('width')
-      // Force an expected order for identical width.
-      ->sort('search_api_id')
-      ->execute();
-    $this->assertResults([1, 2, 3, 6, 7, 4, 5], $results, 'Sort by width.');
+      $results = $this->buildSearch(NULL, [], [], FALSE)
+        ->sort('keywords', QueryInterface::SORT_DESC)
+        // Force an expected order for identical keywords.
+        ->sort('search_api_id')
+        ->execute();
+      $this->assertResults([1, 2, 5, 4, 3, 6, 7], $results, 'Sort by keywords descending.');
 
-    $results = $this->buildSearch(NULL, [], [], FALSE)
-      ->sort('width', QueryInterface::SORT_DESC)
-      // Force an expected order for identical width.
-      ->sort('search_api_id')
-      ->execute();
-    $this->assertResults([5, 4, 1, 2, 3, 6, 7], $results, 'Sort by width descending.');
+      // Type decimal.
+      $results = $this->buildSearch(NULL, [], [], FALSE)
+        ->sort('width')
+        // Force an expected order for identical width.
+        ->sort('search_api_id')
+        ->execute();
+      $this->assertResults([1, 2, 3, 6, 7, 4, 5], $results, 'Sort by width.');
+
+      $results = $this->buildSearch(NULL, [], [], FALSE)
+        ->sort('width', QueryInterface::SORT_DESC)
+        // Force an expected order for identical width.
+        ->sort('search_api_id')
+        ->execute();
+      $this->assertResults([5, 4, 1, 2, 3, 6, 7], $results, 'Sort by width descending.');
+    }
 
     $results = $this->buildSearch(NULL, [], [], FALSE)
       ->sort('changed')
@@ -1103,7 +1111,8 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $this->assertEquals('l', $suggestions[0]->getSuggestionSuffix());
     $this->assertEquals(2, $suggestions[0]->getResultsCount());
 
-    if ('4.x' !== $backend->getSolrConnector()->getSchemaTargetedSolrBranch()) {
+    $targeted_branch = $backend->getSolrConnector()->getSchemaTargetedSolrBranch();
+    if ('4.x' !== $targeted_branch && '3.x' !== $targeted_branch) {
       $query = $this->buildSearch(['articel'], [], ['body'], FALSE);
       $query->setLanguages(['en']);
       $suggestions = $backend->getSpellcheckSuggestions($query, $autocompleteSearch, 'articel', 'articel');

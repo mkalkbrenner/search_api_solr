@@ -416,8 +416,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       $min_version = ['0', '0', '0'];
       $version = implode('.', explode('.', $this->configuration['solr_version']) + $min_version);
       switch ($version) {
+        case '3.0.0':
+          // 3.6.0 is the minimum supported Solr 3 version by the
+          // search_api_solr_legacy module.
+          $version = '3.6.0';
+          break;
         case '4.0.0':
-          // 4.5.0 is the minimum supported Solr version by the
+          // 4.5.0 is the minimum supported Solr 4 version by the
           // search_api_solr_legacy module.
           $version = '4.5.0';
           break;
@@ -445,7 +450,11 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
 
     // Get our solr version number.
     if (isset($info['lucene']['solr-spec-version'])) {
-      return $info['lucene']['solr-spec-version'];
+      // Some Solr distributions or docker images append additional info to the
+      // version number, for example the build date: 3.6.2.2012.12.18.19.52.27.
+      if (preg_match('/^(\d+\.\d+\.\d+)/', $info['lucene']['solr-spec-version'], $matches)) {
+        return $matches[1];
+      }
     }
 
     return '0.0.0';
