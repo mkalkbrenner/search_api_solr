@@ -824,17 +824,15 @@ class Utility {
           }
           // No break! Execute 'default', too.
         default:
-          if ($sloppiness || $fuzziness) {
-            foreach ($k as &$term_or_phrase) {
-              // Just add sloppiness when if we really have a phrase, indicated
-              // by double quotes and terms separated by blanks.
-              if (strpos($term_or_phrase, ' ') && strpos($term_or_phrase, '"') === 0) {
-                $term_or_phrase .= $sloppiness;
-              }
-              // Otherwise just add fuzziness when if we really have a term.
-              elseif (!strpos($term_or_phrase, ' ') && !strpos($term_or_phrase, '"') === 0) {
-                $term_or_phrase .= $fuzziness;
-              }
+          foreach ($k as &$term_or_phrase) {
+            // Just add sloppiness when if we really have a phrase, indicated
+            // by double quotes and terms separated by blanks.
+            if (isset($sloppiness) && strpos($term_or_phrase, ' ') && strpos($term_or_phrase, '"') === 0) {
+              $term_or_phrase .= $sloppiness;
+            }
+            // Otherwise just add fuzziness when if we really have a term.
+            elseif (isset($fuzziness) && !strpos($term_or_phrase, ' ') && !strpos($term_or_phrase, '"') === 0) {
+              $term_or_phrase .= $fuzziness;
             }
             unset($term_or_phrase);
           }

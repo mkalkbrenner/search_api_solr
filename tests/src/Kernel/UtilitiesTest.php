@@ -136,6 +136,10 @@ class UtilitiesTest extends KernelTestBase {
           'limit_to_content_language' => TRUE,
           'include_language_independent' => TRUE,
         ],
+        'term_modifiers' => [
+          'slop' => 3,
+          'fuzzy' => 1,
+        ],
       ],
       search_api_solr_merge_default_index_third_party_settings($third_party_settings)
     );

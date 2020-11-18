@@ -1996,3 +1996,19 @@ function search_api_solr_update_8405() {
     search_api_solr_update_helper_save_backend_config($server_name, $backend_config);
   }
 }
+
+/**
+ * Make term modifiers configurable.
+ */
+function search_api_solr_update_8406() {
+  foreach (search_api_solr_update_helper_get_index_third_party_settings() as $index_id => $third_party_settings) {
+    if (!isset($third_party_settings['term_modifiers'])) {
+      $third_party_settings['term_modifiers'] = [
+        // BC.
+        'slop' => 10000000,
+        'fuzzy' => 2,
+      ];
+      search_api_solr_update_helper_save_index_third_party_settings($index_id, $third_party_settings);
+    }
+  }
+}
