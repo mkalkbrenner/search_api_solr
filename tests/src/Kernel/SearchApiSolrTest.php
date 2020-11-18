@@ -364,7 +364,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       [],
-      'sloppy_terms',
+      'fuzzy_terms',
       ['fuzzy' => 1]
     );
     $this->assertEquals('(+foo~1 +"apple pie" +bar~1)', $flat);
