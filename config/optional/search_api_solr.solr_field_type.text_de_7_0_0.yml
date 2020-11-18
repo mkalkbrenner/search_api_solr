@@ -57,11 +57,6 @@ field_type:
           class: solr.StopFilterFactory
           ignoreCase: true
           words: stopwords_de.txt
-        -
-          class: solr.SynonymGraphFilterFactory
-          synonyms: synonyms_de.txt
-          expand: true
-          ignoreCase: true
         # GermanNormalizationFilter is not needed if German2 Porter stemmer is
         # used.
         #-
@@ -97,6 +92,11 @@ field_type:
           max: 100
         -
           class: solr.LowerCaseFilterFactory
+        -
+          class: solr.SynonymGraphFilterFactory
+          synonyms: synonyms_de.txt
+          expand: true
+          ignoreCase: true
         -
           class: solr.StopFilterFactory
           ignoreCase: true
