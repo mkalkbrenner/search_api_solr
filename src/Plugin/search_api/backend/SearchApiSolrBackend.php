@@ -1578,7 +1578,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $flatten_keys = 'direct' === $parse_mode_id ? $keys : Utility::flattenKeys($keys, [], 'keys');
           }
           else {
-            $flatten_keys = Utility::flattenKeys($keys, ($query_fields_boosted ? explode(' ', $query_fields_boosted) : []), $parse_mode_id);
+            $settings = Utility::getIndexSolrSettings($index);
+            $flatten_keys = Utility::flattenKeys(
+              $keys,
+              ($query_fields_boosted ? explode(' ', $query_fields_boosted) : []),
+              $parse_mode_id,
+              $settings['term_modifiers']
+            );
           }
 
           if ('direct' !== $parse_mode_id && strpos($flatten_keys, '-(') === 0) {
@@ -2928,6 +2934,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               case 'terms':
               case 'phrase':
               case 'sloppy_phrase':
+              case 'sloppy_terms':
+              case 'fuzzy_terms':
               case 'edismax':
                 if (is_array($value)) {
                   $keys += $value;
@@ -2944,7 +2952,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               default:
                 throw new SearchApiSolrException('Incompatible parse mode.');
             }
-            $filter_query = Utility::flattenKeys($keys, $solr_fields[$field], $parse_mode_id);
+            $settings = Utility::getIndexSolrSettings($index);
+            $filter_query = Utility::flattenKeys(
+              $keys,
+              $solr_fields[$field],
+              $parse_mode_id,
+              $settings['term_modifiers']
+            );
           }
           else {
             // Fulltext fields checked against NULL.

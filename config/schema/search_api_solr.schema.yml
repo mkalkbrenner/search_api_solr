@@ -93,6 +93,16 @@ search_api.index.*.third_party.search_api_solr:
         interestingTerms:
           type: string
           label: 'Controls how the MoreLikeThis component presents the "interesting" terms (the top TF/IDF terms) for the query. Supports three settings. The setting "list" lists the terms. The setting "none" lists no terms. The setting "details" lists the terms along with the boost value used for each term. Unless mlt.boost=true, all terms will have boost=1.0.'
+    term_modifiers:
+      type: mapping
+      label: 'term modifiers'
+      mapping:
+        slop:
+          type: integer
+          label: 'The distance referred to here is the number of term movements needed to match the specified phrase.'
+        fuzzy:
+          type: integer
+          label: 'Damerau-Levenshtein Distance or Edit Distance for fuzzy searches.'
     advanced:
       type: mapping
       label: 'advanced settings'

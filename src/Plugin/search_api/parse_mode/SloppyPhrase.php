@@ -11,7 +11,7 @@ use Drupal\search_api\Plugin\search_api\parse_mode\Phrase;
  *
  * @SearchApiParseMode(
  *   id = "sloppy_phrase",
- *   label = @Translation("Phrase search with sloppiness."),
+ *   label = @Translation("Phrase search with sloppiness"),
  *   description = @Translation("The query is interpreted as a single phrase. Solr will also show results where the words are not directly positioned next to each other. The scoring will be lower the further away the words are from eachother"),
  * )
  */

@@ -152,6 +152,10 @@ function search_api_solr_default_index_third_party_settings() {
       'boost' => FALSE,
       'interestingTerms' => 'none',
     ],
+    'term_modifiers' => [
+      'slop' => 3,
+      'fuzzy' => 1,
+    ],
     'advanced' => [
       'index_prefix' => '',
       'collection' => '',
@@ -461,6 +465,31 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#title' => t('interestingTerms'),
       '#description' => t('Controls how the MoreLikeThis component presents the "interesting" terms (the top TF/IDF terms) for the query. Supports three settings. The setting "list" lists the terms. The setting "none" lists no terms. The setting "details" lists the terms along with the boost value used for each term. Unless mlt.boost=true, all terms will have boost=1.0.'),
       '#default_value' => $settings['mlt']['interestingTerms'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['term_modifiers'] = [
+      '#tree' => TRUE,
+      '#type' => 'details',
+      '#title' => t('Term modifiers'),
+      '#collapsed' => TRUE,
+      '#description' => t('Solr supports a variety of term modifiers that add flexibility or precision, as needed, to searches. The Search API Solr provides additional Search API Parse Mode Plugins that make use of these modifiers.'),
+    ];
+
+    $form['third_party_settings']['search_api_solr']['term_modifiers']['slop'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#title' => t('Proximity search distance (aka "slop")'),
+      '#description' => t('A proximity search looks for terms that are within a specific distance from one another. The distance referred to here is the number of term movements needed to match the specified phrase. Used by the "Phrase search with sloppiness" and "Multiple words with sloppiness" query parsers.'),
+      '#default_value' => $settings['mlt']['slop'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['term_modifiers']['fuzzy'] = [
+      '#type' => 'number',
+      '#min' => 0,
+      '#max' => 2,
+      '#title' => t('Fuzzy search distance'),
+      '#description' => t('Fuzzy searches discover terms that are similar to a specified term without necessarily being an exact match. The distance parameter specifies the maximum number of edits allowed, between 0 and 2. Used by the "Multiple words with fuzziness" query parser.'),
+      '#default_value' => $settings['mlt']['fuzzy'],
     ];
 
     $form['third_party_settings']['search_api_solr']['advanced'] = [

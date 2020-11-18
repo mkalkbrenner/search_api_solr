@@ -329,6 +329,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $parse_mode_phrase = $parse_mode_manager->createInstance('phrase');
     $parse_mode_sloppy_terms = $parse_mode_manager->createInstance('sloppy_terms');
     $parse_mode_sloppy_phrase = $parse_mode_manager->createInstance('sloppy_phrase');
+    $parse_mode_fuzzy_terms = $parse_mode_manager->createInstance('fuzzy_terms');
     $parse_mode_direct = $parse_mode_manager->createInstance('direct');
     $parse_mode_edismax = $parse_mode_manager->createInstance('edismax');
 
@@ -345,17 +346,28 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       [],
-      'sloppy_terms'
+      'sloppy_terms',
+      ['slop' => 1234]
     );
-    $this->assertEquals('(+"foo" +"apple pie"~10000000 +"bar")', $flat);
+    $this->assertEquals('(+"foo" +"apple pie"~1234 +"bar")', $flat);
 
     $query->setParseMode($parse_mode_sloppy_phrase);
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       [],
-      'sloppy_phrase'
+      'sloppy_phrase',
+      ['slop' => 5678]
     );
-    $this->assertEquals('(+"foo \"apple pie\" bar"~10000000)', $flat);
+    $this->assertEquals('(+"foo \"apple pie\" bar"~5678)', $flat);
+
+    $query->setParseMode($parse_mode_fuzzy_terms);
+    $flat = SolrUtility::flattenKeys(
+      $query->getKeys(),
+      [],
+      'sloppy_terms',
+      ['fuzzy' => 1]
+    );
+    $this->assertEquals('(+foo~1 +"apple pie" +bar~1)', $flat);
 
     $query->setParseMode($parse_mode_terms);
     $flat = SolrUtility::flattenKeys(
@@ -454,9 +466,10 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $flat = SolrUtility::flattenKeys(
       $query->getKeys(),
       [],
-      'sloppy_phrase'
+      'sloppy_phrase',
+      ['slop' => 5]
     );
-    $this->assertEquals('(+"foo apple pie bar"~10000000)', $flat);
+    $this->assertEquals('(+"foo apple pie bar"~5)', $flat);
 
   }
 
