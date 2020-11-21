@@ -75,7 +75,7 @@ jobs:
               run: |
                 docker ps
                 docker exec solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 wait-for-solr.sh
-                docker exec solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bin/solr create techproducts -d server/solr/configsets/sample_techproducts_configs/conf
+                docker exec solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bin/solr create -c techproducts -d server/solr/configsets/sample_techproducts_configs/conf
                 docker exec solr${{ matrix.solr }}_solr${{ matrix.solr }}_1 bash -c "bin/post -c techproducts example/exampledocs/*.xml"
 
             - name: Run tests
