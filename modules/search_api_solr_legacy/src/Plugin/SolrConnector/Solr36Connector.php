@@ -34,7 +34,7 @@ class Solr36Connector extends SolrConnectorPluginBase {
       // it. The period is a workaround that gives us URLs like "solr/./select".
       'core' => '.',
       'skip_schema_check' => TRUE,
-    ];
+    ] + parent::defaultConfiguration();
   }
 
   /**
