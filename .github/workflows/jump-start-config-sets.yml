@@ -146,6 +146,8 @@ jobs:
 
         needs: generate-config-sets
 
+        continue-on-error: ${{ matrix.experimental }}
+
         strategy:
             matrix:
                 drupal: ['8.9', '9.0', '9.1']
