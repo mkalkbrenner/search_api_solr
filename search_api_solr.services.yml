@@ -8,3 +8,6 @@ services:
   plugin.manager.search_api_solr.connector:
     class: Drupal\search_api_solr\SolrConnector\SolrConnectorPluginManager
     parent: default_plugin_manager
+
+  solarium.query_helper:
+    class: Solarium\Core\Query\Helper

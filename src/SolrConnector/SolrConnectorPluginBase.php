@@ -353,13 +353,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   protected function createClient(array &$configuration) {
     $configuration[self::QUERY_TIMEOUT] = $configuration['timeout'] ?? 5;
     $adapter = NULL;
-    if (extension_loaded('curl')) {
-      $adapter = new Curl($configuration);
-    }
-    else {
+//    if (extension_loaded('curl')) {
+//      $adapter = new Curl($configuration);
+//    }
+//    else {
       $adapter = new Http();
       $adapter->setTimeout($configuration[self::QUERY_TIMEOUT]);
-    }
+//    }
     unset($configuration['timeout']);
     return new Client($adapter, $this->eventDispatcher);
   }
@@ -972,11 +972,6 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * Converts a HttpException in an easier to read SearchApiSolrException.
    *
-   * Connectors must not overwrite this function. Otherwise support requests are
-   * hard to handle in the issue queue. If you want to extend this function and
-   * add more sophisticated error handling, please contribute a patch to
-   * the search_api_solr project on drupal.org.
-   *
    * @param \Solarium\Exception\HttpException $e
    *   The HttpException object.
    * @param \Solarium\Core\Client\Endpoint $endpoint
@@ -984,7 +979,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    *
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  final protected function handleHttpException(HttpException $e, Endpoint $endpoint) {
+  protected function handleHttpException(HttpException $e, Endpoint $endpoint) {
     $body = $e->getBody();
     $response_code = (int) $e->getCode();
     switch ((string) $response_code) {
