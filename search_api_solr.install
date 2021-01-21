@@ -157,7 +157,7 @@ function search_api_solr_requirements($phase) {
                       'title' => t('Solr Server %server', ['%server' => $server->label()]),
                       'value' => t('Schema incomplete'),
                       'severity' => REQUIREMENT_WARNING,
-                      'description' => t('There are some language-specific field types missing in schema of index <a href=":index_url">@index</a> on server <a href=":url">@server</a>.', [
+                      'description' => t('There are some language-specific field types missing in schema of index <a href=":index_url">@index</a> on server <a href=":server_url">@server</a>.', [
                         ':index_url' => $index->toUrl('canonical')->toString(),
                         '@index' => $index->label(),
                         ':server_url' => $server->toUrl('canonical')
