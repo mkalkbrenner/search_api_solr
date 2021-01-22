@@ -3,7 +3,6 @@
 namespace Drupal\search_api_solr;
 
 use Drupal\Component\Plugin\ConfigurableInterface;
-use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
@@ -332,14 +331,6 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   public function getSuggesterQuery();
 
   /**
-   * Creates a new Solarium autocomplete query.
-   *
-   * @return \Drupal\search_api_solr\Solarium\Autocomplete\Query
-   *   The Autocomplete query.
-   */
-  public function getAutocompleteQuery();
-
-  /**
    * Creates a new Solarium extract query.
    *
    * @return \Solarium\QueryType\Extract\Query
@@ -400,21 +391,6 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   public function update(UpdateQuery $query, ?Endpoint $endpoint = NULL);
-
-  /**
-   * Executes a search query and returns the raw response.
-   *
-   * @param \Drupal\search_api_solr\Solarium\Autocomplete\Query $query
-   *   The Solarium select query object.
-   * @param \Solarium\Core\Client\Endpoint|null $endpoint
-   *   (optional) The Solarium endpoint object.
-   *
-   * @return \Solarium\Core\Client\Response
-   *   The Solarium response object.
-   *
-   * @throws \Drupal\search_api_solr\SearchApiSolrException
-   */
-  public function autocomplete(AutocompleteQuery $query, ?Endpoint $endpoint = NULL);
 
   /**
    * Executes any query.

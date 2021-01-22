@@ -11,7 +11,6 @@ use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\Plugin\ConfigurablePluginBase;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api_solr\SearchApiSolrException;
-use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Drupal\search_api_solr\Solarium\EventDispatcher\Psr14Bridge;
 use Drupal\search_api_solr\SolrConnectorInterface;
 use Solarium\Client;
@@ -564,6 +563,36 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     $endpoint_data = $state->get($state_key);
     $server_uri = $this->getServerUri();
 
+
+
+
+
+
+
+//    static $previous_calls = [];
+//
+//    $this->connect();
+//
+//    $endpoint = $this->solr->getEndpoint($endpoint_name);
+//    $endpoint_uri = $endpoint->getBaseUri();
+//    $state_key = 'search_api_solr.endpoint.data';
+//    $state = \Drupal::state();
+//    $endpoint_data = $state->get($state_key);
+//    if (!isset($previous_calls[$endpoint_uri][$handler]) || $reset) {
+//      // Don't retry multiple times in case of an exception.
+//      $previous_calls[$endpoint_name] = TRUE;
+//
+//      if (!is_array($endpoint_data) || !isset($endpoint_data[$endpoint_uri][$handler]) || $reset) {
+//        // @todo Finish https://github.com/solariumphp/solarium/pull/155 and stop
+//        // abusing the ping query for this.
+//        $query = $this->solr->createPing(array('handler' => $handler));
+//        $endpoint_data[$endpoint_uri][$handler] = $this->execute($query, $endpoint)->getData();
+//        $state->set($state_key, $endpoint_data);
+//      }
+//    }
+
+
+
     if (!isset($previous_calls[$server_uri][$handler]) || !isset($endpoint_data[$server_uri][$handler]) || $reset) {
       // Don't retry multiple times in case of an exception.
       $previous_calls[$server_uri][$handler] = TRUE;
@@ -799,15 +828,6 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
-  public function getAutocompleteQuery() {
-    $this->connect();
-    $this->solr->registerQueryType('autocomplete', AutocompleteQuery::class);
-    return $this->solr->createQuery('autocomplete');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function getQueryHelper(QueryInterface $query = NULL) {
     if ($query) {
       return $query->getHelper();
@@ -910,29 +930,6 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     return $this->execute($query, $endpoint);
   }
 
-
-  /**
-   * {@inheritdoc}
-   */
-  public function autocomplete(AutocompleteQuery $query, ?Endpoint $endpoint = NULL) {
-    $this->connect();
-
-    if (!$endpoint) {
-      $endpoint = $this->solr->getEndpoint();
-    }
-
-    $this->useTimeout(self::QUERY_TIMEOUT, $endpoint);
-
-    // Use the 'postbigrequest' plugin if no specific http method is
-    // configured. The plugin needs to be loaded before the request is
-    // created.
-    if ($this->configuration['http_method'] === 'AUTO') {
-      $this->solr->getPlugin('postbigrequest');
-    }
-
-    return $this->execute($query, $endpoint);
-  }
-
   /**
    * {@inheritdoc}
    */
@@ -947,7 +944,8 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       return $this->solr->execute($query, $endpoint);
     }
     catch (HttpException $e) {
-      $this->handleHttpException($e, $endpoint);
+      $this->logException($e);
+//      $this->handleHttpException($e, $endpoint);
     }
   }
 
