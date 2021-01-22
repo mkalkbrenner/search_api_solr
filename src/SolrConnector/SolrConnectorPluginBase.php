@@ -563,36 +563,6 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     $endpoint_data = $state->get($state_key);
     $server_uri = $this->getServerUri();
 
-
-
-
-
-
-
-//    static $previous_calls = [];
-//
-//    $this->connect();
-//
-//    $endpoint = $this->solr->getEndpoint($endpoint_name);
-//    $endpoint_uri = $endpoint->getBaseUri();
-//    $state_key = 'search_api_solr.endpoint.data';
-//    $state = \Drupal::state();
-//    $endpoint_data = $state->get($state_key);
-//    if (!isset($previous_calls[$endpoint_uri][$handler]) || $reset) {
-//      // Don't retry multiple times in case of an exception.
-//      $previous_calls[$endpoint_name] = TRUE;
-//
-//      if (!is_array($endpoint_data) || !isset($endpoint_data[$endpoint_uri][$handler]) || $reset) {
-//        // @todo Finish https://github.com/solariumphp/solarium/pull/155 and stop
-//        // abusing the ping query for this.
-//        $query = $this->solr->createPing(array('handler' => $handler));
-//        $endpoint_data[$endpoint_uri][$handler] = $this->execute($query, $endpoint)->getData();
-//        $state->set($state_key, $endpoint_data);
-//      }
-//    }
-
-
-
     if (!isset($previous_calls[$server_uri][$handler]) || !isset($endpoint_data[$server_uri][$handler]) || $reset) {
       // Don't retry multiple times in case of an exception.
       $previous_calls[$server_uri][$handler] = TRUE;
