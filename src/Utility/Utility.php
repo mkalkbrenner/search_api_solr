@@ -10,7 +10,6 @@ use Drupal\search_api\ParseMode\ParseModeInterface;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\SearchApiSolrException;
-use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\SolrFieldTypeInterface;
 use Solarium\Core\Client\Request;
 
@@ -335,6 +334,320 @@ class Utility {
     }
 
     return $datasources[$index->id()];
+  }
+
+  /**
+   * Returns whether the index only contains "solr_document" datasources.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The Search API index entity.
+   *
+   * @return bool
+   *   TRUE if the index only contains "solr_document" datasources, FALSE
+   *   otherwise.
+   */
+  public static function hasIndexJustSolrDocumentDatasource(IndexInterface $index): bool {
+    static $datasources = [];
+
+    if (!isset($datasources[$index->id()])) {
+      $datasource_ids = $index->getDatasourceIds();
+      $datasources[$index->id()] = ((1 === count($datasource_ids)) && in_array('solr_document', $datasource_ids));
+    }
+
+    return $datasources[$index->id()];
+  }
+
+  /**
+   * Returns the timezone for a query.
+   *
+   * There's a fallback mechanism to get the time zone:
+   * 1. time zone configured for the index
+   * 2. the current user's time zone
+   * 3. site default time zone
+   * 4. storage time zone (UTC)
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The Solr index.
+   *
+   * @return string
+   *   The timezone.
+   */
+  public static function getTimeZone(IndexInterface $index): string {
+    $settings = self::getIndexSolrSettings($index);
+    $system_date = \Drupal::config('system.date');
+    $timezone = '';
+    if ($settings['advanced']['timezone']) {
+      $timezone = $settings['advanced']['timezone'];
+    }
+    else {
+      if ($system_date->get('timezone.user.configurable')) {
+        $timezone = \Drupal::currentUser()->getAccount()->getTimeZone();
+      }
+    }
+    if (!$timezone) {
+      $timezone = $system_date->get('timezone.default') ?: date_default_timezone_get();
+    }
+    return $timezone ?: DateTimeItemInterface::STORAGE_TIMEZONE;
+  }
+
+  /**
+   * Flattens keys and fields into a single search string.
+   *
+   * Formatting the keys into a Solr query can be a bit complex. Keep in mind
+   * that the default operator is OR. For some combinations we had to take
+   * decisions because different interpretations are possible and we have to
+   * ensure that stop words in boolean combinations don't lead to zero results.
+   * Therefore this function will produce these queries:
+   *
+   * Careful interpreting this, phrase  and sloppy phrase queries will represent
+   * different phrases as A & B. To be very clear, A could equal multiple words.
+   *
+   * @code
+   * #conjunction | #negation | fields | parse mode     | return value
+   * ---------------------------------------------------------------------------
+   * AND          | FALSE     | []     | terms / phrase | +(+A +B)
+   * AND          | TRUE      | []     | terms / phrase | -(+A +B)
+   * OR           | FALSE     | []     | terms / phrase | +(A B)
+   * OR           | TRUE      | []     | terms / phrase | -(A B)
+   * AND          | FALSE     | [x]    | terms / phrase | +(x:(+A +B)^1)
+   * AND          | TRUE      | [x]    | terms / phrase | -(x:(+A +B)^1)
+   * OR           | FALSE     | [x]    | terms / phrase | +(x:(A B)^1)
+   * OR           | TRUE      | [x]    | terms / phrase | -(x:(A B)^1)
+   * AND          | FALSE     | [x,y]  | terms          | +((+(x:A^1 y:A^1) +(x:B^1 y:B^1)) x:(+A +B)^1 y:(+A +B)^1)
+   * AND          | FALSE     | [x,y]  | phrase         | +(x:(+A +B)^1 y:(+A +B)^1)
+   * AND          | TRUE      | [x,y]  | terms          | -((+(x:A^1 y:A^1) +(x:B^1 y:B^1)) x:(+A +B)^1 y:(+A +B)^1)
+   * AND          | TRUE      | [x,y]  | phrase         | -(x:(+A +B)^1 y:(+A +B)^1)
+   * OR           | FALSE     | [x,y]  | terms          | +(((x:A^1 y:A^1) (x:B^1 y:B^1)) x:(A B)^1 y:(A B)^1)
+   * OR           | FALSE     | [x,y]  | phrase         | +(x:(A B)^1 y:(A B)^1)
+   * OR           | TRUE      | [x,y]  | terms          | -(((x:A^1 y:A^1) (x:B^1 y:B^1)) x:(A B)^1 y:(A B)^1)
+   * OR           | TRUE      | [x,y]  | phrase         | -(x:(A B)^1 y:(A B)^1)
+   * AND          | FALSE     | [x,y]  | sloppy_terms   | +(x:(+"A"~10000000 +"B"~10000000)^1 y:(+"A"~10000000 +"B"~10000000)^1)
+   * AND          | TRUE      | [x,y]  | sloppy_terms   | -(x:(+"A"~10000000 +"B"~10000000)^1 y:(+"A"~10000000 +"B"~10000000)^1)
+   * OR           | FALSE     | [x,y]  | sloppy_terms   | +(x:("A"~10000000 "B"~10000000)^1 y:("A"~10000000 "B"~10000000)^1)
+   * OR           | TRUE      | [x,y]  | sloppy_terms   | -(x:("A"~10000000 "B"~10000000)^1 y:("A"~10000000 "B"~10000000)^1)
+   * AND          | FALSE     | [x,y]  | sloppy_phrase  | +(x:(+"A"~10000000 +"B"~10000000)^1 y:(+"A"~10000000 +"B"~10000000)^1)
+   * AND          | TRUE      | [x,y]  | sloppy_phrase  | -(x:(+"A"~10000000 +"B"~10000000)^1 y:(+"A"~10000000 +"B"~10000000)^1)
+   * OR           | FALSE     | [x,y]  | sloppy_phrase  | +(x:("A"~10000000 "B"~10000000)^1 y:("A"~10000000 "B"~10000000)^1)
+   * OR           | TRUE      | [x,y]  | sloppy_phrase  | -(x:("A"~10000000 "B"~10000000)^1 y:("A"~10000000 "B"~10000000)^1)
+   * AND          | FALSE     | [x,y]  | edismax        | +({!edismax qf=x^1,y^1}+A +B)
+   * AND          | TRUE      | [x,y]  | edismax        | -({!edismax qf=x^1,y^1}+A +B)
+   * OR           | FALSE     | [x,y]  | edismax        | +({!edismax qf=x^1,y^1}A B)
+   * OR           | TRUE      | [x,y]  | edismax        | -({!edismax qf=x^1,y^1}A B)
+   * AND / OR     | FALSE     | [x]    | direct         | +(x:(A)^1)
+   * AND / OR     | TRUE      | [x]    | direct         | -(x:(A)^1)
+   * AND / OR     | FALSE     | [x,y]  | direct         | +(x:(A)^1 y:(A)^1)
+   * AND / OR     | TRUE      | [x,y]  | direct         | -(x:(A)^1 y:(A)^1)
+   * AND          | FALSE     | []     | keys           | +A +B
+   * AND          | TRUE      | []     | keys           | -(+A +B)
+   * OR           | FALSE     | []     | keys           | A B
+   * OR           | TRUE      | []     | keys           | -(A B)
+   * @endcode
+   *
+   * @param array|string $keys
+   *   The keys array to flatten, formatted as specified by
+   *   \Drupal\search_api\Query\QueryInterface::getKeys() or a phrase string.
+   * @param array $fields
+   *   (optional) An array of field names.
+   * @param string $parse_mode_id
+   *   (optional) The parse mode ID. Defaults to "phrase".
+   * @param array $options
+   *   (optional) An array of options.
+   *
+   * @return string
+   *   A Solr query string representing the same keys.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public static function flattenKeys($keys, array $fields = [], string $parse_mode_id = 'phrase', array $options = []): string {
+    switch ($parse_mode_id) {
+      case 'keys':
+        if (!empty($fields)) {
+          throw new SearchApiSolrException(sprintf('Parse mode %s could not handle fields.', $parse_mode_id));
+        }
+        break;
+
+      case 'edismax':
+      case 'direct':
+        if (empty($fields)) {
+          throw new SearchApiSolrException(sprintf('Parse mode %s requires fields.', $parse_mode_id));
+        }
+        break;
+    }
+
+    $k = [];
+    $pre = '+';
+    $neg = '';
+    $query_parts = [];
+    $sloppiness = '';
+    $fuzziness = '';
+
+    if (is_array($keys)) {
+      $queryHelper = \Drupal::service('solarium.query_helper');
+
+      if (isset($keys['#conjunction']) && $keys['#conjunction'] === 'OR') {
+        $pre = '';
+      }
+
+      if (!empty($keys['#negation'])) {
+        $neg = '-';
+      }
+
+      $escaped = $keys['#escaped'] ?? FALSE;
+
+      foreach ($keys as $key_nr => $key) {
+        // We cannot use \Drupal\Core\Render\Element::children() anymore because
+        // $keys is not a valid render array.
+        if (!$key || strpos($key_nr, '#') === 0) {
+          continue;
+        }
+        if (is_array($key)) {
+          if ('edismax' === $parse_mode_id) {
+            throw new SearchApiSolrException('Incompatible parse mode.');
+          }
+          if ($subkeys = self::flattenKeys($key, $fields, $parse_mode_id, $options)) {
+            $query_parts[] = $subkeys;
+          }
+        }
+        elseif ($escaped) {
+          $k[] = trim($key);
+        }
+        else {
+          $key = trim($key);
+          switch ($parse_mode_id) {
+            // Using the 'phrase' or 'sloppy_phrase' parse mode, Search API
+            // provides one big phrase as keys. Using the 'terms' parse mode,
+            // Search API provides chunks of single terms as keys. But these
+            // chunks might contain not just real terms but again a phrase if
+            // you enter something like this in the search box:
+            // term1 "term2 as phrase" term3.
+            // This will be converted in this keys array:
+            // ['term1', 'term2 as phrase', 'term3'].
+            // To have Solr behave like the database backend, these three
+            // "terms" should be handled like three phrases.
+            case 'terms':
+            case 'sloppy_terms':
+            case 'phrase':
+            case 'sloppy_phrase':
+            case 'edismax':
+            case 'keys':
+              $k[] = $queryHelper->escapePhrase($key);
+              break;
+
+            case 'fuzzy_terms':
+              if (strpos($key, ' ')) {
+                $k[] = $queryHelper->escapePhrase($key);
+              }
+              else {
+                $k[] = $queryHelper->escapeTerm($key);
+              }
+              break;
+
+            default:
+              throw new SearchApiSolrException('Incompatible parse mode.');
+          }
+        }
+      }
+    }
+    elseif (is_string($keys)) {
+      switch ($parse_mode_id) {
+        case 'direct':
+          $pre = '';
+          $k[] = '(' . trim($keys) . ')';
+          break;
+
+        default:
+          throw new SearchApiSolrException('Incompatible parse mode.');
+      }
+    }
+
+    if ($k) {
+      switch ($parse_mode_id) {
+        case 'edismax':
+          $query_parts[] = "({!edismax qf='" . implode(' ', $fields) . "'}" . $pre . implode(' ' . $pre, $k) . ')';
+          break;
+
+        case 'keys':
+          $query_parts[] = $pre . implode(' ' . $pre, $k);
+          break;
+
+        case 'sloppy_terms':
+        case 'sloppy_phrase':
+          if (isset($options['slop'])) {
+            $sloppiness = '~' . $options['slop'];
+          }
+        // No break! Execute 'default', too. 'terms' will be skipped when $k
+        // just contains one element.
+        case 'fuzzy_terms':
+          if (!$sloppiness && isset($options['fuzzy'])) {
+            $fuzziness = '~' . $options['fuzzy'];
+          }
+        // No break! Execute 'default', too. 'terms' will be skipped when $k
+        // just contains one element.
+        case 'terms':
+          if (count($k) > 1 && count($fields) > 0) {
+            $key_parts = [];
+            foreach ($k as $l) {
+              $field_parts = [];
+              foreach ($fields as $f) {
+                $field = $f;
+                $boost = '';
+                // Split on operators:
+                // - boost (^)
+                // - fixed score (^=)
+                if ($split = preg_split('/([\^])/', $f, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)) {
+                  $field = array_shift($split);
+                  $boost = implode('', $split);
+                }
+                $field_parts[] = $field . ':' . $l . $boost;
+              }
+              $key_parts[] = $pre . '(' . implode(' ', $field_parts) . ')';
+            }
+            $query_parts[] = '(' . implode(' ', $key_parts) . ')';
+          }
+        // No break! Execute 'default', too.
+        default:
+          foreach ($k as &$term_or_phrase) {
+            // Just add sloppiness when if we really have a phrase, indicated
+            // by double quotes and terms separated by blanks.
+            if ($sloppiness && strpos($term_or_phrase, ' ') && strpos($term_or_phrase, '"') === 0) {
+              $term_or_phrase .= $sloppiness;
+            }
+            // Otherwise just add fuzziness when if we really have a term.
+            elseif ($fuzziness && !strpos($term_or_phrase, ' ') && strpos($term_or_phrase, '"') !== 0) {
+              $term_or_phrase .= $fuzziness;
+            }
+            unset($term_or_phrase);
+          }
+
+          if (count($fields) > 0) {
+            foreach ($fields as $f) {
+              $field = $f;
+              $boost = '';
+              // Split on operators:
+              // - boost (^)
+              // - fixed score (^=)
+              if ($split = preg_split('/([\^])/', $f, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)) {
+                $field = array_shift($split);
+                $boost = implode('', $split);
+              }
+              $query_parts[] = $field . ':(' . $pre . implode(' ' . $pre, $k) . ')' . $boost;
+            }
+          }
+          else {
+            $query_parts[] = '(' . $pre . implode(' ' . $pre, $k) . ')';
+          }
+      }
+    }
+
+    if (count($query_parts) === 1) {
+      return $neg . reset($query_parts);
+    }
+
+    if (count($query_parts) > 1) {
+      return $neg . '(' . implode(' ', $query_parts) . ')';
+    }
+
+    return '';
   }
 
 }

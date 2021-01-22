@@ -23,7 +23,7 @@ function search_api_solr_requirements($phase) {
       $ret['search_api_solr_eol'] = [
         'title' => t('Search API Solr 8.x-1.x'),
         'value' => t('1.x LTS Support'),
-        'description' => t('Community support of Search API Solr 1.x Ends 2020-12-31. Please contact Acquia support to report any issues with this module.'),
+        'description' => t('Community support of Search API Solr 1.x Ends 2021-12-31. Please contact Acquia support to report any issues with this module.'),
         'severity' => REQUIREMENT_INFO,
       ];
     }
