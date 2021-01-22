@@ -1114,31 +1114,34 @@ class Utility {
    *   An array with the version number and the normalized XML.
    */
   public static function normalizeXml($xml): array {
-    $document = new \DOMDocument();
-    if (@$document->loadXML($xml) === FALSE) {
-      $document->loadXML("<root>$xml</root>");
-    }
-    $version_number = '';
-    $root = $document->documentElement;
-    if (isset($root) && $root->hasAttribute('name')) {
-      $parts = explode('-', $root->getAttribute('name'));
-      if (isset($parts[4])) {
-        // Remove jump-start config-set flag.
-        unset($parts[4]);
+    if ($xml = trim($xml)) {
+      $document = new \DOMDocument();
+      if (@$document->loadXML($xml) === FALSE) {
+        $document->loadXML("<root>$xml</root>");
       }
-      $version_number = implode('-', $parts);
-      $root->removeAttribute('name');
+      $version_number = '';
+      $root = $document->documentElement;
+      if (isset($root) && $root->hasAttribute('name')) {
+        $parts = explode('-', $root->getAttribute('name'));
+        if (isset($parts[4])) {
+          // Remove jump-start config-set flag.
+          unset($parts[4]);
+        }
+        $version_number = implode('-', $parts);
+        $root->removeAttribute('name');
+      }
+      $xpath = new \DOMXPath($document);
+      // Remove all comments.
+      foreach ($xpath->query("//comment()") as $comment) {
+        $comment->parentNode->removeChild($comment);
+      }
+      // Trim all whitespaces.
+      foreach ($xpath->query('//text()') as $whitespace) {
+        $whitespace->data = trim($whitespace->nodeValue);
+      }
+      return [$version_number, $document->saveXML()];
     }
-    $xpath = new \DOMXPath($document);
-    // Remove all comments.
-    foreach ($xpath->query("//comment()") as $comment) {
-      $comment->parentNode->removeChild($comment);
-    }
-    // Trim all whitespaces.
-    foreach ($xpath->query('//text()') as $whitespace) {
-      $whitespace->data = trim($whitespace->nodeValue);
-    }
-    return [$version_number, $document->saveXML()];
+    return ['', ''];
   }
 
 }
