@@ -11,6 +11,7 @@ use Drupal\search_api\Entity\Server;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\SolrBackendInterface;
+use Laminas\Stdlib\ArrayUtils;
 
 /**
  * Implements hook_help().
@@ -120,6 +121,17 @@ function search_api_solr_entity_type_alter(array &$entity_types) {
 }
 
 /**
+ * Merges the default third party settings to those of an index for Solr.
+ *
+ * @param array $third_party_settings
+ *
+ * @return array
+ */
+function search_api_solr_merge_default_index_third_party_settings(array $third_party_settings) {
+  return ArrayUtils::merge(search_api_solr_default_index_third_party_settings(), $third_party_settings, TRUE);
+}
+
+/**
  *
  */
 function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -205,6 +217,62 @@ function search_api_solr_search_api_views_handler_mapping_alter(&$mapping) {
     ],
     'sort' => [
       'id' => 'search_api',
+    ],
+  ];
+}
+
+/**
+ * Get the default third party settings of an index for Solr.
+ *
+ * @return array
+ */
+function search_api_solr_default_index_third_party_settings() {
+  return [
+    'finalize' => FALSE,
+    'commit_before_finalize' => FALSE,
+    'commit_after_finalize' => FALSE,
+    'highlighter' => [
+      'maxAnalyzedChars' => 51200,
+      'fragmenter' => 'gap',
+      'usePhraseHighlighter' => TRUE,
+      'highlightMultiTerm' => TRUE,
+      'preserveMulti' => FALSE,
+      'regex' => [
+        'slop' => 0.5,
+        'pattern' => 'blank',
+        'maxAnalyzedChars' => 10000,
+      ],
+      'highlight' => [
+        'mergeContiguous' => FALSE,
+        'requireFieldMatch' => FALSE,
+        'snippets' => 3,
+        'fragsize' => 0,
+      ],
+    ],
+    'mlt' => [
+      'mintf' => 1,
+      'mindf' => 1,
+      'maxdf' => 0,
+      'maxdfpct' => 0,
+      'minwl' => 0,
+      'maxwl' => 0,
+      'maxqt' => 100,
+      'maxntp' => 2000,
+      'boost' => FALSE,
+      'interestingTerms' => 'none',
+    ],
+    'term_modifiers' => [
+      'slop' => 3,
+      'fuzzy' => 1,
+    ],
+    'advanced' => [
+      'index_prefix' => '',
+      'collection' => '',
+      'timezone' => '',
+    ],
+    'multilingual' => [
+      'limit_to_content_language' => FALSE,
+      'include_language_independent' => TRUE,
     ],
   ];
 }

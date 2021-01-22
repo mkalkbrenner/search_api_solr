@@ -785,35 +785,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           // went into the index.
           $ret[] = $document->getFields()[$field_names['search_api_id']];
         }
-      } catch (SearchApiSolrException $e) {
-        if ($this->configuration['index_single_documents_fallback_count']) {
-          // It might be that a single document caused the exception. Try to index
-          // one by one and create a meaningful error message if possible.
-          $count = 0;
-          foreach ($documents as $document) {
-            if ($count++ < $this->configuration['index_single_documents_fallback_count']) {
-              $id = $document->getFields()[$field_names['search_api_id']];
-
-              try {
-                $update_query = $connector->getUpdateQuery();
-                $update_query->addDocument($document);
-                $connector->update($update_query, $endpoint);
-                $ret[] = $id;
-              } catch (\Exception $e) {
-                watchdog_exception('search_api_solr', $e, '%type while indexing item %id: @message in %function (line %line of %file).', ['%id' => $id]);
-                // We must not throw an exception because we might have indexed
-                // some documents successfully now and need to return these ids.
-              }
-            }
-            else {
-              break;
-            }
-          }
-        }
-        else {
-          watchdog_exception('search_api_solr', $e, "%type while indexing: @message in %function (line %line of %file).");
-          throw $e;
-        }
       } catch (\Exception $e) {
         watchdog_exception('search_api_solr', $e, "%type while indexing: @message in %function (line %line of %file).");
         throw new SearchApiSolrException($e->getMessage(), $e->getCode(), $e);
@@ -3305,6 +3276,25 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   }
 
   /**
+   * Tries to format given date with solarium query helper.
+   *
+   * @param int|string $input
+   *   The date to format (timestamp or string).
+   *
+   * @return bool|string
+   *   The formatted date as string or FALSE in case of invalid input.
+   */
+  public function formatDate($input) {
+    try {
+      $input = is_numeric($input) ? (int) $input : new \DateTime($input, timezone_open(DateTimeItemInterface::STORAGE_TIMEZONE));
+    }
+    catch (\Exception $e) {
+      return FALSE;
+    }
+    return $this->queryHelper->formatDate($input);
+  }
+
+  /**
    * Set the spellcheck parameters for the solarium autocomplete query.
    *
    * @param \Drupal\search_api\Query\QueryInterface $query
@@ -3530,8 +3520,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * {@inheritdoc}
    */
   public function getIndexId(IndexInterface $index) {
-    $settings = Utility::getIndexSolrSettings($index);
-    return $this->configuration['server_prefix'] . $settings['advanced']['index_prefix'] . $index->id();
+    // Prepend per-index prefix.
+    $machine_name = $index->id();
+    $id = $this->searchApiSolrSettings->get('index_prefix_' . $machine_name) . $machine_name;
+    // Prepend environment prefix.
+    $id = $this->searchApiSolrSettings->get('index_prefix') . $id;
+
+    return $id;
   }
 
   /**

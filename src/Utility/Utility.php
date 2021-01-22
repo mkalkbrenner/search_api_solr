@@ -3,7 +3,16 @@
 namespace Drupal\search_api_solr\Utility;
 
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\search_api\IndexInterface;
+use Drupal\search_api\ParseMode\ParseModeInterface;
+use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\ServerInterface;
+use Drupal\search_api_solr\SearchApiSolrException;
+use Drupal\search_api_solr\SolrBackendInterface;
+use Drupal\search_api_solr\SolrFieldTypeInterface;
+use Solarium\Core\Client\Request;
 
 /**
  * Utility functions specific to solr.
@@ -105,7 +114,7 @@ class Utility {
 
     // Return the info.
     if (isset($type)) {
-      return isset($types[$type]) ? $types[$type] : NULL;
+      return $types[$type] ?? NULL;
     }
     return $types;
   }
@@ -179,16 +188,47 @@ class Utility {
   }
 
   /**
+   * Returns the highlighted keys from a snippet highlighted by Solr.
+   *
+   * @param string|array $snippets
+   *   The snippet(s) to format.
+   *
+   * @return array
+   *   The highlighted keys.
+   */
+  public static function getHighlightedKeys($snippets) {
+    if (is_string($snippets)) {
+      $snippets = [$snippets];
+    }
+
+    $keys = [[]];
+
+    foreach ($snippets as $snippet) {
+      if (preg_match_all('@\[HIGHLIGHT\](.+?)\[/HIGHLIGHT\]@', $snippet, $matches)) {
+        $keys[] = $matches[1];
+      }
+    }
+
+    return array_unique(array_merge(...$keys));
+  }
+
+  /**
    * Changes highlighting tags from our custom, HTML-safe ones to HTML.
    *
    * @param string|array $snippet
    *   The snippet(s) to format.
+   * @param string|array $prefix
+   *   (optional) The opening tag to replace "[HIGHLIGHT]".
+   *   Defaults to "<strong>".
+   * @param string|array $suffix
+   *   (optional) The closing tag to replace "[/HIGHLIGHT]".
+   *   Defaults to "</strong>".
    *
    * @return string|array
    *   The snippet(s), properly formatted as HTML.
    */
-  public static function formatHighlighting($snippet) {
-    return preg_replace('#\[(/?)HIGHLIGHT\]#', '<$1strong>', $snippet);
+  public static function formatHighlighting($snippet, $prefix = '<strong>', $suffix = '</strong>') {
+    return str_replace(['[HIGHLIGHT]', '[/HIGHLIGHT]'], [$prefix, $suffix], $snippet);
   }
 
   /**
@@ -257,6 +297,44 @@ class Utility {
         return hex2bin($matches[1]);
       },
       $field_name);
+  }
+
+  /**
+   * Returns the Solr settings for the given index.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The Search API index entity.
+   *
+   * @return array
+   *   An associative array of settings.
+   */
+  public static function getIndexSolrSettings(IndexInterface $index): array {
+    return \search_api_solr_merge_default_index_third_party_settings(
+      $index->getThirdPartySettings('search_api_solr')
+    );
+  }
+
+  /**
+   * Returns whether the index only contains "solr_*" datasources.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The Search API index entity.
+   *
+   * @return bool
+   *   TRUE if the index only contains "solr_*" datasources, FALSE otherwise.
+   */
+  public static function hasIndexJustSolrDatasources(IndexInterface $index): bool {
+    static $datasources = [];
+
+    if (!isset($datasources[$index->id()])) {
+      $datasource_ids = $index->getDatasourceIds();
+      $datasource_ids = array_filter($datasource_ids, function ($datasource_id) {
+        return strpos($datasource_id, 'solr_') !== 0;
+      });
+      $datasources[$index->id()] = !$datasource_ids;
+    }
+
+    return $datasources[$index->id()];
   }
 
 }
