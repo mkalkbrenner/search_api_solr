@@ -270,3 +270,19 @@ function search_api_solr_update_8008() {
   }
 }
 
+/**
+ * Solarium 6 adjustments. Warning! If you have overwritten the connection
+ * settings, don't forget to adjust the 'path'. See the release notes for
+ * details.
+ */
+function search_api_solr_update_8009() {
+  // Remove the V1 API endpoint from the path.
+  foreach (search_api_solr_update_helper_get_backend_configs() as $server_name => $backend_config) {
+    $backend_config['connector_config']['path'] = preg_replace('@/solr$@', '/', $backend_config['connector_config']['path']);
+    search_api_solr_update_helper_save_backend_config($server_name, $backend_config);
+  }
+
+  // Reset the states.
+  \Drupal::state()->delete('search_api_solr.endpoint.data');
+}
+

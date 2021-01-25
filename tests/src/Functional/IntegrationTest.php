@@ -117,7 +117,7 @@ class IntegrationTest extends \Drupal\Tests\search_api\Functional\IntegrationTes
     $edit = [
       'backend_config[connector_config][host]' => 'localhost',
       'backend_config[connector_config][port]' => '8983',
-      'backend_config[connector_config][path]' => '/solr',
+      'backend_config[connector_config][path]' => '/',
       'backend_config[connector_config][core]' => 'drupal',
     ];
     $this->submitForm($edit, 'Save');
