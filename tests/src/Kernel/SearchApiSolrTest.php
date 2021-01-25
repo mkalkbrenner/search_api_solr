@@ -278,7 +278,7 @@ class SearchApiSolrTest extends BackendTestBase {
       $item->setBoost('3.0');
 
       // Get Solr document.
-      /** @var \Solarium\QueryType\Update\Query\Document\Document $document */
+      /** @var \Solarium\QueryType\Update\Query\Document $document */
       $document = $this->invokeMethod($backend, 'getDocument', [$index, $item]);
 
       // Compare boost values.
