@@ -439,7 +439,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     try {
       $info = $this->getCoreInfo();
     }
-    catch (\Exception $e) {
+    catch (SearchApiSolrException $e) {
       try {
         $info = $this->getServerInfo();
       }
