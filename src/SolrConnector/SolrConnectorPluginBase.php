@@ -915,7 +915,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     }
     catch (HttpException $e) {
       $this->logException($e);
-//      $this->handleHttpException($e, $endpoint);
+      $this->handleHttpException($e, $endpoint);
     }
   }
 
