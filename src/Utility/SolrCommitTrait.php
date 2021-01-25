@@ -28,7 +28,7 @@ trait SolrCommitTrait {
       $connector = $backend->getSolrConnector();
       $update = $connector->getUpdateQuery();
       $update->addCommit(TRUE, TRUE, TRUE);
-      $connector->update($update, $backend->getCollectionEndpoint($index));
+      $connector->update($update);
       if (SOLR_INDEX_WAIT) {
         sleep(SOLR_INDEX_WAIT);
       }
