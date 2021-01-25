@@ -1955,7 +1955,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       // For "OR" facets, add the expected tag for exclusion.
       if (isset($info['operator']) && strtolower($info['operator']) === 'or') {
         // @see https://cwiki.apache.org/confluence/display/solr/Faceting#Faceting-LocalParametersforFaceting
-        $facet_field->setExcludes(array('facet:' . $info['field']));
+        $facet_field->getLocalParameters()->clearExcludes()->addExcludes(['facet:' . $info['field']]);
       }
 
       // Set limit, unless it's the default.
