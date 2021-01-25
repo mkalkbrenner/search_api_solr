@@ -591,7 +591,12 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function pingServer() {
-    return $this->getServerInfo(TRUE);
+    if (!empty($this->solr)) {
+      return $this->pingEndpoint($this->solr->getEndpoint(), ['handler' => 'admin/info/system']);
+    }
+    else {
+      return $this->getServerInfo(TRUE);
+    }
   }
 
   /**
