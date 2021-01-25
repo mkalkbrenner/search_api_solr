@@ -16,6 +16,8 @@ use Solarium\QueryType\Select\Query\Query;
  */
 interface SolrConnectorInterface extends ConfigurablePluginInterface {
 
+  const QUERY_TIMEOUT = 'query_timeout';
+
   /**
    * Returns a link to the Solr server.
    *

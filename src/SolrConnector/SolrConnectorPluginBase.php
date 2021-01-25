@@ -10,8 +10,11 @@ use Drupal\Core\Url;
 use Drupal\search_api\Plugin\ConfigurablePluginBase;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api_solr\SearchApiSolrException;
+use Drupal\search_api_solr\Solarium\EventDispatcher\Psr14Bridge;
 use Drupal\search_api_solr\SolrConnectorInterface;
 use Solarium\Client;
+use Solarium\Core\Client\Adapter\Curl;
+use Solarium\Core\Client\Adapter\Http;
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
@@ -76,7 +79,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $plugin = parent::create($container, $configuration, $plugin_id, $plugin_definition);
 
-    $plugin->eventDispatcher = $container->get('event_dispatcher');
+    $plugin->eventDispatcher = new Psr14Bridge();
 
     return $plugin;
   }
@@ -236,7 +239,14 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
 
     if (!$form_state->hasAnyErrors()) {
       // Try to orchestrate a server link from form values.
-      $solr = new Client(NULL, $this->eventDispatcher);
+      $values_copied = $values;
+      // Solr 3 doesn't have the core name in the path. But solarium 6 needs it.
+      // The period is a workaround that gives us URLs like "solr/./select".
+      if (!$values_copied['core']) {
+        $values_copied['core'] = '.';
+      }
+
+      $solr = $this->createClient($values_copied);
       $solr->createEndpoint($values + ['key' => 'core'], TRUE);
       try {
         $this->getServerLink();
@@ -273,27 +283,33 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   protected function connect() {
     if (!$this->solr) {
-      $this->solr = new Client(NULL, $this->eventDispatcher);
+      $configuration = $this->configuration;
+      // Solr 3 doesn't have the core name in the path. But solarium 6 needs it.
+      // The period is a workaround that gives us URLs like "solr/./select".
+      if (!$configuration['core']) {
+        $configuration['core'] = '.';
+      }
+
+      $this->solr = $this->createClient($configuration);
       $this->solr->createEndpoint($this->configuration + ['key' => 'core'], TRUE);
-      $this->attachServerEndpoint();
     }
   }
 
   /**
-   * Attaches an endpoint to the Solr connection to communicate with the server.
-   *
-   * This endpoint is different from the core endpoint which is the default one.
-   * The default endpoint for the core is used to communicate with the index.
-   * But for some administrative tasks the server itself needs to be contacted.
-   * This function is meant to be overwritten as soon as we deal with Solr
-   * service provider specific implementations of SolrHelper.
+   * Create a Client.
    */
-  protected function attachServerEndpoint() {
-    $this->connect();
-    $configuration = $this->configuration;
-    $configuration['core'] = NULL;
-    $configuration['key'] = 'server';
-    $this->solr->createEndpoint($configuration);
+  protected function createClient(array &$configuration) {
+    $configuration[self::QUERY_TIMEOUT] = $configuration['timeout'] ?? 5;
+    $adapter = NULL;
+    if (extension_loaded('curl')) {
+      $adapter = new Curl($configuration);
+    }
+    else {
+      $adapter = new Http();
+      $adapter->setTimeout($configuration[self::QUERY_TIMEOUT]);
+    }
+    unset($configuration['timeout']);
+    return new Client($adapter, $this->eventDispatcher);
   }
 
   /**
@@ -367,7 +383,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function getSolrMajorVersion($version = '') {
-    list($major, ,) = explode('.', $version ?: $this->getSolrVersion());
+    [$major, ,] = explode('.', $version ?: $this->getSolrVersion());
     return $major;
   }
 
@@ -382,7 +398,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function getLuceneMatchVersion($version = '') {
-    list($major, $minor,) = explode('.', $version ?: $this->getSolrVersion());
+    [$major, $minor,] = explode('.', $version ?: $this->getSolrVersion());
     return $major . '.' . $minor;
   }
 
