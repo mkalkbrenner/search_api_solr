@@ -49,7 +49,7 @@ use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Select\Result\Result;
 use Solarium\QueryType\Suggester\Query as SuggesterQuery;
 use Solarium\QueryType\Suggester\Result\Result as SuggesterResult;
-use Solarium\QueryType\Update\Query\Document\Document;
+use Solarium\QueryType\Update\Query\Document;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -747,7 +747,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     /** @var \Drupal\search_api\Item\ItemInterface[] $items */
     foreach ($items as $id => $item) {
-      /** @var \Solarium\QueryType\Update\Query\Document\Document $doc */
+      /** @var \Solarium\QueryType\Update\Query\Document $doc */
       $doc = $update_query->createDocument();
       $doc->setField('id', $this->createId($index_id, $id));
       $doc->setField('index_id', $index_id);
@@ -1343,8 +1343,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * This method allows subclasses to easily apply custom changes before the
    * documents are sent to Solr. The method is empty by default.
    *
-   * @param \Solarium\QueryType\Update\Query\Document\Document[] $documents
-   *   An array of \Solarium\QueryType\Update\Query\Document\Document objects
+   * @param \Solarium\QueryType\Update\Query\Document[] $documents
+   *   An array of \Solarium\QueryType\Update\Query\Document objects
    *   ready to be indexed, generated from $items array.
    * @param \Drupal\search_api\IndexInterface $index
    *   The search index for which items are being indexed.
