@@ -15,6 +15,7 @@ use Drupal\search_api_solr\SolrConnectorInterface;
 use Solarium\Client;
 use Solarium\Core\Client\Adapter\Curl;
 use Solarium\Core\Client\Adapter\Http;
+use Solarium\Core\Client\Adapter\TimeoutAwareInterface;
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
@@ -406,6 +407,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function getServerInfo($reset = FALSE) {
+    $this->useTimeout();
     return $this->getDataFromHandler('server', 'admin/info/system', $reset);
   }
 
@@ -413,6 +415,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function getCoreInfo($reset = FALSE) {
+    $this->useTimeout();
     return $this->getDataFromHandler('core', 'admin/system', $reset);
   }
 
@@ -420,6 +423,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function getLuke() {
+    $this->useTimeout();
     return $this->getDataFromHandler('core', 'admin/luke', TRUE);
   }
 
@@ -525,6 +529,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   public function getStatsSummary() {
     $this->connect();
+    $this->useTimeout();
 
     $summary = array(
       '@pending_docs' => '',
@@ -569,6 +574,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function coreRestGet($path) {
+    $this->useTimeout();
     return $this->restRequest('core', $path);
   }
 
@@ -576,6 +582,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function coreRestPost($path, $command_json = '') {
+    $this->useTimeout(self::INDEX_TIMEOUT);
     return $this->restRequest('core', $path, Request::METHOD_POST, $command_json);
   }
 
@@ -583,6 +590,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function serverRestGet($path) {
+    $this->useTimeout();
     return $this->restRequest('server', $path);
   }
 
@@ -590,6 +598,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function serverRestPost($path, $command_json = '') {
+    $this->useTimeout(self::INDEX_TIMEOUT);
     return $this->restRequest('server', $path, Request::METHOD_POST, $command_json);
   }
 
@@ -619,15 +628,10 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       $request->setRawData($command_json);
     }
     $request->setHandler($path);
-
     $endpoint = $this->solr->getEndpoint($endpoint_key);
-    $timeout = $endpoint->getTimeout();
-    // @todo Destinguish between different flavors of REST requests and use
-    //   different timeout settings.
-    $endpoint->setTimeout($this->configuration['optimize_timeout']);
     $response = $this->executeRequest($request, $endpoint);
-    $endpoint->setTimeout($timeout);
-    $output = Json::decode($response->getBody());
+
+     $output = Json::decode($response->getBody());
     // \Drupal::logger('search_api_solr')->info(print_r($output, true));.
     if (!empty($output['errors'])) {
       throw new SearchApiSolrException('Error trying to send a REST request.' .
@@ -705,6 +709,8 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       $endpoint = $this->solr->getEndpoint('core');
     }
 
+    $this->useTimeout(self::QUERY_TIMEOUT, $endpoint);
+
     // Use the 'postbigrequest' plugin if no specific http method is
     // configured. The plugin needs to be loaded before the request is
     // created.
@@ -746,8 +752,8 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     // The default timeout is set for search queries. The configured timeout
     // might differ and needs to be set now because solarium doesn't
     // distinguish between these types.
-    $timeout = $endpoint->getTimeout();
-    $endpoint->setTimeout($this->configuration['index_timeout']);
+    $this->useTimeout(self::INDEX_TIMEOUT, $endpoint);
+
     if ($this->configuration['commit_within']) {
       // Do a commitWithin since that is automatically a softCommit since Solr 4
       // and a delayed hard commit with Solr 3.4+.
@@ -764,9 +770,6 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     }
 
     $result = $this->execute($query, $endpoint);
-
-    // Reset the timeout setting to the default value for search queries.
-    $endpoint->setTimeout($timeout);
 
     return $result;
   }
@@ -845,22 +848,38 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     // The default timeout is set for search queries. The configured timeout
     // might differ and needs to be set now because solarium doesn't
     // distinguish between these types.
-    $timeout = $endpoint->getTimeout();
-    $endpoint->setTimeout($this->configuration['optimize_timeout']);
+    $this->useTimeout(self::OPTIMIZE_TIMEOUT, $endpoint);
 
     $update_query = $this->solr->createUpdate();
     $update_query->addOptimize(TRUE, FALSE);
 
     $this->execute($update_query, $endpoint);
-
-    // Reset the timeout setting to the default value for search queries.
-    $endpoint->setTimeout($timeout);
   }
 
   /**
    * {@inheritdoc}
    */
+  public function useTimeout(string $timeout = self::QUERY_TIMEOUT, ?Endpoint $endpoint = NULL) {
+    $this->connect();
+
+    if (!$endpoint) {
+      $endpoint = $this->solr->getEndpoint();
+    }
+    $adpater = $this->solr->getAdapter();
+    if ($adpater instanceof TimeoutAwareInterface && ($seconds = $endpoint->getOption($timeout))) {
+      $adpater->setTimeout($seconds);
+    }
+    else {
+      \Drupal::logger('search_api')->warning('The function SolrConnectorPluginBase::useTimeout() has no affect because you use a HTTP adapter that is not implementing TimeoutAwareInterface. You need to adjust your SolrConnector accordingly.');
+    }
+  }
+
+
+  /**
+   * {@inheritdoc}
+   */
   public function extract(QueryInterface $query) {
+    $this->useTimeout(self::INDEX_TIMEOUT);
     return $this->execute($query);
   }
 
