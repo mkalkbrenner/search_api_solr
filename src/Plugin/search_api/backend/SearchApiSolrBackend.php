@@ -2133,7 +2133,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $terms_result = $connector->execute($solarium_query);
           }
           $suggestion = $user_input;
-          $suggester_result = new SuggesterResult(NULL, new SuggesterQuery(), $terms_result->getResponse());
+          $suggester_result = new SuggesterResult(new SuggesterQuery(), $terms_result->getResponse());
           foreach ($suggester_result as $term => $termResult) {
             foreach ($termResult as $result) {
               if ($result == $term) {
