@@ -293,7 +293,25 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
 
       $this->solr = $this->createClient($configuration);
       $this->solr->createEndpoint($this->configuration + ['key' => 'core'], TRUE);
+      $this->attachServerEndpoint();
     }
+  }
+
+  /**
+   * Attaches an endpoint to the Solr connection to communicate with the server.
+   *
+   * This endpoint is different from the core endpoint which is the default one.
+   * The default endpoint for the core is used to communicate with the index.
+   * But for some administrative tasks the server itself needs to be contacted.
+   * This function is meant to be overwritten as soon as we deal with Solr
+   * service provider specific implementations of SolrHelper.
+   */
+  protected function attachServerEndpoint() {
+    $this->connect();
+    $configuration = $this->configuration;
+    $configuration['core'] = '.';
+    $configuration['key'] = 'server';
+    $this->solr->createEndpoint($configuration);
   }
 
   /**
@@ -318,8 +336,8 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   protected function getServerUri() {
     $this->connect();
-    $url_path = $this->solr->getEndpoint('server')->getBaseUri();
-    if ($this->configuration['host'] == 'localhost' && !empty($_SERVER['SERVER_NAME'])) {
+    $url_path = $this->solr->getEndpoint()->getServerUri();
+    if ($this->configuration['host'] === 'localhost' && !empty($_SERVER['SERVER_NAME'])) {
       $url_path = str_replace('localhost', $_SERVER['SERVER_NAME'], $url_path);
     }
 
