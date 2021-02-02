@@ -10,6 +10,7 @@ use Drupal\Core\Url;
 use Drupal\search_api\Plugin\ConfigurablePluginBase;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api_solr\SearchApiSolrException;
+use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Drupal\search_api_solr\Solarium\EventDispatcher\Psr14Bridge;
 use Drupal\search_api_solr\SolrConnectorInterface;
 use Solarium\Client;
@@ -693,6 +694,15 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
+  public function getAutocompleteQuery() {
+    $this->connect();
+    $this->solr->registerQueryType('autocomplete', AutocompleteQuery::class);
+    return $this->solr->createQuery('autocomplete');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getQueryHelper(QueryInterface $query = NULL) {
     if ($query) {
       return $query->getHelper();
@@ -790,6 +800,28 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     $result = $this->execute($query, $endpoint);
 
     return $result;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function autocomplete(AutocompleteQuery $query, ?Endpoint $endpoint = NULL) {
+    $this->connect();
+
+    if (!$endpoint) {
+      $endpoint = $this->solr->getEndpoint();
+    }
+
+    $this->useTimeout(self::QUERY_TIMEOUT, $endpoint);
+
+    // Use the 'postbigrequest' plugin if no specific http method is
+    // configured. The plugin needs to be loaded before the request is
+    // created.
+    if ($this->configuration['http_method'] === 'AUTO') {
+      $this->solr->getPlugin('postbigrequest');
+    }
+
+    return $this->execute($query, $endpoint);
   }
 
   /**

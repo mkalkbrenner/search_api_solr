@@ -2132,39 +2132,28 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $solarium_query->setHandler('select');
             $terms_result = $connector->execute($solarium_query);
           }
-          $suggestion = $user_input;
+          $suggestion = explode(' ', $user_input);
+          // this executes the query and returns the result
           $suggester_result = new SuggesterResult(new SuggesterQuery(), $terms_result->getResponse());
-          foreach ($suggester_result as $term => $termResult) {
-            foreach ($termResult as $result) {
-              if ($result == $term) {
-                continue;
-              }
-              $correction = preg_replace('@(\b)' . preg_quote($term, '@') . '(\b)@', '$1' . $result . '$2', $suggestion);
-              if ($correction != $suggestion) {
-                $suggestion = $correction;
-                // Swapped one term. Try to correct the next term.
-                break;
+          $suggestion_data = $suggester_result->getData();
+          if ($suggestion_data['spellcheck']['suggestions']) {
+            // Suggestion spell check alternates between term and suggestions
+            $suggestion_string = '';
+            foreach ($suggestion_data['spellcheck']['suggestions'] as $key => $sg) {
+              if (isset($suggestion_data['spellcheck']['suggestions'][$key+1]) && is_array($suggestion_data['spellcheck']['suggestions'][$key+1])) {
+                $correction = array_pop($suggestion_data['spellcheck']['suggestions'][$key+1]);
+                $suggestion_string .= implode(' ', $correction) . ' ';
               }
             }
-          }
-
-          if ($suggestion != $user_input && !array_key_exists($suggestion, $autocomplete_terms)) {
+            // Don't add the string if we're just getting a suffix.
+            if (isset($suggestion_suffix) && ((string)($user_input . $suggestion_suffix) == trim($suggestion_string))) {
+              return $suggestions;
+            }
             if ($factory) {
-              $suggestions[] = $factory->createFromSuggestedKeys($suggestion);
+              $suggestions[] = $factory->createFromSuggestedKeys(trim($suggestion_string));
             }
             else {
-              $suggestions[] = Suggestion::fromSuggestedKeys($suggestion, $user_input);
-            }
-            foreach (array_keys($autocomplete_terms) as $term) {
-              $completion = preg_replace('@(\b)' . preg_quote($incomplete_key, '@') . '$@', '$1' . $term . '$2', $suggestion);
-              if ($completion != $suggestion) {
-                if ($factory) {
-                  $suggestions[] = $factory->createFromSuggestedKeys($completion);
-                }
-                else {
-                  $suggestions[] = Suggestion::fromSuggestedKeys($completion, $user_input);
-                }
-              }
+              $suggestions[] = Suggestion::fromSuggestedKeys(trim($suggestion_string), $user_input);
             }
           }
         }
