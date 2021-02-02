@@ -135,6 +135,7 @@ class SolariumRequestLogger implements EventSubscriberInterface {
     }
 
     $debug = [
+      'request count' => $counter,
       'datetime' => gmdate("Y-m-d\TH:i:sP"),
       'Solr request' => $request,
       'Solr endpoint' => $endpoint,
@@ -169,10 +170,11 @@ class SolariumRequestLogger implements EventSubscriberInterface {
     $response = $event->getResponse();
 
     $debug = [
+      'request count' => $counter,
       'datetime' => gmdate("Y-m-d\TH:i:sP"),
       'query_time' => 'Solr query took ' . $timer['time'] . 'ms.',
       'Solr response headers' => $response->getHeaders(),
-      'Solr response body' => Json::decode($response->getBody()),
+      'Solr response body' => $response->getBody(),
     ];
 
     // Show debugging on page.
