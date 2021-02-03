@@ -93,7 +93,7 @@ class SolrConfigForm extends FormBase {
    *   The access result.
    */
   public function access(ServerInterface $search_api_server) {
-    return AccessResult::allowedIf($search_api_server->hasValidBackend() && $search_api_server->getBackend() instanceof SearchApiSolrBackend)->cacheUntilEntityChanges($search_api_server);
+    return AccessResult::allowedIf($search_api_server->hasValidBackend() && $search_api_server->getBackend() instanceof SearchApiSolrBackend)->addCacheableDependency($search_api_server);
   }
 
 }
