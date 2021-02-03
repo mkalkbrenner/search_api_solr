@@ -563,7 +563,7 @@ class SearchApiSolrTest extends BackendTestBase {
       $this->assertEquals(1, $results->getResultCount(), 'Search for »foobar« returned correct number of results.');
       /** @var \Drupal\search_api\Item\ItemInterface $result */
       foreach ($results as $result) {
-        $this->assertContains('<strong>foobar</strong>', (string) $result->getField('body')->getValues()[0]);
+        $this->assertStringContainsString('<strong>foobar</strong>', (string) $result->getField('body')->getValues()[0]);
         $this->assertNull($result->getExcerpt());
       }
 
@@ -576,7 +576,7 @@ class SearchApiSolrTest extends BackendTestBase {
       /** @var \Drupal\search_api\Item\ItemInterface $result */
       foreach ($results as $result) {
         $this->assertNotContains('<strong>foobar</strong>', (string) $result->getField('body')->getValues()[0]);
-        $this->assertContains('<strong>foobar</strong>', $result->getExcerpt());
+        $this->assertStringContainsString('<strong>foobar</strong>', $result->getExcerpt());
       }
 
       $config['highlight_data'] = TRUE;
@@ -587,8 +587,8 @@ class SearchApiSolrTest extends BackendTestBase {
       $this->assertEquals(1, $results->getResultCount(), 'Search for »foobar« returned correct number of results.');
       /** @var \Drupal\search_api\Item\ItemInterface $result */
       foreach ($results as $result) {
-        $this->assertContains('<strong>foobar</strong>', (string) $result->getField('body')->getValues()[0]);
-        $this->assertContains('<strong>foobar</strong>', $result->getExcerpt());
+        $this->assertStringContainsString('<strong>foobar</strong>', (string) $result->getField('body')->getValues()[0]);
+        $this->assertStringContainsString('<strong>foobar</strong>', $result->getExcerpt());
       }
 
     }
@@ -873,7 +873,7 @@ class SearchApiSolrTest extends BackendTestBase {
     /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend $backend */
     $backend = Server::load($this->serverId)->getBackend();
     $content = $backend->extractContentFromFile($filepath);
-    $this->assertContains('The extraction seems working!', $content);
+    $this->assertStringContainsString('The extraction seems working!', $content);
   }
 
   /**
