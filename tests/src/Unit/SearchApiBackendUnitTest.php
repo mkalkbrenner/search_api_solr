@@ -7,7 +7,7 @@ use Drupal\search_api_solr\SolrConnectorInterface;
 use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 use Drupal\Tests\UnitTestCase;
 use Solarium\Core\Query\Helper;
-use Solarium\QueryType\Update\Query\Document\Document;
+use Solarium\QueryType\Update\Query\Document;
 
 // @see datetime.module
 define('DATETIME_STORAGE_TIMEZONE', 'UTC');

@@ -14,10 +14,12 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Form\SubformState;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Plugin\PluginDependencyTrait;
 use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\Core\TypedData\ComplexDataDefinitionInterface;
 use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\Url;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\search_api\Item\Field;
 use Drupal\search_api\Item\FieldInterface;
 use Drupal\search_api\Item\ItemInterface;
@@ -49,7 +51,7 @@ use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Select\Result\Result;
 use Solarium\QueryType\Suggester\Query as SuggesterQuery;
 use Solarium\QueryType\Suggester\Result\Result as SuggesterResult;
-use Solarium\QueryType\Update\Query\Document\Document;
+use Solarium\QueryType\Update\Query\Document;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -69,6 +71,8 @@ define('SEARCH_API_ID_FIELD_NAME', 'ss_search_api_id');
  * )
  */
 class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInterface, PluginFormInterface {
+
+  use PluginDependencyTrait;
 
   use PluginFormTrait {
     submitConfigurationForm as traitSubmitConfigurationForm;
@@ -181,8 +185,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-    drupal_set_message($this->t('Search API Solr 8.x-1.x support ends 2020-12-31. Ensure to upgrade to 8.x-3.x or newer.'), 'warning');
-
     if (!$this->server->isNew()) {
       // Editing this server.
       $form['server_description'] = array(
@@ -321,7 +323,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       if ($connector instanceof PluginFormInterface) {
         $form_state->set('connector', $connector_id);
         if ($form_state->isRebuilding()) {
-          drupal_set_message($this->t('Please configure the selected Solr connector.'), 'warning');
+          $this->messenger()->addWarning('Please configure the selected Solr connector.');
         }
         // Attach the Solr connector plugin configuration form.
         $connector_form_state = SubformState::createForSubform($form['connector_config'], $form, $form_state);
@@ -586,14 +588,14 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $status = 'ok';
             if (empty($this->configuration['skip_schema_check'])) {
               if (substr($stats_summary['@schema_version'], 0, 10) == 'search-api') {
-                drupal_set_message($this->t('Your schema.xml version is too old. Please replace all configuration files with the ones packaged with this module and re-index you data.'), 'error');
+                $this->messenger()->addError('Your schema.xml version is too old. Please replace all configuration files with the ones packaged with this module and re-index you data.');
                 $status = 'error';
               }
               elseif (!preg_match('/drupal-[' . SEARCH_API_SOLR_MIN_SCHEMA_VERSION . '-9]\./', $stats_summary['@schema_version'])) {
                 $variables['@url'] = Url::fromUri('internal:/' . drupal_get_path('module', 'search_api_solr') . '/INSTALL.txt')
                   ->toString();
                 $message = $this->t('You are using an incompatible schema.xml configuration file. Please follow the instructions in the <a href="@url">INSTALL.txt</a> file for setting up Solr.', $variables);
-                drupal_set_message($message, 'error');
+                $this->messenger()->addError($message);
                 $status = 'error';
               }
             }
@@ -747,7 +749,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     /** @var \Drupal\search_api\Item\ItemInterface[] $items */
     foreach ($items as $id => $item) {
-      /** @var \Solarium\QueryType\Update\Query\Document\Document $doc */
+      /** @var \Solarium\QueryType\Update\Query\Document $doc */
       $doc = $update_query->createDocument();
       $doc->setField('id', $this->createId($index_id, $id));
       $doc->setField('index_id', $index_id);
@@ -800,7 +802,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             // 32 characters should be enough for sorting and it makes no sense
             // to heavily increase the index size. The DB backend limits the
             // sort strings to 32 characters, too.
-            if ($first_value instanceof TextValue && Unicode::strlen($first_value->getText()) > 32) {
+            if ($first_value instanceof TextValue && mb_strlen($first_value->getText()) > 32) {
               $first_value = new TextValue(Unicode::truncate($first_value->getText(), 32));
             }
             if (strpos($field_names[$name], 't') === 0 || strpos($field_names[$name], 's') === 0) {
@@ -1343,8 +1345,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * This method allows subclasses to easily apply custom changes before the
    * documents are sent to Solr. The method is empty by default.
    *
-   * @param \Solarium\QueryType\Update\Query\Document\Document[] $documents
-   *   An array of \Solarium\QueryType\Update\Query\Document\Document objects
+   * @param \Solarium\QueryType\Update\Query\Document[] $documents
+   *   An array of \Solarium\QueryType\Update\Query\Document objects
    *   ready to be indexed, generated from $items array.
    * @param \Drupal\search_api\IndexInterface $index
    *   The search index for which items are being indexed.
@@ -1920,7 +1922,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @return bool|string
    */
   protected function formatDate($input) {
-    $input = is_numeric($input) ? (int) $input : new \DateTime($input, timezone_open(DATETIME_STORAGE_TIMEZONE));
+    $input = is_numeric($input) ? (int) $input : new \DateTime($input, timezone_open(DateTimeItemInterface::STORAGE_TIMEZONE));
     return $this->getSolrConnector()->getQueryHelper()->formatDate($input);
   }
 
@@ -1955,7 +1957,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       // For "OR" facets, add the expected tag for exclusion.
       if (isset($info['operator']) && strtolower($info['operator']) === 'or') {
         // @see https://cwiki.apache.org/confluence/display/solr/Faceting#Faceting-LocalParametersforFaceting
-        $facet_field->setExcludes(array('facet:' . $info['field']));
+        $facet_field->getLocalParameters()->clearExcludes()->addExcludes(['facet:' . $info['field']]);
       }
 
       // Set limit, unless it's the default.
@@ -2090,8 +2092,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
         // Make the input lowercase as the indexed data is (usually) also all
         // lowercase.
-        $incomplete_key = Unicode::strtolower($incomplete_key);
-        $user_input = Unicode::strtolower($user_input);
+        $incomplete_key = mb_strtolower($incomplete_key);
+        $user_input = mb_strtolower($user_input);
 
         $solarium_query->setFields($fl);
         $solarium_query->setPrefix($incomplete_key);
@@ -2132,39 +2134,28 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $solarium_query->setHandler('select');
             $terms_result = $connector->execute($solarium_query);
           }
-          $suggestion = $user_input;
-          $suggester_result = new SuggesterResult(NULL, new SuggesterQuery(), $terms_result->getResponse());
-          foreach ($suggester_result as $term => $termResult) {
-            foreach ($termResult as $result) {
-              if ($result == $term) {
-                continue;
-              }
-              $correction = preg_replace('@(\b)' . preg_quote($term, '@') . '(\b)@', '$1' . $result . '$2', $suggestion);
-              if ($correction != $suggestion) {
-                $suggestion = $correction;
-                // Swapped one term. Try to correct the next term.
-                break;
+          $suggestion = explode(' ', $user_input);
+          // this executes the query and returns the result
+          $suggester_result = new SuggesterResult(new SuggesterQuery(), $terms_result->getResponse());
+          $suggestion_data = $suggester_result->getData();
+          if ($suggestion_data['spellcheck']['suggestions']) {
+            // Suggestion spell check alternates between term and suggestions
+            $suggestion_string = '';
+            foreach ($suggestion_data['spellcheck']['suggestions'] as $key => $sg) {
+              if (isset($suggestion_data['spellcheck']['suggestions'][$key+1]) && is_array($suggestion_data['spellcheck']['suggestions'][$key+1])) {
+                $correction = array_pop($suggestion_data['spellcheck']['suggestions'][$key+1]);
+                $suggestion_string .= implode(' ', $correction) . ' ';
               }
             }
-          }
-
-          if ($suggestion != $user_input && !array_key_exists($suggestion, $autocomplete_terms)) {
+            // Don't add the string if we're just getting a suffix.
+            if (isset($suggestion_suffix) && ((string)($user_input . $suggestion_suffix) == trim($suggestion_string))) {
+              return $suggestions;
+            }
             if ($factory) {
-              $suggestions[] = $factory->createFromSuggestedKeys($suggestion);
+              $suggestions[] = $factory->createFromSuggestedKeys(trim($suggestion_string));
             }
             else {
-              $suggestions[] = Suggestion::fromSuggestedKeys($suggestion, $user_input);
-            }
-            foreach (array_keys($autocomplete_terms) as $term) {
-              $completion = preg_replace('@(\b)' . preg_quote($incomplete_key, '@') . '$@', '$1' . $term . '$2', $suggestion);
-              if ($completion != $suggestion) {
-                if ($factory) {
-                  $suggestions[] = $factory->createFromSuggestedKeys($completion);
-                }
-                else {
-                  $suggestions[] = Suggestion::fromSuggestedKeys($completion, $user_input);
-                }
-              }
+              $suggestions[] = Suggestion::fromSuggestedKeys(trim($suggestion_string), $user_input);
             }
           }
         }
@@ -2795,6 +2786,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    */
   public function extractContentFromFile($filepath) {
     $connector = $this->getSolrConnector();
+    $filename = basename($filepath);
 
     $query = $connector->getExtractQuery();
     $query->setExtractOnly(TRUE);
@@ -2802,7 +2794,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     // Execute the query.
     $result = $connector->extract($query);
-    return $connector->getContentFromExtractResult($result, $filepath);
+    return $connector->getContentFromExtractResult($result, $filename);
   }
 
   /**

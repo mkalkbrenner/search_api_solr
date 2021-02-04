@@ -48,7 +48,7 @@ interface SolrBackendInterface extends BackendInterface {
    * @param \Drupal\search_api\Item\ItemInterface $item
    *   An item to get documents for.
    *
-   * @return \Solarium\QueryType\Update\Query\Document\Document
+   * @return \Solarium\QueryType\Update\Query\Document
    *   A solr document.
    */
   public function getDocument(IndexInterface $index, ItemInterface $item);
@@ -63,7 +63,7 @@ interface SolrBackendInterface extends BackendInterface {
    * @param \Solarium\QueryType\Update\Query\Query $update_query
    *   The existing update query the documents should be added to.
    *
-   * @return \Solarium\QueryType\Update\Query\Document\Document[]
+   * @return \Solarium\QueryType\Update\Query\Document[]
    *   An array of solr documents.
    */
   public function getDocuments(IndexInterface $index, array $items, UpdateQuery $update_query = NULL);

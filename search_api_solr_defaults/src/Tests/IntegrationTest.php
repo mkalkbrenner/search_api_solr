@@ -4,19 +4,24 @@ namespace Drupal\search_api_solr_defaults\Tests;
 
 use Drupal\comment\Tests\CommentTestTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\field\Tests\EntityReference\EntityReferenceTestTrait;
+use Drupal\Tests\field\Traits\EntityReferenceTestTrait;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
-use Drupal\simpletest\WebTestBase;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Tests the correct installation of the default configs.
  *
  * @group search_api_solr
  */
-class IntegrationTest extends WebTestBase {
+class IntegrationTest extends BrowserTestBase {
 
   use StringTranslationTrait, CommentTestTrait, EntityReferenceTestTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected $defaultTheme = 'stark';
 
   /**
    * The profile to install as a basis for testing.
@@ -42,7 +47,7 @@ class IntegrationTest extends WebTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp() {
     parent::setUp();
 
     // Create user with content access permission to see if the view is
