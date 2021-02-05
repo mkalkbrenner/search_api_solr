@@ -31,6 +31,11 @@
         "drupal/search_api_autocomplete": "1.x-dev",
         "drupal/search_api_location": "1.x-dev"
     },
+    "conflict": {
+        "drupal/acquia_connector": "<1.24 && >=2.0",
+        "drupal/acquia_search_solr": "*",
+        "drupal/search_api_pantheon":"<1.1"
+    },
     "extra": {
         "branch-alias": {
             "dev-8.x-1.x": "1.x-dev"
