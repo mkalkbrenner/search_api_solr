@@ -2,7 +2,9 @@
 
 namespace Drupal\search_api_solr_devel\Logging;
 
+use Drupal\Component\Utility\Timer;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Component\Serialization\Json;
 use Drupal\devel\DevelDumperManagerInterface;
 use Drupal\search_api\LoggerTrait;
 use Drupal\search_api_solr\Utility\Utility;
@@ -65,6 +67,56 @@ class SolariumRequestLogger implements EventSubscriberInterface {
   }
 
   /**
+   * Show debug message and a data object dump.
+   *
+   * @param $counter int
+   *   The current Solr query counter.
+   * @param $data mixed
+   *   Data to dump.
+   * @param $message string
+   *   Message to show.
+   */
+  public function showMessage($counter, $data, $message) {
+    $message = 'Request #' . $counter . '. ' . $message;
+    $this->develDumperManager->message($data, $message, 'debug', 'kint');
+  }
+
+  /**
+   * Start timer for a query.
+   *
+   * @param $counter int
+   *   The current Solr query counter.
+   */
+  public function timerStart($counter) {
+    Timer::start('search_api_solr_devel_' . $counter);
+  }
+
+  /**
+   * Returns timer for a query.
+   *
+   * @param $counter int
+   *   The current Solr query counter.
+   * @return array
+   *   The timer array.
+   */
+  public function timerStop($counter) {
+    return Timer::stop('search_api_solr_devel_' . $counter);
+  }
+
+  /**
+   * Determine which Solr requests should be ignored.
+   *
+   * @param $handler string
+   *   The Solr handler. Examples: "admin/ping", "select", etc.
+   * @return boolean
+   *   TRUE when we should skip debugging this query.
+   */
+  public function shouldIgnore($handler) {
+    $regex = '/.*admin.*/';
+    return preg_match($regex, $handler);
+  }
+
+  /**
    * Dumps a Solr query as drupal messages.
    *
    * @param \Drupal\search_api_solr\Solarium\EventDispatcher\EventProxy $event
@@ -78,12 +130,24 @@ class SolariumRequestLogger implements EventSubscriberInterface {
     $request = $event->getRequest();
     $endpoint = $event->getEndpoint();
 
-    $this->develDumperManager->message($request, $counter . '. Solr request object', 'debug', 'kint');
-    $this->develDumperManager->message($endpoint, $counter . '. Solr endpoint object', 'debug', 'kint');
-    $this->develDumperManager->message(AdapterHelper::buildUri($request, $endpoint), $counter . '. Solr request', 'debug', 'kint');
+    if ($this->shouldIgnore($request->getHandler())) {
+      return;
+    }
 
-    $this->develDumperManager->debug($request, 'Solr request');
-    $this->develDumperManager->debug($endpoint, 'Solr endpoint');
+    $debug = [
+      'request count' => $counter,
+      'datetime' => gmdate("Y-m-d\TH:i:sP"),
+      'Solr request' => $request,
+      'Solr endpoint' => $endpoint,
+      'Solr URI' => AdapterHelper::buildUri($request, $endpoint),
+    ];
+
+    // Show debugging on page.
+    $this->showMessage($counter, $debug, 'Search API Solr Debug: Request');
+
+    // Log raw data to file.
+    $this->develDumperManager->debug($debug, 'Search API Solr Debug: Request', 'default');
+    $this->timerStart($counter);
   }
 
   /**
@@ -93,10 +157,30 @@ class SolariumRequestLogger implements EventSubscriberInterface {
    *   The post execute event.
    */
   public function postExecuteRequest($event) {
+    static $counter = 0;
+    $counter++;
+
+    if ($this->shouldIgnore($event->getRequest()->getHandler())) {
+      return;
+    }
+
+    $timer = $this->timerStop($counter);
+
     /** @var \Solarium\Core\Event\PostExecuteRequest $event */
     $response = $event->getResponse();
 
-    //$this->develDumperManager->message($response, 'Solr response', 'debug', 'kint');
-    $this->develDumperManager->debug($response, 'Solr response');
+    $debug = [
+      'request count' => $counter,
+      'datetime' => gmdate("Y-m-d\TH:i:sP"),
+      'query_time' => 'Solr query took ' . $timer['time'] . 'ms.',
+      'Solr response headers' => $response->getHeaders(),
+      'Solr response body' => $response->getBody(),
+    ];
+
+    // Show debugging on page.
+    $this->showMessage($counter, $debug, 'Search API Solr Debug: Response');
+
+    // Log raw data to file (using NULL plugin)
+    $this->develDumperManager->debug($debug, 'Search API Solr Debug: Response', 'default');
   }
 }
