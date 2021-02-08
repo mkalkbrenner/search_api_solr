@@ -2134,11 +2134,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $solarium_query->setHandler('select');
             $terms_result = $connector->execute($solarium_query);
           }
-          $suggestion = explode(' ', $user_input);
           // this executes the query and returns the result
           $suggester_result = new SuggesterResult(new SuggesterQuery(), $terms_result->getResponse());
           $suggestion_data = $suggester_result->getData();
-          if ($suggestion_data['spellcheck']['suggestions']) {
+          if (isset($suggestion_data['spellcheck']['suggestions'])) {
             // Suggestion spell check alternates between term and suggestions
             $suggestion_string = '';
             foreach ($suggestion_data['spellcheck']['suggestions'] as $key => $sg) {
