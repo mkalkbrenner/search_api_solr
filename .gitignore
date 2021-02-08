@@ -6,3 +6,4 @@ nbproject
 composer.lock
 InMemoriamOfPinkPony.rip
 /tests/run_tests.sh
+/grumphp.yml
