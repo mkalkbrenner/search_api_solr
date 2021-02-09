@@ -15,6 +15,7 @@
   <rule ref="./vendor/drupal/coder/coder_sniffer/Drupal/ruleset.xml">
     <!-- Disable Drupal.Commenting.Deprecated. -->
     <exclude name="Drupal.Commenting.Deprecated" />
+    <exclude name="Drupal.NamingConventions.ValidVariableName.LowerCamelName" />
   </rule>
 
   <rule ref="./vendor/drupal/coder/coder_sniffer/DrupalPractice/ruleset.xml"/>

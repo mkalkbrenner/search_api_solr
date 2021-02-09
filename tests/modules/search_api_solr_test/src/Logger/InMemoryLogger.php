@@ -9,6 +9,11 @@ use Psr\Log\AbstractLogger;
  */
 class InMemoryLogger extends AbstractLogger {
 
+  /**
+   * The logged messages.
+   *
+   * @var array
+   */
   private $messages = [];
 
   /**

@@ -32,6 +32,8 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
   protected $minimum_solr_version;
 
   /**
+   * Whether the config entity is recommended to be used.
+   *
    * @var bool
    */
   protected $recommended = TRUE;
@@ -66,12 +68,10 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
    * Formats a given array to an XML string.
    */
   protected function buildXmlFromArray($root_element_name, array $attributes) {
-    /** @noinspection PhpComposerExtensionStubsInspection */
     $root = new \SimpleXMLElement('<' . $root_element_name . '/>');
     self::buildXmlFromArrayRecursive($root, $attributes);
 
     // Create formatted string.
-    /** @noinspection PhpComposerExtensionStubsInspection */
     $dom = dom_import_simplexml($root)->ownerDocument;
     $dom->formatOutput = TRUE;
     $formatted_xml_string = $dom->saveXML();

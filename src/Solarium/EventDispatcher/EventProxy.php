@@ -6,34 +6,46 @@ use Symfony\Component\EventDispatcher\Event as LegacyEvent;
 use Symfony\Contracts\EventDispatcher\Event;
 
 /**
- * A proxy for events defined by symfony contracts
+ * A proxy for events defined by symfony contracts.
  */
-class EventProxy extends LegacyEvent
-{
+class EventProxy extends LegacyEvent {
+
   /**
+   * The Symfony contracts event.
+   *
    * @var \Symfony\Contracts\EventDispatcher\Event
    */
   protected $event;
 
+  /**
+   * EventProxy constructor.
+   *
+   * @param \Symfony\Contracts\EventDispatcher\Event $event
+   *   The Symfony contracts event.
+   */
   public function __construct(Event $event) {
     $this->event = $event;
   }
 
-  public function isPropagationStopped()
-  {
+  /**
+   * {@inheritdoc}
+   */
+  public function isPropagationStopped() {
     return $this->event->isPropagationStopped();
   }
 
-  public function stopPropagation()
-  {
+  /**
+   * {@inheritdoc}
+   */
+  public function stopPropagation() {
     $this->event->stopPropagation();
   }
 
   /**
    * Proxies all method calls to the original event.
    */
-  public function __call($method, $arguments)
-  {
+  public function __call($method, $arguments) {
     return $this->event->{$method}(...$arguments);
   }
+
 }

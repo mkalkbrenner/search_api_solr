@@ -12,14 +12,22 @@ use Symfony\Component\EventDispatcher\Event;
 final class Psr14Bridge extends ContainerAwareEventDispatcher implements EventDispatcherInterface {
 
   /**
+   * The event dispatcher.
+   *
    * @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
    */
   protected $dispatcher;
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct() {
     $this->dispatcher = \Drupal::service('event_dispatcher');
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function dispatch($event, Event $null = NULL) {
     if (\is_object($event)) {
       return $this->dispatcher->dispatch(\get_class($event), new EventProxy($event));
@@ -27,7 +35,11 @@ final class Psr14Bridge extends ContainerAwareEventDispatcher implements EventDi
     return $this->dispatcher->dispatch($event, $null);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function addListener($event_name, $listener, $priority = 0) {
     $this->dispatcher->addListener($event_name, $listener, $priority);
   }
+
 }

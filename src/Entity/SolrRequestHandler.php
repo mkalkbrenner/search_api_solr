@@ -71,7 +71,7 @@ class SolrRequestHandler extends AbstractSolrEntity implements SolrRequestHandle
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
   public function getPurposeId(): string {
     return $this->request_handler['name'];

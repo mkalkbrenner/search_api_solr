@@ -24,7 +24,18 @@ use Drupal\search_api_solr\SolrFieldManagerInterface;
  */
 class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
 
+  /**
+   * The Solr field manager prefix.
+   *
+   * @var string
+   */
   protected $solr_field = 'solr_field';
+
+  /**
+   * The Solr document factory prefix.
+   *
+   * @var string
+   */
   protected $solr_document = 'solr_document';
 
   use PluginFormTrait;

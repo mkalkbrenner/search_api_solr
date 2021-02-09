@@ -7,6 +7,9 @@ namespace Drupal\search_api_solr;
  */
 class SolrMultisiteDocumentFactory extends SolrDocumentFactory {
 
+  /**
+   * {@inheritdoc}
+   */
   protected static $solrDocument = 'solr_multisite_document';
 
 }
