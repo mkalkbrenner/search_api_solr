@@ -9,10 +9,38 @@ on:
         - cron: '0 8 * * *' # run at 08:00 UTC
 
 jobs:
+    test-grumphp:
+        runs-on: ubuntu-latest
+
+        env:
+          COMPOSER_MEMORY_LIMIT: -1
+
+        steps:
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                php-version: 7.4
+                extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, bcmath, intl, gd, iconv, json, simplexml
+                ini-values: memory_limit=256M,post_max_size=256M
+                coverage: none
+
+            - name: Checkout search_api_solr
+              uses: actions/checkout@v2
+              with:
+                fetch-depth: 0
+
+            - name: Composer install
+              run: composer install
+
+            - name: Run GrumPHP
+              run: vendor/bin/grumphp run
+
     generate-config-sets:
         runs-on: ubuntu-latest
 
         name: Generate Solr jump-start config-sets
+
+        needs: test-grumphp
 
         env:
           COMPOSER_MEMORY_LIMIT: -1
@@ -141,7 +169,7 @@ jobs:
                 name: jump-start-config-sets
                 path: search_api_solr/jump-start
 
-    run-tests:
+    test-phpunit:
         runs-on: ubuntu-latest
 
         needs: generate-config-sets
@@ -259,7 +287,7 @@ jobs:
                 vendor/bin/drush en search_api_spellcheck,search_api_autocomplete,facets,search_api_location --yes
                 vendor/bin/phpunit -v -c core --group search_api_solr --exclude-group not_drupal${{ matrix.drupal }},not_solr${{ matrix.solr }} modules/contrib/search_api_solr
 
-    run-legacy-tests:
+    test-phpunit-legacy:
       runs-on: ubuntu-latest
 
       needs: generate-config-sets
@@ -347,7 +375,7 @@ jobs:
 
         name: Push updated Solr jump-start config-sets
 
-        needs: [run-tests, run-legacy-tests]
+        needs: [test-grumphp, test-phpunit, test-phpunit-legacy]
 
         steps:
             - name: Checkout search_api_solr
