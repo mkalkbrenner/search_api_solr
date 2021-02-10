@@ -427,7 +427,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   public function getServerInfo($reset = FALSE) {
     $this->useTimeout();
-    return $this->getDataFromHandler('server', 'admin/info/system', $reset);
+    return $this->getDataFromHandler(NULL, 'admin/info/system', $reset);
   }
 
   /**
