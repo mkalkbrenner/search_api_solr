@@ -1186,7 +1186,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   The cardinality.
    */
   protected function getPropertyPathCardinality($property_path, array $properties, $cardinality = 1) {
-    list($key, $nested_path) = SearchApiUtility::splitPropertyPath($property_path, FALSE);
+    [$key, $nested_path] = SearchApiUtility::splitPropertyPath($property_path, FALSE);
     if (isset($properties[$key])) {
       $property = $properties[$key];
       if ($property instanceof FieldDefinitionInterface) {
@@ -2729,54 +2729,65 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   /**
    * Sets grouping for the query.
    *
-   * @todo This code is outdated and needs to be reviewd and refactored.
+   * @param \Solarium\QueryType\Select\Query\Query $solarium_query
+   * @param \Drupal\search_api\Query\QueryInterface $query
+   * @param array $grouping_options
+   * @param array $index_fields
+   * @param array $field_names
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  protected function setGrouping(Query $solarium_query, QueryInterface $query, $grouping_options = array(), $index_fields = array(), $field_names = array()) {
-    $group_params['group'] = 'true';
-    // We always want the number of groups returned so that we get pagers done
-    // right.
-    $group_params['group.ngroups'] = 'true';
-    if (!empty($grouping_options['truncate'])) {
-      $group_params['group.truncate'] = 'true';
-    }
-    if (!empty($grouping_options['group_facet'])) {
-      $group_params['group.facet'] = 'true';
-    }
-    foreach ($grouping_options['fields'] as $collapse_field) {
-      $type = $index_fields[$collapse_field]['type'];
-      // Only single-valued fields are supported.
-      if ($this->dataTypeHelper->isTextType($type)) {
-        $warnings[] = $this->t('Grouping is not supported for field @field. Only single-valued fields not indexed as "Fulltext" are supported.',
-          array('@field' => $index_fields[$collapse_field]['name']));
-        continue;
+  protected function setGrouping(Query $solarium_query, QueryInterface $query, $grouping_options = [], $index_fields = [], $field_names = []) {
+    if (!empty($grouping_options['use_grouping'])) {
+
+      $group_fields = [];
+
+      foreach ($grouping_options['fields'] as $collapse_field) {
+        // @todo languages
+        $first_name = reset($field_names[$collapse_field]);
+        /** @var \Drupal\search_api\Item\Field $field */
+        $field = $index_fields[$collapse_field];
+        $type = $field->getType();
+        if ($this->dataTypeHelper->isTextType($type)) {
+          $this->getLogger()->error('Grouping is not supported for field @field. Only single-valued fields not indexed as "Fulltext" are supported.',
+            ['@field' => $index_fields[$collapse_field]['name']]);
+        }
+        else {
+          $group_fields[] = $first_name;
+        }
       }
-      $group_params['group.field'][] = $field_names[$collapse_field];
-    }
-    if (empty($group_params['group.field'])) {
-      unset($group_params);
-    }
-    else {
-      if (!empty($grouping_options['group_sort'])) {
-        foreach ($grouping_options['group_sort'] as $group_sort_field => $order) {
-          if (isset($fields[$group_sort_field])) {
-            $f = $fields[$group_sort_field];
-            if (substr($f, 0, 3) == 'ss_') {
-              $f = 'sort_' . substr($f, 3);
+
+      if (!empty($group_fields)) {
+        // Activate grouping on the solarium query.
+        $grouping_component = $solarium_query->getGrouping();
+
+        $grouping_component->setFields($group_fields)
+          // We always want the number of groups returned so that we get pagers
+          // done right.
+          ->setNumberOfGroups(TRUE)
+          ->setTruncate(!empty($grouping_options['truncate']))
+          ->setFacet(!empty($grouping_options['group_facet']));
+
+        if (!empty($grouping_options['group_limit']) && ($grouping_options['group_limit'] != 1)) {
+          $grouping_component->setLimit($grouping_options['group_limit']);
+        }
+
+        if (!empty($grouping_options['group_sort'])) {
+          foreach ($grouping_options['group_sort'] as $group_sort_field => $order) {
+            if (isset($fields[$group_sort_field])) {
+              $f = $fields[$group_sort_field];
+              if (substr($f, 0, 3) === 'ss_') {
+                $f = 'sort_' . substr($f, 3);
+              }
+              $order = strtolower($order);
+              $group_params['group.sort'][] = $f . ' ' . $order;
             }
-            $order = strtolower($order);
-            $group_params['group.sort'][] = $f . ' ' . $order;
+          }
+          if (!empty($group_params['group.sort'])) {
+            $group_params['group.sort'] = implode(', ', $group_params['group.sort']);
           }
         }
-        if (!empty($group_params['group.sort'])) {
-          $group_params['group.sort'] = implode(', ', $group_params['group.sort']);
-        }
       }
-      if (!empty($grouping_options['group_limit']) && ($grouping_options['group_limit'] != 1)) {
-        $group_params['group.limit'] = $grouping_options['group_limit'];
-      }
-    }
-    foreach ($group_params as $param_id => $param_value) {
-      $solarium_query->addParam($param_id, $param_value);
     }
   }
 
