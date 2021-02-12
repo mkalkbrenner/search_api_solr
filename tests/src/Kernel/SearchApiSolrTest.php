@@ -334,6 +334,7 @@ class SearchApiSolrTest extends BackendTestBase {
    * Checks backend specific features.
    */
   protected function checkBackendSpecificFeatures() {
+    $this->indexItems($this->indexId);
     $this->checkSearchResultGrouping();
     $this->clearIndex();
   }
