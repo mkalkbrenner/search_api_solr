@@ -351,16 +351,14 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * Create a Client.
    */
   protected function createClient(array &$configuration) {
+    // @todo For backward compatibility we didn't rename 'timeout' yet. We
+    // should do so in an update hook.
     $configuration[self::QUERY_TIMEOUT] = $configuration['timeout'] ?? 5;
-    $adapter = NULL;
-    if (extension_loaded('curl')) {
-      $adapter = new Curl($configuration);
-    }
-    else {
-      $adapter = new Http();
-      $adapter->setTimeout($configuration[self::QUERY_TIMEOUT]);
-    }
     unset($configuration['timeout']);
+
+    $adapter = extension_loaded('curl') ? new Curl() : new Http();
+    $adapter->setTimeout($configuration[self::QUERY_TIMEOUT]);
+
     return new Client($adapter, $this->eventDispatcher);
   }
 
