@@ -1397,20 +1397,33 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     // If field collapsing has been enabled for this query, we need to process
     // the results differently.
     $grouping = $query->getOption('search_api_grouping');
-    $docs = array();
-    if (!empty($grouping['use_grouping']) && $is_grouping) {
-      // $docs = array();
-      //      $result_set['result count'] = 0;
-      //      foreach ($grouping['fields'] as $field) {
-      //        if (!empty($response->grouped->{$fields[$field]})) {
-      //          $result_set['result count'] += $response->grouped->{$fields[$field]}->ngroups;
-      //          foreach ($response->grouped->{$fields[$field]}->groups as $group) {
-      //            foreach ($group->doclist->docs as $doc) {
-      //              $docs[] = $doc;
-      //            }
-      //          }
-      //        }
-      //      }.
+    if (!empty($grouping['use_grouping'])) {
+      $docs = [];
+      $resultCount = 0;
+      if ($result_set->hasExtraData('search_api_solr_response')) {
+        $response = $result_set->getExtraData('search_api_solr_response');
+        foreach ($grouping['fields'] as $field) {
+          $solr_field_name = $field_names[$field];
+          if (!empty($response['grouped'][$solr_field_name])) {
+            $resultCount = count($response['grouped'][$solr_field_name]);
+            foreach ($response['grouped'][$solr_field_name]['groups'] as $group) {
+              foreach ($group['doclist']['docs'] as $doc) {
+                $docs[] = $doc;
+              }
+            }
+          }
+        }
+        // Set a default number then get the groups number if possible.
+        $result_set->setResultCount($resultCount);
+        if (count($grouping['fields']) == 1) {
+          $field = reset($grouping['fields']);
+          // @todo handle languages
+          $solr_field_name = $field_names[$field];
+          if (isset($response['grouped'][$solr_field_name]['ngroups'])) {
+            $result_set->setResultCount($response['grouped'][$solr_field_name]['ngroups']);
+          }
+        }
+      }
     }
     else {
       $result_set->setResultCount($result->getNumFound());
@@ -1420,7 +1433,17 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     // Add each search result to the results array.
     /** @var \Solarium\QueryType\Select\Result\Document $doc */
     foreach ($docs as $doc) {
-      $doc_fields = $doc->getFields();
+      if (is_array($doc)) {
+        $doc_fields = $doc;
+      }
+      else {
+        /** @var \Solarium\QueryType\Select\Result\Document $doc */
+        $doc_fields = $doc->getFields();
+      }
+      if (empty($doc_fields[$id_field])) {
+        throw new SearchApiSolrException(sprintf('The result does not contain the essential ID field "%s".', $id_field));
+      }
+
       $item_id = $doc_fields[$id_field];
       // For items coming from a different site, we need to adapt the item ID.
       if (!$this->configuration['site_hash'] && $doc_fields['hash'] != $site_hash) {
