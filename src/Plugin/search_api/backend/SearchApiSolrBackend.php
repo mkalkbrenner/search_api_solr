@@ -2772,19 +2772,18 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         }
 
         if (!empty($grouping_options['group_sort'])) {
+          $sorts = [];
           foreach ($grouping_options['group_sort'] as $group_sort_field => $order) {
             if (isset($fields[$group_sort_field])) {
               $f = $fields[$group_sort_field];
               if (substr($f, 0, 3) === 'ss_') {
                 $f = 'sort_' . substr($f, 3);
               }
-              $order = strtolower($order);
-              $group_params['group.sort'][] = $f . ' ' . $order;
+              $sorts[] = $f . ' ' . strtolower($order);
             }
           }
-          if (!empty($group_params['group.sort'])) {
-            $group_params['group.sort'] = implode(', ', $group_params['group.sort']);
-          }
+
+          $grouping_component->setSort(implode(', ', $sorts));
         }
       }
     }
