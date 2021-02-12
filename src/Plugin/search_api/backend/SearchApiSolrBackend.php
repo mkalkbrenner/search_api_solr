@@ -2743,8 +2743,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $group_fields = [];
 
       foreach ($grouping_options['fields'] as $collapse_field) {
-        // @todo languages
-        $first_name = reset($field_names[$collapse_field]);
+        $first_name = $field_names[$collapse_field];
         /** @var \Drupal\search_api\Item\Field $field */
         $field = $index_fields[$collapse_field];
         $type = $field->getType();
