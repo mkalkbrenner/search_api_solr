@@ -331,6 +331,14 @@ class SearchApiSolrTest extends BackendTestBase {
   }
 
   /**
+   * Checks backend specific features.
+   */
+  protected function checkBackendSpecificFeatures() {
+    $this->checkSearchResultGrouping();
+    $this->clearIndex();
+  }
+
+  /**
    * Gets the Drupal Fields and their Solr mapping.
    *
    * @param \Drupal\search_api_solr\SolrBackendInterface $backend
@@ -699,6 +707,31 @@ class SearchApiSolrTest extends BackendTestBase {
     }
 
     return $result;
+  }
+
+  /**
+   * Tests search result grouping.
+   */
+  public function checkSearchResultGrouping() {
+    if (in_array('search_api_grouping', $this->getIndex()->getServerInstance()->getBackend()->getSupportedFeatures())) {
+      $query = $this->buildSearch(NULL, [], [], FALSE);
+      $query->setOption('search_api_grouping', [
+        'use_grouping' => TRUE,
+        'fields' => [
+          'type',
+        ],
+      ]);
+      $results = $query->execute();
+
+      $this->assertEquals(2, $results->getResultCount(), 'Get the results count grouping by type.');
+      $data = $results->getExtraData('search_api_solr_response');
+      $this->assertEquals(5, $data['grouped']['ss_type']['matches'], 'Get the total documents after grouping.');
+      $this->assertEquals(2, $data['grouped']['ss_type']['ngroups'], 'Get the number of groups after grouping.');
+      $this->assertResults([1, 4], $results, 'Grouping by type');
+    }
+    else {
+      $this->markTestSkipped("The selected backend/connector doesn't support the *search_api_grouping* feature.");
+    }
   }
 
   /**

@@ -463,7 +463,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'search_api_mlt',
       'search_api_random_sort',
       'search_api_data_type_location',
-      // 'search_api_grouping',
+      'search_api_grouping',
       // 'search_api_spellcheck',
       // 'search_api_data_type_geohash',
     ];
