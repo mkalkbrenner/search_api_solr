@@ -427,7 +427,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   public function getServerInfo($reset = FALSE) {
     $this->useTimeout();
-    return $this->getDataFromHandler('server', 'admin/info/system', $reset);
+    return $this->getDataFromHandler('admin/info/system', $reset);
   }
 
   /**
@@ -435,7 +435,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   public function getCoreInfo($reset = FALSE) {
     $this->useTimeout();
-    return $this->getDataFromHandler('core', 'admin/system', $reset);
+    return $this->getDataFromHandler($this->configuration['core'] . '/admin/system', $reset);
   }
 
   /**
@@ -443,7 +443,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   public function getLuke() {
     $this->useTimeout();
-    return $this->getDataFromHandler('core', 'admin/luke', TRUE);
+    return $this->getDataFromHandler($this->configuration['core'] . '/admin/luke', TRUE);
   }
 
   /**
@@ -464,39 +464,44 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * Gets data from a Solr endpoint using a given handler.
    *
-   * @param $endpoint_name
-   * @param $handler
+   * @param string $handler
+   *   The handler used for the API query.
    * @param bool $reset
    *   If TRUE the server will be asked regardless if a previous call is cached.
    *
-   * @return object
-   *   A response object with system information.
+   * @return array
+   *   Response data with system information.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  protected function getDataFromHandler($endpoint_name, $handler, $reset = FALSE) {
+  protected function getDataFromHandler($handler, $reset = FALSE) {
     static $previous_calls = [];
 
     $this->connect();
 
-    $endpoint = $this->solr->getEndpoint($endpoint_name);
-    $endpoint_uri = $endpoint->getBaseUri();
+    // We keep the results in a state instead of a cache because we want to
+    // access parts of this data even if Solr is temporarily not reachable and
+    // caches have been cleared.
     $state_key = 'search_api_solr.endpoint.data';
     $state = \Drupal::state();
     $endpoint_data = $state->get($state_key);
+    $server_uri = $this->getServerUri();
 
-    if (!isset($previous_calls[$endpoint_uri][$handler]) || $reset) {
+    if (!isset($previous_calls[$server_uri][$handler]) || !isset($endpoint_data[$server_uri][$handler]) || $reset) {
       // Don't retry multiple times in case of an exception.
-      $previous_calls[$endpoint_name] = TRUE;
+      $previous_calls[$server_uri][$handler] = TRUE;
 
-      if (!is_array($endpoint_data) || !isset($endpoint_data[$endpoint_uri][$handler]) || $reset) {
-        // @todo Finish https://github.com/solariumphp/solarium/pull/155 and stop
-        // abusing the ping query for this.
-        $query = $this->solr->createPing(array('handler' => $handler));
-        $endpoint_data[$endpoint_uri][$handler] = $this->execute($query, $endpoint)->getData();
+      if (!is_array($endpoint_data) || !isset($endpoint_data[$server_uri][$handler]) || $reset) {
+        $query = $this->solr->createApi([
+          'handler' => $handler,
+          'version' => Request::API_V1,
+        ]);
+        $endpoint_data[$server_uri][$handler] = $this->execute($query)->getData();
         $state->set($state_key, $endpoint_data);
       }
     }
 
-    return $endpoint_data[$endpoint_uri][$handler];
+    return $endpoint_data[$server_uri][$handler];
   }
 
   /**
