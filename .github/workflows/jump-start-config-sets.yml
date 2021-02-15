@@ -1,4 +1,4 @@
-name: Jump Start Config-Sets
+name: 8.x-1.x
 
 on:
     push:
