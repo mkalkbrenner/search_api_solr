@@ -341,8 +341,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     $form['advanced']['server_prefix'] = [
       '#type' => 'textfield',
-      '#title' => t('All index prefix'),
-      '#description' => t("By default, the index ID in the Solr server is the same as the index's machine name in Drupal. This setting will let you specify an additional prefix. Only use alphanumeric characters and underscores. Since changing the prefix makes the currently indexed data inaccessible, you should not change this variable when no data is indexed."),
+      '#title' => $this->t('All index prefix'),
+      '#description' => $this->t("By default, the index ID in the Solr server is the same as the index's machine name in Drupal. This setting will let you specify an additional prefix. Only use alphanumeric characters and underscores. Since changing the prefix makes the currently indexed data inaccessible, you should not change this variable when no data is indexed."),
       '#default_value' => $this->configuration['server_prefix'],
     ];
 
@@ -726,7 +726,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $ping = FALSE;
       }
       if ($ping) {
-        $msg = $this->t('The Solr @core could be accessed (latency: @millisecs ms).', ['@core' => $cloud ? 'collection' : 'core', '@millisecs' => $ping * 1000]);
+        $msg = $this->t('The Solr @core could be accessed (latency: @millisecs ms).', [
+          '@core' => $cloud ? 'collection' : 'core',
+          '@millisecs' => $ping * 1000,
+        ]);
       }
       else {
         $msg = $this->t('The Solr @core could not be accessed. Further data is therefore unavailable.', ['@core' => $cloud ? 'collection' : 'core']);
@@ -1009,10 +1012,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           // went into the index.
           $ret[] = $document->getFields()[$field_names['search_api_id']];
         }
-      } catch (SearchApiSolrException $e) {
+      }
+      catch (SearchApiSolrException $e) {
         if ($this->configuration['index_single_documents_fallback_count']) {
-          // It might be that a single document caused the exception. Try to index
-          // one by one and create a meaningful error message if possible.
+          // It might be that a single document caused the exception. Try to
+          // index one by one and create a meaningful error message if possible.
           $count = 0;
           foreach ($documents as $document) {
             if ($count++ < $this->configuration['index_single_documents_fallback_count']) {
@@ -1023,7 +1027,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                 $update_query->addDocument($document);
                 $connector->update($update_query, $endpoint);
                 $ret[] = $id;
-              } catch (\Exception $e) {
+              }
+              catch (\Exception $e) {
                 watchdog_exception('search_api_solr', $e, '%type while indexing item %id: @message in %function (line %line of %file).', ['%id' => $id]);
                 // We must not throw an exception because we might have indexed
                 // some documents successfully now and need to return these ids.
@@ -1038,7 +1043,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           watchdog_exception('search_api_solr', $e, "%type while indexing: @message in %function (line %line of %file).");
           throw $e;
         }
-      } catch (\Exception $e) {
+      }
+      catch (\Exception $e) {
         watchdog_exception('search_api_solr', $e, "%type while indexing: @message in %function (line %line of %file).");
         throw new SearchApiSolrException($e->getMessage(), $e->getCode(), $e);
       }
@@ -1805,6 +1811,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   The \Drupal\search_api\Query\Query object representing the executed
    *   search query.
    * @param bool $highlight
+   *   (optional) Whether to enable highlighting. Defaults to TRUE.
    *
    * @throws \Drupal\search_api\SearchApiException
    */
@@ -1829,7 +1836,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         // Ensure that required fields are returned.
         $returned_fields = array_unique(array_merge($highlight_fields, $required_fields));
         // Just highlight string and text fields to avoid Solr exceptions.
-        $highlight_fields = array_filter($highlight_fields, function($v) {
+        $highlight_fields = array_filter($highlight_fields, function ($v) {
           return preg_match('/^t.?[sm]_/', $v) || preg_match('/^s[sm]_/', $v);
         });
       }
@@ -3183,7 +3190,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   protected function createLocationFilterQuery(&$spatial) {
-    $spatial_method = (isset($spatial['method']) && in_array($spatial['method'], ['geofilt', 'bbox'])) ? $spatial['method'] : 'geofilt';
+    $allowed_spatial = ['geofilt', 'bbox'];
+    $spatial_method = (isset($spatial['method']) && in_array($spatial['method'], $allowed_spatial)) ? $spatial['method'] : 'geofilt';
     $value = $spatial['filter_query_conditions']['value'];
 
     switch ($spatial['filter_query_conditions']['operator']) {
@@ -4252,16 +4260,20 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * Sets grouping for the query.
    *
    * @param \Solarium\QueryType\Select\Query\Query $solarium_query
+   *   The Solarium query.
    * @param \Drupal\search_api\Query\QueryInterface $query
+   *   The Search API query.
    * @param array $grouping_options
+   *   The grouping options array.
    * @param array $index_fields
+   *   The field definitions from the index.
    * @param array $field_names
+   *   The Solr field names.
    *
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  protected function setGrouping(Query $solarium_query, QueryInterface $query, $grouping_options = [], $index_fields = [], $field_names = []) {
+  protected function setGrouping(Query $solarium_query, QueryInterface $query, array $grouping_options = [], array $index_fields = [], array $field_names = []) {
     if (!empty($grouping_options['use_grouping'])) {
-
       $group_fields = [];
 
       foreach ($grouping_options['fields'] as $collapse_field) {
@@ -4474,6 +4486,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @param string $name
    *   The name of the element.
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
    *
    * @return bool
    *   TRUE if an element of the given kind and name exists, FALSE otherwise.
@@ -4490,7 +4503,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $state = \Drupal::state();
     // This state is resetted once a day via cron.
     $schema_parts = $state->get('search_api_solr.endpoint.schema_parts');
-
 
     if (
       !is_array($schema_parts) ||
@@ -4556,6 +4568,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * Perform document count for a given endpoint, in total and per site / index.
    *
    * @param \Solarium\Core\Client\Endpoint $endpoint
+   *   The Solarium endpoint object.
    *
    * @return array
    *   An associative array of document counts.
@@ -4689,6 +4702,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * _version_ numbers are important for replication and checkpoints.
    *
    * @param \Solarium\Core\Client\Endpoint $endpoint
+   *   The Solarium endpoint object.
    *
    * @return array
    *   An associative array of max document versions.
@@ -4841,6 +4855,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *
    * Prevents the Solr connector from being serialized. There's no need for a
    * corresponding __wakeup() because of getSolrConnector().
+   *
    * @see getSolrConnector()
    */
   public function __sleep() {

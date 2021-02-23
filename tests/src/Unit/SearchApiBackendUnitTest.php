@@ -51,7 +51,7 @@ class SearchApiBackendUnitTest extends UnitTestCase {
   protected $backend;
 
   /**
-   *
+   * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();

@@ -257,7 +257,7 @@ class SearchApiSolrLocationTest extends SolrBackendTestBase {
       'format' => 'ints2D',
     ];
     $result = $query->execute();
-    // @codingStandardsIgnoreLine
+    // phpcs:ignore
     $heatmap = [NULL, NULL, NULL, NULL, NULL, NULL, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], NULL, [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL];
     $filter = [];
     if (version_compare($this->getSolrVersion(), '7.5', '>=')) {
@@ -321,7 +321,7 @@ class SearchApiSolrLocationTest extends SolrBackendTestBase {
       'format' => 'ints2D',
     ];
     $result = $query->execute();
-    // @codingStandardsIgnoreLine
+    // phpcs:ignore
     $heatmap = [NULL, NULL, NULL, [0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL];
     $filter = [];
     if (version_compare($this->getSolrVersion(), '7.5', '>=')) {

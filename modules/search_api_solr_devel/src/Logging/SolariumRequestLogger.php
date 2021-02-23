@@ -4,10 +4,8 @@ namespace Drupal\search_api_solr_devel\Logging;
 
 use Drupal\Component\Utility\Timer;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
-use Drupal\Component\Serialization\Json;
 use Drupal\devel\DevelDumperManagerInterface;
 use Drupal\search_api\LoggerTrait;
-use Drupal\search_api_solr\Utility\Utility;
 use Solarium\Core\Client\Adapter\AdapterHelper;
 use Solarium\Core\Event\Events;
 use Solarium\QueryType\Select\Query\Query;
@@ -59,7 +57,7 @@ class SolariumRequestLogger implements EventSubscriberInterface {
     /** @var \Solarium\Core\Event\PostCreateQuery $event */
     $query = $event->getQuery();
     if ($query instanceof Query) {
-      /** @var $query */
+      /** @var \Solarium\QueryType\Select\Query\Query $query */
       $query->getDebug();
       $query->addParam('echoParams', 'all')
         ->setOmitHeader(FALSE);
@@ -69,11 +67,11 @@ class SolariumRequestLogger implements EventSubscriberInterface {
   /**
    * Show debug message and a data object dump.
    *
-   * @param $counter int
+   * @param int $counter
    *   The current Solr query counter.
-   * @param $data mixed
+   * @param mixed $data
    *   Data to dump.
-   * @param $message string
+   * @param string $message
    *   Message to show.
    */
   public function showMessage($counter, $data, $message) {
@@ -84,7 +82,7 @@ class SolariumRequestLogger implements EventSubscriberInterface {
   /**
    * Start timer for a query.
    *
-   * @param $counter int
+   * @param int $counter
    *   The current Solr query counter.
    */
   public function timerStart($counter) {
@@ -94,8 +92,9 @@ class SolariumRequestLogger implements EventSubscriberInterface {
   /**
    * Returns timer for a query.
    *
-   * @param $counter int
+   * @param int $counter
    *   The current Solr query counter.
+   *
    * @return array
    *   The timer array.
    */
@@ -106,9 +105,10 @@ class SolariumRequestLogger implements EventSubscriberInterface {
   /**
    * Determine which Solr requests should be ignored.
    *
-   * @param $handler string
+   * @param string $handler
    *   The Solr handler. Examples: "admin/ping", "select", etc.
-   * @return boolean
+   *
+   * @return bool
    *   TRUE when we should skip debugging this query.
    */
   public function shouldIgnore($handler) {
@@ -183,4 +183,5 @@ class SolariumRequestLogger implements EventSubscriberInterface {
     // Log raw data to file (using NULL plugin)
     $this->develDumperManager->debug($debug, 'Search API Solr Debug: Response', 'default');
   }
+
 }

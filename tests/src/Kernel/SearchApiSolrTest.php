@@ -28,6 +28,11 @@ class SearchApiSolrTest extends SolrBackendTestBase {
   use SolrCommitTrait;
   use InvokeMethodTrait;
 
+  /**
+   * Languages to install.
+   *
+   * @var array
+   */
   protected $languageIds = [
     'ar' => 'ar',
     'bg' => 'bg',
@@ -134,7 +139,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     return;
 
     // @todo
-    // @codingStandardsIgnoreStart
+    // phpcs:disable
     $query = $this->buildSearch();
     $facets = [];
     $facets['body'] = [
@@ -153,7 +158,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $facets = $results->getExtraData('search_api_facets', [])['body'];
     usort($facets, [$this, 'facetCompare']);
     $this->assertEquals($expected, $facets, 'Correct facets were returned for a fulltext field.');
-    // @codingStandardsIgnoreEnd
+    // phpcs:enable
   }
 
   /**
@@ -1034,10 +1039,10 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend $backend */
     $backend = Server::load($this->serverId)->getBackend();
     $targeted_branch = $backend->getSolrConnector()->getSchemaTargetedSolrBranch();
-    if ('3.x' !== $targeted_branch) {
-      // There's no real collated field for Solr 3.x. Therefore the sorting of
-      // of "non existing" values differ.
 
+    // There's no real collated field for Solr 3.x. Therefore the sorting of
+    // of "non existing" values differ.
+    if ('3.x' !== $targeted_branch) {
       // Type multi-value string. Uses first value.
       $results = $this->buildSearch(NULL, [], [], FALSE)
         ->sort('keywords')
@@ -1148,7 +1153,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $this->assertEquals(1, $suggestions[3]->getResultsCount());
 
     // @todo spellcheck tests
-    // @codingStandardsIgnoreStart
+    // phpcs:disable
     // $query = $this->buildSearch(['articel cats doks'], [], ['body'], FALSE);
     // $query->setLanguages(['en']);
     // $suggestions = $backend->getSpellcheckSuggestions($query, $autocompleteSearch, 'doks', 'articel doks');
@@ -1162,7 +1167,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     // $this->assertEquals('e', $suggestions[0]->getSuggestionSuffix());
     // $this->assertEquals(1, $suggestions[0]->getResultsCount());
     // $this->assertEquals('es', $suggestions[1]->getSuggestionSuffix());
-    // @codingStandardsIgnoreEnd
+    // phpcs:enable
 
     if (version_compare($solr_major_version, '6', '>=')) {
       // @todo Add more suggester tests.
@@ -1329,7 +1334,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $expected_results = [
       1 => 'en',
       2 => 'en',
-      7 => LanguageInterface::LANGCODE_NOT_SPECIFIED
+      7 => LanguageInterface::LANGCODE_NOT_SPECIFIED,
     ];
     $this->assertResults($expected_results, $results, 'Search content and unspecified language for "gene".');
 
@@ -1346,7 +1351,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       4 => 'de',
       5 => 'de-at',
       6 => 'de-at',
-      7 => LanguageInterface::LANGCODE_NOT_SPECIFIED
+      7 => LanguageInterface::LANGCODE_NOT_SPECIFIED,
     ];
     $this->assertResults($expected_results, $results, 'Search all and unspecified languages for "gene".');
 
@@ -1465,7 +1470,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       }
     }
 
-    $config_name = 'name="drupal-' . SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION . '-solr-' . $solr_major_version . '.x-'. SEARCH_API_SOLR_JUMP_START_CONFIG_SET .'"';
+    $config_name = 'name="drupal-' . SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION . '-solr-' . $solr_major_version . '.x-' . SEARCH_API_SOLR_JUMP_START_CONFIG_SET . '"';
     $this->assertStringContainsString($config_name, $config_files['solrconfig.xml']);
     $this->assertStringContainsString($config_name, $config_files['schema.xml']);
     $this->assertStringContainsString($server->id(), $config_files['test.txt']);
@@ -1480,8 +1485,17 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     }
 
     $backend_config['connector_config']['jmx'] = TRUE;
-    $backend_config['disabled_field_types'] = ['text_foo_en_4_5_0', 'text_foo_en_6_0_0', 'text_de_4_5_0', 'text_de_6_0_0', 'text_de_7_0_0'];
-    $backend_config['disabled_caches'] = ['cache_document_default_7_0_0', 'cache_filter_default_7_0_0'];
+    $backend_config['disabled_field_types'] = [
+      'text_foo_en_4_5_0',
+      'text_foo_en_6_0_0',
+      'text_de_4_5_0',
+      'text_de_6_0_0',
+      'text_de_7_0_0',
+    ];
+    $backend_config['disabled_caches'] = [
+      'cache_document_default_7_0_0',
+      'cache_filter_default_7_0_0',
+    ];
     $server->setBackendConfig($backend_config);
     $server->save();
     // Reset static caches.
@@ -1529,7 +1543,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    * Data provider for testConfigGeneration method.
    */
   public function configGenerationDataProvider() {
-    // @codingStandardsIgnoreStart
+    // phpcs:disable
     return [[[
       'schema_extra_types.xml' => [
         # phonetic is currently not available for Solr <= 7.x.
@@ -1614,7 +1628,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
         'hook_search_api_solr_config_files_alter() works'
       ],
     ]]];
-    // @codingStandardsIgnoreEnd
+    // phpcs:enable
   }
 
 }

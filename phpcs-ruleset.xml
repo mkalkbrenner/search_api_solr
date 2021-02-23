@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!-- See http://pear.php.net/manual/en/package.php.php-codesniffer.annotated-ruleset.php -->
+<ruleset name="Search API Solr">
+  <description>Search API Solr coding standard</description>
+  <!--
+  To setup inspection in PHPStorm:
+    - Go to File | Settings | Editor | Inspections
+    - Create new inspection profile and enable only "PHP | Quality tools | PHP_CodeSniffer validation"
+    - Set extensions: php,module,inc,theme,install
+    - Set coding standard: Custom with path to ./phpcs-ruleset.xml
+    - Go to File | Settings | Languages & Frameworks | PHP | Quality Tools
+    - Set PHP_CodeSniffer configuration to Local with path to ./vendor/bin/phpcs
+  -->
+
+  <rule ref="./vendor/drupal/coder/coder_sniffer/Drupal/ruleset.xml">
+    <!-- Disable Drupal.Commenting.Deprecated. -->
+    <exclude name="Drupal.Commenting.Deprecated" />
+    <exclude name="Drupal.NamingConventions.ValidVariableName.LowerCamelName" />
+  </rule>
+
+  <rule ref="./vendor/drupal/coder/coder_sniffer/DrupalPractice/ruleset.xml"/>
+
+</ruleset>

@@ -419,11 +419,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
           // search_api_solr_legacy module.
           $version = '3.6.0';
           break;
+
         case '4.0.0':
           // 4.5.0 is the minimum supported Solr 4 version by the
           // search_api_solr_legacy module.
           $version = '4.5.0';
           break;
+
         case '6.0.0':
           // 6.4.0 is the minimum supported Solr version. Earlier Solr 6
           // versions should run in Solr 5 compatibility mode using the
@@ -660,13 +662,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
         $max_time = (int) $update_handler_stats['autocommit maxTime'];
         $summary['@deletes_by_id'] = (int) $update_handler_stats['deletesById'];
         $summary['@deletes_by_query'] = (int) $update_handler_stats['deletesByQuery'];
-        $summary['@core_name'] = $stats['solr-mbeans']['CORE']['core']['stats']['coreName'] ?? $this->t('No information available.');;
+        $summary['@core_name'] = $stats['solr-mbeans']['CORE']['core']['stats']['coreName'] ?? $this->t('No information available.');
         if (version_compare($solr_version, '6.4', '>=')) {
           // @see https://issues.apache.org/jira/browse/SOLR-3990
-          $summary['@index_size'] = $stats['solr-mbeans']['CORE']['core']['stats']['size'] ?? $this->t('No information available.');;
+          $summary['@index_size'] = $stats['solr-mbeans']['CORE']['core']['stats']['size'] ?? $this->t('No information available.');
         }
         else {
-          $summary['@index_size'] = $stats['solr-mbeans']['QUERYHANDLER']['/replication']['stats']['indexSize'] ?? $this->t('No information available.');;
+          $summary['@index_size'] = $stats['solr-mbeans']['QUERYHANDLER']['/replication']['stats']['indexSize'] ?? $this->t('No information available.');
         }
       }
 
@@ -720,6 +722,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * @param string $command_json
    *   The command to send encoded as JSON.
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint.
    *
    * @return array
    *   The decoded response.
@@ -908,7 +911,6 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     return $this->execute($query, $endpoint);
   }
 
-
   /**
    * {@inheritdoc}
    */
@@ -986,7 +988,8 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     $body = $e->getBody();
     $response_code = (int) $e->getCode();
     switch ((string) $response_code) {
-      case '400': // Bad Request.
+      case '400':
+        // Bad Request.
         $description = 'bad request';
         $response_decoded = Json::decode($body);
         if ($response_decoded && isset($response_decoded['error'])) {
@@ -994,16 +997,19 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
         }
         break;
 
-      case '404': // Not Found.
+      // Not Found.
+      case '404':
         $description = 'not found';
         break;
 
-      case '401': // Unauthorized.
-      case '403': // Forbidden.
+      // Unauthorized / Forbidden.
+      case '401':
+      case '403':
         $description = 'access denied';
         break;
 
-      case '500': // Internal Server Error.
+      // Internal Server Error.
+      case '500':
       case '0':
         $description = 'internal Solr server error';
         break;
@@ -1020,8 +1026,10 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * Could be overwritten by other connectors according to their needs.
    *
    * @param \Solarium\Core\Client\Endpoint $endpoint
+   *   The Solarium endpoint.
    *
    * @return string
+   *   The endpoint URI.
    */
   protected function getEndpointUri(Endpoint $endpoint): string {
     return $endpoint->getServerUri();
@@ -1171,10 +1179,15 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   public function createEndpoint(string $key, array $additional_configuration = []) {
     $this->connect();
-    $configuration = ['key' => $key, self::QUERY_TIMEOUT => $this->configuration['timeout']] + $additional_configuration + $this->configuration;
+    $configuration = [
+      'key' => $key,
+      self::QUERY_TIMEOUT => $this->configuration['timeout'],
+    ] + $additional_configuration + $this->configuration;
+
     if (Client::checkMinimal('5.2.0')) {
       unset($configuration['timeout']);
     }
+
     return $this->solr->createEndpoint($configuration, TRUE);
   }
 
@@ -1224,4 +1237,5 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   public function alterConfigZip(ZipStream $zip, string $lucene_match_version, string $server_id = '') {
   }
+
 }

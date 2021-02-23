@@ -875,7 +875,7 @@ class Utility {
    * @param array|string $keys
    *   The keys array to flatten, formatted as specified by
    *   \Drupal\search_api\Query\QueryInterface::getKeys() or a phrase string.
-   * @param ParseModeInterface $parse_mode
+   * @param \Drupal\search_api\ParseMode\ParseModeInterface|null $parse_mode
    *   (optional) The parse mode. Defaults to "terms" if null.
    *
    * @return string
@@ -1075,8 +1075,11 @@ class Utility {
    * collisions.
    *
    * @param string $checkpoint
+   *   The checkpoint ID.
    * @param string $index_id
+   *   The index ID.
    * @param string $site_hash
+   *   The site hash.
    *
    * @return string
    *   The formatted checkpoint ID.

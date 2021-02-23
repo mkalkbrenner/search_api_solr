@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\search_api_solr_defaults\Functional;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
 use Drupal\search_api\IndexInterface;
@@ -17,6 +18,7 @@ use Drupal\Tests\BrowserTestBase;
 class IntegrationTest extends BrowserTestBase {
 
   use SolrCommitTrait;
+  use StringTranslationTrait;
 
   /**
    * The profile to install as a basis for testing.
@@ -182,7 +184,7 @@ class IntegrationTest extends BrowserTestBase {
     // because there was no content type "article".
     $this->drupalGet('admin/modules');
     $this->submitForm($edit_enable, 'Install');
-    $success_text = t('Content type @content_type not found. Solr Search Defaults module could not be installed.', ['@content_type' => 'article']);
+    $success_text = $this->t('Content type @content_type not found. Solr Search Defaults module could not be installed.', ['@content_type' => 'article']);
     $this->assertSession()->pageTextContains($success_text);
   }
 

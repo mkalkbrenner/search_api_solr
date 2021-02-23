@@ -96,6 +96,8 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    *   The file name of the config zip that should be created.
    * @param string $solr_version
    *   The targeted Solr version.
+   * @param array $options
+   *   An array of options.
    *
    * @throws \Drupal\search_api\ConsoleException
    * @throws \Drupal\search_api\SearchApiException
@@ -123,6 +125,8 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @param string $indexId
    *   (optional) A search index ID, or NULL to index items for all enabled
    *   indexes.
+   * @param array $options
+   *   An array of options.
    *
    * @command search-api-solr:finalize-index
    *

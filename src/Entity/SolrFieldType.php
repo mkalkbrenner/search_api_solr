@@ -252,7 +252,6 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
       $field_type[$type] = $analyzer;
     }
 
-    /** @noinspection PhpComposerExtensionStubsInspection */
     return $pretty ?
       json_encode($field_type, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
       Json::encode($field_type);
@@ -292,7 +291,6 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    */
   public function getSpellcheckFieldTypeAsJson(bool $pretty = FALSE) {
     if ($this->spellcheck_field_type) {
-      /** @noinspection PhpComposerExtensionStubsInspection */
       return $pretty ?
         json_encode($this->spellcheck_field_type, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
         Json::encode($this->spellcheck_field_type);
@@ -315,7 +313,6 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    */
   public function getCollatedFieldTypeAsJson(bool $pretty = FALSE) {
     if ($this->collated_field_type) {
-      /** @noinspection PhpComposerExtensionStubsInspection */
       return $pretty ?
         json_encode($this->collated_field_type, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
         Json::encode($this->collated_field_type);
@@ -338,7 +335,6 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    */
   public function getUnstemmedFieldTypeAsJson(bool $pretty = FALSE) {
     if ($this->unstemmed_field_type) {
-      /** @noinspection PhpComposerExtensionStubsInspection */
       return $pretty ?
         json_encode($this->unstemmed_field_type, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
         Json::encode($this->unstemmed_field_type);
@@ -388,13 +384,18 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   }
 
   /**
-   * Serializes a filed type as XML fragment as required by Solr.
+   * Serializes a field type to XML fragment as required by Solr.
    *
    * @param array $field_type
+   *   The Solr Field Type definition.
    * @param string $additional_label
+   *   (optional) An additional label suffix.
    * @param bool $add_comment
+   *   (optional) Whether to add a comment to identify the field.
+   *   Defaults to TRUE.
    *
    * @return string
+   *   The resulting XML string for the given field type.
    */
   protected function getSubFieldTypeAsXml(array $field_type, string $additional_label = '', bool $add_comment = TRUE) {
     $formatted_xml_string = $this->buildXmlFromArray('fieldType', $field_type);
@@ -516,6 +517,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * Returns the collated field definition.
    *
    * @param int|null $solr_major_version
+   *   (optional) The Solr major version.
    *
    * @return array|null
    *   The array containing the collated field definition or null if is

@@ -250,12 +250,13 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
    * Returns the formatted XML for solrconfig_extra.xml.
    *
    * @param int|null $solr_major_version
+   *   (optional) The Solr major version.
    *
    * @throws \Drupal\search_api\SearchApiException
    */
   public function getSchemaExtraFieldsXml(?int $solr_major_version = NULL) {
     $xml = '';
-    /* @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
+    /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
     foreach ($this->getEnabledEntities() as $solr_field_type) {
       foreach ($solr_field_type->getStaticFields() as $static_field) {
         $xml .= '<field ';

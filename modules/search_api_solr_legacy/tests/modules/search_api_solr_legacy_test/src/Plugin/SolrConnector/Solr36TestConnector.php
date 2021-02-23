@@ -122,4 +122,5 @@ class Solr36TestConnector extends Solr36Connector {
     $search_api_index_storage = \Drupal::entityTypeManager()->getStorage('search_api_index');
     $search_api_index_storage->resetCache();
   }
+
 }

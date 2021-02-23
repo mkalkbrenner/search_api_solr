@@ -2,6 +2,7 @@
 
 /**
  * @file
+ * Post update functions for Search API Solr.
  */
 
 /**

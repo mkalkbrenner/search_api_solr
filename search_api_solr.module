@@ -2,6 +2,7 @@
 
 /**
  * @file
+ * Search API Solr module.
  */
 
 use Drupal\Core\Url;
@@ -116,6 +117,7 @@ function search_api_solr_cron() {
  * Get the default third party settings of an index for Solr.
  *
  * @return array
+ *   Associative array containing default third party settings.
  */
 function search_api_solr_default_index_third_party_settings() {
   return [
@@ -172,15 +174,17 @@ function search_api_solr_default_index_third_party_settings() {
  * Merges the default third party settings to those of an index for Solr.
  *
  * @param array $third_party_settings
+ *   Third party settings for an index to merge with the default settings.
  *
  * @return array
+ *   The resulting third party settings array.
  */
 function search_api_solr_merge_default_index_third_party_settings(array $third_party_settings) {
   return ArrayUtils::merge(search_api_solr_default_index_third_party_settings(), $third_party_settings, TRUE);
 }
 
 /**
- * Implements hook_form_FORM_alter.
+ * Implements hook_form_FORM_ID_alter() for search_api_index_form.
  */
 function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   // We need to restrict by form ID here because this function is also called
@@ -338,7 +342,7 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
     $form['third_party_settings']['search_api_solr']['highlighter']['highlightMultiTerm'] = [
       '#type' => 'checkbox',
       '#title' => t('highlightMultiTerm'),
-      '#description' => t('If set, Solr will highlight wildcard queries (and other MultiTermQuery subclasses). If false, they won\'t be highlighted at all.'),
+      '#description' => t("If set, Solr will highlight wildcard queries (and other MultiTermQuery subclasses). If false, they won't be highlighted at all."),
       '#default_value' => $settings['highlighter']['highlightMultiTerm'],
     ];
 
@@ -461,9 +465,13 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
 
     $form['third_party_settings']['search_api_solr']['mlt']['interestingTerms'] = [
       '#type' => 'select',
-      '#options' => ['none' => 'none', 'list' => 'list', 'details' => 'details'],
+      '#options' => [
+        'none' => t('None'),
+        'list' => t('List'),
+        'details' => t('Details'),
+      ],
       '#title' => t('interestingTerms'),
-      '#description' => t('Controls how the MoreLikeThis component presents the "interesting" terms (the top TF/IDF terms) for the query. Supports three settings. The setting "list" lists the terms. The setting "none" lists no terms. The setting "details" lists the terms along with the boost value used for each term. Unless mlt.boost=true, all terms will have boost=1.0.'),
+      '#description' => t('Controls how the MoreLikeThis component presents the "interesting" terms (the top TF/IDF terms) for the query. Supports three settings. The setting "List" lists the terms. The setting "None" lists no terms. The setting "Details" lists the terms along with the boost value used for each term. Unless mlt.boost=true, all terms will have boost=1.0.'),
       '#default_value' => $settings['mlt']['interestingTerms'],
     ];
 
@@ -524,7 +532,7 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
 }
 
 /**
- *
+ * Form validation handler for search_api_index_form.
  */
 function search_api_solr_form_search_api_index_form_validate_server(&$element, FormStateInterface $form_state, $form) {
   if ($server = Server::load($form_state->getValue('server'))) {
@@ -552,16 +560,7 @@ function search_api_solr_form_search_api_index_form_validate_server(&$element, F
 }
 
 /**
- * Implements hook_search_api_views_handler_mapping_alter()
- *
- * @param array $mapping
- *   An associative array with data types as the keys and Views field data
- *   definitions as the values. In addition to all normally defined data types,
- *   keys can also be "options" for any field with an options list, "entity" for
- *   general entity-typed fields or "entity:ENTITY_TYPE" (with "ENTITY_TYPE"
- *   being the machine name of an entity type) for entities of that type.
- *
- * @see _search_api_views_handler_mapping()
+ * Implements hook_search_api_views_handler_mapping_alter().
  */
 function search_api_solr_search_api_views_handler_mapping_alter(&$mapping) {
   $mapping['solr_text_omit_norms'] =
@@ -608,8 +607,10 @@ function search_api_solr_install_missing_field_types() {
  * Get all Search API servers that use a Solr backend.
  *
  * @param bool $only_active
+ *   (optional) Return only active servers. Defaults to TRUE.
  *
  * @return \Drupal\search_api\Entity\ServerInterface[]
+ *   An array of Search API server entities.
  *
  * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -636,10 +637,6 @@ function search_api_solr_get_servers($only_active = TRUE) {
  * Implements hook_entity_operation().
  *
  * Adds an operation to Solr servers to directly generate and download a config.
- *
- * @param \Drupal\Core\Entity\EntityInterface $entity
- *
- * @return array
  *
  * @throws \Drupal\search_api\SearchApiException
  */
@@ -680,10 +677,10 @@ function search_api_solr_entity_operation(EntityInterface $entity) {
 }
 
 /**
- *
+ * Implements hook_entity_type_alter().
  */
 function search_api_solr_entity_type_alter(array &$entity_types) {
-  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
   $entity_types['search_api_index']->setFormClass('solr_multisite_clone', IndexSolrMultisiteCloneForm::class);
   $entity_types['search_api_index']->setFormClass('solr_multisite_update', IndexSolrMultisiteUpdateForm::class);
 }
@@ -692,6 +689,7 @@ function search_api_solr_entity_type_alter(array &$entity_types) {
  * Returns visibility state status values.
  *
  * @return array
+ *   Array of options.
  *
  * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
