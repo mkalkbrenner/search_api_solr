@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_solr\Plugin\search_api\backend;
 
+use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Config\Config;
@@ -43,8 +44,10 @@ use Drupal\search_api\Utility\Utility as SearchApiUtility;
 use Drupal\search_api_autocomplete\SearchInterface;
 use Drupal\search_api_autocomplete\Suggestion\SuggestionFactory;
 use Drupal\search_api_solr\Entity\SolrFieldType;
+use Drupal\search_api_solr\Event\PreExtractFacetsEvent;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
+use Drupal\search_api_solr\Solarium\EventDispatcher\Psr14Bridge;
 use Drupal\search_api_solr\Solarium\Result\StreamDocument;
 use Drupal\search_api_solr\SolrAutocompleteInterface;
 use Drupal\search_api_solr\SolrBackendInterface;
@@ -159,9 +162,16 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   protected $entityTypeManager;
 
   /**
+   * The event dispatcher.
+   *
+   * @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
+   */
+  protected $eventDispatcher;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, Config $search_api_solr_settings, LanguageManagerInterface $language_manager, SolrConnectorPluginManager $solr_connector_plugin_manager, FieldsHelperInterface $fields_helper, DataTypeHelperInterface $dataTypeHelper, Helper $query_helper, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, Config $search_api_solr_settings, LanguageManagerInterface $language_manager, SolrConnectorPluginManager $solr_connector_plugin_manager, FieldsHelperInterface $fields_helper, DataTypeHelperInterface $dataTypeHelper, Helper $query_helper, EntityTypeManagerInterface $entityTypeManager, ContainerAwareEventDispatcher $eventDispatcher) {
     $this->moduleHandler = $module_handler;
     $this->searchApiSolrSettings = $search_api_solr_settings;
     $this->languageManager = $language_manager;
@@ -170,6 +180,14 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $this->dataTypeHelper = $dataTypeHelper;
     $this->queryHelper = $query_helper;
     $this->entityTypeManager = $entityTypeManager;
+    if (class_exists('\Drupal\Component\EventDispatcher\Event')) {
+      // Drupal >= 9.1.
+      $this->eventDispatcher = $eventDispatcher;
+    }
+    else {
+      // Drupal <= 9.0.
+      $this->eventDispatcher = new Psr14Bridge($eventDispatcher);
+    }
 
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
@@ -189,7 +207,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $container->get('search_api.fields_helper'),
       $container->get('search_api.data_type_helper'),
       $container->get('solarium.query_helper'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('event_dispatcher')
     );
   }
 
@@ -570,7 +589,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         throw new SearchApiException("The Solr Connector with ID '$this->configuration['connector']' could not be retrieved.");
       }
     }
-    return $this->solrConnector;
+
+    return $this->solrConnector->setEventDispatcher($this->eventDispatcher);
   }
 
   /**
@@ -2690,6 +2710,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @throws \Drupal\search_api\SearchApiException
    */
   protected function extractFacets(QueryInterface $query, Result $resultset) {
+    $this->eventDispatcher->dispatch(new PreExtractFacetsEvent($query, $resultset));
+
     if (!$resultset->getFacetSet()) {
       return [];
     }
@@ -4845,14 +4867,33 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   /**
    * Implements the magic __sleep() method.
    *
-   * Prevents the Solr connector from being serialized. There's no need for a
-   * corresponding __wakeup() because of getSolrConnector().
+   * Prevents the Solr connector from being serialized. For Drupal >= 9.1
+   * there's no need for a corresponding __wakeup() because of
+   * getSolrConnector(). But for Drupal <= 9.0.
    * @see getSolrConnector()
    */
   public function __sleep() {
     $properties = array_flip(parent::__sleep());
+
     unset($properties['solrConnector']);
+    if (isset($properties['eventDispatcher'])) {
+      // Drupal <= 9.0.
+      unset($properties['eventDispatcher']);
+    }
+
     return array_keys($properties);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __wakeup() {
+    parent::__wakeup();
+
+    if (!$this->eventDispatcher) {
+      // Drupal <= 9.0.
+      $this->eventDispatcher = new Psr14Bridge(\Drupal::service('event_dispatcher'));
+    }
   }
 
 }

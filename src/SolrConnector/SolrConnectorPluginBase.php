@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_solr\SolrConnector;
 
+use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
@@ -12,7 +13,6 @@ use Drupal\search_api\Plugin\ConfigurablePluginBase;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
-use Drupal\search_api_solr\Solarium\EventDispatcher\Psr14Bridge;
 use Drupal\search_api_solr\SolrConnectorInterface;
 use Solarium\Client;
 use Solarium\Core\Client\Adapter\Curl;
@@ -26,7 +26,6 @@ use Solarium\Exception\HttpException;
 use Solarium\QueryType\Extract\Result as ExtractResult;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 use Solarium\QueryType\Select\Query\Query;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use ZipStream\ZipStream;
 
 /**
@@ -67,7 +66,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * The event dispatcher.
    *
-   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
+   * @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
    */
   protected $eventDispatcher;
 
@@ -81,12 +80,9 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $plugin = parent::create($container, $configuration, $plugin_id, $plugin_definition);
-
-    $plugin->eventDispatcher = new Psr14Bridge();
-
-    return $plugin;
+  public function setEventDispatcher(ContainerAwareEventDispatcher $eventDispatcher) : SolrConnectorInterface {
+    $this->eventDispatcher = $eventDispatcher;
+    return $this;
   }
 
   /**

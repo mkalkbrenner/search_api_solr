@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_solr;
 
+use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Solarium\Core\Client\Endpoint;
@@ -22,6 +23,13 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   const INDEX_TIMEOUT = 'index_timeout';
   const OPTIMIZE_TIMEOUT = 'optimize_timeout';
   const FINALIZE_TIMEOUT = 'finalize_timeout';
+
+  /**
+   * Sets the event dispatcher.
+   *
+   * @param \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher $eventDispatcher
+   */
+  public function setEventDispatcher(ContainerAwareEventDispatcher $eventDispatcher): SolrConnectorInterface;
 
   /**
    * Returns TRUE for Cloud.
