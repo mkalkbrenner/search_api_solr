@@ -4871,6 +4871,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   public function __sleep() {
     $properties = array_flip(parent::__sleep());
     unset($properties['solrConnector']);
+    unset($properties['eventDispatcher']);
     return array_keys($properties);
   }
 
