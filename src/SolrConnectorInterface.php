@@ -11,6 +11,7 @@ use Solarium\Core\Query\QueryInterface;
 use Solarium\QueryType\Extract\Result as ExtractResult;
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use ZipStream\ZipStream;
 
 /**
@@ -22,6 +23,13 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   const INDEX_TIMEOUT = 'index_timeout';
   const OPTIMIZE_TIMEOUT = 'optimize_timeout';
   const FINALIZE_TIMEOUT = 'finalize_timeout';
+
+  /**
+   * Sets the event dispatcher.
+   *
+   * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $eventDispatcher
+   */
+  public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): SolrConnectorInterface;
 
   /**
    * Returns TRUE for Cloud.
