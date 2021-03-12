@@ -24,6 +24,7 @@ use Drupal\Core\TypedData\DataDefinition;
 use Drupal\Core\TypedData\ListDataDefinitionInterface;
 use Drupal\Core\Url;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\search_api\Event\PreExtractFacetsEvent;
 use Drupal\search_api\Item\Field;
 use Drupal\search_api\Item\FieldInterface;
 use Drupal\search_api\Item\ItemInterface;
@@ -2709,6 +2710,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @throws \Drupal\search_api\SearchApiException
    */
   protected function extractFacets(QueryInterface $query, Result $resultset) {
+    $this->eventDispatcher->dispatch(new PreExtractFacetsEvent($query, $resultset));
+
     if (!$resultset->getFacetSet()) {
       return [];
     }
