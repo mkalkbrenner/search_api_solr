@@ -100,10 +100,10 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
     if (!empty($stats)) {
       $solr_version = $this->getSolrVersion(TRUE);
       if (version_compare($solr_version, '7.0', '>=')) {
-        $summary['@collection_name'] = $stats['solr-mbeans']['CORE']['core']['stats']['CORE.collection'];
+        $summary['@collection_name'] = $stats['solr-mbeans']['CORE']['core']['stats']['CORE.collection'] ?? '';
       }
       else {
-        $summary['@core_name'] = $stats['solr-mbeans']['CORE']['core']['stats']['collection'];
+        $summary['@core_name'] = $stats['solr-mbeans']['CORE']['core']['stats']['collection'] ?? '';
       }
     }
 
