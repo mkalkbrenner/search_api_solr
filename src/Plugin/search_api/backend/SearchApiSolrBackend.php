@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_solr\Plugin\search_api\backend;
 
+use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Config\Config;
@@ -74,7 +75,6 @@ use Solarium\QueryType\Select\Result\Result;
 use Solarium\QueryType\Update\Query\Document;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Laminas\Stdlib\ArrayUtils;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Apache Solr backend for search api.
@@ -163,14 +163,14 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   /**
    * The event dispatcher.
    *
-   * @var \Symfony\Contracts\EventDispatcher\EventDispatcherInterface|null
+   * @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
    */
   protected $eventDispatcher;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, Config $search_api_solr_settings, LanguageManagerInterface $language_manager, SolrConnectorPluginManager $solr_connector_plugin_manager, FieldsHelperInterface $fields_helper, DataTypeHelperInterface $dataTypeHelper, Helper $query_helper, EntityTypeManagerInterface $entityTypeManager, EventDispatcherInterface $eventDispatcher) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, Config $search_api_solr_settings, LanguageManagerInterface $language_manager, SolrConnectorPluginManager $solr_connector_plugin_manager, FieldsHelperInterface $fields_helper, DataTypeHelperInterface $dataTypeHelper, Helper $query_helper, EntityTypeManagerInterface $entityTypeManager, ContainerAwareEventDispatcher $eventDispatcher) {
     $this->moduleHandler = $module_handler;
     $this->searchApiSolrSettings = $search_api_solr_settings;
     $this->languageManager = $language_manager;
