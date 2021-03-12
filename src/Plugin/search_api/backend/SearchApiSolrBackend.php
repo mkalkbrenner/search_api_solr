@@ -4675,9 +4675,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
     }
     else {
-      $connector = $this->getSolrConnector();
-      $connector_endpoint = $connector->getEndpoint();
-      return $this->doGetMaxDocumentVersions($connector_endpoint);
+      // Try to list versions of orphaned or foreign documents.
+      try {
+        $connector = $this->getSolrConnector();
+        $connector_endpoint = $connector->getEndpoint();
+        return $this->doGetMaxDocumentVersions($connector_endpoint);
+      }
+      catch (\Exception $e) {
+        // Do nothing.
+      }
     }
 
     return $document_versions;
