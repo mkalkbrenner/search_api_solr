@@ -4864,15 +4864,33 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   /**
    * Implements the magic __sleep() method.
    *
-   * Prevents the Solr connector from being serialized. There's no need for a
-   * corresponding __wakeup() because of getSolrConnector().
+   * Prevents the Solr connector from being serialized. For Drupal >= 9.1
+   * there's no need for a corresponding __wakeup() because of
+   * getSolrConnector(). But for Drupal <= 9.0.
    * @see getSolrConnector()
    */
   public function __sleep() {
     $properties = array_flip(parent::__sleep());
+
     unset($properties['solrConnector']);
-    unset($properties['eventDispatcher']);
+    if (isset($properties['eventDispatcher'])) {
+      // Drupal <= 9.0.
+      unset($properties['eventDispatcher']);
+    }
+
     return array_keys($properties);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __wakeup() {
+    parent::__wakeup();
+
+    if (!$this->eventDispatcher) {
+      // Drupal <= 9.0.
+      $this->eventDispatcher = new Psr14Bridge(\Drupal::service('event_dispatcher'));
+    }
   }
 
 }
