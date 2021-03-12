@@ -185,7 +185,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
     else {
       // Drupal <= 9.0.
-      $this->eventDispatcher = new Psr14Bridge();
+      $this->eventDispatcher = new Psr14Bridge($eventDispatcher);
     }
 
     parent::__construct($configuration, $plugin_id, $plugin_definition);

@@ -16,8 +16,8 @@ final class Psr14Bridge extends ContainerAwareEventDispatcher implements EventDi
    */
   protected $dispatcher;
 
-  public function __construct() {
-    $this->dispatcher = \Drupal::service('event_dispatcher');
+  public function __construct(ContainerAwareEventDispatcher $eventDispatcher) {
+    $this->dispatcher = $eventDispatcher;
   }
 
   public function dispatch($event, Event $null = NULL) {
