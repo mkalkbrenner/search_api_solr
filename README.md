@@ -5,7 +5,8 @@ The search_api_solr module manages its dependencies and class loader via
 composer. So if you simply downloaded this module from drupal.org you have to
 delete it and install it again via composer!
 
-Simply change into the Drupal directory and use composer to install search_api_solr:
+Simply change into the Drupal directory and use composer to install
+search_api_solr:
 
 ```
 cd $DRUPAL
@@ -67,8 +68,9 @@ But the Search API Solr Search module will create the correct configs for you!
 4. Copy the config.zip to the Solr server and extract. The unpacked
    configuration directory is named `$CONF` in these instructions.
 
-**_Now_** you can create a Solr core using this config-set on a running Solr server.
-There're different ways to do so. For most Linux distributions you can run
+**_Now_** you can create a Solr core using this config-set on a running Solr
+server. There're different ways to do so. For most Linux distributions you can
+run
 ```
 sudo -u solr $SOLR/bin/solr create_core -c $CORE -d $CONF -n $CORE
 ```
@@ -146,6 +148,9 @@ docker-compose.yml files for various Solr versions. These use default
 config-sets that will work for most drupal use-cases.
 This variant is suitable for evaluation and development purposes.
 
+These config-sets are also suitable for standard production use-cases without
+the need for advanced features or customizations.
+
 ![Jump Start Config-Sets](https://github.com/mkalkbrenner/search_api_solr/workflows/Jump%20Start%20Config-Sets/badge.svg?branch=4.x)
 
 Search API Solr features
@@ -183,6 +188,11 @@ Regarding third-party features, the following are supported:
   - Introduced by module: search_api_attachments
 - location
   - Introduced by module: search_api_location
+- NLP
+  - Introduced by module: search_api_solr_nlp
+  - Adds more fulltext field types based on natural language processing, for
+    example field types that filter all word which aren't nouns. This is great
+    for auto completion.
 
 If you feel some service option is missing, or have other ideas for improving
 this implementation, please file a feature request in the project's issue queue,
@@ -221,9 +231,9 @@ This module includes:
   - Solr Cloud Connector
   - Solr Cloud BasicAuth Connector
 
-There are service provider specific connectors available, for example from Acquia
-and platform.sh. Please contact your provider for details if you don't run your
-own Solr server.
+There are service provider specific connectors available, for example from
+Acquia, Pantheon, hosted solr, platform.sh, and others. Please contact your
+provider for details if you don't run your own Solr server.
 
 Customizing your Solr server
 ----------------------------
