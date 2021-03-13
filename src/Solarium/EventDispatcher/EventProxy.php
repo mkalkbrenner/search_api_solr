@@ -2,20 +2,19 @@
 
 namespace Drupal\search_api_solr\Solarium\EventDispatcher;
 
-use Symfony\Component\EventDispatcher\Event as LegacyEvent;
-use Symfony\Contracts\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
- * A proxy for events defined by symfony contracts
+ * A proxy for events defined by symfony contracts to be used with older Drupal.
  */
-class EventProxy extends LegacyEvent
+class EventProxy extends Event
 {
   /**
    * @var \Symfony\Contracts\EventDispatcher\Event
    */
   protected $event;
 
-  public function __construct(Event $event) {
+  public function __construct($event) {
     $this->event = $event;
   }
 
