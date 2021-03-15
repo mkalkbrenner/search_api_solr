@@ -44,7 +44,13 @@ use Drupal\search_api\Utility\Utility as SearchApiUtility;
 use Drupal\search_api_autocomplete\SearchInterface;
 use Drupal\search_api_autocomplete\Suggestion\SuggestionFactory;
 use Drupal\search_api_solr\Entity\SolrFieldType;
+use Drupal\search_api_solr\Event\PostCreateIndexDocumentEvent;
+use Drupal\search_api_solr\Event\PostCreateIndexDocumentsEvent;
+use Drupal\search_api_solr\Event\PostExtractFacetsEvent;
+use Drupal\search_api_solr\Event\PostSetFacetsEvent;
+use Drupal\search_api_solr\Event\PreCreateIndexDocumentEvent;
 use Drupal\search_api_solr\Event\PreExtractFacetsEvent;
+use Drupal\search_api_solr\Event\PreSetFacetsEvent;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Drupal\search_api_solr\Solarium\EventDispatcher\Psr14Bridge;
@@ -1105,6 +1111,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
       /** @var \Solarium\QueryType\Update\Query\Document $doc */
       $doc = $update_query->createDocument();
+      $this->eventDispatcher->dispatch(new PreCreateIndexDocumentEvent($item, $doc));
       $doc->setField('timestamp', $request_time);
       $doc->setField('id', $this->createId($site_hash, $index_id, $id));
       $doc->setField('index_id', $index_id);
@@ -1202,11 +1209,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
 
       if ($doc) {
+        $this->eventDispatcher->dispatch(new PostCreateIndexDocumentEvent($item, $doc));
         $documents[] = $doc;
       }
     }
 
     // Let other modules alter documents before sending them to solr.
+    $this->eventDispatcher->dispatch(new PostCreateIndexDocumentsEvent($items, $documents));
     $this->moduleHandler->alter('search_api_solr_documents', $documents, $index, $items);
 
     return $documents;
@@ -2840,6 +2849,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
     }
 
+    $this->eventDispatcher->dispatch(new PostExtractFacetsEvent($query, $resultset, $facets));
+
     return $facets;
   }
 
@@ -3287,6 +3298,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   protected function setFacets(QueryInterface $query, Query $solarium_query) {
     static $index_fulltext_fields = [];
 
+    $this->eventDispatcher->dispatch(new PreSetFacetsEvent($query, $solarium_query));
+
     $facet_key = Client::checkMinimal('5.2') ? 'local_key' : 'key';
 
     $facets = $query->getOption('search_api_facets', []);
@@ -3389,6 +3402,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $facet_field->setMinCount($info['min_count']);
       }
     }
+
+    $this->eventDispatcher->dispatch(new PostSetFacetsEvent($query, $solarium_query));
   }
 
   /**
