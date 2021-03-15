@@ -44,6 +44,8 @@ use Drupal\search_api\Utility\Utility as SearchApiUtility;
 use Drupal\search_api_autocomplete\SearchInterface;
 use Drupal\search_api_autocomplete\Suggestion\SuggestionFactory;
 use Drupal\search_api_solr\Entity\SolrFieldType;
+use Drupal\search_api_solr\Event\PostCreateIndexDocumentEvent;
+use Drupal\search_api_solr\Event\PostCreateIndexDocumentsEvent;
 use Drupal\search_api_solr\Event\PostExtractFacetsEvent;
 use Drupal\search_api_solr\Event\PostSetFacetsEvent;
 use Drupal\search_api_solr\Event\PreExtractFacetsEvent;
@@ -1108,6 +1110,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
       /** @var \Solarium\QueryType\Update\Query\Document $doc */
       $doc = $update_query->createDocument();
+      $this->eventDispatcher->dispatch(new PostCreateIndexDocumentEvent($item, $doc));
       $doc->setField('timestamp', $request_time);
       $doc->setField('id', $this->createId($site_hash, $index_id, $id));
       $doc->setField('index_id', $index_id);
@@ -1205,11 +1208,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
 
       if ($doc) {
+        $this->eventDispatcher->dispatch(new PostCreateIndexDocumentEvent($item, $doc));
         $documents[] = $doc;
       }
     }
 
     // Let other modules alter documents before sending them to solr.
+    $this->eventDispatcher->dispatch(new PostCreateIndexDocumentsEvent($items, $documents));
     $this->moduleHandler->alter('search_api_solr_documents', $documents, $index, $items);
 
     return $documents;
