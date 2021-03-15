@@ -44,7 +44,10 @@ use Drupal\search_api\Utility\Utility as SearchApiUtility;
 use Drupal\search_api_autocomplete\SearchInterface;
 use Drupal\search_api_autocomplete\Suggestion\SuggestionFactory;
 use Drupal\search_api_solr\Entity\SolrFieldType;
+use Drupal\search_api_solr\Event\PostExtractFacetsEvent;
+use Drupal\search_api_solr\Event\PostSetFacetsEvent;
 use Drupal\search_api_solr\Event\PreExtractFacetsEvent;
+use Drupal\search_api_solr\Event\PreSetFacetsEvent;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Drupal\search_api_solr\Solarium\EventDispatcher\Psr14Bridge;
@@ -2840,6 +2843,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
     }
 
+    $this->eventDispatcher->dispatch(new PostExtractFacetsEvent($query, $resultset, $facets));
+
     return $facets;
   }
 
@@ -3287,6 +3292,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   protected function setFacets(QueryInterface $query, Query $solarium_query) {
     static $index_fulltext_fields = [];
 
+    $this->eventDispatcher->dispatch(new PreSetFacetsEvent($query, $solarium_query));
+
     $facet_key = Client::checkMinimal('5.2') ? 'local_key' : 'key';
 
     $facets = $query->getOption('search_api_facets', []);
@@ -3389,6 +3396,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $facet_field->setMinCount($info['min_count']);
       }
     }
+
+    $this->eventDispatcher->dispatch(new PostSetFacetsEvent($query, $solarium_query));
   }
 
   /**
