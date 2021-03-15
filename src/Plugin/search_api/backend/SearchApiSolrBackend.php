@@ -48,7 +48,6 @@ use Drupal\search_api_solr\Event\PostCreateIndexDocumentEvent;
 use Drupal\search_api_solr\Event\PostCreateIndexDocumentsEvent;
 use Drupal\search_api_solr\Event\PostExtractFacetsEvent;
 use Drupal\search_api_solr\Event\PostSetFacetsEvent;
-use Drupal\search_api_solr\Event\PreCreateIndexDocumentEvent;
 use Drupal\search_api_solr\Event\PreExtractFacetsEvent;
 use Drupal\search_api_solr\Event\PreSetFacetsEvent;
 use Drupal\search_api_solr\SearchApiSolrException;
