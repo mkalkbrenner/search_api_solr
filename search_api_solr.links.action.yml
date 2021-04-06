@@ -43,3 +43,9 @@ solr_configset.config_zip:
     - entity.solr_request_handler.collection
     - entity.solr_request_dispatcher.collection
     - entity.search_api_server.canonical
+
+solr_configset.current_config_zip:
+  route_name: 'solr_configset.current_config_zip'
+  title: 'Get current config.zip from Solr server'
+  appears_on:
+    - search_api_solr.solr_config_files
