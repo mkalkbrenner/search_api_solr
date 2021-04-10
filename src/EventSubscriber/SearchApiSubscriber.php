@@ -44,7 +44,7 @@ class SearchApiSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * Subscribed events getter.
+   * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
     // Workaround to avoid a fatal error during site install in some cases.
