@@ -204,8 +204,8 @@
 <dynamicField name="tm_X3b_ja_*" type="text_ja" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />
 <dynamicField name="tos_X3b_ja_*" type="text_ja" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="true" />
 <dynamicField name="tom_X3b_ja_*" type="text_ja" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="true" />
-<dynamicField name="tus_X3b_ja_*" type="text_ja" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />
-<dynamicField name="tum_X3b_ja_*" type="text_ja" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />
+<dynamicField name="tus_X3b_ja_*" type="text_unstemmed_ja" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />
+<dynamicField name="tum_X3b_ja_*" type="text_unstemmed_ja" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />
 <dynamicField name="spellcheck_ja*" type="text_spell_ja" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="true" />
 <dynamicField name="sort_X3b_ja_*" type="collated_ja" stored="false" indexed="false" docValues="true" />
 <dynamicField name="ts_X3b_und_*" type="text_und" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />
