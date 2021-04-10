@@ -40,8 +40,11 @@ field_type:
     -
       type: query
       tokenizer:
-        class: solr.JapaneseBaseFormFilterFactory
+        class: solr.JapaneseTokenizerFactory
+        mode: search
       filters:
+        -
+          class: solr.JapaneseBaseFormFilterFactory
         -
           class: solr.JapanesePartOfSpeechStopFilterFactory
           tags: stoptags_ja.txt
