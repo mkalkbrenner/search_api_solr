@@ -581,4 +581,4 @@ text_files:
     #未知語
     #
     ##### End of file
-  stopwords: { }
+  stopwords: |
