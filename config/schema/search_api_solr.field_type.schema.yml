@@ -108,6 +108,9 @@ search_api_solr.solr_field_type.*:
         nouns:
           type: string
           label: 'Nouns'
+        stoptags:
+          type: string
+          label: 'Stop tags'
 
 search_api_solr.solr_common_field_type:
   type: mapping
