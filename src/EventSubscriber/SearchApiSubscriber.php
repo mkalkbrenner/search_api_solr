@@ -13,19 +13,11 @@ class SearchApiSubscriber implements EventSubscriberInterface {
   /**
    * Adds the mapping to treat some Solr special fields as fulltext in views.
    *
-   * @param mixed $event
+   * @param \Drupal\search_api\Event\MappingViewsFieldHandlersEvent $event
    *   The Search API event.
-   * @param array $mapping
-   *   An associative array with data types as the keys and Views field data
-   *   definitions as the values. In addition to all normally defined data
-   *   types, keys can also be "options" for any field with an options list,
-   *   "entity" for general entity-typed fields or "entity:ENTITY_TYPE"
-   *   (with "ENTITY_TYPE" being the machine name of an entity type)
-   *   for entities of that type.
-   *
-   * @see Drupal/search_api/src/Event/SearchApiEvents.php
    */
-  public function onMappingViewsFiledHandlers($event, array &$mapping) {
+  public function onMappingViewsFieldHandlers($event) {
+    $mapping = & $event->getFieldHandlerMapping();
 
     $mapping['solr_text_omit_norms'] =
     $mapping['solr_text_suggester'] =
@@ -54,7 +46,7 @@ class SearchApiSubscriber implements EventSubscriberInterface {
     }
 
     return [
-      SearchApiEvents::MAPPING_VIEWS_FIELD_HANDLERS => 'onMappingViewsFiledHandlers',
+      SearchApiEvents::MAPPING_VIEWS_FIELD_HANDLERS => 'onMappingViewsFieldHandlers',
     ];
 
   }
