@@ -9,6 +9,12 @@ services:
     tags:
       - {name: event_subscriber}
 
+  search_api_solr.search_api_subscriber:
+    class: Drupal\search_api_solr\EventSubscriber\SearchApiSubscriber
+    arguments: []
+    tags:
+      - { name: event_subscriber }
+
   search_api_solr.local_action_access_check:
     class: Drupal\search_api_solr\Access\LocalActionAccessCheck
     arguments: ['@current_user']
