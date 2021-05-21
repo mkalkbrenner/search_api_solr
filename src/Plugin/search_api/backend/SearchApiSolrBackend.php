@@ -51,6 +51,7 @@ use Drupal\search_api_solr\Event\PostSetFacetsEvent;
 use Drupal\search_api_solr\Event\PreCreateIndexDocumentEvent;
 use Drupal\search_api_solr\Event\PreExtractFacetsEvent;
 use Drupal\search_api_solr\Event\PreSetFacetsEvent;
+use Drupal\search_api_solr\Plugin\search_api\processor\BoostMoreRecent;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Drupal\search_api_solr\Solarium\EventDispatcher\Psr14Bridge;
@@ -1630,7 +1631,16 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $sorts = $solarium_query->getSorts();
             $relevance_field = reset($field_names['search_api_relevance']);
             if (isset($sorts[$relevance_field])) {
-              $flatten_query[] = '{!boost b=boost_document}';
+              if ($boosts = $query->getOption('solr_boost_more_recent', [])) {
+                $sum[] = 'boost_document';
+                foreach ($boosts as $field_id => $boost) {
+                  $sum[] = str_replace(BoostMoreRecent::FIELD_PLACEHOLDER, reset($field_names[$field_id]), $boost);
+                }
+                $flatten_query[] = '{!boost b=sum(' . implode(',', $sum). ')}';
+              }
+              else {
+                $flatten_query[] = '{!boost b=boost_document}';
+              }
               // @todo Remove condition together with search_api_solr_legacy.
               if (version_compare($connector->getSolrMajorVersion(), '6', '>=')) {
                 // Since Solr 6 we could use payload_score!
