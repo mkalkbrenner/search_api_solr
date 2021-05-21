@@ -1634,7 +1634,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               if ($boosts = $query->getOption('solr_boost_more_recent', [])) {
                 $sum[] = 'boost_document';
                 foreach ($boosts as $field_id => $boost) {
-                  $sum[] = str_replace(BoostMoreRecent::FIELD_PLACEHOLDER, reset($field_names[$field_id]), $boost);
+                  // Ensure a single value field for the boost function.
+                  $solr_field_name = Utility::getSortableSolrField($field_id, $field_names, $query);
+                  $sum[] = str_replace(BoostMoreRecent::FIELD_PLACEHOLDER, $solr_field_name, $boost);
                 }
                 $flatten_query[] = '{!boost b=sum(' . implode(',', $sum). ')}';
               }
@@ -2500,7 +2502,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             }
 
             $value = $value->getText();
-            // No break, now we have a string.
+          // No break, now we have a string.
           case 'string':
           default:
             // Keep $value as it is.
