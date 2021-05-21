@@ -152,7 +152,6 @@ class DateRangeTest extends ProcessorTestBase {
 
     $fieldsHelper = $this->container->get('search_api.fields_helper');
 
-    // Index location coordinates as location data type.
     $this->index->addField($fieldsHelper->createField($this->index, 'field_date_range', $date_range_info));
     $this->index->addField($fieldsHelper->createField($this->index, 'field_date_ranges', $date_ranges_info));
 
