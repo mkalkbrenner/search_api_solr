@@ -10,16 +10,12 @@ use Drupal\node\Entity\NodeType;
 use Drupal\node\NodeInterface;
 use Drupal\search_api\Query\Query;
 use Drupal\search_api\Query\QueryInterface;
-use Drupal\search_api\Query\ResultSetInterface;
-use Drupal\search_api\Utility\Utility;
 use Drupal\Tests\search_api\Kernel\Processor\ProcessorTestBase;
 
 /**
- * Tests the "Date range" processor.
+ * Tests the "Boost more recent" processor.
  *
  * @group search_api_solr
- * @group not_solr3
- * @group not_solr4
  *
  * @see \Drupal\search_api_solr\Plugin\search_api\processor\BoostMoreRecent
  */
