@@ -126,8 +126,6 @@ class BoostMoreRecentTest extends ProcessorTestBase {
 
     $this->assertArrayHasKey('solr_boost_more_recent', $this->index->getProcessors(), 'Boost more recent processor is added.');
 
-    $query_helper = \Drupal::getContainer()->get('search_api.query_helper');
-
     $query = new Query($this->index);
     $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
     $query->sort('search_api_id');
