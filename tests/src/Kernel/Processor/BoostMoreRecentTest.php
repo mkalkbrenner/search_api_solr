@@ -10,16 +10,12 @@ use Drupal\node\Entity\NodeType;
 use Drupal\node\NodeInterface;
 use Drupal\search_api\Query\Query;
 use Drupal\search_api\Query\QueryInterface;
-use Drupal\search_api\Query\ResultSetInterface;
-use Drupal\search_api\Utility\Utility;
 use Drupal\Tests\search_api\Kernel\Processor\ProcessorTestBase;
 
 /**
- * Tests the "Date range" processor.
+ * Tests the "Boost more recent" processor.
  *
  * @group search_api_solr
- * @group not_solr3
- * @group not_solr4
  *
  * @see \Drupal\search_api_solr\Plugin\search_api\processor\BoostMoreRecent
  */
@@ -129,8 +125,6 @@ class BoostMoreRecentTest extends ProcessorTestBase {
     $this->indexItems();
 
     $this->assertArrayHasKey('solr_boost_more_recent', $this->index->getProcessors(), 'Boost more recent processor is added.');
-
-    $query_helper = \Drupal::getContainer()->get('search_api.query_helper');
 
     $query = new Query($this->index);
     $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
