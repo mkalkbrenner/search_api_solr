@@ -2490,7 +2490,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                       //   terms to be boosted. We should consider to re-use the
                       //   logic of the tokenizer processor. But this might
                       //   require to turn some methods to public.
-                      $doc->addField('boost_term', preg_replace('/([^\s]{2,})/', '$1|' . sprintf('%.1f', $boost), str_replace('|', ' ', $value)));
+                      $doc->addField('boost_term', preg_replace('/([^\s]{2,})/u', '$1|' . sprintf('%.1f', $boost), str_replace('|', ' ', $value)));
                     }
                   }
                   if (!$first_value) {

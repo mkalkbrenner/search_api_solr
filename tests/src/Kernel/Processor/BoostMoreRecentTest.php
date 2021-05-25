@@ -117,7 +117,7 @@ class BoostMoreRecentTest extends ProcessorTestBase {
   }
 
   /**
-   * Tests date range queries.
+   * Tests boost by recent date queries.
    *
    * @throws \Drupal\search_api\SearchApiException
    */

@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\search_api_solr\Kernel\Processor;
 
-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 use Drupal\search_api\Entity\Server;
 use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Monolog\Handler\StreamHandler;
