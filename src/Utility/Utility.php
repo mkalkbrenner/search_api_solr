@@ -753,7 +753,7 @@ class Utility {
               break;
 
             case 'fuzzy_terms':
-              if (strpos($key, ' ')) {
+              if (preg_match('/\s/u', $key)) {
                 $k[] = $queryHelper->escapePhrase($key);
               }
               else {
