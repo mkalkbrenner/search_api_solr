@@ -72,7 +72,7 @@ class BoostMoreRecent extends ProcessorPluginBase implements PluginFormInterface
           '#title' => $this->t('Boost'),
           '#options' => static::$boost_factors,
           '#description' => $this->t('To boost more recent dates, Solr performs a reciprocal function with recip(x,m,a,b) implementing a/(m*x+b) where m,a,b are constants, and x is a date converted into the difference between NOW and its timestamp using a configurable resolution. When a and b are equal, and x>=0, this function has a maximum value of 1 that drops as x increases. Increasing the value of a and b together results in a movement of the entire function to a flatter part of the curve. These properties make this an ideal function for boosting more recent documents. Therefore its result is multiplied with a configurable boost factor. Setting it to 0.0 disables the boost by recent date for this field.'),
-          '#default_value' => sprintf('%.1f', $this->configuration['boosts'][$field_id]['boost'] ?? 0.0),
+          '#default_value' => sprintf('%.1F', $this->configuration['boosts'][$field_id]['boost'] ?? 0.0),
         ];
 
         $form['boosts'][$field_id]['resolution'] = [
@@ -138,7 +138,7 @@ class BoostMoreRecent extends ProcessorPluginBase implements PluginFormInterface
 
     $boosts = [];
     foreach ($this->configuration['boosts'] as $field_id => $boost) {
-      $boosts[$field_id] = sprintf('product(%.1f,recip(ms(%s,%s),%s,%.3f,%3f))', $boost['boost'], $boost['resolution'], self::FIELD_PLACEHOLDER, $boost['m'], $boost['a'], $boost['b']);
+      $boosts[$field_id] = sprintf('product(%.1F,recip(ms(%s,%s),%s,%.3F,%3F))', $boost['boost'], $boost['resolution'], self::FIELD_PLACEHOLDER, $boost['m'], $boost['a'], $boost['b']);
     }
     if ($boosts) {
       $query->setOption('solr_boost_more_recent', $boosts);
