@@ -122,7 +122,7 @@ class SearchApiBackendUnitTest extends UnitTestCase {
       $field,
       [$input],
       $type,
-      $boost_terms,
+      &$boost_terms,
     ];
 
     // addIndexField() should convert the $input according to $type and call
