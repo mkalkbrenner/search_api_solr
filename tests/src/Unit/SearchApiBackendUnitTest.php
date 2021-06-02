@@ -116,11 +116,13 @@ class SearchApiBackendUnitTest extends UnitTestCase {
         ->shouldNotBeCalled();
     }
 
+    $boost_terms = [];
     $args = [
       $document->reveal(),
       $field,
       [$input],
       $type,
+      $boost_terms,
     ];
 
     // addIndexField() should convert the $input according to $type and call
