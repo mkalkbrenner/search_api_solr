@@ -1109,6 +1109,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     foreach ($items as $id => $item) {
       $language_id = $item->getLanguage();
       $field_names = $this->getLanguageSpecificSolrFieldNames($language_id, $index);
+      $boost_terms = [];
 
       /** @var \Solarium\QueryType\Update\Query\Document $doc */
       $doc = $update_query->createDocument();
@@ -1158,7 +1159,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           break;
         }
 
-        $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $field->getType());
+        $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $field->getType(), $boost_terms);
         // Enable sorts in some special cases.
         if ($first_value && !array_key_exists($name, $special_fields)) {
           if (
@@ -1207,6 +1208,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             }
           }
         }
+      }
+
+      foreach ($boost_terms as $term => $boost) {
+        $doc->addField('boost_term', sprintf('%s|%.1F', $term, $boost));
       }
 
       if ($doc) {
@@ -2410,11 +2415,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   The values for the field.
    * @param string $type
    *   The field type.
+   * @param array $boost_terms
+   *   Reference to an array where special boosts per term should be stored.
    *
    * @return bool|float|int|string
    *   The first value of $values that has been added to the index.
    */
-  protected function addIndexField(Document $doc, $key, array $values, $type) {
+  protected function addIndexField(Document $doc, $key, array $values, $type, array &$boost_terms) {
     // Don't index empty values (i.e., when field is missing).
     if (empty($values)) {
       return '';
@@ -2486,11 +2493,17 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
                     $boost = $token->getBoost();
                     if (0.0 != $boost && 1.0 != $boost) {
-                      // @todo This regex is a first approach to isolate the
-                      //   terms to be boosted. We should consider to re-use the
-                      //   logic of the tokenizer processor. But this might
-                      //   require to turn some methods to public.
-                      $doc->addField('boost_term', preg_replace('/([^\s]{2,})/u', '$1|' . sprintf('%.1F', $boost), str_replace('|', ' ', $value)));
+                      // This regex is a first approach to isolate the terms to
+                      // be boosted. It might be that there's some more
+                      // sophisticated logic required here. The unicode mode is
+                      // required to handle multibyte white spaces of languages
+                      // like Japanese.
+                      $terms = preg_split('/\s+/u', $value);
+                      foreach($terms as $term) {
+                        if (!array_key_exists($term, $boost_terms) || $boost_terms[$term] < $boost) {
+                          $boost_terms[$term] = $boost;
+                        }
+                      }
                     }
                   }
                   if (!$first_value) {
@@ -2498,6 +2511,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                   }
                 }
               }
+
               continue 2;
             }
 
