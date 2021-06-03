@@ -32,7 +32,7 @@
         "drupal/search_api_location": "1.x-dev"
     },
     "conflict": {
-        "drupal/acquia_connector": "<1.24 || ^2",
+        "drupal/acquia_connector": "<3.*",
         "drupal/acquia_search_solr": "*",
         "drupal/search_api_pantheon":"<1.1"
     },
