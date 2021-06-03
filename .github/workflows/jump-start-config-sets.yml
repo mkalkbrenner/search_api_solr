@@ -184,6 +184,7 @@ jobs:
                   - drupal: '9.2'
                     solr: '8'
                     php: '8.0'
+                    experimental: false
 
         name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
 
