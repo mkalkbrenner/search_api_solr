@@ -46,6 +46,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     'ga' => 'ga',
     'hi' => 'hi',
     'hr' => 'hr',
+    'hu' => 'hu',
     'id' => 'id',
     'it' => 'it',
     'ja' => 'ja',
@@ -309,6 +310,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
           if (version_compare($targeted_solr_major_version, '6', '<')) {
             $language_ids['ar'] = FALSE;
             $language_ids['ja'] = FALSE;
+            $language_ids['hu'] = FALSE;
             $language_ids['sk'] = FALSE;
             if (version_compare($targeted_solr_major_version, '5', '<')) {
               $language_ids['cs'] = FALSE;

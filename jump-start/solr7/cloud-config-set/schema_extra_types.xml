@@ -977,6 +977,61 @@
   </analyzer>
 </fieldType>
 <!--
+  Hungarian Text Field
+  7.0.0
+-->
+<fieldType name="text_hu" class="solr.TextField" positionIncrementGap="100">
+  <analyzer type="index">
+    <charFilter class="solr.MappingCharFilterFactory" mapping="accents_hu.txt"/>
+    <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+    <filter class="solr.WordDelimiterGraphFilterFactory" catenateNumbers="0" generateNumberParts="0" protected="protwords_hu.txt" splitOnCaseChange="1" generateWordParts="1" preserveOriginal="1" catenateAll="0" catenateWords="0"/>
+    <filter class="solr.LowerCaseFilterFactory"/>
+    <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords_hu.txt"/>
+    <filter class="solr.SnowballPorterFilterFactory" language="Hungarian"/>
+    <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+  </analyzer>
+  <analyzer type="query">
+    <charFilter class="solr.MappingCharFilterFactory" mapping="accents_hu.txt"/>
+    <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+    <filter class="solr.WordDelimiterGraphFilterFactory" catenateNumbers="0" generateNumberParts="0" protected="protwords_hu.txt" splitOnCaseChange="0" generateWordParts="1" preserveOriginal="1" catenateAll="0" catenateWords="0"/>
+    <filter class="solr.LengthFilterFactory" min="2" max="100"/>
+    <filter class="solr.LowerCaseFilterFactory"/>
+    <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms_hu.txt" expand="true" ignoreCase="true"/>
+    <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords_hu.txt"/>
+    <filter class="solr.SnowballPorterFilterFactory" language="Hungarian"/>
+    <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+  </analyzer>
+</fieldType>
+<!--
+  Hungarian Text Field collated
+  7.0.0
+-->
+<fieldType name="collated_hu" class="solr.ICUCollationField" locale="hu" strength="primary" caseLevel="false"/>
+<!--
+  Hungarian Text Field unstemmed
+  7.0.0
+-->
+<fieldType name="text_unstemmed_hu" class="solr.TextField" positionIncrementGap="100">
+  <analyzer type="index">
+    <charFilter class="solr.MappingCharFilterFactory" mapping="accents_hu.txt"/>
+    <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+    <filter class="solr.WordDelimiterGraphFilterFactory" catenateNumbers="0" generateNumberParts="0" protected="protwords_hu.txt" splitOnCaseChange="1" generateWordParts="1" preserveOriginal="1" catenateAll="0" catenateWords="0"/>
+    <filter class="solr.LowerCaseFilterFactory"/>
+    <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords_hu.txt"/>
+    <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+  </analyzer>
+  <analyzer type="query">
+    <charFilter class="solr.MappingCharFilterFactory" mapping="accents_hu.txt"/>
+    <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+    <filter class="solr.WordDelimiterGraphFilterFactory" catenateNumbers="0" generateNumberParts="0" protected="protwords_hu.txt" splitOnCaseChange="0" generateWordParts="1" preserveOriginal="1" catenateAll="0" catenateWords="0"/>
+    <filter class="solr.LengthFilterFactory" min="2" max="100"/>
+    <filter class="solr.LowerCaseFilterFactory"/>
+    <filter class="solr.SynonymGraphFilterFactory" synonyms="synonyms_hu.txt" expand="true" ignoreCase="true"/>
+    <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords_hu.txt"/>
+    <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+  </analyzer>
+</fieldType>
+<!--
   Indonesian Text Field
   7.0.0
 -->

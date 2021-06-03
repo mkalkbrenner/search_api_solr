@@ -179,6 +179,13 @@
 <dynamicField name="tus_X3b_hi_*" type="text_unstemmed_hi" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />
 <dynamicField name="tum_X3b_hi_*" type="text_unstemmed_hi" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />
 <dynamicField name="sort_X3b_hi_*" type="collated_hi" stored="false" indexed="false" docValues="true" />
+<dynamicField name="ts_X3b_hu_*" type="text_hu" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />
+<dynamicField name="tm_X3b_hu_*" type="text_hu" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />
+<dynamicField name="tos_X3b_hu_*" type="text_hu" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="true" />
+<dynamicField name="tom_X3b_hu_*" type="text_hu" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="true" />
+<dynamicField name="tus_X3b_hu_*" type="text_unstemmed_hu" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />
+<dynamicField name="tum_X3b_hu_*" type="text_unstemmed_hu" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />
+<dynamicField name="sort_X3b_hu_*" type="collated_hu" stored="false" indexed="false" docValues="true" />
 <dynamicField name="ts_X3b_id_*" type="text_id" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />
 <dynamicField name="tm_X3b_id_*" type="text_id" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />
 <dynamicField name="tos_X3b_id_*" type="text_id" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="true" />
