@@ -2852,4 +2852,20 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     return $location_distance_fields;
   }
 
+  /**
+   * Implements the magic __sleep() method.
+   *
+   * Prevents the Solr connector from being serialized. There's no need for a
+   * corresponding __wakeup() because of getSolrConnector().
+   *
+   * @see getSolrConnector()
+   */
+  public function __sleep() {
+    $properties = array_flip(parent::__sleep());
+
+    unset($properties['solrConnector']);
+
+    return array_keys($properties);
+  }
+
 }
