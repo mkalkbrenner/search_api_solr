@@ -76,6 +76,7 @@ jobs:
                 vendor/bin/drush language-add ga
                 vendor/bin/drush language-add hi
                 vendor/bin/drush language-add hr
+                vendor/bin/drush language-add hu
                 vendor/bin/drush language-add id
                 vendor/bin/drush language-add it
                 vendor/bin/drush language-add ja
