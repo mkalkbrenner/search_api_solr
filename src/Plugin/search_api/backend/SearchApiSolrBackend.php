@@ -2493,12 +2493,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
                     $boost = $token->getBoost();
                     if (0.0 != $boost && 1.0 != $boost) {
-                      // These regular expressions are a first approach to
+                      // This regular expressions are a first approach to
                       // isolate the terms to be boosted. It might be that
                       // there's some more sophisticated logic required here.
                       // The unicode mode is required to handle multibyte white
                       // spaces of languages like Japanese.
-                      $terms = preg_split('/\s+/u', $value);
+                      $terms = preg_split('/\s+/u', str_replace('|', ' ', $value));
                       foreach($terms as $term) {
                         if (mb_strlen($term) >= 2) {
                           if (!array_key_exists($term, $boost_terms) || $boost_terms[$term] < $boost) {
