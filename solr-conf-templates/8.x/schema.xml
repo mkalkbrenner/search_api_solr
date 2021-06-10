@@ -379,6 +379,7 @@
     <fieldType name="boost_term_payload" stored="false" indexed="true" class="solr.TextField" >
       <analyzer>
         <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+        <filter class="solr.LengthFilterFactory" min="2" max="100"/>
         <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
         <!--
@@ -393,7 +394,6 @@
              Fully Qualified class name implementing PayloadEncoder, Encoder must have a no arg constructor.
          -->
         <filter class="solr.DelimitedPayloadTokenFilterFactory" encoder="float"/>
-        <filter class="solr.LengthFilterFactory" min="2" max="100"/>
       </analyzer>
     </fieldType>
 

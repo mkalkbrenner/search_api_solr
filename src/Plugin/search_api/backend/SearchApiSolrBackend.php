@@ -2501,7 +2501,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                       // spaces of languages like Japanese.
                       $terms = preg_split('/\s+/u', str_replace('|', ' ', $value));
                       foreach($terms as $term) {
-                        if (mb_strlen($term) >= 2) {
+                        $len = mb_strlen($term);
+                        // The length boundaries are defined as this for
+                        // fieldType name="boost_term_payload" in schema.xml.
+                        // Shorter or longer terms will be skipped anyway.
+                        if ($len >= 2 && $len <= 100) {
                           if (!array_key_exists($term, $boost_terms) || $boost_terms[$term] < $boost) {
                             $boost_terms[$term] = $boost;
                           }
