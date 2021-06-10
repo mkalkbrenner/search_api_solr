@@ -20,7 +20,7 @@ interface SolrBackendInterface extends BackendInterface {
   /**
    * The minimum required Solr schema version.
    */
-  const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.1.1';
+  const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.1.13';
 
   /**
    * The separator to indicate the start of a language ID.
