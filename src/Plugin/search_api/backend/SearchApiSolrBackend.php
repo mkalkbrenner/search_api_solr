@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_solr\Plugin\search_api\backend;
 
+use Composer\Semver\Comparator;
 use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
@@ -187,7 +188,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $this->dataTypeHelper = $dataTypeHelper;
     $this->queryHelper = $query_helper;
     $this->entityTypeManager = $entityTypeManager;
-    if (class_exists('\Drupal\Component\EventDispatcher\Event')) {
+    if (Comparator::greaterThanOrEqualTo(\Drupal::VERSION, '9.1.0')) {
       // Drupal >= 9.1.
       $this->eventDispatcher = $eventDispatcher;
     }
