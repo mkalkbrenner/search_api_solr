@@ -1,6 +1,6 @@
 type: module
 name: 'Search API Solr Legacy'
-description: 'Add support for older unsupported Solr versions >= 4.5.'
+description: 'Add support for older unsupported Solr versions (3.6, >=4.5, 5.x).'
 package: Search
 core_version_requirement: ^8.8 || ^9
 dependencies:

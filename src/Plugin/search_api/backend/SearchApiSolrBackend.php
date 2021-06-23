@@ -850,11 +850,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                 $status = 'ok';
                 if (!$this->isNonDrupalOrOutdatedConfigSetAllowed()) {
                   $variables[':url'] = Url::fromUri('internal:/' . drupal_get_path('module', 'search_api_solr') . '/README.md')->toString();
-                  if (
-                    strpos($stats_summary['@schema_version'], 'search-api') === 0 ||
-                    strpos($stats_summary['@schema_version'], 'drupal') === 0
-                  ) {
-                    if (strpos($stats_summary['@schema_version'], 'drupal-' . SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION) !== 0) {
+                  if (preg_match('/^drupal-(.*?)-solr/', $stats_summary['@schema_version'], $matches)) {
+                    if (Comparator::lessThan($matches[1], SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION)) {
                       \Drupal::messenger()->addError($this->t('You are using outdated Solr configuration set. Please follow the instructions described in the <a href=":url">README.md</a> file for setting up Solr.', $variables));
                       $status = 'error';
                     }
@@ -1530,14 +1527,22 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         );
       }
 
+      $search_api_retrieved_field_values = array_flip($query->getOption('search_api_retrieved_field_values', []));
+      if (array_key_exists('search_api_solr_score_debugging', $search_api_retrieved_field_values)) {
+        unset($search_api_retrieved_field_values['search_api_solr_score_debugging']);
+        // Activate the debug query component.
+        $solarium_query->getDebug();
+      }
+      $search_api_retrieved_field_values = array_keys($search_api_retrieved_field_values);
+
       if ($query->hasTag('mlt')) {
         // Set the list of fields to retrieve, but avoid highlighting and
         // different overhead.
-        $this->setFields($solarium_query, $query->getOption('search_api_retrieved_field_values', []), $query, FALSE);
+        $this->setFields($solarium_query, $search_api_retrieved_field_values, $query, FALSE);
       }
       else {
         // Set the list of fields to retrieve.
-        $this->setFields($solarium_query, $query->getOption('search_api_retrieved_field_values', []), $query);
+        $this->setFields($solarium_query, $search_api_retrieved_field_values, $query);
 
         // Set sorts.
         $this->setSorts($solarium_query, $query);
@@ -2585,6 +2590,17 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $id_field = $language_unspecific_field_names['search_api_id'];
     $score_field = $language_unspecific_field_names['search_api_relevance'];
     $language_field = $language_unspecific_field_names['search_api_language'];
+    $backend_defined_fields = [];
+
+    /** @var \Solarium\Component\Result\Debug\DocumentSet $explain */
+    $explain = NULL;
+    $search_api_retrieved_field_values = $query->getOption('search_api_retrieved_field_values', []);
+    if (in_array('search_api_solr_score_debugging', $search_api_retrieved_field_values)) {
+      if ($debug = $result->getDebug()) {
+        $explain = $debug->getExplain();
+        $backend_defined_fields = $this->getBackendDefinedFields($query->getIndex());
+      }
+    }
 
     // Set up the results array.
     $result_set = $query->getResults();
@@ -2691,9 +2707,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $result_item->setScore($doc_fields[$score_field]);
         unset($doc_fields[$score_field]);
       }
+      unset($doc_fields[$id_field]);
       // The language field should not be removed. We keep it in the values as
       // well for backward compatibility and for easy access.
-      unset($doc_fields[$id_field]);
 
       // Extract properties from the Solr document, translating from Solr to
       // Search API property names. This reverses the mapping in
@@ -2730,6 +2746,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         str_replace('solr_document/', '', $result_item->getId()) :
         $this->createId($this->getTargetedSiteHash($index), $this->getTargetedIndexId($index), $result_item->getId());
       $this->getHighlighting($result->getData(), $solr_id, $result_item, $field_names);
+
+      if ($explain) {
+        if ($explain_doc = $explain->getDocument($solr_id)) {
+          $backend_defined_fields['search_api_solr_score_debugging']->setValues([$explain_doc->__toString()]);
+          $result_item->setField('search_api_solr_score_debugging', clone $backend_defined_fields['search_api_solr_score_debugging']);
+        }
+      }
 
       $result_set->addResultItem($result_item);
     }
@@ -4468,6 +4491,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $backend_defined_fields[$distance_field_name] = $distance_field;
       }
     }
+
+    $backend_defined_fields['search_api_solr_score_debugging'] = $this->getFieldsHelper()
+      ->createField($index, 'search_api_solr_score_debugging', [
+        'label' => 'Solr score debugging',
+        'description' => $this->t('Detailed information about the score calculation.'),
+        'type' => 'string',
+        'property_path' => 'search_api_solr_score_debugging',
+        'data_definition' => DataDefinition::create('string'),
+      ]);
 
     return $backend_defined_fields;
   }
