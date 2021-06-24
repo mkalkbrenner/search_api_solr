@@ -1168,9 +1168,8 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   public function createEndpoint(string $key, array $additional_configuration = []) {
     $this->connect();
     $configuration = ['key' => $key, self::QUERY_TIMEOUT => $this->configuration['timeout']] + $additional_configuration + $this->configuration;
-    if (Client::checkMinimal('5.2.0')) {
-      unset($configuration['timeout']);
-    }
+    unset($configuration['timeout']);
+
     return $this->solr->createEndpoint($configuration, TRUE);
   }
 
