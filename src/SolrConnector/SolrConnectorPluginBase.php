@@ -997,14 +997,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
         break;
 
       case '500': // Internal Server Error.
-      case '0':
         $description = 'internal Solr server error';
         break;
 
       default:
         $description = 'unreachable or returned unexpected response code';
     }
-    throw new SearchApiSolrException(sprintf('Solr endpoint %s %s (%d). %s', $this->getEndpointUri($endpoint), $description, $response_code, $body), $response_code, $e);
+    throw new SearchApiSolrException(sprintf('Solr endpoint %s %s (response code: %d, exception: "%s"). %s', $this->getEndpointUri($endpoint), $description, $response_code, $e->getMessage(), $body), $response_code, $e);
   }
 
   /**
