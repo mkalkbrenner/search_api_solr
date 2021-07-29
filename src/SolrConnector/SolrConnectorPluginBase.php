@@ -1003,7 +1003,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       default:
         $description = 'unreachable or returned unexpected response code';
     }
-    throw new SearchApiSolrException(sprintf('Solr endpoint %s %s (response code: %d, exception: "%s"). %s', $this->getEndpointUri($endpoint), $description, $response_code, $e->getMessage(), $body), $response_code, $e);
+    throw new SearchApiSolrException(sprintf('Solr endpoint %s %s (code: %d, message: %s). %s', $this->getEndpointUri($endpoint), $description, $response_code, $e->getMessage(), $body), $response_code, $e);
   }
 
   /**
