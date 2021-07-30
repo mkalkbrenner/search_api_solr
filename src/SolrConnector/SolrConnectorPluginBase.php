@@ -103,6 +103,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       'http_method' => 'AUTO',
       'commit_within' => 1000,
       'jmx' => FALSE,
+      'jts' => FALSE,
       'solr_install_dir' => '',
       'skip_schema_check' => FALSE,
     ];
@@ -119,6 +120,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     $configuration[self::FINALIZE_TIMEOUT] = (int) $configuration[self::FINALIZE_TIMEOUT];
     $configuration['commit_within'] = (int) $configuration['commit_within'];
     $configuration['jmx'] = (bool) $configuration['jmx'];
+    $configuration['jts'] = (bool) $configuration['jts'];
     $configuration['skip_schema_check'] = (bool) $configuration['skip_schema_check'];
 
     parent::setConfiguration($configuration);
@@ -265,7 +267,14 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       '#type' => 'checkbox',
       '#title' => $this->t('Enable JMX'),
       '#description' => $this->t('Enable JMX based monitoring.'),
-      '#default_value' => isset($this->configuration['jmx']) ? $this->configuration['jmx'] : FALSE,
+      '#default_value' => $this->configuration['jmx'] ?? FALSE,
+    ];
+
+    $form['advanced']['jts'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable JTS'),
+      '#description' => $this->t('Enable JTS (java topographic suite). Be sure to follow instructions in last solr reference guide about how to use spatial search.'),
+      '#default_value' => $this->configuration['jts'] ?? FALSE,
     ];
 
     $form['advanced']['solr_install_dir'] = [
@@ -1211,6 +1220,11 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   public function alterConfigFiles(array &$files, string $lucene_match_version, string $server_id = '') {
     if (!empty($this->configuration['jmx'])) {
       $files['solrconfig_extra.xml'] .= "<jmx />\n";
+    }
+
+    if (!empty($this->configuration['jts'])) {
+      $jts_arguments = 'spatialContextFactory="org.locationtech.spatial4j.context.jts.JtsSpatialContextFactory" autoIndex="true" validationRule="repairBuffer0"';
+      $files['schema.xml'] = preg_replace("#\sclass\s*=\s*\"solr\.SpatialRecursivePrefixTreeFieldType\"#ms", "\\0\n        " . $jts_arguments, $files['schema.xml']);
     }
   }
 

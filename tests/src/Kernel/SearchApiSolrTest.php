@@ -1472,6 +1472,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $this->assertStringContainsString($config_name, $config_files['schema.xml']);
     $this->assertStringContainsString($server->id(), $config_files['test.txt']);
     $this->assertStringNotContainsString('<jmx />', $config_files['solrconfig_extra.xml']);
+    $this->assertStringNotContainsString('JtsSpatialContextFactory', $config_files['schema.xml']);
     if ('true' === SOLR_CLOUD) {
       $this->assertStringContainsString('solr.luceneMatchVersion:' . $solr_major_version, $config_files['solrconfig.xml']);
       $this->assertStringContainsString('<statsCache class="org.apache.solr.search.stats.LRUStatsCache" />', $config_files['solrconfig_extra.xml']);
@@ -1482,6 +1483,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     }
 
     $backend_config['connector_config']['jmx'] = TRUE;
+    $backend_config['connector_config']['jts'] = TRUE;
     $backend_config['disabled_field_types'] = ['text_foo_en_4_5_0', 'text_foo_en_6_0_0', 'text_de_4_5_0', 'text_de_6_0_0', 'text_de_7_0_0'];
     $backend_config['disabled_caches'] = ['cache_document_default_7_0_0', 'cache_filter_default_7_0_0'];
     $server->setBackendConfig($backend_config);
@@ -1491,6 +1493,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
 
     $config_files = $solr_configset_controller->getConfigFiles();
     $this->assertStringContainsString('<jmx />', $config_files['solrconfig_extra.xml']);
+    $this->assertStringContainsString('JtsSpatialContextFactory', $config_files['schema.xml']);
     $this->assertStringContainsString('text_en', $config_files['schema_extra_types.xml']);
     $this->assertStringNotContainsString('text_foo_en', $config_files['schema_extra_types.xml']);
     $this->assertStringNotContainsString('text_de', $config_files['schema_extra_types.xml']);
