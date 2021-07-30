@@ -3773,8 +3773,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    */
   protected function getAutocompleteSpellCheckSuggestions(ResultInterface $result, SuggestionFactory $suggestion_factory) {
     $suggestions = [];
-    foreach ($this->extractSpellCheckSuggestions($result) as $keys) {
-      $suggestions[] = $suggestion_factory->createFromSuggestedKeys(implode(' ', $keys));
+    foreach ($this->extractSpellCheckSuggestions($result) as $spellcheck_suggestions) {
+      foreach ($spellcheck_suggestions as $keys) {
+        $suggestions[] = $suggestion_factory->createFromSuggestedKeys($keys);
+      }
     }
     return $suggestions;
   }
