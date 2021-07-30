@@ -23,6 +23,7 @@ backend_config:
     http_method: AUTO
     commit_within: 1000
     jmx: false
+    jts: false
     skip_schema_check: true
   optimize: false
   fallback_multiple: true

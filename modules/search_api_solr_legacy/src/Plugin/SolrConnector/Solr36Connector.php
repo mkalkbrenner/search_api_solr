@@ -59,6 +59,11 @@ class Solr36Connector extends SolrConnectorPluginBase {
       '#value' => TRUE,
     ];
 
+    $form['advanced']['jts'] = [
+      '#type' => 'value',
+      '#value' => FALSE,
+    ];
+
     return $form;
   }
 

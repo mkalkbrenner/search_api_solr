@@ -44,6 +44,9 @@ plugin.plugin_configuration.search_api_solr_connector.standard:
     jmx:
       type: boolean
       label: 'Enable JMX'
+    jts:
+      type: boolean
+      label: 'Enable JTS'
     solr_install_dir:
       type: string
       label: 'solr.install.dir property'
