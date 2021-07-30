@@ -98,7 +98,7 @@ function search_api_solr_requirements($phase) {
                   'There are some files missing in the Solr server schema <a href=":url">@server</a>: @files. An updated config.zip should be downloaded and deployed to your Solr server.', [
                     ':url' => $server->toUrl('canonical')->toString(),
                     '@server' => $server->label(),
-                    '@files' => implode(', ', array_keys($extra_release_files)),
+                    '@files' => implode(', ', $extra_release_files),
                   ]
                 );
               }
