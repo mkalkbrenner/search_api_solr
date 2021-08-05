@@ -24,8 +24,8 @@ use Solarium\Core\Client\Response;
 use Solarium\Core\Query\QueryInterface;
 use Solarium\Exception\HttpException;
 use Solarium\QueryType\Extract\Result as ExtractResult;
-use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 use Solarium\QueryType\Select\Query\Query;
+use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 use ZipStream\ZipStream;
 
 /**
@@ -1078,12 +1078,15 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     if (!$endpoint) {
       $endpoint = $this->solr->getEndpoint();
     }
-    $adpater = $this->solr->getAdapter();
-    if ($adpater instanceof TimeoutAwareInterface && ($seconds = $endpoint->getOption($timeout))) {
-      $adpater->setTimeout($seconds);
-    }
-    else {
-      $this->getLogger()->warning('The function SolrConnectorPluginBase::useTimeout() has no affect because you use a HTTP adapter that is not implementing TimeoutAwareInterface. You need to adjust your SolrConnector accordingly.');
+    $seconds = $endpoint->getOption($timeout);
+    if ($seconds) {
+      $adapter = $this->solr->getAdapter();
+      if ($adapter instanceof TimeoutAwareInterface) {
+        $adapter->setTimeout($seconds);
+      }
+      else {
+        $this->getLogger()->warning('The function SolrConnectorPluginBase::useTimeout() has no effect because you use a HTTP adapter that is not implementing TimeoutAwareInterface. You need to adjust your SolrConnector accordingly.');
+      }
     }
   }
 
