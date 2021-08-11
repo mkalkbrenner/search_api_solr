@@ -143,6 +143,19 @@ class Utility {
   }
 
   /**
+   * Returns a suitable name for a new configset.
+   *
+   * @param \Drupal\search_api\ServerInterface $server
+   *   The Solr server to generate the name for.
+   *
+   * @return string
+   *   A suitable name for a new configset.
+   */
+  public static function generateConfigsetName(ServerInterface $server): string {
+    return $server->id() . '_' . self::getSiteHash();
+  }
+
+  /**
    * Retrieves a list of all config files of a server's Solr backend.
    *
    * @param \Drupal\search_api\ServerInterface $server

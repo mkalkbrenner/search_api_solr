@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @package Drupal\search_api_solr_admin\Form
  */
-class SolrReloadCoreForm extends FormBase {
+class SolrDeleteCollectionForm extends FormBase {
 
   use LoggerTrait {
     getLogger as getSearchApiLogger;
@@ -55,7 +55,7 @@ class SolrReloadCoreForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'solr_reload_core_form';
+    return 'solr_delete_collection_form';
   }
 
   /**
@@ -68,12 +68,12 @@ class SolrReloadCoreForm extends FormBase {
     $backend = $this->search_api_server->getBackend();
 
     $core = $search_api_server->getBackendConfig()['connector_config']['core'];
-    $form['#title'] = $this->t('Reload %type %core?', ['%type' => $backend->getSolrConnector()->isCloud() ? 'core' : 'collection', '%core' => $core]);
+    $form['#title'] = $this->t('Delete collection %core?', ['%core' => $core]);
 
     $form['actions'] = [
       'submit' => [
         '#type' => 'submit',
-        '#value' => $this->t('Reload'),
+        '#value' => $this->t('Delete'),
       ],
     ];
 
@@ -85,13 +85,13 @@ class SolrReloadCoreForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     try {
-      /** @var \Drupal\search_api_solr\SolrConnectorInterface $connector */
+      /** @var \Drupal\search_api_solr\SolrCloudConnectorInterface $connector */
       $connector = $this->search_api_server->getBackend()->getSolrConnector();
-      $result = $connector->reloadCore();
+      $result = $connector->deleteCollection();
 
       if ($result) {
         $core = $this->search_api_server->getBackendConfig()['connector_config']['core'];
-        $this->messenger->addMessage($this->t('Solr: %core reloaded.', ['%core' => $core]));
+        $this->messenger->addMessage($this->t('Successfully deleted collection %core.', ['%core' => $core]));
       }
     }
     catch (\Exception $e) {

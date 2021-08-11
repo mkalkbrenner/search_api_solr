@@ -32,19 +32,12 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
   /**
    * Constructs a SearchApiSolrCommands object.
    *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   *   The entity type manager.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
-   *   The module handler.
-   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
-   *   The event dispatcher.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @param \Drupal\search_api_solr\Utility\SolrCommandHelper $commandHelper
+   *   The command helper.
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager, ModuleHandlerInterface $moduleHandler, EventDispatcherInterface $eventDispatcher) {
+  public function __construct(SolrCommandHelper $commandHelper) {
     parent::__construct();
-    $this->commandHelper = new SolrCommandHelper($entityTypeManager, $moduleHandler, $eventDispatcher, 'dt');
+    $this->commandHelper = $commandHelper;
   }
 
   /**
