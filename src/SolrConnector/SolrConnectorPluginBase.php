@@ -513,6 +513,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
+  public function getConfigSetName(): ?string {
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getSchemaVersionString($reset = FALSE) {
     return $this->getCoreInfo($reset)['core']['schema'];
   }
@@ -1016,7 +1023,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       default:
         $description = 'unreachable or returned unexpected response code';
     }
-    throw new SearchApiSolrException(sprintf('Solr endpoint %s %s (%d). %s', $this->getEndpointUri($endpoint), $description, $response_code, $body), $response_code, $e);
+    throw new SearchApiSolrException(sprintf('Solr endpoint %s %s (code: %d, body: %s, message: %s).', $this->getEndpointUri($endpoint), $description, $response_code, $body, $e->getMessage()), $response_code, $e);
   }
 
   /**
@@ -1055,24 +1062,30 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
-  public function adjustTimeout(int $timeout, ?Endpoint &$endpoint = NULL) {
+  public function adjustTimeout(int $seconds, string $timeout = self::QUERY_TIMEOUT, ?Endpoint &$endpoint = NULL): int {
     $this->connect();
 
     if (!$endpoint) {
       $endpoint = $this->solr->getEndpoint();
     }
 
-    $previous_timeout = $endpoint->getOption(self::QUERY_TIMEOUT);
+    $previous_timeout = $endpoint->getOption($timeout);
     $options = $endpoint->getOptions();
-    $options[self::QUERY_TIMEOUT] = $timeout;
+    $options[$timeout] = $seconds;
     $endpoint = new Endpoint($options);
     return $previous_timeout;
   }
 
   /**
-   * {@inheritdoc}
+   * Set the timeout.
+   *
+   * @param string $timeout
+   *   (optional) The configured timeout to use. Default is self::QUERY_TIMEOUT.
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
+   * @return mixed
    */
-  public function useTimeout(string $timeout = self::QUERY_TIMEOUT, ?Endpoint $endpoint = NULL) {
+  protected function useTimeout(string $timeout = self::QUERY_TIMEOUT, ?Endpoint $endpoint = NULL) {
     $this->connect();
 
     if (!$endpoint) {

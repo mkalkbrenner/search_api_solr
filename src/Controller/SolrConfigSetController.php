@@ -157,8 +157,6 @@ class SolrConfigSetController extends ControllerBase {
    *
    * @return string
    *   XML snippet containing all index settings.
-   *
-   * @throws \Drupal\search_api\SearchApiException
    */
   public function getSolrconfigIndexXml(?ServerInterface $search_api_server = NULL): string {
     // Reserved for future internal use.
@@ -430,8 +428,6 @@ class SolrConfigSetController extends ControllerBase {
    *
    * @return \Symfony\Component\HttpFoundation\Response
    *   The HTTP response object.
-   *
-   * @throws \Drupal\search_api\SearchApiException
    */
   public function streamCurrentConfigZip(ServerInterface $search_api_server): Response {
     try {

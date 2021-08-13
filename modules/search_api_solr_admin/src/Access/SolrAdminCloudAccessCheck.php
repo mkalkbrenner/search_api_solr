@@ -9,9 +9,9 @@ use Drupal\Core\Routing\Access\AccessInterface;
 use Drupal\Core\Session\AccountInterface;
 
 /**
- * Provides an access check for the "Solr Admin" routes.
+ * Provides an access check for the "Solr Admin" routes for Solr Cloud.
  */
-class SolrAdminAccessCheck implements AccessInterface {
+class SolrAdminCloudAccessCheck implements AccessInterface {
 
   /**
    * A custom access check.
@@ -25,7 +25,7 @@ class SolrAdminAccessCheck implements AccessInterface {
     if ($search_api_server) {
       $backend = $search_api_server->getBackend();
       if ($backend instanceof SolrBackendInterface) {
-        if (!$backend->getSolrConnector()->isCloud()) {
+        if ($backend->getSolrConnector()->isCloud()) {
           return AccessResult::allowed();
         }
       }

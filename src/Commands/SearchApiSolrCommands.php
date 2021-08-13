@@ -32,19 +32,12 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
   /**
    * Constructs a SearchApiSolrCommands object.
    *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   *   The entity type manager.
-   * @param \Drupal\Core\Extension\ModuleHandlerInterface $moduleHandler
-   *   The module handler.
-   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
-   *   The event dispatcher.
-   *
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @param \Drupal\search_api_solr\Utility\SolrCommandHelper $commandHelper
+   *   The command helper.
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager, ModuleHandlerInterface $moduleHandler, EventDispatcherInterface $eventDispatcher) {
+  public function __construct(SolrCommandHelper $commandHelper) {
     parent::__construct();
-    $this->commandHelper = new SolrCommandHelper($entityTypeManager, $moduleHandler, $eventDispatcher, 'dt');
+    $this->commandHelper = $commandHelper;
   }
 
   /**
@@ -64,12 +57,10 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    *   Deletes all Solr Field Type and re-installs them from their yml files.
    *
    * @aliases solr-reinstall-ft,sasm-reinstall-ft,search-api-solr-delete-and-reinstall-all-field-types,search-api-solr-multilingual-delete-and-reinstall-all-field-types
-   *
-   * @throws \Drupal\search_api\SearchApiException
-   *   Thrown if an index has a server which couldn't be loaded.
    */
   public function reinstallFieldtypes() {
     $this->commandHelper->reinstallFieldtypesCommand();
+    $this->logger()->success(dt('Solr field types re-installed.'));
   }
 
   /**
@@ -79,9 +70,6 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    *
    * @usage drush search-api-solr:install-missing-fieldtypes
    *   Install missing Solr Field Types.
-   *
-   * @throws \Drupal\search_api\SearchApiException
-   *   Thrown if an index has a server which couldn't be loaded.
    */
   public function installMissingFieldtypes() {
     search_api_solr_install_missing_field_types();
@@ -147,6 +135,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
   public function finalizeIndex($indexId = NULL, array $options = ['force' => FALSE]) {
     $force = (bool) $options['force'];
     $this->commandHelper->finalizeIndexCommand($indexId ? [$indexId] : $indexId, $force);
+    $this->logger()->success(dt('Solr %index_id finalized.', ['%index_id' => $indexId]));
   }
 
   /**

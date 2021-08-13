@@ -136,6 +136,14 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   public function getLuke();
 
   /**
+   * Gets the name of the used configset.
+   *
+   * @return string|null
+   *   Configset name.
+   */
+  public function getConfigSetName(): ?string;
+
+  /**
    * Gets the full schema version string the core is using.
    *
    * @param bool $reset
@@ -571,17 +579,17 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * The timeout will not be saved in the configuration of the connector. It
    * will be overwritten for the current request only.
    *
-   * @param int $timeout
+   * @param int $seconds
    *   The new query timeout value to set.
+   * @param string $timeout
+   *   (optional) The configured timeout to use. Default is self::QUERY_TIMEOUT.
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
    *   (optional) The Solarium endpoint object.
    *
    * @return int
    *   The previous query timeout value.
-   *
-   * @deprecated use useTim
    */
-  public function adjustTimeout(int $timeout, ?Endpoint &$endpoint = NULL);
+  public function adjustTimeout(int $seconds, string $timeout = self::QUERY_TIMEOUT, ?Endpoint &$endpoint = NULL): int;
 
   /**
    * Get the query timeout.

@@ -2,8 +2,10 @@
 
 namespace Drupal\search_api_solr\Utility;
 
+use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\Controller\SolrConfigSetController;
 use Drupal\search_api_solr\SearchApiSolrException;
+use Drupal\search_api_solr\SolrBackendInterface;
 use ZipStream\Option\Archive;
 use Drupal\search_api\Utility\CommandHelper;
 
@@ -35,11 +37,7 @@ class SolrCommandHelper extends CommandHelper {
    * @throws \ZipStream\Exception\OverflowException
    */
   public function getServerConfigCommand($server_id, $file_name = NULL, $solr_version = NULL) {
-    $servers = $this->loadServers([$server_id]);
-    $server = reset($servers);
-    if (!$server) {
-      throw new SearchApiSolrException('Unknown server');
-    }
+    $server = $this->getServer($server_id);
 
     if ($solr_version) {
       $config = $server->getBackendConfig();
@@ -106,4 +104,37 @@ class SolrCommandHelper extends CommandHelper {
     }
   }
 
+  /**
+   * Gets search server.
+   *
+   * @param string $server_id
+   *   The ID of the server.
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   */
+  protected function getServer(string $server_id): ServerInterface {
+    $servers = $this->loadServers([$server_id]);
+    $server = reset($servers);
+    if (!$server) {
+      throw new SearchApiSolrException(sprintf('Unknown server %s', $server_id));
+    }
+    if (!($server->getBackend() instanceof SolrBackendInterface)) {
+      throw new SearchApiSolrException(sprintf('Server %s is not a Solr server', $server->label()));
+    }
+
+    return $server;
+  }
+
+  /**
+   * @param \Drupal\search_api\ServerInterface $server
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   */
+  protected function reindex(ServerInterface $server): void {
+    foreach($server->getIndexes() as $index) {
+      if ($index->status() && !$index->isReadOnly()) {
+        $index->reindex();
+      }
+    }
+  }
 }
