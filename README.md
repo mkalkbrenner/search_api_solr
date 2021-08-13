@@ -24,8 +24,33 @@ The minimum support version Solr version is 6.4. Any version below might work
 if you use your own Solr config or if you enable the optional
 `search_api_solr_legacy` sub-module that is included in this module.
 
-Setting up Solr (single core)
------------------------------
+In general it is highly recommended to run Solr in cloud mode (Solr Cloud)!
+
+Setting up Solr Cloud - the modern way
+--------------------------------------
+
+To setup Solr in Cloud mode locally you can either follow the instructions of
+the [Apache Solr Reference Guide](https://solr.apache.org/guide/) or use
+docker-compose with
+https://github.com/docker-solr/docker-solr-examples/blob/master/docker-compose/docker-compose.yml
+
+The preferred way for local developent is to use DDev where you can easily add
+the pre-definded
+[solr-cloud service](https://github.com/docker-solr/docker-solr-examples/blob/master/docker-compose/docker-compose.yml).
+
+Once Solr Cloud is running with DDev you don't need to deal with any configset
+files like described in the sections below. Just enable the
+search_api_solr_admin sub-module and configure the Search API Server to use
+the Solr Cloud Connector with Basic Auth. The username "solr" and the password
+"SolrRocks" are pre-configured in `.ddev/solr-cloud/security.json`. Now you
+create or update your collection any time by clicking the "Upload Configset"
+button on the Serch API server details page. Or automate things using
+```
+ddev drush search_api_solr:upload-configset SERVER_ID
+```
+
+Setting up Solr (single core) - the classic way
+-----------------------------------------------
 
 In order for this module to work, you need to set up a Solr server.
 For this, you can either purchase a server from a web Solr hosts or set up your
@@ -120,8 +145,8 @@ directory to a random string of characters and using that as the path.
 For configuring indexes and searches you have to follow the documentation of
 search_api.
 
-Setting up Solr Cloud
----------------------
+Setting up Solr Cloud - the classic way
+---------------------------------------
 
 Instead of a single core you have to create a collection in your Solr Cloud
 instance. To do so you have to read the Solr handbook.
