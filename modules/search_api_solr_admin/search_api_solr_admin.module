@@ -21,7 +21,7 @@ function search_api_solr_admin_form_search_api_server_status_alter(&$form, FormS
 }
 
 function search_api_solr_admin_form_search_api_server_status_submit_delete_collection(&$form, FormStateInterface $form_state) {
-  // Redirect to the "Clear server" confirmation form.
+  // Redirect to the "delete collection" form.
   /** @var \Drupal\search_api\ServerInterface $server */
   $server = $form['#server'];
   $form_state->setRedirect('search_api_solr_admin.solr_delete_collection_form', ['search_api_server' => $server->id()]);

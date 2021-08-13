@@ -63,6 +63,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    */
   public function reinstallFieldtypes() {
     $this->commandHelper->reinstallFieldtypesCommand();
+    $this->logger()->success(dt('Solr field types re-installed.'));
   }
 
   /**
@@ -140,6 +141,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
   public function finalizeIndex($indexId = NULL, array $options = ['force' => FALSE]) {
     $force = (bool) $options['force'];
     $this->commandHelper->finalizeIndexCommand($indexId ? [$indexId] : $indexId, $force);
+    $this->logger()->success(dt('Solr %index_id finalized.', ['%index_id' => $indexId]));
   }
 
   /**

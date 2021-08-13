@@ -67,6 +67,7 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
    */
   public function reload(string $server_id): void {
     $this->commandHelper->reload($server_id);
+    $this->logger()->success(dt('Solr core/collection of %server_id reloaded.', ['%server_id' => $server_id]));
   }
 
   /**
@@ -87,6 +88,7 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
    */
   public function deleteCollection(string $server_id): void {
     $this->commandHelper->deleteCollection($server_id);
+    $this->logger()->success(dt('Solr collection of %server_id deleted.', ['%server_id' => $server_id]));
   }
 
   /**
@@ -111,7 +113,8 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
    * @aliases solr-upload-conf
    */
   public function uploadConfigset(string $server_id, int $num_shards = 3): void {
-    $this->commandHelper->uploadConfigset($server_id, $num_shards);
+    $this->commandHelper->uploadConfigset($server_id, $num_shards, $this->output()->isVerbose());
+    $this->logger()->success(dt('Solr configset for %server_id uploaded.', ['%server_id' => $server_id]));
   }
 
 }
