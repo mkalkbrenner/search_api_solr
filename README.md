@@ -42,7 +42,7 @@ Once Solr Cloud is running with DDev you don't need to deal with any configset
 files like described in the sections below. Just enable the
 search_api_solr_admin sub-module and configure the Search API Server to use
 the Solr Cloud Connector with Basic Auth. The username "solr" and the password
-"SolrRocks" are pre-configured in *.ddev/solr-cloud/security.json*. Now you
+"SolrRocks" are pre-configured in `.ddev/solr-cloud/security.json`. Now you
 create or update your collection any time by clicking the "Upload Configset"
 button on the Serch API server details page. Or automate things using
 ```
