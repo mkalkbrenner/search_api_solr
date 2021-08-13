@@ -580,7 +580,7 @@ function search_api_solr_install_missing_field_types() {
  *
  * @param bool $only_active
  *
- * @return \Drupal\search_api\Entity\ServerInterface[]
+ * @return \Drupal\search_api\ServerInterface[]
  *
  * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -589,7 +589,7 @@ function search_api_solr_install_missing_field_types() {
 function search_api_solr_get_servers($only_active = TRUE) {
   $solr_servers = [];
   $storage = \Drupal::entityTypeManager()->getStorage('search_api_server');
-  /** @var \Drupal\search_api\Entity\ServerInterface[] $servers */
+  /** @var \Drupal\search_api\ServerInterface[] $servers */
   $servers = $only_active ? $storage->loadByProperties(['status' => TRUE]) :
     $storage->loadMultiple();
   foreach ($servers as $server) {
