@@ -3,6 +3,7 @@
 namespace Drupal\search_api_solr;
 
 use Solarium\Core\Client\Endpoint;
+use Solarium\Core\Client\State\ClusterState;
 use Solarium\QueryType\Graph\Query as GraphQuery;
 use Solarium\QueryType\Stream\Query as StreamQuery;
 
@@ -75,6 +76,75 @@ interface SolrCloudConnectorInterface extends SolrConnectorInterface {
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   public function getCollectionInfo($reset = FALSE);
+
+  /**
+   * Gets information about the cluster status of a Solr Collection.
+   *
+   * @param string|null $collection
+   *   Collection.
+   *
+   * @return ClusterState|null
+   *   A response object with system information.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function getClusterStatus(?string $collection = NULL): ?ClusterState;
+
+  /**
+   * Reloads collection.
+   *
+   * @param string|null $collection
+   *   Collection.
+   *
+   * @return bool
+   *   TRUE if successful, FALSE otherwise.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function reloadCollection(?string $collection = NULL): bool;
+
+  /**
+   * Creates collection.
+   *
+   * @param array $options
+   *
+   * @param string|null $collection
+   *   Collection.
+   *
+   * @return bool
+   *   TRUE if successful, FALSE otherwise.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function createCollection(array $options, ?string $collection = NULL): bool;
+
+  /**
+   * Deletes collection.
+   *
+   * @param string|null $collection
+   *   Collection.
+   *
+   * @return bool
+   *   TRUE if successful, FALSE otherwise.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function deleteCollection(?string $collection = NULL): bool;
+
+  /**
+   * Upload a configset to Solr Cloud
+   *
+   * @param string $name
+   *   The name of the configset within Solr
+   *
+   * @param string $filename
+   *   The file name of the configset to uplaod.
+   *
+   * @return bool
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function uploadConfigset(string $name, string $filename): bool;
 
   /**
    * Pings the Solr collection to tell whether it can be accessed.

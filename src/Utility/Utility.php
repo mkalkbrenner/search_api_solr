@@ -14,6 +14,8 @@ use Drupal\search_api_solr\Entity\SolrRequestDispatcher;
 use Drupal\search_api_solr\Entity\SolrRequestHandler;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
+use Drupal\search_api_solr\SolrCloudConnectorInterface;
+use Drupal\search_api_solr\SolrConnectorInterface;
 use Drupal\search_api_solr\SolrFieldTypeInterface;
 use Solarium\Core\Client\Request;
 
@@ -140,6 +142,19 @@ class Utility {
       \Drupal::state()->set('search_api_solr.site_hash', $hash);
     }
     return $hash;
+  }
+
+  /**
+   * Returns a suitable name for a new configset.
+   *
+   * @param \Drupal\search_api\ServerInterface $server
+   *   The Solr server to generate the name for.
+   *
+   * @return string
+   *   A suitable name for a new configset.
+   */
+  public static function generateConfigsetName(ServerInterface $server): string {
+    return $server->id() . '_' . self::getSiteHash();
   }
 
   /**
@@ -1142,6 +1157,46 @@ class Utility {
       return [$version_number, $document->saveXML()];
     }
     return ['', ''];
+  }
+
+  /**
+   * Gets the Solr connector configured for a server.
+   *
+   * @param \Drupal\search_api\ServerInterface $server
+   *   The Search API Server.
+   *
+   * @return \Drupal\search_api_solr\SolrConnectorInterface
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public static function getSolrConnector(ServerInterface $server): SolrConnectorInterface {
+    $backend = $server->getBackend();
+     if (!($backend instanceof SolrBackendInterface)) {
+      throw new SearchApiSolrException(sprintf('Server %s is not a Solr server', $server->label()));
+    }
+
+    return $backend->getSolrConnector();
+  }
+
+  /**
+   * Gets the Solr Cloud connector configured for a server.
+   *
+   * @param \Drupal\search_api\ServerInterface $server
+   *   The Search API Server.
+   *
+   * @return \Drupal\search_api_solr\SolrCloudConnectorInterface
+   *
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public static function getSolrCloudConnector(ServerInterface $server): SolrCloudConnectorInterface {
+    $connector = self::getSolrConnector($server);
+    if (!$connector->isCloud()) {
+      throw new SearchApiSolrException(sprintf('The configured connector for server %s (%s) is not a cloud connector.', $server->label(), $server->id()));
+    }
+
+    return $connector;
   }
 
 }
