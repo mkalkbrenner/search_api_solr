@@ -7,6 +7,7 @@ use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Processor\ProcessorPluginBase;
 use Drupal\search_api\Query\QueryInterface;
+use Drupal\search_api_solr\SolrBackendInterface;
 
 /**
  * Adds a boost for more recent dates.
@@ -23,8 +24,6 @@ use Drupal\search_api\Query\QueryInterface;
 class BoostMoreRecent extends ProcessorPluginBase implements PluginFormInterface {
 
   use PluginFormTrait;
-
-  public const FIELD_PLACEHOLDER = 'FIELD_PLACEHOLDER';
 
   /**
    * The available boost factors.
@@ -136,12 +135,12 @@ class BoostMoreRecent extends ProcessorPluginBase implements PluginFormInterface
   public function preprocessSearchQuery(QueryInterface $query) {
     parent::preprocessSearchQuery($query);
 
-    $boosts = [];
+    $boosts = $query->getOption('solr_document_boost_factors', []);
     foreach ($this->configuration['boosts'] as $field_id => $boost) {
-      $boosts[$field_id] = sprintf('product(%.1F,recip(ms(%s,%s),%s,%.3F,%3F))', $boost['boost'], $boost['resolution'], self::FIELD_PLACEHOLDER, $boost['m'], $boost['a'], $boost['b']);
+      $boosts[$field_id] = sprintf('product(%.1F,recip(ms(%s,%s),%s,%.3F,%3F))', $boost['boost'], $boost['resolution'], SolrBackendInterface::FIELD_PLACEHOLDER, $boost['m'], $boost['a'], $boost['b']);
     }
     if ($boosts) {
-      $query->setOption('solr_boost_more_recent', $boosts);
+      $query->setOption('solr_document_boost_factors', $boosts);
     }
   }
 
