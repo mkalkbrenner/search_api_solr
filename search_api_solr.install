@@ -2027,10 +2027,21 @@ function search_api_solr_update_8408() {
   // Covered search_api_solr_update_8409().
 }
 
-
 /**
  * Add Hungarian field type.
  */
 function search_api_solr_update_8409() {
   search_api_solr_update_helper_install_configs();
+}
+
+/**
+ * Allow to turn off the distrib parameter for Solr Cloud.
+ */
+function search_api_solr_update_8410() {
+  foreach (search_api_solr_update_helper_get_backend_configs() as $server_name => $backend_config) {
+    if (!isset($backend_config['connector_config']['distrib']) && (strpos($backend_config['connector'], 'solr_cloud') === 0)) {
+      $backend_config['connector_config']['distrib'] = TRUE;
+      search_api_solr_update_helper_save_backend_config($server_name, $backend_config);
+    }
+  }
 }
