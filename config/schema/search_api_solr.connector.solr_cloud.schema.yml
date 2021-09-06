@@ -9,5 +9,5 @@ plugin.plugin_configuration.search_api_solr_connector.solr_cloud:
       type: string
       label: 'StatsCache'
     distrib:
-      type: bool
+      type: boolean
       label: 'Distribute queries across all nodes'
