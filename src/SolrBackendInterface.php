@@ -43,6 +43,8 @@ interface SolrBackendInterface extends BackendInterface {
    */
   const SEARCH_API_SOLR_LANGUAGE_SEPARATOR = ';';
 
+  const FIELD_PLACEHOLDER = 'FIELD_PLACEHOLDER';
+
   /**
    * Creates a list of all indexed field names mapped to their Solr field names.
    *

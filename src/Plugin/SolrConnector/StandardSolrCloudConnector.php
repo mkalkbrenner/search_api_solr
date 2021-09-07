@@ -33,7 +33,17 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
     return [
       'checkpoints_collection' => '',
       'stats_cache' => 'org.apache.solr.search.stats.LRUStatsCache',
+      'distrib' => TRUE,
     ] + parent::defaultConfiguration();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setConfiguration(array $configuration) {
+    $configuration['distrib'] = (bool) $configuration['distrib'];
+
+    parent::setConfiguration($configuration);
   }
 
   /**
@@ -75,6 +85,13 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
       ],
       '#description' => $this->t('Document and term statistics are needed in order to calculate relevancy. Solr provides four implementations out of the box when it comes to document stats calculation. LocalStatsCache: This only uses local term and document statistics to compute relevance. In cases with uniform term distribution across shards, this works reasonably well. ExactStatsCache: This implementation uses global values (across the collection) for document frequency. ExactSharedStatsCache: This is exactly like the exact stats cache in its functionality but the global stats are reused for subsequent requests with the same terms. LRUStatsCache: This implementation uses an LRU cache to hold global stats, which are shared between requests. Formerly a limitation was that TF/IDF relevancy computations only used shard-local statistics. This is still the case by default or if LocalStatsCache is used. If your data isn’t randomly distributed, or if you want more exact statistics, then remember to configure the ExactStatsCache (or "better").'),
       '#default_value' => isset($this->configuration['stats_cache']) ? $this->configuration['stats_cache'] : 'org.apache.solr.search.stats.LRUStatsCache',
+    ];
+
+    $form['advanced']['distrib'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Distribute queries'),
+      '#description' => $this->t("Normally queries should be distributed across all nodes of a Solr Cloud that store shards of the collection. In rare debug use-cases or when you only run a single node it might be useful to disable the query distribution."),
+      '#default_value' => $this->configuration['distrib'] ?? TRUE,
     ];
 
     return $form;
@@ -288,7 +305,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function getSelectQuery() {
     $query = parent::getSelectQuery();
-    return $query->setDistrib(TRUE);
+    return $query->setDistrib($this->configuration['distrib'] ?? TRUE);
   }
 
   /**
@@ -296,7 +313,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function getMoreLikeThisQuery() {
     $query = parent::getMoreLikeThisQuery();
-    return $query->setDistrib(TRUE);
+    return $query->setDistrib($this->configuration['distrib'] ?? TRUE);
   }
 
   /**
@@ -304,7 +321,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function getTermsQuery() {
     $query = parent::getTermsQuery();
-    return $query->setDistrib(TRUE);
+    return $query->setDistrib($this->configuration['distrib'] ?? TRUE);
   }
 
   /**
@@ -312,7 +329,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function getSpellcheckQuery() {
     $query = parent::getSpellcheckQuery();
-    return $query->setDistrib(TRUE);
+    return $query->setDistrib($this->configuration['distrib'] ?? TRUE);
   }
 
   /**
@@ -320,7 +337,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function getSuggesterQuery() {
     $query = parent::getSuggesterQuery();
-    return $query->setDistrib(TRUE);
+    return $query->setDistrib($this->configuration['distrib'] ?? TRUE);
   }
 
   /**
@@ -328,7 +345,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    */
   public function getAutocompleteQuery() {
     $query = parent::getAutocompleteQuery();
-    return $query->setDistrib(TRUE);
+    return $query->setDistrib($this->configuration['distrib'] ?? TRUE);
   }
 
   /**
