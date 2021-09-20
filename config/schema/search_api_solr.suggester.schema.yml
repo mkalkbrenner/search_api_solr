@@ -1,5 +1,6 @@
 plugin.plugin_configuration.search_api_autocomplete_suggester.search_api_solr_suggester:
   type: mapping
+  label: 'Search API Solr Suggester'
   mapping:
     search_api_solr/site_hash:
       type: integer
@@ -13,22 +14,8 @@ plugin.plugin_configuration.search_api_autocomplete_suggester.search_api_solr_su
 
 plugin.plugin_configuration.search_api_autocomplete_suggester.search_api_solr_spellcheck:
   type: mapping
-  mapping:
-    search_api_solr/site_hash:
-      type: integer
-      label: 'Site hash'
-    search_api/index:
-      type: string
-      label: 'Index ID'
-    drupal/langcode:
-      type: string
-      label: 'Language'
+  label: 'Search API Solr Spellcheck'
 
 plugin.plugin_configuration.search_api_autocomplete_suggester.search_api_solr_terms:
-  type: mapping
-  mapping:
-    fields:
-      type: sequence
-      label: 'The fields to use for terms suggestions'
-      sequence:
-        type: string
+  type: plugin.plugin_configuration.search_api_autocomplete_suggester.server
+  label: 'Search API Solr Terms'
