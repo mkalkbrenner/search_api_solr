@@ -28,7 +28,7 @@ class RegexReplace extends FieldsProcessorPluginBase {
     return [
       'regexes' => [],
       'replacements' => [],
-    ];
+    ] + parent::defaultConfiguration();
   }
 
   /**
