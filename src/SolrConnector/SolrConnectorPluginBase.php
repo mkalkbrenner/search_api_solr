@@ -375,16 +375,12 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   }
 
   /**
-   * Returns a the Solr server URI.
+   * Returns the Solr server URI.
    */
   protected function getServerUri() {
     $this->connect();
-    $url_path = $this->solr->getEndpoint()->getServerUri();
-    if ($this->configuration['host'] === 'localhost' && !empty($_SERVER['SERVER_NAME'])) {
-      $url_path = str_replace('localhost', $_SERVER['SERVER_NAME'], $url_path);
-    }
 
-    return $url_path;
+    return $this->solr->getEndpoint()->getServerUri();
   }
 
   /**
@@ -392,6 +388,11 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   public function getServerLink() {
     $url_path = $this->getServerUri();
+    if ($this->configuration['host'] === 'localhost' && !empty($_SERVER['SERVER_NAME'])) {
+      // In most cases "localhost" could not be resolved from the UI in the
+      // browser. Try the 'SERVER_NAME'.
+      $url_path = str_replace('localhost', $_SERVER['SERVER_NAME'], $url_path);
+    }
     $url = Url::fromUri($url_path);
 
     return Link::fromTextAndUrl($url_path, $url);
@@ -402,6 +403,11 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   public function getCoreLink() {
     $url_path = $this->getServerUri() . 'solr/#/' . $this->configuration['core'];
+    if ($this->configuration['host'] === 'localhost' && !empty($_SERVER['SERVER_NAME'])) {
+      // In most cases "localhost" could not be resolved from the UI in the
+      // browser. Try the 'SERVER_NAME'.
+      $url_path = str_replace('localhost', $_SERVER['SERVER_NAME'], $url_path);
+    }
     $url = Url::fromUri($url_path);
 
     return Link::fromTextAndUrl($url_path, $url);
