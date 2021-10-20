@@ -28,6 +28,7 @@ class RegexReplace extends FieldsProcessorPluginBase {
     return [
       'regexes' => [],
       'replacements' => [],
+      'preserve_original' => FALSE,
     ] + parent::defaultConfiguration();
   }
 
@@ -49,6 +50,13 @@ class RegexReplace extends FieldsProcessorPluginBase {
       '#title' => $this->t('Replacements'),
       '#description' => $this->t('One replacement (pattern) per line.'),
       '#default_value' => implode("\n", $this->configuration['replacements'] ?? []),
+    ];
+
+    $form['preserve_original'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Preserve original'),
+      '#description' => $this->t('Index the original string in addition to the replacement.'),
+      '#default_value' => $this->configuration['preserve_original'] ?? FALSE,
     ];
 
     return $form;
@@ -92,12 +100,28 @@ class RegexReplace extends FieldsProcessorPluginBase {
   /**
    * {@inheritdoc}
    */
-  protected function process(&$value) {
+  protected function processFieldValue(&$value, $type) {
     // Do *not* turn a value of null into an empty string!
     if (is_string($value)) {
-      foreach ($this->configuration['regexes'] as $key => $regex)
-      $value = preg_replace($regex, $this->configuration['replacements'][$key], $value);
+      foreach ($this->configuration['regexes'] as $key => $regex) {
+        $replacement = $this->configuration['replacements'][$key];
+        if ($this->configuration['preserve_original']) {
+          $replacement .= ' $0';
+        }
+        $value = preg_replace($regex, $replacement, $value);
+      }
     }
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function processKey(&$value) {
+    // Do *not* turn a value of null into an empty string!
+    if (is_string($value)) {
+      foreach ($this->configuration['regexes'] as $key => $regex) {
+        $value = preg_replace($regex, $this->configuration['replacements'][$key], $value);
+      }
+    }
+  }
 }
