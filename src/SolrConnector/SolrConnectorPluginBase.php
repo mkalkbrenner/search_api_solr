@@ -1180,8 +1180,8 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     }
 
     // In most (or every) cases when an error happens we won't reach that point,
-    // because a Solr exception is already pased through. Anyway, this exception
-    // will be thrown if the solarium library surprises us again. ;-)
+    // because a Solr exception is already passed through. Anyway, this
+    // exception will be thrown if the solarium library surprises us again. ;-)
     throw new SearchApiSolrException('Unable to find extracted files within the Solr response body.');
   }
 
