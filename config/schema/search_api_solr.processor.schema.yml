@@ -50,3 +50,6 @@ plugin.plugin_configuration.search_api_processor.solr_regex_replace:
       sequence:
         type: string
         label: 'replacement'
+    preserve_original:
+      type: boolean
+      label: 'Preserve original'
