@@ -282,16 +282,10 @@ jobs:
               run: |
                 cd drupal
                 composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
-                composer require solarium/solarium:"dev-master as 6.1.99" drupal/search_api:"dev-1.x as 1.99.0" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:1.x-dev drupal/devel:3.x-dev drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --ignore-platform-reqs --no-interaction --no-suggest
+                composer require solarium/solarium:"dev-master as 6.1.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:1.x-dev drupal/devel:3.x-dev drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --ignore-platform-reqs --no-interaction --no-suggest
                 # search_api was installed as dendency above. This is a required check! Now switch to the latest dev version.
                 composer require drupal/search_api:1.x-dev --ignore-platform-reqs --no-interaction --no-suggest
                 composer run-script drupal-phpunit-upgrade
-
-            #- name: Install search_api_location
-            #  if: matrix.drupal != '9.0'
-            #  run: |
-            #    cd drupal
-            #    composer require drupal/search_api_location
 
             - name: Create Solr collections
               run: |
@@ -322,17 +316,9 @@ jobs:
 
       strategy:
         matrix:
-          drupal: ['8.9', '9.0', '9.1', '9.2']
+          drupal: ['9.2']
           solr: ['3']
-          php: ['7.3', '7.4']
-          exclude:
-            - drupal: '9.2'
-              solr: '3'
-              php: '7.3'
-          include:
-            - drupal: '9.2'
-              solr: '3'
-              php: '8.0'
+          php: ['7.3', '7.4', '8.0']
 
       name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
 
@@ -401,9 +387,6 @@ jobs:
             cp search_api_solr/tests/github.phpunit.xml drupal/core/phpunit.xml.dist
             cd drupal
             php -S localhost:8888 >& /dev/null &
-            vendor/bin/drush si minimal --db-url=sqlite://sites/default/files/db.sqlite --yes
-            vendor/bin/drush en search_api_solr_admin,search_api_solr_defaults,search_api_solr_devel,search_api_solr_legacy --yes
-            vendor/bin/drush en search_api_spellcheck,search_api_autocomplete,facets,search_api_location --yes
             vendor/bin/phpunit -v -c core --group search_api_solr_legacy --exclude-group not_drupal${{ matrix.drupal }},not_solr${{ matrix.solr }} modules/contrib/search_api_solr/modules/search_api_solr_legacy
 
     push-config-sets:
