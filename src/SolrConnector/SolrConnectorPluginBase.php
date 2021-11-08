@@ -1179,6 +1179,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       return $array_data[basename($filepath)];
     }
 
+    // In case of file hosted on s3fs array_data has full file path as key.
+    // Example:
+    // https://[s3-bucket.s3-domain.com]/s3fs-public/document/[document-name.pdf?VersionId=123]
+    if (isset($array_data[$filepath])) {
+      return $array_data[$filepath];
+    }
+
     // In most (or every) cases when an error happens we won't reach that point,
     // because a Solr exception is already passed through. Anyway, this
     // exception will be thrown if the solarium library surprises us again. ;-)
