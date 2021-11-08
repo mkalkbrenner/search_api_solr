@@ -36,7 +36,7 @@ jobs:
               uses: actions/checkout@v2
               with:
                 repository: drupal/drupal
-                ref: 8.9.x
+                ref: 9.2.x
                 path: drupal
 
             - name: Checkout search_api_solr
@@ -151,40 +151,83 @@ jobs:
 
         strategy:
             matrix:
-                drupal: ['8.9', '9.0', '9.1', '9.2']
+                drupal: ['9.2']
                 solr: ['4', '5', '6', '7', '8']
-                php: ['7.3', '7.4']
+                php: ['7.3', '7.4', '8.0']
                 experimental: [false]
-                exclude:
-                  - drupal: '9.1'
-                    solr: '4'
-                    php: '7.3'
-                  - drupal: '9.1'
-                    solr: '5'
-                    php: '7.3'
-                  - drupal: '9.1'
-                    solr: '6'
-                    php: '7.3'
-                  - drupal: '9.1'
-                    solr: '7'
-                    php: '7.3'
-                  - drupal: '9.2'
-                    solr: '4'
-                    php: '7.3'
-                  - drupal: '9.2'
-                    solr: '5'
-                    php: '7.3'
-                  - drupal: '9.2'
-                    solr: '6'
-                    php: '7.3'
-                  - drupal: '9.2'
-                    solr: '7'
-                    php: '7.3'
                 include:
-                  - drupal: '9.2'
+                  - drupal: '9.1'
+                    solr: '8'
+                    php: '7.3'
+                    experimental: false
+                  - drupal: '9.1'
+                    solr: '8'
+                    php: '7.4'
+                    experimental: false
+                  - drupal: '9.1'
                     solr: '8'
                     php: '8.0'
                     experimental: false
+                  - drupal: '9.3'
+                    solr: '4'
+                    php: '7.3'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '5'
+                    php: '7.3'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '6'
+                    php: '7.3'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '7'
+                    php: '7.3'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '8'
+                    php: '7.3'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '4'
+                    php: '7.4'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '5'
+                    php: '7.4'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '6'
+                    php: '7.4'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '7'
+                    php: '7.4'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '8'
+                    php: '7.4'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '4'
+                    php: '8.0'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '5'
+                    php: '8.0'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '6'
+                    php: '8.0'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '7'
+                    php: '8.0'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '8'
+                    php: '8.0'
+                    experimental: true
 
         name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
 
