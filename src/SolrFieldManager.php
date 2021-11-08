@@ -126,8 +126,6 @@ class SolrFieldManager implements SolrFieldManagerInterface {
    *
    * @return \Drupal\Core\TypedData\DataDefinitionInterface[]
    *   The array of field definitions for the server, keyed by field name.
-   *
-   * @throws \Drupal\search_api\SearchApiException
    */
   protected function buildFieldDefinitionsFromConfig(IndexInterface $index) {
     $fields = [];

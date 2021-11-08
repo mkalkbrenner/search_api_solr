@@ -608,8 +608,14 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    */
   public function isAvailable() {
     try {
-      $conn = $this->getSolrConnector();
-      return $conn->pingServer() !== FALSE;
+      $connector = $this->getSolrConnector();
+      $server_available = $connector->pingServer() !== FALSE;
+      $core_available = $connector->pingCore() !== FALSE;
+      if ($server_available && !$core_available) {
+        \Drupal::messenger()
+          ->addWarning($this->t('Server %server is reachable but the configured %core is not available.', ['%server' => $this->getServer()->label(), '%core' => $connector->isCloud() ? 'collection' : 'core']));
+      }
+      return $server_available && $core_available;
     }
     catch (\Exception $e) {
       $this->logException($e);
@@ -739,6 +745,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
       else {
         $msg = $this->t('The Solr server could not be reached or is protected by your service provider.');
+        \Drupal::messenger()->addWarning($msg);
       }
       $info[] = [
         'label' => $this->t('Server Connection'),
@@ -1349,7 +1356,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           $this->getLogger()->debug('PID %pid, Index %index_id: Finalization lock acquired.', $vars);
           $finalization_in_progress[$index->id()] = TRUE;
           $connector = $this->getSolrConnector();
-          $connector->useTimeout(SolrConnectorInterface::FINALIZE_TIMEOUT);
+          $previous_query_timeout = $connector->adjustTimeout($connector->getFinalizeTimeout(), SolrConnectorInterface::QUERY_TIMEOUT);
+          $previous_index_timeout = $connector->adjustTimeout($connector->getFinalizeTimeout(), SolrConnectorInterface::INDEX_TIMEOUT);
           try {
             if (!empty($settings['commit_before_finalize'])) {
               $this->ensureCommit($index);
@@ -1377,6 +1385,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             throw new SearchApiSolrException($e->getMessage(), $e->getCode(), $e);
           }
           unset($finalization_in_progress[$index->id()]);
+
+          $connector->adjustTimeout($previous_query_timeout, SolrConnectorInterface::QUERY_TIMEOUT);
+          $connector->adjustTimeout($previous_index_timeout, SolrConnectorInterface::INDEX_TIMEOUT);
 
           return TRUE;
         }

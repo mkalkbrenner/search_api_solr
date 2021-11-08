@@ -22,8 +22,13 @@ class SolrAdminAccessCheck implements AccessInterface {
    *   (optional) The Search API server entity.
    */
   public function access(AccountInterface $account, ServerInterface $search_api_server = NULL) {
-    if ($search_api_server && $search_api_server->getBackend() instanceof SolrBackendInterface) {
-      return AccessResult::allowed();
+    if ($search_api_server) {
+      $backend = $search_api_server->getBackend();
+      if ($backend instanceof SolrBackendInterface) {
+        if (!$backend->getSolrConnector()->isCloud()) {
+          return AccessResult::allowed();
+        }
+      }
     }
     return AccessResult::forbidden();
   }

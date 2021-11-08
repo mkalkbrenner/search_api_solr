@@ -2,27 +2,21 @@
 
 namespace Drupal\search_api_solr_admin\Form;
 
-use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\ServerInterface;
-use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\search_api_solr\Utility\Utility;
-use Drupal\search_api_solr_admin\Utility\SolrAdminCommandHelper;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * The core reload form.
+ * The collection delete form.
  *
  * @package Drupal\search_api_solr_admin\Form
  */
-class SolrReloadCoreForm extends SolrAdminFormBase {
+class SolrDeleteCollectionForm extends SolrAdminFormBase {
 
   /**
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'solr_reload_core_form';
+    return 'solr_delete_collection_form';
   }
 
   /**
@@ -31,16 +25,13 @@ class SolrReloadCoreForm extends SolrAdminFormBase {
   public function buildForm(array $form, FormStateInterface $form_state, ServerInterface $search_api_server = NULL) {
     $this->search_api_server = $search_api_server;
 
-    /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend $backend */
-    $backend = $this->search_api_server->getBackend();
-
     $core = $this->search_api_server->getBackendConfig()['connector_config']['core'];
-    $form['#title'] = $this->t('Reload %type %core?', ['%type' => $backend->getSolrConnector()->isCloud() ? 'core' : 'collection', '%core' => $core]);
+    $form['#title'] = $this->t('Delete collection %core?', ['%core' => $core]);
 
     $form['actions'] = [
       'submit' => [
         '#type' => 'submit',
-        '#value' => $this->t('Reload'),
+        '#value' => $this->t('Delete'),
       ],
     ];
 
@@ -52,8 +43,8 @@ class SolrReloadCoreForm extends SolrAdminFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     try {
-      $this->commandHelper->reload($this->search_api_server->id());
-      $this->messenger->addMessage($this->t('Successfully reloaded %type.', ['%type' => Utility::getSolrConnector($this->search_api_server)->isCloud() ? 'collection' : 'core']));
+      $this->commandHelper->deleteCollection($this->search_api_server->id());
+      $this->messenger->addMessage($this->t('Successfully deleted collection.'));
     }
     catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
