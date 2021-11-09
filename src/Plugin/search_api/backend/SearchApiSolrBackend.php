@@ -186,14 +186,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $this->dataTypeHelper = $dataTypeHelper;
     $this->queryHelper = $query_helper;
     $this->entityTypeManager = $entityTypeManager;
-    if (Comparator::greaterThanOrEqualTo(\Drupal::VERSION, '9.1.0')) {
-      // Drupal >= 9.1.
-      $this->eventDispatcher = $eventDispatcher;
-    }
-    else {
-      // Drupal <= 9.0.
-      $this->eventDispatcher = new Psr14Bridge($eventDispatcher);
-    }
+    $this->eventDispatcher = $eventDispatcher;
 
     parent::__construct($configuration, $plugin_id, $plugin_definition);
   }
