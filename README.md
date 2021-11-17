@@ -34,9 +34,9 @@ the [Apache Solr Reference Guide](https://solr.apache.org/guide/) or use
 docker-compose with
 https://github.com/docker-solr/docker-solr-examples/blob/master/docker-compose/docker-compose.yml
 
-The preferred way for local developent is to use DDev where you can easily add
+The preferred way for local development is to use DDev where you can easily add
 the pre-definded
-[solr-cloud service](https://github.com/docker-solr/docker-solr-examples/blob/master/docker-compose/docker-compose.yml).
+[solr-cloud service](https://github.com/drud/ddev-contrib/tree/master/docker-compose-services/solr).
 
 Once Solr Cloud is running with DDev you don't need to deal with any configset
 files like described in the sections below. Just enable the
@@ -48,6 +48,10 @@ button on the Serch API server details page. Or automate things using
 ```
 ddev drush search_api_solr:upload-configset SERVER_ID
 ```
+
+Check the
+[Apache Solr (Cloud) Integration for DDEV-Local README](https://github.com/drud/ddev-contrib/blob/master/docker-compose-services/solr/README.md)
+for more detailed instructions.
 
 Setting up Solr (single core) - the classic way
 -----------------------------------------------
