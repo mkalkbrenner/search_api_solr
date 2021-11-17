@@ -238,6 +238,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       // 10 is Solr's default limit if rows is not set.
       'rows' => 10,
       'index_single_documents_fallback_count' => 10,
+      'index_empty_text_fields' => FALSE,
     ];
   }
 
@@ -284,6 +285,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $configuration['fallback_multiple'] = (bool) $configuration['fallback_multiple'];
     $configuration['rows'] = (int) ($configuration['rows'] ?? 10);
     $configuration['index_single_documents_fallback_count'] = (int) ($configuration['index_single_documents_fallback_count'] ?? 10);
+    $configuration['index_empty_text_fields'] = (bool) $configuration['index_empty_text_fields'];
 
     parent::setConfiguration($configuration);
 
@@ -341,6 +343,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#description' => $this->t('In case of an erroneous document that causes a Solr exception, the entire batch of documents will not be indexed. In order to identify the erroneous document and to keep indexing the others, the indexing process falls back to index documents one by one instead of a batch. This setting limits the amount of single documents to be indexed per batch to avoid too many commits that might slow doen the Solr server. Setting the value to "0" disables the fallback.'),
       '#default_value' => $this->configuration['index_single_documents_fallback_count'] ?: 10,
       '#required' => TRUE,
+    ];
+
+    $form['advanced']['index_empty_text_fields'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Index empty Fulltext fields'),
+      '#description' => t('By default, empty fields of type fulltext will be removed from the indexed document. In some cases like multilingual searches across different language-specific fields that might impact the IDF similarity and therefore the scoring in an unwanted way. By indexing a dummy value instead you can "normalize" the IDF by ensuring the same number of total documents for each field (per language).'),
+      '#default_value' => $this->configuration['index_empty_text_fields'],
     ];
 
     $form['advanced']['retrieve_data'] = [
@@ -2437,19 +2446,28 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   The first value of $values that has been added to the index.
    */
   protected function addIndexField(Document $doc, $key, array $values, $type, array &$boost_terms) {
-    // Don't index empty values (i.e., when field is missing).
-    if (empty($values)) {
-      return '';
-    }
-
     if (strpos($type, 'solr_text_') === 0) {
       $type = 'text';
+    }
+
+    if (empty($values)) {
+      if ('text' !== $type || !$this->configuration['index_empty_text_fields']) {
+        // Don't index empty values (i.e., when field is missing).
+        return '';
+      }
     }
 
     $first_value = '';
 
     // All fields.
     foreach ($values as $value) {
+      if (NULL === $value && 'text' === $type && $this->configuration['index_empty_text_fields']) {
+        // Index a dummy value to keep the number of total documents
+        // containing a field consistent for IDF based similarity
+        // calculations, especially for multilingual searches.
+        $value = new TextValue(SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE);
+      }
+
       if (NULL !== $value) {
         switch ($type) {
           case 'boolean':
@@ -2459,7 +2477,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           case 'date':
             $value = $this->formatDate($value);
             if ($value === FALSE) {
-              continue(2);
+              continue 2;
             }
             break;
 
@@ -2493,7 +2511,16 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               }
 
               foreach ($tokens as $token) {
-                if ($value = $token->getText()) {
+                $value = $token->getText();
+
+                if (!$value && $this->configuration['index_empty_text_fields']) {
+                  // Index a dummy value to keep the number of total documents
+                  // containing a field consistent for IDF based similarity
+                  // calculations, especially for multilingual searches.
+                  $value = SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE;
+                }
+
+                if ($value) {
                   if ($legacy_solr_version) {
                     // Boosting field values at index time is only supported in
                     // old Solr versions.
@@ -2537,7 +2564,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             }
 
             $value = $value->getText();
-          // No break, now we have a string.
+
+            if (!$value && $this->configuration['index_empty_text_fields']) {
+              // Index a dummy value to keep the number of total documents
+              // containing a field consistent for IDF based similarity
+              // calculations, especially for multilingual searches.
+              $value = SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE;
+            }
+
+            // No break, now we have a string.
           case 'string':
           default:
             // Keep $value as it is.
@@ -2742,6 +2777,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                 break;
 
               case 't':
+                if ($this->configuration['index_empty_text_fields'] && SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE === $value) {
+                  // Don't add the EMPTY_TEXT_FIELD_DUMMY_VALUE to the search
+                  // search result field. Continue with next value.
+                  // @see addIndexField().
+                  continue 2;
+                }
+
                 $value = new TextValue($value);
             }
           }
