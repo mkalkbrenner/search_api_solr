@@ -271,14 +271,14 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * {@inheritdoc}
    */
   public function setConfiguration(array $configuration) {
-    $configuration['retrieve_data'] = (bool) $configuration['retrieve_data'];
-    $configuration['highlight_data'] = (bool) $configuration['highlight_data'];
-    $configuration['site_hash'] = (bool) $configuration['site_hash'];
-    $configuration['optimize'] = (bool) $configuration['optimize'];
-    $configuration['fallback_multiple'] = (bool) $configuration['fallback_multiple'];
+    $configuration['retrieve_data'] = (bool) ($configuration['retrieve_data'] ?? FALSE);
+    $configuration['highlight_data'] = (bool) ($configuration['highlight_data'] ?? FALSE);
+    $configuration['site_hash'] = (bool) ($configuration['site_hash'] ?? FALSE);
+    $configuration['optimize'] = (bool) ($configuration['optimize'] ?? FALSE);
+    $configuration['fallback_multiple'] = (bool) ($configuration['fallback_multiple'] ?? FALSE);
     $configuration['rows'] = (int) ($configuration['rows'] ?? 10);
     $configuration['index_single_documents_fallback_count'] = (int) ($configuration['index_single_documents_fallback_count'] ?? 10);
-    $configuration['index_empty_text_fields'] = (bool) $configuration['index_empty_text_fields'];
+    $configuration['index_empty_text_fields'] = (bool) ($configuration['index_empty_text_fields'] ?? FALSE);
 
     parent::setConfiguration($configuration);
 
