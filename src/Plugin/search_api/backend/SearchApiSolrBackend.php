@@ -3500,7 +3500,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           $solr_version = $connector->getSolrVersion();
           if (
             version_compare($solr_version, '7.0', '>=') &&
-            preg_match('^[ifpdh]', $solr_field, $matches)
+            preg_match('/^[ifpdh]/', $solr_field, $matches)
           ) {
             // Trie based field types were deprecated in Solr 6 and with Solr 7
             // we switched to the point based equivalents. But lucene doesn't
