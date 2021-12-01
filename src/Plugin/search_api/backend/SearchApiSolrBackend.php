@@ -3460,7 +3460,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             //   hard to detect which language specific fields should be
             //   considered. And the results have to be combined across
             //   languages. One way to implement it might be facet queries.
-            throw new SearchApiSolrException('Facetting on fulltext fields is not yet supported. Consider to add a string field to the index for that purpose.');
+            //   For now, log an error and throw an exception.
+            $msg = sprintf('Facets for fulltext fields are not yet supported. Consider converting the following field to a string or index it twice as string: %s.', $info['field']);
+            $this->getLogger()->error($msg);
+            throw new SearchApiSolrException($msg);
           }
           else {
             // Create the Solarium facet field object.
@@ -3492,6 +3495,22 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
       // Set mincount, unless it's the default.
       if ($info['min_count'] != 1) {
+        if (0 === (int) $info['min_count']) {
+          $connector = $this->getSolrConnector();
+          $solr_version = $connector->getSolrVersion();
+          if (
+            version_compare($solr_version, '7.0', '>=') &&
+            preg_match('/^[ifpdh]/', $solr_field, $matches)
+          ) {
+            // Trie based field types were deprecated in Solr 6 and with Solr 7
+            // we switched to the point based equivalents. But lucene doesn't
+            // support a mincount of "0" for these field types.
+            $msg = sprintf('Facets having a mincount of "0" is not yet supported by Solr for point based field types. Consider converting the following field to a string or index it twice as string: %s.', $info['field']);
+            $this->getLogger()->error($msg);
+            throw new SearchApiSolrException($msg);
+          }
+        }
+
         $facet_field->setMinCount($info['min_count']);
       }
     }
