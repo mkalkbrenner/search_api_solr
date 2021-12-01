@@ -3495,6 +3495,19 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
       // Set mincount, unless it's the default.
       if ($info['min_count'] != 1) {
+        if (0 === (int) $info['min_count']) {
+          $connector = $this->getSolrConnector();
+          $solr_version = $connector->getSolrVersion();
+          if (version_compare($solr_version, '7.0', '>=')) {
+            // Trie based field types were deprecated in Solr 6 and with Solr 7
+            // we switched to the point based equivalents. But lucene doesn't
+            // support a mincount of "0" for these field types.
+            $msg = sprintf('Facets having a mincount of "0" is not yet supported by Solr for point based field types. Consider converting the following field to a string or index it twice as string: %s.', $info['field']);
+            $this->getLogger()->error($msg);
+            throw new SearchApiSolrException($msg);
+          }
+        }
+
         $facet_field->setMinCount($info['min_count']);
       }
     }

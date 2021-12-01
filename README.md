@@ -323,11 +323,19 @@ you enabled "Retrieve result data from Solr". In this case you have to enable
 the "Solr dummy fields" processor and add as many dummy fields to the index as
 you require. Afterwards you should manipulate these fields via API.
 
-Facet Support
--------------
-Facetting on fulltext fields is not yet supported. We recommend the use of string fields for that purpose.
+Troubleshooting Facets
+----------------------
+Facetting on fulltext fields is not yet supported. We recommend the use of
+string fields for that purpose.
 
-If updating a search index from an earlier version, check your field configurations to avoid this error.
+Trie based field types were deprecated in Solr 6 and with Solr 7 we switched to
+the point based equivalents. But lucene doesn't support a mincount of "0" for
+these field types. We recommend the use of string fields instead of numeric ones
+for that purpose.
+
+If updating from Search API Solr 8.x-1.x or from Solr versions before 7 to Solr
+7 or 8, check your Search API index' field configurations to avoid these errors
+that will lead to exceptions and zero results.
 
 Support
 =======
