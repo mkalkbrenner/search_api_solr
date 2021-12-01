@@ -3498,7 +3498,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         if (0 === (int) $info['min_count']) {
           $connector = $this->getSolrConnector();
           $solr_version = $connector->getSolrVersion();
-          if (version_compare($solr_version, '7.0', '>=')) {
+          if (
+            version_compare($solr_version, '7.0', '>=') &&
+            preg_match('^[ifpdh]', $solr_field, $matches)
+          ) {
             // Trie based field types were deprecated in Solr 6 and with Solr 7
             // we switched to the point based equivalents. But lucene doesn't
             // support a mincount of "0" for these field types.
