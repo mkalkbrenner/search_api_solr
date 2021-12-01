@@ -3460,7 +3460,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             //   hard to detect which language specific fields should be
             //   considered. And the results have to be combined across
             //   languages. One way to implement it might be facet queries.
-            throw new SearchApiSolrException('Facetting on fulltext fields is not yet supported. Consider to add a string field to the index for that purpose.');
+            //   For now, log an error and throw an exception.
+            $msg = sprintf('Facets for fulltext fields are not yet supported. Consider converting the following field to a string or index it twice as string: %s.', $info['field']);
+            $this->getLogger()->error($msg);
+            throw new SearchApiSolrException($msg);
           }
           else {
             // Create the Solarium facet field object.

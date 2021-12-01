@@ -323,6 +323,12 @@ you enabled "Retrieve result data from Solr". In this case you have to enable
 the "Solr dummy fields" processor and add as many dummy fields to the index as
 you require. Afterwards you should manipulate these fields via API.
 
+Facet Support
+-------------
+Facetting on fulltext fields is not yet supported. We recommend the use of string fields for that purpose.
+
+If updating a search index from an earlier version, check your field configurations to avoid this error.
+
 Support
 =======
 
