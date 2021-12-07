@@ -34,9 +34,9 @@ the [Apache Solr Reference Guide](https://solr.apache.org/guide/) or use
 docker-compose with
 https://github.com/docker-solr/docker-solr-examples/blob/master/docker-compose/docker-compose.yml
 
-The preferred way for local developent is to use DDev where you can easily add
+The preferred way for local development is to use DDev where you can easily add
 the pre-definded
-[solr-cloud service](https://github.com/docker-solr/docker-solr-examples/blob/master/docker-compose/docker-compose.yml).
+[solr-cloud service](https://github.com/drud/ddev-contrib/tree/master/docker-compose-services/solr).
 
 Once Solr Cloud is running with DDev you don't need to deal with any configset
 files like described in the sections below. Just enable the
@@ -48,6 +48,10 @@ button on the Serch API server details page. Or automate things using
 ```
 ddev drush search_api_solr:upload-configset SERVER_ID
 ```
+
+Check the
+[Apache Solr (Cloud) Integration for DDEV-Local README](https://github.com/drud/ddev-contrib/blob/master/docker-compose-services/solr/README.md)
+for more detailed instructions.
 
 Setting up Solr (single core) - the classic way
 -----------------------------------------------
@@ -318,6 +322,20 @@ notice that Views will randomly output the same value for all of these fields if
 you enabled "Retrieve result data from Solr". In this case you have to enable
 the "Solr dummy fields" processor and add as many dummy fields to the index as
 you require. Afterwards you should manipulate these fields via API.
+
+Troubleshooting Facets
+----------------------
+Facetting on fulltext fields is not yet supported. We recommend the use of
+string fields for that purpose.
+
+Trie based field types were deprecated in Solr 6 and with Solr 7 we switched to
+the point based equivalents. But lucene doesn't support a mincount of "0" for
+these field types. We recommend the use of string fields instead of numeric ones
+for that purpose.
+
+If updating from Search API Solr 8.x-1.x or from Solr versions before 7 to Solr
+7 or 8, check your Search API index' field configurations to avoid these errors
+that will lead to exceptions and zero results.
 
 Support
 =======

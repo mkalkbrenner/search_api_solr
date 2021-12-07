@@ -2043,7 +2043,7 @@ function search_api_solr_update_8410() {
 }
 
 /**
- * Handle American and Britisch synonyms and Māori macrons.
+ * Handle American and British synonyms and Māori macrons.
  */
 function search_api_solr_update_8411() {
   foreach (['6_0_0', '7_0_0'] as $version) {

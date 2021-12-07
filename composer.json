@@ -24,11 +24,11 @@
         "ext-dom": "*",
         "ext-json": "*",
         "ext-simplexml": "*",
-        "drupal/search_api": "~1.17",
+        "drupal/search_api": "~1.21",
         "composer/semver": "^1.0|^3.0",
         "consolidation/annotated-command": "^2.12|^4.1",
         "maennchen/zipstream-php": "^1.2|^2.0",
-        "solarium/solarium": "^6.1.5",
+        "solarium/solarium": "^6.1.6",
         "laminas/laminas-stdlib": "^3.2"
     },
     "require-dev": {
@@ -55,7 +55,7 @@
     "extra": {
         "drush": {
             "services": {
-                "drush.services.yml": "^9"
+                "drush.services.yml": "^9 || ^10"
             }
         }
     }
