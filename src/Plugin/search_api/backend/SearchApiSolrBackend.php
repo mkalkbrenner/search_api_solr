@@ -3204,15 +3204,20 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
     unset($v);
 
-    if (1 == count($value)) {
+    // In case of an "erroneous" query that only provides a single value in
+    // combination with a multi-value operator, convert it into a single value
+    // and a single value operator.
+    if (1 === count($value)) {
       $value = array_shift($value);
 
       switch ($operator) {
         case 'IN':
+        case 'BETWEEN':
           $operator = '=';
           break;
 
         case 'NOT IN':
+        case 'NOT BETWEEN':
           $operator = '<>';
           break;
       }
