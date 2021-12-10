@@ -256,7 +256,7 @@ jobs:
 
       strategy:
         matrix:
-          drupal: ['9.2', '9.2']
+          drupal: ['9.2', '9.3']
           solr: ['3']
           php: ['7.3', '8.0']
 
