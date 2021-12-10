@@ -37,7 +37,6 @@
         "drupal/devel": "^4.0",
         "drupal/facets": "1.x-dev",
         "drupal/geofield": "1.x-dev",
-        "drupal/search_api_autocomplete": "1.x-dev",
         "drupal/search_api_location": "1.x-dev",
         "drupal/search_api_spellcheck": "3.x-dev"
     },
@@ -47,7 +46,6 @@
     },
     "suggest": {
         "drupal/facets": "Provides facetted search.",
-        "drupal/search_api_autocomplete": "Provides auto complete for search boxes.",
         "drupal/search_api_location": "Provides location searches.",
         "drupal/search_api_spellcheck": "Provides spell checking and 'Did You Mean?'.",
         "drupal/search_api_solr_nlp": "Highly recommended! Provides Solr field types based on natural language processing (NLP)."
