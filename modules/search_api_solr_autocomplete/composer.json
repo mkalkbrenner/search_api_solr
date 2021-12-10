@@ -1,0 +1,52 @@
+{
+    "name": "drupal/search_api_solr_autocomplete",
+    "description": "Adds autocomplete functionality to Apache Solr searches.",
+    "type": "drupal-module",
+    "homepage": "https://www.drupal.org/project/search_api_solr",
+    "authors": [
+        {
+            "name": "Markus Kalkbrenner",
+            "homepage": "https://www.drupal.org/u/mkalkbrenner"
+        },
+        {
+            "name": "Alexandre Dias",
+            "homepage": "https://www.drupal.org/u/saidatom"
+        },
+        {
+            "name": "Claudiu Cristea",
+            "homepage": "https://www.drupal.org/u/claudiu.cristea"
+        },
+        {
+            "name": "Ilias Dimopoulos",
+            "homepage": "https://www.drupal.org/u/idimopoulos-0"
+        },
+        {
+            "name": "Pieter Frenssen",
+            "email": "https://www.drupal.org/u/pfrenssen"
+        },
+        {
+            "name": "Other contributors",
+            "homepage": "https://www.drupal.org/node/982682/committers"
+        }
+    ],
+    "license": "GPL-2.0-or-later",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/search_api_solr",
+        "chat": "https://drupalchat.me/channel/search",
+        "source": "http://git.drupal.org/project/search_api_solr.git"
+    },
+    "extra": {
+        "drush": {
+            "services": {
+                "drush.services.yml": "^9 || ^10"
+            }
+        }
+    },
+    "require": {
+        "drupal/search_api_autocomplete": "^1.5",
+        "drupal/search_api_solr": "^4"
+    },
+    "suggest": {
+        "drupal/search_api_autocomplete": "Provides auto complete for search boxes."
+    }
+}

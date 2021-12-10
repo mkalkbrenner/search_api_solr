@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * @file
+ * Search API Solr Autocomplete.
+ */
+
+declare(strict_types = 1);
