@@ -14,12 +14,6 @@ use Drupal\search_api_autocomplete\Suggester\SuggesterPluginBase;
  *
  * The server needs to support the "search_api_autocomplete" feature for this to
  * work.
- *
- * @SearchApiAutocompleteSuggester(
- *   id = "search_api_solr_spellcheck_legacy",
- *   label = @Translation("Solr Spellcheck"),
- *   description = @Translation("Suggest corrections for the entered words based on Solr's spellcheck component. Note: Be careful when activating this feature if you run multiple indexes in one Solr core! The spellcheck component is not able to distinguish between the different indexes and returns suggestions for the complete core. If you run multiple indexes in one core you might get suggestions that lead to zero results on a specific index!"),
- * )
  */
 class Spellcheck extends SuggesterPluginBase implements PluginFormInterface {
 

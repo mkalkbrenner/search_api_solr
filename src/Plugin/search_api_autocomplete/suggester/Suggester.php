@@ -16,12 +16,6 @@ use Drupal\search_api_solr\Utility\Utility;
  *
  * The server needs to support the "search_api_autocomplete" feature for this to
  * work.
- *
- * @SearchApiAutocompleteSuggester(
- *   id = "search_api_solr_suggester_legacy",
- *   label = @Translation("Solr Suggester"),
- *   description = @Translation("Suggest complete phrases for the entered string based on Solr's suggest component."),
- * )
  */
 class Suggester extends SuggesterPluginBase implements PluginFormInterface {
 
