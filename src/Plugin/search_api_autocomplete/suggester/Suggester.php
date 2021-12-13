@@ -16,6 +16,11 @@ use Drupal\search_api_solr\Utility\Utility;
  *
  * The server needs to support the "search_api_autocomplete" feature for this to
  * work.
+ *
+ * @deprecated in search_api_solr:4.3.0 and is removed from search_api_solr:5.0.0. Use the
+ *    \Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\suggester\Suggester instead
+ *
+ * @see https://www.drupal.org/node/3254186
  */
 class Suggester extends SuggesterPluginBase implements PluginFormInterface {
 
