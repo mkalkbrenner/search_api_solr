@@ -1,4 +1,4 @@
-plugin.plugin_configuration.search_api_autocomplete_suggester.search_api_solr_suggester:
+plugin.plugin_configuration.search_api_autocomplete_suggester.search_api_solr_suggester_legacy:
   type: mapping
   label: 'Search API Solr Suggester'
   mapping:
@@ -12,10 +12,10 @@ plugin.plugin_configuration.search_api_autocomplete_suggester.search_api_solr_su
       type: string
       label: 'Language'
 
-plugin.plugin_configuration.search_api_autocomplete_suggester.search_api_solr_spellcheck:
+plugin.plugin_configuration.search_api_autocomplete_suggester.search_api_solr_spellcheck_legacy:
   type: mapping
   label: 'Search API Solr Spellcheck'
 
-plugin.plugin_configuration.search_api_autocomplete_suggester.search_api_solr_terms:
+plugin.plugin_configuration.search_api_autocomplete_suggester.search_api_solr_terms_legacy:
   type: plugin.plugin_configuration.search_api_autocomplete_suggester.server
   label: 'Search API Solr Terms'

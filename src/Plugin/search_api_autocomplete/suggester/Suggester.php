@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\suggester;
+namespace Drupal\search_api_solr\Plugin\search_api_autocomplete\suggester;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
@@ -18,7 +18,7 @@ use Drupal\search_api_solr\Utility\Utility;
  * work.
  *
  * @SearchApiAutocompleteSuggester(
- *   id = "search_api_solr_suggester",
+ *   id = "search_api_solr_suggester_legacy",
  *   label = @Translation("Solr Suggester"),
  *   description = @Translation("Suggest complete phrases for the entered string based on Solr's suggest component."),
  * )

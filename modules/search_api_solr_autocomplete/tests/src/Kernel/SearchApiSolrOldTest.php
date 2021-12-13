@@ -14,9 +14,7 @@ use Drupal\Tests\search_api_solr\Kernel\SearchApiSolrTest;
 class SearchApiSolrOldTest extends SearchApiSolrTest {
 
   /**
-   * Modules to enable for this test.
-   *
-   * @var string[]
+   * {@inheritdoc}
    */
   public static $modules = [
     'search_api_solr_autocomplete',
@@ -27,7 +25,7 @@ class SearchApiSolrOldTest extends SearchApiSolrTest {
   /**
    * Tests the autocomplete support and ngram results.
    */
-  public function testAutocompleteAndNgram() {
+  public function testAutocompleteAndNgram(): void {
     $this->addTestEntity(1, [
       'name' => 'Test Article 1',
       'body' => 'The test article number 1 about cats, dogs and trees.',

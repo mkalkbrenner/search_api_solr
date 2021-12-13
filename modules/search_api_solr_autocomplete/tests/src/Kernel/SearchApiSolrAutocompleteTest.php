@@ -14,9 +14,7 @@ use Drupal\Tests\search_api_solr\Kernel\SearchApiSolrTest;
 class SearchApiSolrAutocompleteTest extends SearchApiSolrTest {
 
   /**
-   * Modules to enable for this test.
-   *
-   * @var string[]
+   * {@inheritdoc}
    */
   public static $modules = [
     'search_api_solr_autocomplete',
@@ -25,7 +23,7 @@ class SearchApiSolrAutocompleteTest extends SearchApiSolrTest {
   /**
    * Tests the autocomplete support and ngram results.
    */
-  public function testAutocomplete() {
+  public function testAutocomplete(): void {
     $this->addTestEntity(1, [
       'name' => 'This is sparta',
       'body' => 'The scene originates from the 2006 film 300 directed by Zack Snyder.',
