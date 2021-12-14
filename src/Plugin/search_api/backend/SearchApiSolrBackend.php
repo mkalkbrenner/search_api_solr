@@ -1446,7 +1446,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
         $this->moduleHandler->alterDeprecated('hook_search_api_solr_search_results_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostExtractResultsEvent instead.','search_api_solr_search_results', $search_api_result_set, $query, $solarium_result);
         $this->postQuery($search_api_result_set, $query, $solarium_result);
-        $event = new PostExtractResultsEvent($query, $solarium_result);
+        $event = new PostExtractResultsEvent($search_api_result_set, $query, $solarium_result);
         $this->eventDispatcher->dispatch($event);
         $solarium_result = $event->getSolariumResult();
       }
