@@ -2275,7 +2275,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     // Let modules adjust the field mappings.
     $this->moduleHandler->alterDeprecated('hook_search_api_solr_field_mapping_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostFieldMappingEvent instead.','search_api_solr_field_mapping', $index, $field_mapping, $language_id);
-    $event = new PostFieldMappingEvent($index, $field_mapping, $language_id)
+    $event = new PostFieldMappingEvent($index, $field_mapping, $language_id);
     $this->eventDispatcher->dispatch($event);
 
     return $event->getFieldMapping();
