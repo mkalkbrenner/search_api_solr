@@ -273,7 +273,9 @@ class SolrConfigSetController extends ControllerBase {
     ];
 
     $this->moduleHandler()->alterDeprecated('hook_search_api_solr_configset_template_mapping_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigSetTemplateMappingEvent instead.','search_api_solr_configset_template_mapping', $solr_configset_template_mapping);
+    $event = new PostConfigSetTemplateMappingEvent($solr_configset_template_mapping);
     $this->eventDispatcher()->dispatch(new PostConfigSetTemplateMappingEvent($solr_configset_template_mapping));
+    $solr_configset_template_mapping = $event->getConfigSetTemplateMapping();
 
     $search_api_solr_conf_path = $solr_configset_template_mapping[$solr_branch];
     $solrcore_properties_file = $search_api_solr_conf_path . '/solrcore.properties';
@@ -354,10 +356,10 @@ class SolrConfigSetController extends ControllerBase {
 
     $connector->alterConfigFiles($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
     $this->moduleHandler()->alterDeprecated('hook_search_api_solr_config_files_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigFilesGenerationEvent instead.','search_api_solr_config_files', $files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
-    $this->eventDispatcher()->dispatch(new PostConfigFilesGenerationEvent($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId));
+    $event = new PostConfigFilesGenerationEvent($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
+    $this->eventDispatcher()->dispatch($event);
 
-
-    return $files;
+    return $event->getConfigFiles();
   }
 
   /**
@@ -390,9 +392,10 @@ class SolrConfigSetController extends ControllerBase {
 
     $connector->alterConfigZip($zip, $lucene_match_version, $this->serverId);
     $this->moduleHandler->alterDeprecated('hook_search_api_solr_config_zip_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigSetGenerationEvent instead.','search_api_solr_config_zip', $zip, $lucene_match_version, $this->serverId);
-    \Drupal::getContainer()->get('event_dispatcher')->dispatch(new PostConfigSetGenerationEvent($zip, $lucene_match_version, $this->serverId));
+    $event = new PostConfigSetGenerationEvent($zip, $lucene_match_version, $this->serverId);
+    $this->eventDispatcher()->dispatch($event);
 
-    return $zip;
+    return $event->getZipStream();
   }
 
   /**
