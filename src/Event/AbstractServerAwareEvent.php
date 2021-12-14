@@ -4,14 +4,7 @@ namespace Drupal\search_api_solr\Event;
 
 use Drupal\Component\EventDispatcher\Event;
 
-abstract class AbstractFilesGenerationEvent extends Event {
-
-  /**
-   * The files.
-   *
-   * @var array
-   */
-  protected $files;
+abstract class AbstractServerAwareEvent extends Event {
 
   /**
    * @var string
@@ -26,34 +19,12 @@ abstract class AbstractFilesGenerationEvent extends Event {
   /**
    * Constructs a new class instance.
    *
-   * @param array $files
-   *   Reference to files array.
    * @param string $lucene_match_version
    * @param string $server_id
    */
-  public function __construct(array &$files, string $lucene_match_version, string $server_id) {
-    $this->files = &$files;
+  public function __construct(string $lucene_match_version, string $server_id) {
     $this->luceneMatchVersion = $lucene_match_version;
     $this->serverId = $server_id;
-  }
-
-  /**
-   * Retrieves the files array.
-   *
-   * @return array
-   *   The files array.
-   */
-  public function getFiles(): array {
-    return $this->files;
-  }
-
-  /**
-   * Set the files array.
-   *
-   * @param array $files
-   */
-  public function setConfigFiles(array $files) {
-    $this->files = $files;
   }
 
   /**
