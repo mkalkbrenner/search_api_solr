@@ -70,7 +70,7 @@ final class PostFieldMappingEvent extends Event {
    * @return string
    *   The language ID.
    */
-  public function getLangcode(): array {
+  public function getLangcode(): string {
     return $this->langcode;
   }
 }
