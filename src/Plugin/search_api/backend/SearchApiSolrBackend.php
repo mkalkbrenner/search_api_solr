@@ -45,16 +45,21 @@ use Drupal\search_api\Utility\Utility as SearchApiUtility;
 use Drupal\search_api_autocomplete\SearchInterface;
 use Drupal\search_api_autocomplete\Suggestion\SuggestionFactory;
 use Drupal\search_api_solr\Entity\SolrFieldType;
+use Drupal\search_api_solr\Event\PostConvertedQueryEvent;
 use Drupal\search_api_solr\Event\PostCreateIndexDocumentEvent;
 use Drupal\search_api_solr\Event\PostCreateIndexDocumentsEvent;
 use Drupal\search_api_solr\Event\PostExtractFacetsEvent;
+use Drupal\search_api_solr\Event\PostExtractResultsEvent;
+use Drupal\search_api_solr\Event\PostFieldMappingEvent;
+use Drupal\search_api_solr\Event\PostIndexFinalizationEvent;
 use Drupal\search_api_solr\Event\PostSetFacetsEvent;
 use Drupal\search_api_solr\Event\PreCreateIndexDocumentEvent;
 use Drupal\search_api_solr\Event\PreExtractFacetsEvent;
+use Drupal\search_api_solr\Event\PreIndexFinalizationEvent;
+use Drupal\search_api_solr\Event\PreQueryEvent;
 use Drupal\search_api_solr\Event\PreSetFacetsEvent;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
-use Drupal\search_api_solr\Solarium\EventDispatcher\Psr14Bridge;
 use Drupal\search_api_solr\Solarium\Result\StreamDocument;
 use Drupal\search_api_solr\SolrAutocompleteInterface;
 use Drupal\search_api_solr\SolrBackendInterface;
@@ -1117,8 +1122,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $boost_terms = [];
 
       /** @var \Solarium\QueryType\Update\Query\Document $doc */
-      $doc = $update_query->createDocument();
-      $this->eventDispatcher->dispatch(new PreCreateIndexDocumentEvent($item, $doc));
+      $event = new PreCreateIndexDocumentEvent($item, $update_query->createDocument());
+      $this->eventDispatcher->dispatch($event);
+      $doc = $event->getSolariumDocument();
+
       $doc->setField('timestamp', $request_time);
       $doc->setField('id', $this->createId($site_hash, $index_id, $id));
       $doc->setField('index_id', $index_id);
@@ -1220,16 +1227,18 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
 
       if ($doc) {
-        $this->eventDispatcher->dispatch(new PostCreateIndexDocumentEvent($item, $doc));
-        $documents[] = $doc;
+        $event = new PostCreateIndexDocumentEvent($item, $doc);
+        $this->eventDispatcher->dispatch($event);
+        $documents[] = $event->getSolariumDocument();
       }
     }
 
     // Let other modules alter documents before sending them to solr.
-    $this->eventDispatcher->dispatch(new PostCreateIndexDocumentsEvent($items, $documents));
-    $this->moduleHandler->alter('search_api_solr_documents', $documents, $index, $items);
+    $this->moduleHandler->alterDeprecated('hook_search_api_solr_documents_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostCreateIndexDocumentsEvent instead.','search_api_solr_documents', $documents, $index, $items);
+    $event = new PostCreateIndexDocumentsEvent($items, $documents);
+    $this->eventDispatcher->dispatch($event);
 
-    return $documents;
+    return $event->getSolariumDocuments();
   }
 
   /**
@@ -1364,7 +1373,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               $this->ensureCommit($index);
             }
 
-            $this->moduleHandler->invokeAll('search_api_solr_finalize_index', [$index]);
+            $this->moduleHandler->invokeAllDeprecated('hook_search_api_solr_finalize_index is deprecated will be removed in Search API Solr 4.3.0. Handle the PreIndexFinalizationEvent instead.','search_api_solr_finalize_index', [$index]);
+            $this->eventDispatcher->dispatch(new PreIndexFinalizationEvent($index));
 
             if (!empty($settings['commit_after_finalize'])) {
               $this->ensureCommit($index);
@@ -1376,6 +1386,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $lock->release($lock_name);
             $vars = ['%index_id' => $index->id(), '%pid' => getmypid()];
             $this->getLogger()->debug('PID %pid, Index %index_id: Finalization lock released.', $vars);
+
+            $this->eventDispatcher->dispatch(new PostIndexFinalizationEvent($index));
           }
           catch (\Exception $e) {
             unset($finalization_in_progress[$index->id()]);
@@ -1432,8 +1444,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         // Extract results.
         $search_api_result_set = $this->extractResults($query, $solarium_result);
 
-        $this->moduleHandler->alter('search_api_solr_search_results', $search_api_result_set, $query, $solarium_result);
+        $this->moduleHandler->alterDeprecated('hook_search_api_solr_search_results_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostExtractResultsEvent instead.','search_api_solr_search_results', $search_api_result_set, $query, $solarium_result);
         $this->postQuery($search_api_result_set, $query, $solarium_result);
+        $event = new PostExtractResultsEvent($search_api_result_set, $query, $solarium_result);
+        $this->eventDispatcher->dispatch($event);
+        $solarium_result = $event->getSolariumResult();
       }
       else {
         throw new SearchApiSolrException('Streaming expression has no result.');
@@ -1605,10 +1620,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
       try {
         // Allow modules to alter the solarium query.
-        $this->moduleHandler->alter('search_api_solr_query', $solarium_query, $query);
+        $this->moduleHandler->alterDeprecated('hook_search_api_solr_query_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PreQueryEvent instead.','search_api_solr_query', $solarium_query, $query);
         $this->preQuery($solarium_query, $query);
+        $event = new PreQueryEvent($query, $solarium_query);
+        $this->eventDispatcher->dispatch($event);
+        $solarium_query = $event->getSolariumQuery();
 
-        // Since Solr 7.2 the edsimax query parser doesn't allow local
+        // Since Solr 7.2 the edismax query parser doesn't allow local
         // parameters anymore. But since we don't want to force all modules that
         // implemented our hooks to re-write their code, we transform the query
         // back into a lucene query. flattenKeys() was adjusted accordingly, but
@@ -1689,7 +1707,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         }
 
         // Allow modules to alter the converted solarium query.
-        $this->moduleHandler->alter('search_api_solr_converted_query', $solarium_query, $query);
+        $this->moduleHandler->alterDeprecated('hook_search_api_solr_converted_query_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConvertedQueryEvent instead.','search_api_solr_query', $solarium_query, $query);
+        $event = new PostConvertedQueryEvent($query, $solarium_query);
+        $this->eventDispatcher->dispatch($event);
+        $solarium_query = $event->getSolariumQuery();
 
         // Send search request.
         $response = $connector->search($solarium_query, $this->getCollectionEndpoint($index));
@@ -1728,8 +1749,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           }
         }
 
-        $this->moduleHandler->alter('search_api_solr_search_results', $search_api_result_set, $query, $solarium_result);
+        $this->moduleHandler->alterDeprecated('hook_search_api_solr_search_results_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostExtractResultsEvent instead.','search_api_solr_search_results', $search_api_result_set, $query, $solarium_result);
         $this->postQuery($search_api_result_set, $query, $solarium_result);
+        $event = new PostExtractResultsEvent($search_api_result_set, $query, $solarium_result);
+        $this->eventDispatcher->dispatch($event);
+        $search_api_result_set = $event->getSearchApiResultSet();
       }
       catch (\Exception $e) {
         throw new SearchApiSolrException('An error occurred while trying to search with Solr: ' . $e->getMessage(), $e->getCode(), $e);
@@ -2250,9 +2274,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
 
     // Let modules adjust the field mappings.
-    $this->moduleHandler->alter('search_api_solr_field_mapping', $index, $field_mapping, $language_id);
+    $this->moduleHandler->alterDeprecated('hook_search_api_solr_field_mapping_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostFieldMappingEvent instead.','search_api_solr_field_mapping', $index, $field_mapping, $language_id);
+    $event = new PostFieldMappingEvent($index, $field_mapping, $language_id);
+    $this->eventDispatcher->dispatch($event);
 
-    return $field_mapping;
+    return $event->getFieldMapping();
   }
 
   /**
@@ -2819,7 +2845,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @throws \Drupal\search_api\SearchApiException
    */
   protected function extractFacets(QueryInterface $query, Result $resultset) {
-    $this->eventDispatcher->dispatch(new PreExtractFacetsEvent($query, $resultset));
+    $event = new PreExtractFacetsEvent($query, $resultset);
+    $this->eventDispatcher->dispatch($event);
+    $resultset = $event->getSolariumResult();
 
     if (!$resultset->getFacetSet()) {
       return [];
@@ -2949,9 +2977,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
     }
 
-    $this->eventDispatcher->dispatch(new PostExtractFacetsEvent($query, $resultset, $facets));
+    $event = new PostExtractFacetsEvent($query, $resultset, $facets);
+    $this->eventDispatcher->dispatch($event);
 
-    return $facets;
+    return $event->getFacets();
   }
 
   /**
@@ -3534,6 +3563,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @param \Drupal\search_api\Query\QueryInterface $query
    *   The \Drupal\search_api\Query\Query object representing the executed
    *   search query.
+   *
+   * @deprecated This function will be removed in Search API Solr 4.3.0.
+   *             Handle the PreQueryEvent instead.
    */
   protected function preQuery(SolariumQueryInterface $solarium_query, QueryInterface $query) {
   }
@@ -3550,6 +3582,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   search query.
    * @param object $response
    *   The response object returned by Solr.
+   *
+   * @deprecated This function will be removed in Search API Solr 4.3.0.
+   *             Handle the PostExtractResultsEvent instead.
    */
   protected function postQuery(ResultSetInterface $results, QueryInterface $query, $response) {
   }
