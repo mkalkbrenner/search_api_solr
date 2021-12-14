@@ -5,18 +5,19 @@
  * Hooks provided by the Search API Solr search module.
  */
 
-/**
- * @addtogroup hooks
- * @{
- */
-
 use Drupal\search_api_solr\Event\PostConfigFilesGenerationEvent;
 use Drupal\search_api_solr\Event\PostConfigSetGenerationEvent;
 use Drupal\search_api_solr\Event\PostConvertedQueryEvent;
 use Drupal\search_api_solr\Event\PostCreateIndexDocumentsEvent;
 use Drupal\search_api_solr\Event\PostExtractResultsEvent;
 use Drupal\search_api_solr\Event\PostFieldMappingEvent;
+use Drupal\search_api_solr\Event\PreIndexFinalizationEvent;
 use Drupal\search_api_solr\Event\PreQueryEvent;
+
+/**
+ * @addtogroup hooks
+ * @{
+ */
 
 /**
  * Lets modules alter the Solarium select query before executing it.
@@ -248,10 +249,13 @@ function search_api_solr_hook_search_api_data_type_info() {
  * This hook will be called every time any item within the index was updated or
  * deleted. Not on every modification but before the first search happens on an
  * updated index. This could be useful to apply late modifications to the items
- * themselves within Solr which is much more faster.
+ * themselves within Solr which is much faster.
  *
  * @param \Drupal\search_api\IndexInterface $index
  *   The search index.
+ *
+ * @deprecated This function will be removed in Search API Solr 4.3.0.
+ *             Handle the PreIndexFinalizationEvent instead.
  */
 function hook_search_api_solr_finalize_index(\Drupal\search_api\IndexInterface $index) {
 
