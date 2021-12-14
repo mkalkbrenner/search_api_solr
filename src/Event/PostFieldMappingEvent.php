@@ -53,7 +53,7 @@ final class PostFieldMappingEvent extends Event {
    *
    * @param array $field_mapping
    */
-  public function setFacets(array $field_mapping) {
+  public function setFieldMapping(array $field_mapping) {
     $this->fieldMapping = $field_mapping;
   }
 
