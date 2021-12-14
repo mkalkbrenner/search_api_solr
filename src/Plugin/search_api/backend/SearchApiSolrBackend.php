@@ -2977,7 +2977,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
     }
 
-    $event = new PostExtractFacetsEvent($query, $resultset, $facets)
+    $event = new PostExtractFacetsEvent($query, $resultset, $facets);
     $this->eventDispatcher->dispatch($event);
 
     return $event->getFacets();
