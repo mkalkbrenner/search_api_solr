@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\search_api_solr\EventSubscriber;
+namespace Drupal\search_api_solr_legacy\EventSubscriber;
 
 use Drupal\search_api_solr\Event\PostConfigSetTemplateMappingEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
