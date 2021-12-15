@@ -55,7 +55,7 @@ function search_api_solr_post_update_8319() {
 /**
  * Install new Search API Solr Autocomplete.
  */
-function search_api_solr_post_update_8320() {
+function search_api_solr_post_update_8320(): void {
   if (\Drupal::moduleHandler()->moduleExists('search_api_autocomplete')) {
     /** @var \Drupal\Core\Extension\ModuleInstallerInterface $module_installer */
     $module_installer = \Drupal::service('module_installer');

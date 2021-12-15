@@ -11,7 +11,7 @@ use Drupal\Tests\search_api_solr\Kernel\SearchApiSolrTest;
  *
  * @group search_api_solr
  */
-class SearchApiSolrOldTest extends SearchApiSolrTest {
+class SearchApiSolrAutocompleteAndNgramTest extends SearchApiSolrTest {
 
   /**
    * {@inheritdoc}
