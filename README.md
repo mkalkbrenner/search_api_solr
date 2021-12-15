@@ -182,6 +182,19 @@ the need for advanced features or customizations.
 
 ![Jump Start Config-Sets](https://github.com/mkalkbrenner/search_api_solr/workflows/Jump%20Start%20Config-Sets/badge.svg?branch=4.x)
 
+Updating Solr
+-------------
+
+Whenever you update your Solr installation it is recommended that you generate a
+new config-set and deploy it. The deployment depends on the the installation
+variation you choose before. It is also recommended to re-index yur content
+after an update. But if it is a minor update it should be save to just queue all
+contentfor re-indexing.
+
+When performing a major version update like from Solr 6 to Solr 8 it is
+recommended to delete the core or collection and recreate it like described in
+the installation instructions above.
+
 Search API Solr features
 ========================
 

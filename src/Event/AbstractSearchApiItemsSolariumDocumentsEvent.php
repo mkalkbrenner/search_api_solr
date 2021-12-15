@@ -3,8 +3,6 @@
 namespace Drupal\search_api_solr\Event;
 
 use Drupal\Component\EventDispatcher\Event;
-use Drupal\search_api\Item\ItemInterface;
-use Solarium\Core\Query\DocumentInterface;
 
 /**
  * Search API Solr event base class.
