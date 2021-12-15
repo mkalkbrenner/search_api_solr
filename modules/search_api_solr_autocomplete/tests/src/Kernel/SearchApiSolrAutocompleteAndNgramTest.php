@@ -4,14 +4,19 @@ namespace Drupal\Tests\search_api_solr_autocomplete\Kernel;
 
 use Drupal\search_api\Entity\Server;
 use Drupal\search_api_autocomplete\Entity\Search;
-use Drupal\Tests\search_api_solr\Kernel\SearchApiSolrTest;
+use Drupal\search_api_solr\Utility\SolrCommitTrait;
+use Drupal\Tests\search_api_solr\Kernel\SolrBackendTestBase;
+use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 
 /**
  * Tests search autocomplete support and ngram results using the Solr search backend.
  *
  * @group search_api_solr
  */
-class SearchApiSolrAutocompleteAndNgramTest extends SearchApiSolrTest {
+class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
+
+  use SolrCommitTrait;
+  use InvokeMethodTrait;
 
   /**
    * {@inheritdoc}
