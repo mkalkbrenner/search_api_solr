@@ -185,7 +185,7 @@ class DevelController extends ControllerBase {
                     $description = 'This hook is deprecated in search_api:8.x-1.14 and is removed from search_api:2.0.0. Please use the "search_api.indexing_items" event instead. See https://www.drupal.org/node/3059866';
                     $this->moduleHandler()->alterDeprecated($description, 'search_api_index_items', $this, $items);
                     $event = new IndexingItemsEvent($index, $items);
-                    $this->eventDispatcher()->dispatch(SearchApiEvents::INDEXING_ITEMS, $event);
+                    $this->eventDispatcher()->dispatch($event, SearchApiEvents::INDEXING_ITEMS);
                     $items = $event->getItems();
                     $index->preprocessIndexItems($items);
 
