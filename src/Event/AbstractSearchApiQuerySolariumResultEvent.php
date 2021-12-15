@@ -4,7 +4,6 @@ namespace Drupal\search_api_solr\Event;
 
 use Drupal\Component\EventDispatcher\Event;
 use Drupal\search_api\Query\QueryInterface;
-use Solarium\QueryType\Select\Result\Result;
 
 /**
  * Search API Solr event base class.

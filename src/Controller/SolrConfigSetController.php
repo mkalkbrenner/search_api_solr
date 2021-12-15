@@ -274,7 +274,7 @@ class SolrConfigSetController extends ControllerBase {
 
     $this->moduleHandler()->alterDeprecated('hook_search_api_solr_configset_template_mapping_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigSetTemplateMappingEvent instead.','search_api_solr_configset_template_mapping', $solr_configset_template_mapping);
     $event = new PostConfigSetTemplateMappingEvent($solr_configset_template_mapping);
-    $this->eventDispatcher()->dispatch(new PostConfigSetTemplateMappingEvent($solr_configset_template_mapping));
+    $this->eventDispatcher()->dispatch($event);
     $solr_configset_template_mapping = $event->getConfigSetTemplateMapping();
 
     $search_api_solr_conf_path = $solr_configset_template_mapping[$solr_branch];
