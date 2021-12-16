@@ -3,6 +3,7 @@
 namespace Drupal\search_api_solr_legacy\EventSubscriber;
 
 use Drupal\search_api_solr\Event\PostConfigSetTemplateMappingEvent;
+use Drupal\search_api_solr\Event\SearchApiSolrEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
@@ -31,7 +32,7 @@ class SearchApiSolrSubscriber implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    $events[PostConfigSetTemplateMappingEvent::class][] = ['postConfigSetTemplateMapping'];
+    $events[SearchApiSolrEvents::POST_CONFIG_SET_TEMPLATE_MAPPING][] = ['postConfigSetTemplateMapping'];
 
     return $events;
   }

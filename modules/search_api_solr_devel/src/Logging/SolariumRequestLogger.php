@@ -7,7 +7,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\devel\DevelDumperManagerInterface;
 use Drupal\search_api\LoggerTrait;
 use Solarium\Core\Client\Adapter\AdapterHelper;
-use Solarium\Core\Event\Events;
+use Solarium\Core\Event\Events as SolariumEvents;
 use Solarium\Core\Event\PostCreateQuery;
 use Solarium\Core\Event\PostExecuteRequest;
 use Solarium\Core\Event\PreExecuteRequest;
@@ -43,11 +43,11 @@ class SolariumRequestLogger implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    return [
-      Events::POST_CREATE_QUERY => 'postCreateQuery',
-      Events::PRE_EXECUTE_REQUEST => 'preExecuteRequest',
-      Events::POST_EXECUTE_REQUEST => 'postExecuteRequest',
-    ];
+    $events[SolariumEvents::POST_CREATE_QUERY][] = ['postCreateQuery'];
+    $events[SolariumEvents::PRE_EXECUTE_REQUEST][] = ['preExecuteRequest'];
+    $events[SolariumEvents::POST_EXECUTE_REQUEST][] = ['postExecuteRequest'];
+
+    return $events;
   }
 
   /**
