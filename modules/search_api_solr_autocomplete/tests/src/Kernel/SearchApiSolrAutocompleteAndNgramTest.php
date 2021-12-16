@@ -4,9 +4,7 @@ namespace Drupal\Tests\search_api_solr_autocomplete\Kernel;
 
 use Drupal\search_api\Entity\Server;
 use Drupal\search_api_autocomplete\Entity\Search;
-use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\Tests\search_api_solr\Kernel\SolrBackendTestBase;
-use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 
 /**
  * Tests search autocomplete support and ngram results using the Solr search backend.
@@ -15,23 +13,18 @@ use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
  */
 class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
 
-  use SolrCommitTrait;
-  use InvokeMethodTrait;
-
   /**
    * {@inheritdoc}
    */
   public static $modules = [
-    'search_api_autocomplete',
     'search_api_solr_autocomplete',
     'search_api_solr_legacy',
-    'user',
   ];
 
   /**
    * Tests the autocomplete support and ngram results.
    */
-  public function testAutocompleteAndNgram(): void {
+  protected function testAutocompleteAndNgram(): void {
     $this->addTestEntity(1, [
       'name' => 'Test Article 1',
       'body' => 'The test article number 1 about cats, dogs and trees.',
@@ -166,6 +159,13 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
         ->execute();
       $this->assertResults($expected_results, $results, $field . ': tre');
     }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function testBackend() {
+    $this->testAutocompleteAndNgram();
   }
 
 }

@@ -4,27 +4,26 @@ namespace Drupal\Tests\search_api_solr_autocomplete\Kernel;
 
 use Drupal\search_api\Entity\Server;
 use Drupal\search_api_autocomplete\Entity\Search;
-use Drupal\Tests\search_api_solr\Kernel\SearchApiSolrTest;
+use Drupal\Tests\search_api_solr\Kernel\SolrBackendTestBase;
 
 /**
  * Tests search autocomplete results using the Solr search backend.
  *
  * @group search_api_solr
  */
-class SearchApiSolrAutocompleteTest extends SearchApiSolrTest {
+class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
 
   /**
    * {@inheritdoc}
    */
   public static $modules = [
-    'search_api_autocomplete',
     'search_api_solr_autocomplete',
   ];
 
   /**
    * Tests the autocomplete support and ngram results.
    */
-  public function testAutocomplete(): void {
+  protected function testAutocomplete(): void {
     $this->addTestEntity(1, [
       'name' => 'This is sparta',
       'body' => 'The scene originates from the 2006 film 300 directed by Zack Snyder.',
@@ -97,6 +96,13 @@ class SearchApiSolrAutocompleteTest extends SearchApiSolrTest {
     $this->assertEquals(1, $suggestions[2]->getResultsCount());
     $this->assertEquals('media francia.', $suggestions[3]->getSuggestedKeys());
     $this->assertEquals(1, $suggestions[3]->getResultsCount());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function testBackend() {
+    $this->testAutocomplete();
   }
 
 }
