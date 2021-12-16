@@ -211,7 +211,7 @@ a Solr Query Debugger and shows how content gets indexed.
 Regarding third-party features, the following are supported:
 
 - autocomplete
-  - Introduced by module: search_api_autocomplete
+  - Introduced by module: search_api_solr_autocomplete
   - Lets you add autocompletion capabilities to search forms on the site.
 - facets
   - Introduced by module: facet
