@@ -37,7 +37,6 @@
         "drupal/devel": "^4.0",
         "drupal/facets": "1.x-dev",
         "drupal/geofield": "1.x-dev",
-        "drupal/search_api_autocomplete": "1.x-dev",
         "drupal/search_api_location": "1.x-dev",
         "drupal/search_api_spellcheck": "3.x-dev"
     },
