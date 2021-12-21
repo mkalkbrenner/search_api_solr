@@ -646,9 +646,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'search_api_mlt',
       'search_api_random_sort',
       'search_api_spellcheck',
-      // Datatypes.
-      'search_api_data_type_location',
-      // 'search_api_data_type_geohash'.
     ];
 
     // @see https://lucene.apache.org/solr/guide/7_6/result-grouping.html#distributed-result-grouping-caveats
@@ -673,7 +670,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       return in_array($custom_code, $custom_codes);
     }
 
-    return in_array($type, [
+    $built_in_support = [
       'location',
       'rpt',
       'solr_string_storage',
@@ -683,7 +680,14 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'solr_text_unstemmed',
       'solr_text_wstoken',
       'solr_date_range',
-    ]);
+    ];
+    if (in_array($type, $built_in_support)) {
+      return TRUE;
+    }
+
+    // @see search_api_solr_hook_search_api_data_type_info()
+    $type_info = Utility::getDataTypeInfo($type);
+    return !empty($type_info['prefix']);
   }
 
   /**
