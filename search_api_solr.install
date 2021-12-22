@@ -159,7 +159,7 @@ function search_api_solr_requirements($phase) {
                         'title' => t('Solr Server %server', ['%server' => $server->label()]),
                         'value' => t('Schema incomplete'),
                         'severity' => REQUIREMENT_WARNING,
-                        'description' => t('There are some language-specific field types missing in schema of index <a href=":index_url">@index</a> on server <a href=":server_url">@server</a>: %missing. These languages will use the language-undefined fallback field type. In case of language variations like "de-at" the fallback will be the non-variation language "de" if it exists. You can suppress this warning by checking the corresponding checkbox in the advanced section on the server <a href=":server_edit_url">edit page</a>.', [
+                        'description' => t('There are some language-specific field types missing in schema of index <a href=":index_url">@index</a> on server <a href=":server_url">@server</a>: %missing. These languages will use the language-undefined fallback field type. In case of language variations like "de-at" the fallback will be the non-variation language "de" if it exists. You can suppress this warning by checking the corresponding checkbox in the advanced section on the server <a href=":server_edit_url">edit page</a>. But before doing this you should whether the missing language-specific field type exists or not. If it is available and you get this warning you simply need to generate and deploy a new Solr config-set.', [
                           ':index_url' => $index->toUrl('canonical')
                             ->toString(),
                           '@index' => $index->label(),
