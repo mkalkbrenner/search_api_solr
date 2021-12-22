@@ -50,6 +50,7 @@ function search_api_solr_requirements($phase) {
         /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
         $backend = $server->getBackend();
         $connector = $backend->getSolrConnector();
+        $configuration = $backend->getConfiguration();
         if ($backend->isAvailable() && $connector->pingCore()) {
           if (!$backend->isNonDrupalOrOutdatedConfigSetAllowed()) {
             $config_set_controller = new SolrConfigSetController();
@@ -149,22 +150,28 @@ function search_api_solr_requirements($phase) {
               foreach ($indexes as $index_id => $index) {
                 $endpoint = $backend->getCollectionEndpoint($index);
                 if ($connector->pingEndpoint($endpoint)) {
-                  $stats = $backend->getSchemaLanguageStatistics($endpoint);
-                  if ($missing_languages = array_filter($stats, function ($state) {
-                    return !$state;
-                  })) {
-                    $requirements['search_api_solr_schema_' . $server_id . $endpoint->getKey() . '_languages'] = [
-                      'title' => t('Solr Server %server', ['%server' => $server->label()]),
-                      'value' => t('Schema incomplete'),
-                      'severity' => REQUIREMENT_WARNING,
-                      'description' => t('There are some language-specific field types missing in schema of index <a href=":index_url">@index</a> on server <a href=":server_url">@server</a>.', [
-                        ':index_url' => $index->toUrl('canonical')->toString(),
-                        '@index' => $index->label(),
-                        ':server_url' => $server->toUrl('canonical')
-                          ->toString(),
-                        '@server' => $server->label(),
-                      ]),
-                    ];
+                  if (!$configuration['suppress_missing_languages']) {
+                    $stats = $backend->getSchemaLanguageStatistics($endpoint);
+                    if ($missing_languages = array_filter($stats, function ($state) {
+                      return !$state;
+                    })) {
+                      $requirements['search_api_solr_schema_' . $server_id . $endpoint->getKey() . '_languages'] = [
+                        'title' => t('Solr Server %server', ['%server' => $server->label()]),
+                        'value' => t('Schema incomplete'),
+                        'severity' => REQUIREMENT_WARNING,
+                        'description' => t('There are some language-specific field types missing in schema of index <a href=":index_url">@index</a> on server <a href=":server_url">@server</a>: %missing. These languages will use the language-undefined fallback field type. In case of language variations like "de-at" the fallback will be the non-variation language "de" if it exists. You can suppress this warning by checking the corresponding checkbox in the advanced section on the server <a href=":server_edit_url">edit page</a>. But before doing this you should whether the missing language-specific field type exists or not. If it is available and you get this warning you simply need to generate and deploy a new Solr config-set.', [
+                          ':index_url' => $index->toUrl('canonical')
+                            ->toString(),
+                          '@index' => $index->label(),
+                          ':server_url' => $server->toUrl('canonical')
+                            ->toString(),
+                          '@server' => $server->label(),
+                          '%missing' => implode(', ', array_keys($missing_languages)),
+                          ':server_edit_url' => $server->toUrl('edit-form')
+                            ->toString(),
+                        ]),
+                      ];
+                    }
                   }
                 }
                 else {
@@ -202,7 +209,7 @@ function search_api_solr_requirements($phase) {
       }
     }
 
-    if (!Client::checkMinimal('6.1.3')) {
+    if (!Client::checkMinimal('6.1.5')) {
       $requirements['search_api_solr_solarium'] = [
         'title' => t('Solarium library'),
         'value' => t('Solarium library'),
