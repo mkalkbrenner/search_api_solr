@@ -43,35 +43,13 @@ use Drupal\search_api_solr\Event\PreQueryEvent;
 function hook_search_api_solr_query_alter(\Solarium\Core\Query\QueryInterface $solarium_query, \Drupal\search_api\Query\QueryInterface $query) {
   // To get a list of solrium events:
   // @see http://solarium.readthedocs.io/en/stable/customizing-solarium/#plugin-system
-  // If the Search API query has a 'my_custom_boost' option, use the edsimax
-  // query handler and add some boost queries.
+  // If the Search API query has a 'my_custom_boost' option, boost German
+  // results.
   if ($query->getOption('my_custom_boost')) {
-    // $solr_field_names maps search_api field names to real field names in
-    // the Solr index.
-    $solr_field_names = $query->getIndex()->getServerInstance()->getBackend()->getSolrFieldNames($query->getIndex());
-
-    /** @var \Solarium\Component\EdisMax $edismax */
-    $edismax = $solarium_query->getEDisMax();
-
-    $keys = $query->getKeys();
-    if (is_array($keys)) {
-      $keys = implode(' ', $keys);
+    if ($boosts = $query->getOption('solr_document_boost_factors', [])) {
+      $boosts['search_api_language'] = sprintf('if(eq(%s,"%s"),%2F,0.0)', \Drupal\search_api_solr\SolrBackendInterface::FIELD_PLACEHOLDER, 'de', 1.2);
+      $query->setOption('solr_document_boost_factors', $boosts);
     }
-
-    if ($keys) {
-      $boost_queries['title_exact_phrase'] = [
-        'query' => $solr_field_names['title'] . ':' . $solarium_query->getHelper()->escapePhrase($keys) . '^11.0',
-      ];
-      $edismax->addBoostQueries($boost_queries);
-    }
-
-    // Boost documents by date.
-    // @see https://www.drupal.org/project/search_api_solr/issues/2855329
-    $boost_functions = 'recip(abs(ms(NOW/HOUR,' . $solr_field_names['modified'] . ')),3.16e-11,1,.4)^3';
-    $edismax->setBoostFunctions($boost_functions);
-
-    // Avoid the conversion into a lucene parser expression, keep edismax.
-    $solarium_query->addParam('defType', 'edismax');
   }
 }
 
