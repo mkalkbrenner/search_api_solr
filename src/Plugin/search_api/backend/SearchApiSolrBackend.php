@@ -237,6 +237,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'rows' => 10,
       'index_single_documents_fallback_count' => 10,
       'index_empty_text_fields' => FALSE,
+      'suppress_missing_languages' => FALSE,
     ];
   }
 
@@ -284,6 +285,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $configuration['rows'] = (int) ($configuration['rows'] ?? 10);
     $configuration['index_single_documents_fallback_count'] = (int) ($configuration['index_single_documents_fallback_count'] ?? 10);
     $configuration['index_empty_text_fields'] = (bool) ($configuration['index_empty_text_fields'] ?? FALSE);
+    $configuration['suppress_missing_languages'] = (bool) ($configuration['suppress_missing_languages'] ?? FALSE);
 
     parent::setConfiguration($configuration);
 
@@ -362,6 +364,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#title' => $this->t('Retrieve highlighted snippets'),
       '#description' => $this->t('Return a highlighted version of the indexed fulltext fields. These will be used by the "Highlighting Processor" directly instead of applying its own PHP algorithm.'),
       '#default_value' => $this->configuration['highlight_data'],
+    ];
+
+    $form['advanced']['suppress_missing_languages'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Suppress warnings about missing language-specific field types'),
+      '#description' => t("By default, fields of type fulltext will be indexed using language-specific Solr field types. But Search API Solr doesn't provide such a language-specific filed type configuration for any language supported by Drupal. In this case the language-undefined field type will be used as fall-back. Or in case of language variations like 'de-at' the 'de' will be used as fallback. But in both cases a warning will be shown on the status report page to inform about this fact. By activating this chackbox you can suppress these warnings permanently."),
+      '#default_value' => $this->configuration['suppress_missing_languages'],
     ];
 
     $form['advanced']['fallback_multiple'] = [
