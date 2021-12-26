@@ -24,7 +24,7 @@ use Solarium\QueryType\Stream\Query as StreamQuery;
  *   description = @Translation("A standard connector for a Solr Cloud.")
  * )
  */
-class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCloudConnectorInterface {
+class StandardSolrCloudConnector extends SolrConnectorPluginBase implements SolrCloudConnectorInterface {
 
   /**
    * {@inheritdoc}
@@ -34,6 +34,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
       'checkpoints_collection' => '',
       'stats_cache' => 'org.apache.solr.search.stats.LRUStatsCache',
       'distrib' => TRUE,
+      'context' => 'solr',
     ] + parent::defaultConfiguration();
   }
 
@@ -67,9 +68,16 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
 
     $form['optimize_timeout']['#description'] = $this->t('The timeout in seconds for background index optimization queries on the Solr collection.');
 
+    $form['context'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Solr host context'),
+      '#description' => $this->t('The context path for the Solr web application. Defaults to "solr" in any Solr Cloud installation.'),
+      '#default_value' => isset($this->configuration['context']) ? $this->configuration['context'] : 'solr',
+    ];
+
     $form['advanced']['checkpoints_collection'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('checkpoints_collection'),
+      '#title' => $this->t('Checkpoints Collection'),
       '#description' => $this->t("The collection where topic checkpoints are stored. Not required if you don't work with topic() streaming expressions."),
       '#default_value' => isset($this->configuration['checkpoints_collection']) ? $this->configuration['checkpoints_collection'] : '',
     ];
@@ -425,7 +433,7 @@ class StandardSolrCloudConnector extends StandardSolrConnector implements SolrCl
    * {@inheritdoc}
    */
   public function alterConfigFiles(array &$files, string $lucene_match_version, string $server_id = '') {
-    SolrConnectorPluginBase::alterConfigFiles($files, $lucene_match_version, $server_id);
+    parent::alterConfigFiles($files, $lucene_match_version, $server_id);
 
     // Leverage the implicit Solr request handlers with default settings for
     // Solr Cloud.
