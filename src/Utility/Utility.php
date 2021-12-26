@@ -633,7 +633,7 @@ class Utility {
    * ensure that stop words in boolean combinations don't lead to zero results.
    * Therefore this function will produce these queries:
    *
-   * Careful interpreting this, phrase  and sloppy phrase queries will represent
+   * Careful interpreting this, phrase and sloppy phrase queries will represent
    * different phrases as A & B. To be very clear, A could equal multiple words.
    *
    * @code
