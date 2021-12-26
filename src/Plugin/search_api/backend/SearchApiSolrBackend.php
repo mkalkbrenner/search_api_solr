@@ -647,8 +647,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    */
   public function getSupportedFeatures() {
     $features = [
-      // Features.
-      'search_api_autocomplete',
       'search_api_facets',
       'search_api_facets_operator_or',
       'search_api_granular',
@@ -656,6 +654,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'search_api_random_sort',
       'search_api_spellcheck',
     ];
+
+    if ($this->moduleHandler->moduleExists('search_api_solr_autocomplete')) {
+      $features[] = 'search_api_autocomplete';
+    }
 
     // @see https://lucene.apache.org/solr/guide/7_6/result-grouping.html#distributed-result-grouping-caveats
     if (!$this->getSolrConnector()->isCloud()) {
@@ -1794,7 +1796,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     // language might be set by a filter in a search view.
     if (empty($language_ids)) {
       if (!$query->hasTag('views') && $settings['multilingual']['limit_to_content_language']) {
-        // Limit the language to the current language being used.
+        // Limit the language to the current content language being used.
         $language_ids[] = \Drupal::languageManager()
           ->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)
           ->getId();

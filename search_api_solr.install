@@ -209,7 +209,7 @@ function search_api_solr_requirements($phase) {
       }
     }
 
-    if (!Client::checkMinimal('6.1.5')) {
+    if (!Client::checkMinimal('6.2.1')) {
       $requirements['search_api_solr_solarium'] = [
         'title' => t('Solarium library'),
         'value' => t('Solarium library'),
@@ -2055,5 +2055,17 @@ function search_api_solr_update_8410() {
 function search_api_solr_update_8411() {
   foreach (['6_0_0', '7_0_0'] as $version) {
     search_api_solr_update_helper_replace_field_type('search_api_solr.solr_field_type.text_en_' . $version);
+  }
+}
+
+/**
+ * Add support for hostContext parameter for Solr Cloud.
+ */
+function search_api_solr_update_8412() {
+  foreach (search_api_solr_update_helper_get_backend_configs() as $server_name => $backend_config) {
+    if (!isset($backend_config['connector_config']['context']) && (strpos($backend_config['connector'], 'solr_cloud') === 0)) {
+      $backend_config['connector_config']['context'] = 'solr';
+      search_api_solr_update_helper_save_backend_config($server_name, $backend_config);
+    }
   }
 }

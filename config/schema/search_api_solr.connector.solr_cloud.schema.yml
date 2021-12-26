@@ -11,3 +11,6 @@ plugin.plugin_configuration.search_api_solr_connector.solr_cloud:
     distrib:
       type: boolean
       label: 'Distribute queries across all nodes'
+    context:
+      type: string
+      label: 'hostContext'
