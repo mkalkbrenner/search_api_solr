@@ -17,6 +17,7 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
    * {@inheritdoc}
    */
   public static $modules = [
+    'search_api_autocomplete',
     'search_api_solr_autocomplete',
     'search_api_solr_legacy',
   ];
@@ -47,6 +48,12 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
     $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
     $autocompleteSearch = new Search([], 'search_api_autocomplete_search');
 
+    /** @var \Drupal\search_api_autocomplete\Utility\PluginHelper $plugin_helper */
+    $plugin_helper = $this->container->get('search_api_autocomplete.plugin_helper');
+    $spellcheck_plugin = $plugin_helper->createSuggesterPlugin($autocompleteSearch, 'search_api_solr_spellcheck');
+    $suggester_plugin = $plugin_helper->createSuggesterPlugin($autocompleteSearch, 'search_api_solr_suggester');
+    $terms_plugin = $plugin_helper->createSuggesterPlugin($autocompleteSearch, 'search_api_solr_terms');
+
     $query = $this->buildSearch(['artic'], [], ['body_unstemmed'], FALSE);
     $query->setLanguages(['en']);
     $suggestions = $backend->getAutocompleteSuggestions($query, $autocompleteSearch, 'artic', 'artic');
@@ -56,7 +63,7 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
 
     $query = $this->buildSearch(['artic'], [], ['body'], FALSE);
     $query->setLanguages(['en']);
-    $suggestions = $backend->getAutocompleteSuggestions($query, $autocompleteSearch, 'artic', 'artic');
+    $suggestions = $terms_plugin->getAutocompleteSuggestions($query, 'artic', 'artic');
     $this->assertEquals(1, count($suggestions));
     // This time we test the stemmed token.
     $this->assertEquals('l', $suggestions[0]->getSuggestionSuffix());
@@ -66,7 +73,7 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
     if ('4.x' !== $targeted_branch && '3.x' !== $targeted_branch) {
       $query = $this->buildSearch(['articel'], [], ['body'], FALSE);
       $query->setLanguages(['en']);
-      $suggestions = $backend->getSpellcheckSuggestions($query, $autocompleteSearch, 'articel', 'articel');
+      $suggestions = $spellcheck_plugin->getAutocompleteSuggestions($query, 'articel', 'articel');
       $this->assertEquals(1, count($suggestions));
       $this->assertEquals('article', $suggestions[0]->getSuggestedKeys());
       $this->assertEquals(0, $suggestions[0]->getResultsCount());
@@ -106,7 +113,7 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
       // @todo Add more suggester tests.
       $query = $this->buildSearch(['artic'], [], ['body'], FALSE);
       $query->setLanguages(['en']);
-      $suggestions = $backend->getSuggesterSuggestions($query, $autocompleteSearch, 'artic', 'artic');
+      $suggestions = $suggester_plugin->getAutocompleteSuggestions($query, 'artic', 'artic');
       $this->assertEquals(2, count($suggestions));
 
       // Since we don't specify the result weights explicitly for this suggester

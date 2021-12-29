@@ -71,7 +71,7 @@ class Spellcheck extends SuggesterPluginBase implements PluginFormInterface {
       return [];
     }
 
-    return $this->getSpellcheckSuggestions($backend, $query, $this->getSearch(), $incomplete_key, $user_input);
+    return $this->getSpellcheckSuggestions($backend, $query, $incomplete_key, $user_input);
   }
 
   /**
@@ -81,11 +81,6 @@ class Spellcheck extends SuggesterPluginBase implements PluginFormInterface {
    * @param \Drupal\search_api\Query\QueryInterface $query
    *   A query representing the base search, with all completely entered words
    *   in the user input so far as the search keys.
-   * @param \Drupal\search_api_autocomplete\SearchInterface $search
-   *   An object containing details about the search the user is on, and
-   *   settings for the autocompletion. See the class documentation for details.
-   *   Especially $search->getOptions() should be checked for settings, like
-   *   whether to try and estimate result counts for returned suggestions.
    * @param string $incomplete_key
    *   The start of another fulltext keyword for the search, which should be
    *   completed. Might be empty, in which case all user input up to now was
@@ -100,7 +95,7 @@ class Spellcheck extends SuggesterPluginBase implements PluginFormInterface {
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  protected function getSpellcheckSuggestions(SolrBackendInterface $backend, QueryInterface $query, SearchInterface $search, $incomplete_key, $user_input) {
+  protected function getSpellcheckSuggestions(SolrBackendInterface $backend, QueryInterface $query, $incomplete_key, $user_input) {
     $suggestions = [];
     if ($solarium_query = $this->getAutocompleteQuery($backend, $incomplete_key, $user_input)) {
       try {

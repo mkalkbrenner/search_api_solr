@@ -11,8 +11,11 @@ use Drupal\search_api_solr\Event\PostConvertedQueryEvent;
 use Drupal\search_api_solr\Event\PostCreateIndexDocumentsEvent;
 use Drupal\search_api_solr\Event\PostExtractResultsEvent;
 use Drupal\search_api_solr\Event\PostFieldMappingEvent;
+use Drupal\search_api_solr\Event\PreAutocompleteTermsQueryEvent;
 use Drupal\search_api_solr\Event\PreIndexFinalizationEvent;
 use Drupal\search_api_solr\Event\PreQueryEvent;
+use Drupal\search_api_solr_autocomplete\Event\PreSpellcheckQueryEvent;
+use Drupal\search_api_solr_autocomplete\Event\PreSuggesterQueryEvent;
 
 /**
  * @addtogroup hooks
@@ -58,6 +61,9 @@ function hook_search_api_solr_query_alter(\Solarium\Core\Query\QueryInterface $s
  *
  * @param \Drupal\search_api\Query\QueryInterface $query
  *   The Search API query object representing the executed search query.
+ *
+ * @deprecated This function will be removed in Search API Solr 4.3.0.
+ *             Handle the PreAutocompleteTermsQueryEvent instead.
  */
 function hook_search_api_solr_terms_autocomplete_query_alter(\Drupal\search_api\Query\QueryInterface $query) {
   // If the Search API query has a 'terms' component, set a custom option.
@@ -73,7 +79,7 @@ function hook_search_api_solr_terms_autocomplete_query_alter(\Drupal\search_api\
  *   The Search API query object representing the executed search query.
  *
  * @deprecated This function will be removed in Search API Solr 4.3.0.
- *             Handle the PreQueryEvent instead.
+ *             Handle the PreSpellcheckQueryEvent instead.
  */
 function hook_search_api_solr_spellcheck_autocomplete_query_alter(\Drupal\search_api_solr\Solarium\Autocomplete\Query $solarium_query, \Drupal\search_api\Query\QueryInterface $query) {
   // If the Search API query has a 'spellcheck' component, set a custom
@@ -88,6 +94,9 @@ function hook_search_api_solr_spellcheck_autocomplete_query_alter(\Drupal\search
  *   The Solarium query object, as generated from the Search API query.
  * @param \Drupal\search_api\Query\QueryInterface $query
  *   The Search API query object representing the executed search query.
+ *
+ * @deprecated This function will be removed in Search API Solr 4.3.0.
+ *             Handle the PreSuggesterQueryEvent instead.
  */
 function hook_search_api_solr_suggester_autocomplete_query_alter(\Drupal\search_api_solr\Solarium\Autocomplete\Query $solarium_query, \Drupal\search_api\Query\QueryInterface $query) {
   // If the Search API query has a 'suggester' component, set a custom

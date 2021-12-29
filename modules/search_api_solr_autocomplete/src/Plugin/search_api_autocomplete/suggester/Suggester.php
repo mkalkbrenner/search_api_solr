@@ -141,7 +141,7 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
       $options['context_filter_tags'][] = 'drupal/langcode:' . $config['drupal/langcode'];
     }
 
-    return $this->getSuggesterSuggestions($backend, $query, $this->getSearch(), $incomplete_key, $user_input, $options);
+    return $this->getSuggesterSuggestions($backend, $query, $incomplete_key, $user_input, $options);
   }
 
   /**
@@ -151,11 +151,6 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
    * @param \Drupal\search_api\Query\QueryInterface $query
    *   A query representing the base search, with all completely entered words
    *   in the user input so far as the search keys.
-   * @param \Drupal\search_api_autocomplete\SearchInterface $search
-   *   An object containing details about the search the user is on, and
-   *   settings for the autocompletion. See the class documentation for details.
-   *   Especially $search->getOptions() should be checked for settings, like
-   *   whether to try and estimate result counts for returned suggestions.
    * @param string $incomplete_key
    *   The start of another fulltext keyword for the search, which should be
    *   completed. Might be empty, in which case all user input up to now was
@@ -173,7 +168,7 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function getSuggesterSuggestions(SolrBackendInterface $backend, QueryInterface $query, SearchInterface $search, $incomplete_key, $user_input, array $options = []) {
+  protected function getSuggesterSuggestions(SolrBackendInterface $backend, QueryInterface $query, $incomplete_key, $user_input, array $options = []) {
     $suggestions = [];
     if ($solarium_query = $this->getAutocompleteQuery($backend,$incomplete_key, $user_input)) {
       try {
