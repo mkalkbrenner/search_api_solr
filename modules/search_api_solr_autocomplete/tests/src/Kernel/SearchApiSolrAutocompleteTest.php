@@ -56,6 +56,7 @@ class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
 
     $query = $this->buildSearch(['artic'], [], ['body_unstemmed'], FALSE);
     $query->setLanguages(['en']);
+    $terms_plugin->setConfiguration(['fields' => ['body_unstemmed']]);
     $suggestions = $terms_plugin->getAutocompleteSuggestions($query, 'artic', 'artic');
     $this->assertEquals(1, count($suggestions));
     $this->assertEquals('le', $suggestions[0]->getSuggestionSuffix());
@@ -63,6 +64,7 @@ class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
 
     $query = $this->buildSearch(['artic'], [], ['body'], FALSE);
     $query->setLanguages(['en']);
+    $terms_plugin->setConfiguration(['fields' => ['body']]);
     $suggestions = $terms_plugin->getAutocompleteSuggestions($query, 'artic', 'artic');
     $this->assertEquals(1, count($suggestions));
     // This time we test the stemmed token.
@@ -81,6 +83,7 @@ class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
 
     $query = $this->buildSearch(['article tre'], [], ['body_unstemmed'], FALSE);
     $query->setLanguages(['en']);
+    $terms_plugin->setConfiguration(['fields' => ['body_unstemmed']]);
     $suggestions = $terms_plugin->getAutocompleteSuggestions($query, 'tre', 'article tre');
     $this->assertEquals('article tree', $suggestions[0]->getSuggestedKeys());
     $this->assertEquals(1, $suggestions[0]->getResultsCount());
