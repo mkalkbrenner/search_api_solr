@@ -53,6 +53,7 @@ use Drupal\search_api_solr\Event\PostExtractResultsEvent;
 use Drupal\search_api_solr\Event\PostFieldMappingEvent;
 use Drupal\search_api_solr\Event\PostIndexFinalizationEvent;
 use Drupal\search_api_solr\Event\PostSetFacetsEvent;
+use Drupal\search_api_solr\Event\PreAutocompleteTermsQueryEvent;
 use Drupal\search_api_solr\Event\PreCreateIndexDocumentEvent;
 use Drupal\search_api_solr\Event\PreExtractFacetsEvent;
 use Drupal\search_api_solr\Event\PreIndexFinalizationEvent;
@@ -70,7 +71,6 @@ use Drupal\search_api_solr\SolrConnectorInterface;
 use Drupal\search_api_solr\SolrProcessorInterface;
 use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\search_api_solr\Utility\Utility;
-use Drupal\search_api_solr_autocomplete\Event\PreSpellcheckQueryEvent;
 use Solarium\Component\ComponentAwareQueryInterface;
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\Response;
@@ -3602,7 +3602,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $this->setAutocompleteTermQuery($query, $solarium_query, $incomplete_key);
         // Allow modules to alter the solarium autocomplete query.
         $this->moduleHandler->alterDeprecated('hook_search_api_solr_terms_autocomplete_query_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PreSpellcheckQueryEvent instead.', 'search_api_solr_terms_autocomplete_query', $solarium_query, $query);
-        $event = new PreSpellcheckQueryEvent($query, $solarium_query);
+        $event = new PreAutocompleteTermsQueryEvent($query, $solarium_query);
         $this->dispatch($event);
         $result = $this->getSolrConnector()->autocomplete($solarium_query, $this->getCollectionEndpoint($query->getIndex()));
         $suggestions = $this->getAutocompleteTermSuggestions($result, $suggestion_factory, $incomplete_key);

@@ -12,7 +12,7 @@ backend_config:
   connector: solr_cloud_basic_auth_test
   connector_config:
     scheme: http
-    host: localhost
+    host: ddev-drupal-solr
     port: 8983
     path: /
     core: drupal

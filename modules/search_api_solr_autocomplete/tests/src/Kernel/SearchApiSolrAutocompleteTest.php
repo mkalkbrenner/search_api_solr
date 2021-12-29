@@ -11,7 +11,7 @@ use Drupal\Tests\search_api_solr\Kernel\SolrBackendTestBase;
  *
  * @group search_api_solr
  */
-class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
+class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
 
   /**
    * {@inheritdoc}
@@ -46,7 +46,7 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
     /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend $backend */
     $backend = Server::load($this->serverId)->getBackend();
     $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
-    $autocompleteSearch = new Search([], 'search_api_autocomplete_search');
+    $autocompleteSearch = new Search(['index_id' => $this->indexId], 'search_api_autocomplete_search');
 
     /** @var \Drupal\search_api_autocomplete\Utility\PluginHelper $plugin_helper */
     $plugin_helper = $this->container->get('search_api_autocomplete.plugin_helper');
@@ -56,14 +56,14 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
 
     $query = $this->buildSearch(['artic'], [], ['body_unstemmed'], FALSE);
     $query->setLanguages(['en']);
-    $suggestions = $backend->getAutocompleteSuggestions($query, $autocompleteSearch, 'artic', 'artic');
+    $suggestions = $terms_plugin->getAutocompleteSuggestions($query, 'artic', 'artic');
     $this->assertEquals(1, count($suggestions));
     $this->assertEquals('le', $suggestions[0]->getSuggestionSuffix());
     $this->assertEquals(2, $suggestions[0]->getResultsCount());
 
     $query = $this->buildSearch(['artic'], [], ['body'], FALSE);
     $query->setLanguages(['en']);
-    $suggestions = $backend->getAutocompleteSuggestions($query, $autocompleteSearch, 'artic', 'artic');
+    $suggestions = $terms_plugin->getAutocompleteSuggestions($query, 'artic', 'artic');
     $this->assertEquals(1, count($suggestions));
     // This time we test the stemmed token.
     $this->assertEquals('l', $suggestions[0]->getSuggestionSuffix());
@@ -81,7 +81,7 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
 
     $query = $this->buildSearch(['article tre'], [], ['body_unstemmed'], FALSE);
     $query->setLanguages(['en']);
-    $suggestions = $backend->getAutocompleteSuggestions($query, $autocompleteSearch, 'tre', 'article tre');
+    $suggestions = $terms_plugin->getAutocompleteSuggestions($query, 'tre', 'article tre');
     $this->assertEquals('article tree', $suggestions[0]->getSuggestedKeys());
     $this->assertEquals(1, $suggestions[0]->getResultsCount());
     // Having set preserveOriginal in WordDelimiter let punction remain.
@@ -132,5 +132,6 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
       $this->assertEquals('The test <b>artic</b>le number 2 about a tree.', $suggestions['The test <b>artic</b>le number 2 about a tree.']->getSuggestedKeys());
     }
   }
+
 
 }
