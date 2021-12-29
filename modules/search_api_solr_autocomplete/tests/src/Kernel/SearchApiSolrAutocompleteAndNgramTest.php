@@ -63,7 +63,7 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
 
     $query = $this->buildSearch(['artic'], [], ['body'], FALSE);
     $query->setLanguages(['en']);
-    $suggestions = $terms_plugin->getAutocompleteSuggestions($query, 'artic', 'artic');
+    $suggestions = $backend->getAutocompleteSuggestions($query, $autocompleteSearch, 'artic', 'artic');
     $this->assertEquals(1, count($suggestions));
     // This time we test the stemmed token.
     $this->assertEquals('l', $suggestions[0]->getSuggestionSuffix());
