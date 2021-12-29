@@ -23,9 +23,9 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
   ];
 
   /**
-   * Tests the autocomplete support and ngram results.
+   * {@inheritdoc}
    */
-  protected function testAutocompleteAndNgram(): void {
+  public function testBackend() {
     $this->addTestEntity(1, [
       'name' => 'Test Article 1',
       'body' => 'The test article number 1 about cats, dogs and trees.',
@@ -131,48 +131,6 @@ class SearchApiSolrAutocompleteAndNgramTest extends SolrBackendTestBase {
       $this->assertEquals('</b>le number 2 about a tree.', $suggestions['The test <b>artic</b>le number 2 about a tree.']->getSuggestionSuffix());
       $this->assertEquals('The test <b>artic</b>le number 2 about a tree.', $suggestions['The test <b>artic</b>le number 2 about a tree.']->getSuggestedKeys());
     }
-
-    // Tests NGram and Edge NGram search result.
-    foreach (['category_ngram', 'category_edge'] as $field) {
-      $results = $this->buildSearch(['tre'], [], [$field])
-        ->execute();
-      $this->assertResults([1, 2], $results, $field . ': tre');
-
-      $results = $this->buildSearch(['Dog'], [], [$field])
-        ->execute();
-      $this->assertResults([1], $results, $field . ': Dog');
-
-      $results = $this->buildSearch([], [], [])
-        ->addCondition($field, 'Dog')
-        ->execute();
-      $this->assertResults([1], $results, $field . ': Dog as condition');
-    }
-
-    // Tests NGram search result.
-    $result_set = [
-      'category_ngram' => [1, 2],
-      'category_ngram_string' => [1, 2],
-      'category_edge' => [],
-      'category_edge_string' => [],
-    ];
-    foreach ($result_set as $field => $expected_results) {
-      $results = $this->buildSearch(['re'], [], [$field])
-        ->execute();
-      $this->assertResults($expected_results, $results, $field . ': re');
-    }
-
-    foreach (['category_ngram_string' => [1, 2], 'category_edge_string' => [2]] as $field => $expected_results) {
-      $results = $this->buildSearch(['tre'], [], [$field])
-        ->execute();
-      $this->assertResults($expected_results, $results, $field . ': tre');
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function testBackend() {
-    $this->testAutocompleteAndNgram();
   }
 
 }
