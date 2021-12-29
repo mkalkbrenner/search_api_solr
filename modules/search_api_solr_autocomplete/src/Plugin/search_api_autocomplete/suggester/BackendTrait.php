@@ -3,7 +3,6 @@
 namespace Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\suggester;
 
 use Drupal\search_api\IndexInterface;
-use Drupal\search_api\LoggerTrait;
 use Drupal\search_api_solr\SolrAutocompleteInterface;
 
 /**
@@ -11,15 +10,13 @@ use Drupal\search_api_solr\SolrAutocompleteInterface;
  */
 trait BackendTrait {
 
-  use LoggerTrait;
-
   /**
    * Retrieves the backend for the given index, if it supports autocomplete.
    *
    * @param \Drupal\search_api\IndexInterface $index
    *   The search index.
    *
-   * @return \Drupal\search_api_solr\SolrAutocompleteInterface|null
+   * @return \Drupal\search_api_solr\SolrBackendInterfaceInterface|null
    *   The backend plugin of the index's server, if it exists and supports
    *   autocomplete; NULL otherwise.
    */
@@ -32,6 +29,7 @@ trait BackendTrait {
         $backend instanceof SolrAutocompleteInterface &&
         $server->supportsFeature('search_api_autocomplete')
       ) {
+        /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
         return $backend;
       }
     }

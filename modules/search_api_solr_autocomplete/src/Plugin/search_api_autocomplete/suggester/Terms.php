@@ -25,7 +25,9 @@ class Terms extends Server {
    * @throws \Drupal\search_api_autocomplete\SearchApiAutocompleteException
    */
   public function getAutocompleteSuggestions(QueryInterface $query, $incomplete_key, $user_input) {
-    if (!($backend = static::getBackend($this->getSearch()->getIndex()))) {
+    $backend = static::getBackend($this->getSearch()->getIndex());
+
+    if (!$backend) {
       return [];
     }
 
