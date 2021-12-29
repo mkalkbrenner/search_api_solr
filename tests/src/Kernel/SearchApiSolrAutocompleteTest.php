@@ -62,7 +62,7 @@ class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
 
     /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend $backend */
     $backend = Server::load($this->serverId)->getBackend();
-    $autocompleteSearch = new Search([], 'search_api_solr_autocomplete_search');
+    $autocompleteSearch = new Search(['index_id' => $this->indexId], 'search_api_solr_autocomplete_search');
 
     $query = $this->buildSearch(['produc'], [], ['body_unstemmed'], FALSE);
     $query->setLanguages(['en']);
