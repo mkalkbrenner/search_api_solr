@@ -10,9 +10,12 @@ use Drupal\search_api\SearchApiException;
 use Drupal\search_api_autocomplete\SearchInterface;
 use Drupal\search_api_autocomplete\Suggester\SuggesterPluginBase;
 use Drupal\search_api_autocomplete\Suggestion\SuggestionFactory;
+use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Drupal\search_api_solr\SolrAutocompleteBackendTrait;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr_autocomplete\Event\PreSpellcheckQueryEvent;
+use Solarium\Component\ComponentAwareQueryInterface;
+use Solarium\Core\Query\Result\ResultInterface;
 
 /**
  * Provides a suggester plugin that retrieves suggestions from the server.
@@ -115,6 +118,73 @@ class Spellcheck extends SuggesterPluginBase implements PluginFormInterface {
       }
     }
 
+    return $suggestions;
+  }
+
+  /**
+   * Set the spellcheck parameters for the solarium autocomplete query.
+   *
+   * @param \Drupal\search_api_solr\SolrBackendInterface $backend
+   * @param \Drupal\search_api\Query\QueryInterface $query
+   *   A query representing the completed user input so far.
+   * @param \Drupal\search_api_solr\Solarium\Autocomplete\Query $solarium_query
+   *   A Solarium autocomplete query.
+   * @param string $user_input
+   *   The user input.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  protected function setAutocompleteSpellCheckQuery(SolrBackendInterface $backend, QueryInterface $query, AutocompleteQuery $solarium_query, $user_input) {
+    $backend->setSpellcheck($solarium_query, $query, [
+      'keys' => [$user_input],
+      'count' => $query->getOption('limit') ?? 1,
+    ]);
+  }
+
+  /**
+   * Get the spellcheck suggestions from the autocomplete query result.
+   *
+   * @param \Solarium\Core\Query\Result\ResultInterface $result
+   *   An autocomplete query result.
+   * @param \Drupal\search_api_autocomplete\Suggestion\SuggestionFactory $suggestion_factory
+   *   The suggestion factory.
+   *
+   * @return \Drupal\search_api_autocomplete\Suggestion\SuggestionInterface[]
+   *   An array of suggestions.
+   */
+  protected function getAutocompleteSpellCheckSuggestions(ResultInterface $result, SuggestionFactory $suggestion_factory) {
+    $suggestions = [];
+    foreach ($this->extractSpellCheckSuggestions($result) as $spellcheck_suggestions) {
+      foreach ($spellcheck_suggestions as $keys) {
+        $suggestions[] = $suggestion_factory->createFromSuggestedKeys($keys);
+      }
+    }
+    return $suggestions;
+  }
+
+  /**
+   * Get the spellcheck suggestions from the autocomplete query result.
+   *
+   * @param \Solarium\Core\Query\Result\ResultInterface $result
+   *   An autocomplete query result.
+   *
+   * @return array
+   *   An array of suggestions.
+   */
+  protected function extractSpellCheckSuggestions(ResultInterface $result) {
+    $suggestions = [];
+    if ($spellcheck_results = $result->getComponent(ComponentAwareQueryInterface::COMPONENT_SPELLCHECK)) {
+      foreach ($spellcheck_results as $term_result) {
+        $keys = [];
+        /** @var \Solarium\Component\Result\Spellcheck\Suggestion $term_result */
+        foreach ($term_result->getWords() as $correction) {
+          $keys[] = $correction['word'];
+        }
+        if ($keys) {
+          $suggestions[$term_result->getOriginalTerm()] = $keys;
+        }
+      }
+    }
     return $suggestions;
   }
 

@@ -3,8 +3,11 @@
 namespace Drupal\Tests\search_api_solr_autocomplete\Kernel;
 
 use Drupal\search_api\Entity\Server;
+use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api_autocomplete\Entity\Search;
+use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\Tests\search_api_solr\Kernel\SolrBackendTestBase;
+use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 
 /**
  * Tests search autocomplete support and ngram results using the Solr search backend.
@@ -12,6 +15,8 @@ use Drupal\Tests\search_api_solr\Kernel\SolrBackendTestBase;
  * @group search_api_solr
  */
 class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
+
+  use InvokeMethodTrait;
 
   /**
    * {@inheritdoc}
@@ -116,7 +121,7 @@ class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
       // @todo Add more suggester tests.
       $query = $this->buildSearch(['artic'], [], ['body'], FALSE);
       $query->setLanguages(['en']);
-      $suggestions = $suggester_plugin->getAutocompleteSuggestions($query, 'artic', 'artic');
+      $suggestions = $this->invokeMethod($suggester_plugin, 'getSuggesterSuggestions', [$backend, $query, 'artic', 'artic']);
       $this->assertEquals(2, count($suggestions));
 
       // Since we don't specify the result weights explicitly for this suggester

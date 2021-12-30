@@ -4259,8 +4259,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * Adds spellcheck features to the search query.
    *
    * @todo Scope is public to be accessible from
-   *       SolrAutocompleteBackendTrait::setAutocompleteSpellCheckQuery(). Maybe
-   *       some refactoring is required.
+   *       \Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\Spellcheck::setAutocompleteSpellCheckQuery().
+   *       Maybe some refactoring is required.
    *
    * @param \Solarium\Component\ComponentAwareQueryInterface $solarium_query
    *   The Solarium query.
