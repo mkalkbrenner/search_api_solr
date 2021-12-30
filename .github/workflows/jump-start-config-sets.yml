@@ -160,10 +160,6 @@ jobs:
                     solr: '8'
                     php: '7.4'
                     experimental: false
-                  - drupal: '9.3'
-                    solr: '8'
-                    php: '8.1'
-                    experimental: true
                   - drupal: '9.4'
                     solr: '8'
                     php: '8.0'
@@ -171,6 +167,18 @@ jobs:
                   - drupal: '10.0'
                     solr: '8'
                     php: '8.0'
+                    experimental: true
+                  - drupal: '9.3'
+                    solr: '8'
+                    php: '8.1'
+                    experimental: false
+                  - drupal: '9.4'
+                    solr: '8'
+                    php: '8.1'
+                    experimental: false
+                  - drupal: '10.0'
+                    solr: '8'
+                    php: '8.1'
                     experimental: true
 
         name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
