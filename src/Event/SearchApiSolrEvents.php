@@ -188,4 +188,13 @@ final class SearchApiSolrEvents {
    */
   const PRE_SET_FACETS = PreSetFacetsEvent::class;
 
+  /**
+   * Fired before the terms based autocomplete solarium query is executed.
+   *
+   * @Event
+   *
+   * @see \Drupal\search_api_solr\Event\PreAutocompleteTermsQueryEvent
+   */
+  const PRE_AUTOCOMPLETE_TERMS_QUERY = PreAutocompleteTermsQueryEvent::class;
+
 }

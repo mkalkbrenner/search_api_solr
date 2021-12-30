@@ -22,7 +22,7 @@ interface SolrBackendInterface extends BackendInterface {
    *
    * @todo replace by an automatic detection when core provides module versions.
    */
-  public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.3';
+  public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.4';
 
   /**
    * The minimum required Solr schema version.
@@ -392,5 +392,18 @@ interface SolrBackendInterface extends BackendInterface {
    * @return bool
    */
   public function isNonDrupalOrOutdatedConfigSetAllowed(): bool;
+
+  /**
+   * Provide an easy to access event dispatcher for plugins.
+   *
+   * @param object $event
+   *   The object to process.
+   *
+   * @return object
+   *   The Event that was passed, now modified by listeners.
+   *
+   * @see \Psr\EventDispatcher\EventDispatcherInterface
+   */
+  public function dispatch(object $event): void;
 
 }
