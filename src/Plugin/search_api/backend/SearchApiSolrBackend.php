@@ -63,7 +63,6 @@ use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Drupal\search_api_solr\Solarium\Result\StreamDocument;
 use Drupal\search_api_solr\SolrAutocompleteBackendTrait;
-use Drupal\search_api_solr\SolrAutocompleteInterface;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\SolrCloudConnectorInterface;
 use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginManager;
@@ -99,7 +98,7 @@ use Laminas\Stdlib\ArrayUtils;
  *   description = @Translation("Index items using an Apache Solr search server.")
  * )
  */
-class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInterface, SolrAutocompleteInterface, PluginFormInterface {
+class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInterface, PluginFormInterface {
 
   use PluginFormTrait {
     submitConfigurationForm as traitSubmitConfigurationForm;
