@@ -68,6 +68,7 @@ use Drupal\search_api_solr\SolrCloudConnectorInterface;
 use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginManager;
 use Drupal\search_api_solr\SolrConnectorInterface;
 use Drupal\search_api_solr\SolrProcessorInterface;
+use Drupal\search_api_solr\SolrSpellcheckBackendTrait;
 use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\search_api_solr\Utility\Utility;
 use Solarium\Component\ComponentAwareQueryInterface;
@@ -111,6 +112,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   use SolrCommitTrait;
 
   use SolrAutocompleteBackendTrait;
+
+  use SolrSpellcheckBackendTrait;
 
   /**
    * The module handler.

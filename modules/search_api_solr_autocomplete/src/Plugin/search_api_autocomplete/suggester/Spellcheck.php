@@ -13,6 +13,7 @@ use Drupal\search_api_autocomplete\Suggestion\SuggestionFactory;
 use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Drupal\search_api_solr\SolrAutocompleteBackendTrait;
 use Drupal\search_api_solr\SolrBackendInterface;
+use Drupal\search_api_solr\SolrSpellcheckBackendTrait;
 use Drupal\search_api_solr_autocomplete\Event\PreSpellcheckQueryEvent;
 use Solarium\Component\ComponentAwareQueryInterface;
 use Solarium\Core\Query\Result\ResultInterface;
@@ -34,6 +35,7 @@ class Spellcheck extends SuggesterPluginBase implements PluginFormInterface {
   use PluginFormTrait;
   use BackendTrait;
   use SolrAutocompleteBackendTrait;
+  use SolrSpellcheckBackendTrait;
 
   /**
    * {@inheritdoc}
@@ -157,32 +159,6 @@ class Spellcheck extends SuggesterPluginBase implements PluginFormInterface {
     foreach ($this->extractSpellCheckSuggestions($result) as $spellcheck_suggestions) {
       foreach ($spellcheck_suggestions as $keys) {
         $suggestions[] = $suggestion_factory->createFromSuggestedKeys($keys);
-      }
-    }
-    return $suggestions;
-  }
-
-  /**
-   * Get the spellcheck suggestions from the autocomplete query result.
-   *
-   * @param \Solarium\Core\Query\Result\ResultInterface $result
-   *   An autocomplete query result.
-   *
-   * @return array
-   *   An array of suggestions.
-   */
-  protected function extractSpellCheckSuggestions(ResultInterface $result) {
-    $suggestions = [];
-    if ($spellcheck_results = $result->getComponent(ComponentAwareQueryInterface::COMPONENT_SPELLCHECK)) {
-      foreach ($spellcheck_results as $term_result) {
-        $keys = [];
-        /** @var \Solarium\Component\Result\Spellcheck\Suggestion $term_result */
-        foreach ($term_result->getWords() as $correction) {
-          $keys[] = $correction['word'];
-        }
-        if ($keys) {
-          $suggestions[$term_result->getOriginalTerm()] = $keys;
-        }
       }
     }
     return $suggestions;

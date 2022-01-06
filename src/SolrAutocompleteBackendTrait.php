@@ -3,7 +3,7 @@
 namespace Drupal\search_api_solr;
 
 /**
- * Provides a helper method for loading the search backend.
+ * Provides autocomplete related methods used by search backends and plugins.
  */
 trait SolrAutocompleteBackendTrait {
 
