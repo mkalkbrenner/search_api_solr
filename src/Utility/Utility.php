@@ -1215,12 +1215,6 @@ class Utility {
 
     $settings = self::getIndexSolrSettings($index);
     $language_ids = $query->getLanguages();
-    array_walk($language_ids, function(&$item, $key) {
-      if (LanguageInterface::LANGCODE_NOT_APPLICABLE === $item) {
-        $item = LanguageInterface::LANGCODE_NOT_SPECIFIED;
-      }
-    });
-    $language_ids = array_unique($language_ids);
 
     // If there are no languages set, we need to set them. As an example, a
     // language might be set by a filter in a search view.
@@ -1238,6 +1232,12 @@ class Utility {
         $language_ids = array_keys(\Drupal::languageManager()->getLanguages());
       }
     }
+
+    array_walk($language_ids, function(&$item, $key) {
+      if (LanguageInterface::LANGCODE_NOT_APPLICABLE === $item) {
+        $item = LanguageInterface::LANGCODE_NOT_SPECIFIED;
+      }
+    });
 
     if ($settings['multilingual']['include_language_independent']) {
       $language_ids[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
