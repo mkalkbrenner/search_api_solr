@@ -1386,8 +1386,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
         $lock_name = 'search_api_solr.' . $index->id() . '.finalization_lock';
         if ($lock->acquire($lock_name)) {
-          $vars = ['%index_id' => $index->id(), '%pid' => getmypid()];
-          $this->getLogger()->debug('PID %pid, Index %index_id: Finalization lock acquired.', $vars);
+          if ($settings['debug_finalize']) {
+            $vars = ['%index_id' => $index->id(), '%pid' => getmypid()];
+            $this->getLogger()->debug('PID %pid, Index %index_id: Finalization lock acquired.', $vars);
+          }
           $finalization_in_progress[$index->id()] = TRUE;
           $connector = $this->getSolrConnector();
           $previous_query_timeout = $connector->adjustTimeout($connector->getFinalizeTimeout(), SolrConnectorInterface::QUERY_TIMEOUT);
@@ -1408,8 +1410,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               ->set('search_api_solr.' . $index->id() . '.last_finalization',
                 \Drupal::time()->getRequestTime());
             $lock->release($lock_name);
-            $vars = ['%index_id' => $index->id(), '%pid' => getmypid()];
-            $this->getLogger()->debug('PID %pid, Index %index_id: Finalization lock released.', $vars);
+            if ($settings['debug_finalize']) {
+              $vars = ['%index_id' => $index->id(), '%pid' => getmypid()];
+              $this->getLogger()->debug('PID %pid, Index %index_id: Finalization lock released.', $vars);
+            }
 
             $this->dispatch(new PostIndexFinalizationEvent($index));
           }
@@ -1432,8 +1436,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         if ($lock->wait($lock_name)) {
           // wait() returns TRUE if the lock isn't released within the given
           // timeout (default 30s).
-          $vars = ['%index_id' => $index->id(), '%pid' => getmypid()];
-          $this->getLogger()->debug('PID %pid, Index %index_id: Waited unsuccessfully for finalization lock.', $vars);
+          if ($settings['debug_finalize']) {
+            $vars = ['%index_id' => $index->id(), '%pid' => getmypid()];
+            $this->getLogger()->debug('PID %pid, Index %index_id: Waited unsuccessfully for finalization lock.', $vars);
+          }
           throw new SearchApiSolrException('The search index currently being rebuilt. Try again later.');
         }
 
