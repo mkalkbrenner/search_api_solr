@@ -3955,6 +3955,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    */
   protected function getMoreLikeThisQuery(QueryInterface $query) {
     $connector = $this->getSolrConnector();
+    $solr_version = $connector->getSolrVersion();
     $solarium_query = $connector->getMoreLikeThisQuery();
     $mlt_options = $query->getOption('search_api_mlt');
     $language_ids = Utility::ensureLanguageCondition($query);
@@ -4013,18 +4014,31 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $mlt_fl = [];
     foreach ($mlt_options['fields'] as $mlt_field) {
       $first_field = reset($field_names[$mlt_field]);
-      // Date fields don't seem to be supported at all in MLT queries.
-      if (strpos($first_field, 'd') !== 0) {
-        if (strpos($first_field, 't') !== 0) {
-          // Non-text fields are not language-specific.
-          $mlt_fl[] = [$first_field];
-        }
-        else {
-          // Add all language-specific field names. This should work for
-          // non Drupal Solr Documents as well which contain only a single
-          // name.
-          $mlt_fl[] = array_values($field_names[$mlt_field]);
-        }
+      if (
+        strpos($first_field, 'd') === 0 ||
+        (
+          version_compare($solr_version, '7.0', '>=') &&
+          preg_match('^[ifpdh]', $first_field, $matches)
+        )
+      ) {
+        // Trie based field types were deprecated in Solr 6 and with Solr 7 we
+        // switched to the point based equivalents. But lucene doesn't support
+        // mlt based on these field types. Date fields don't seem to be
+        // supported at all in MLT queries.
+        $msg = sprintf('More like this (MLT) is not yet supported by Solr for point based field types. Consider converting the following field to a string or index it twice as string: %s.', $mlt_field);
+        $this->getLogger()->error($msg);
+        throw new SearchApiSolrException($msg);
+      }
+
+      if (strpos($first_field, 't') !== 0) {
+        // Non-text fields are not language-specific.
+        $mlt_fl[] = [$first_field];
+      }
+      else {
+        // Add all language-specific field names. This should work for
+        // non Drupal Solr Documents as well which contain only a single
+        // name.
+        $mlt_fl[] = array_values($field_names[$mlt_field]);
       }
     }
 
