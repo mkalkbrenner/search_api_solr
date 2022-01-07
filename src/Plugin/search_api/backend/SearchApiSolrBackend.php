@@ -1728,7 +1728,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         }
 
         // Allow modules to alter the converted solarium query.
-        $this->moduleHandler->alterDeprecated('hook_search_api_solr_converted_query_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConvertedQueryEvent instead.','search_api_solr_query', $solarium_query, $query);
+        $this->moduleHandler->alterDeprecated('hook_search_api_solr_converted_query_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConvertedQueryEvent instead.', 'search_api_solr_converted_query', $solarium_query, $query);
         $event = new PostConvertedQueryEvent($query, $solarium_query);
         $this->dispatch($event);
         $solarium_query = $event->getSolariumQuery();
