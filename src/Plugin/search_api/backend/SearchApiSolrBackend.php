@@ -1644,7 +1644,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
       try {
         // Allow modules to alter the solarium query.
-        $this->moduleHandler->alterDeprecated('hook_search_api_solr_query_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PreQueryEvent instead.','search_api_solr_query', $solarium_query, $query);
+        $this->moduleHandler->alterDeprecated('hook_search_api_solr_query_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PreQueryEvent instead.', 'search_api_solr_query', $solarium_query, $query);
         $this->preQuery($solarium_query, $query);
         $event = new PreQueryEvent($query, $solarium_query);
         $this->dispatch($event);
@@ -1773,7 +1773,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           }
         }
 
-        $this->moduleHandler->alterDeprecated('hook_search_api_solr_search_results_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostExtractResultsEvent instead.','search_api_solr_search_results', $search_api_result_set, $query, $solarium_result);
+        $this->moduleHandler->alterDeprecated('hook_search_api_solr_search_results_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostExtractResultsEvent instead.', 'search_api_solr_search_results', $search_api_result_set, $query, $solarium_result);
         $this->postQuery($search_api_result_set, $query, $solarium_result);
         $event = new PostExtractResultsEvent($search_api_result_set, $query, $solarium_result);
         $this->dispatch($event);
@@ -2275,7 +2275,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
 
     // Let modules adjust the field mappings.
-    $this->moduleHandler->alterDeprecated('hook_search_api_solr_field_mapping_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostFieldMappingEvent instead.','search_api_solr_field_mapping', $index, $field_mapping, $language_id);
+    $this->moduleHandler->alterDeprecated('hook_search_api_solr_field_mapping_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostFieldMappingEvent instead.', 'search_api_solr_field_mapping', $index, $field_mapping, $language_id);
     $event = new PostFieldMappingEvent($index, $field_mapping, $language_id);
     $this->dispatch($event);
 
