@@ -1233,10 +1233,16 @@ class Utility {
       }
     }
 
+    array_walk($language_ids, function(&$item, $key) {
+      if (LanguageInterface::LANGCODE_NOT_APPLICABLE === $item) {
+        $item = LanguageInterface::LANGCODE_NOT_SPECIFIED;
+      }
+    });
+
     if ($settings['multilingual']['include_language_independent']) {
       $language_ids[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
-      // LanguageInterface::LANGCODE_NOT_APPLICABLE never appears in Search API
-      // at the moment.
+      // LanguageInterface::LANGCODE_NOT_APPLICABLE is mapped to
+      // LanguageInterface::LANGCODE_NOT_SPECIFIED above.
     }
 
     $query->setLanguages(array_unique($language_ids));

@@ -676,6 +676,20 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $this->assertEquals('tm_X3b_en_body:("some text")', $fq[0]['query']);
     $this->assertArrayNotHasKey(1, $fq);
 
+    $query = $this->buildSearch();
+    $query->setLanguages([LanguageInterface::LANGCODE_NOT_SPECIFIED]);
+    $query->addCondition('body', 'some text', '=');
+    $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
+    $this->assertEquals('tm_X3b_und_body:("some text")', $fq[0]['query']);
+    $this->assertArrayNotHasKey(1, $fq);
+
+    $query = $this->buildSearch();
+    $query->setLanguages([LanguageInterface::LANGCODE_NOT_APPLICABLE]);
+    $query->addCondition('body', 'some text', '=');
+    $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
+    $this->assertEquals('tm_X3b_und_body:("some text")', $fq[0]['query']);
+    $this->assertArrayNotHasKey(1, $fq);
+
     $parse_mode_manager = \Drupal::service('plugin.manager.search_api.parse_mode');
     $parse_mode_phrase = $parse_mode_manager->createInstance('phrase');
 
@@ -1322,7 +1336,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       'name' => 'und 8',
       'body' => 'genes',
       'type' => 'item',
-      'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
+      'langcode' => LanguageInterface::LANGCODE_NOT_APPLICABLE,
     ]);
     $count = \Drupal::entityQuery('entity_test_mulrev_changed')->count()->execute();
     $this->assertEquals(8, $count, "$count items inserted.");
