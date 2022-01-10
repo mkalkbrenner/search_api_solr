@@ -4018,7 +4018,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         strpos($first_field, 'd') === 0 ||
         (
           version_compare($solr_version, '7.0', '>=') &&
-          preg_match('^[ifpdh]', $first_field, $matches)
+          preg_match('/^[ifph]/', $first_field, $matches)
         )
       ) {
         // Trie based field types were deprecated in Solr 6 and with Solr 7 we
