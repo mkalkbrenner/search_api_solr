@@ -1260,7 +1260,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $expected_results = [
       1 => 'en',
       2 => 'en',
-      7 => LanguageInterface::LANGCODE_NOT_SPECIFIED
+      7 => LanguageInterface::LANGCODE_NOT_APPLICABLE
     ];
     $this->assertResults($expected_results, $results, 'Search content and unspecified language for "gene".');
 
@@ -1277,9 +1277,16 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       4 => 'de',
       5 => 'de-at',
       6 => 'de-at',
-      7 => LanguageInterface::LANGCODE_NOT_SPECIFIED
+      7 => LanguageInterface::LANGCODE_NOT_APPLICABLE,
     ];
     $this->assertResults($expected_results, $results, 'Search all and unspecified languages for "gene".');
+
+    $results = $this->buildSearch('und', [], ['name'])->execute();
+    $expected_results = [
+      7 => LanguageInterface::LANGCODE_NOT_APPLICABLE,
+      8 => LanguageInterface::LANGCODE_NOT_SPECIFIED,
+    ];
+    $this->assertResults($expected_results, $results, 'Search all and unspecified languages for "und".');
 
     $this->assertFalse($this->getIndex()->isReindexing());
     ConfigurableLanguage::createFromLangcode('de-ch')->save();
@@ -1330,13 +1337,13 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       'name' => 'und 7',
       'body' => 'gene',
       'type' => 'item',
-      'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
+      'langcode' => LanguageInterface::LANGCODE_NOT_APPLICABLE,
     ]);
     $this->addTestEntity(8, [
       'name' => 'und 8',
       'body' => 'genes',
       'type' => 'item',
-      'langcode' => LanguageInterface::LANGCODE_NOT_APPLICABLE,
+      'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
     ]);
     $count = \Drupal::entityQuery('entity_test_mulrev_changed')->count()->execute();
     $this->assertEquals(8, $count, "$count items inserted.");
