@@ -1332,13 +1332,13 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       'name' => 'und 7',
       'body' => 'gene',
       'type' => 'item',
-      'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
+      'langcode' => LanguageInterface::LANGCODE_NOT_APPLICABLE,
     ]);
     $this->addTestEntity(8, [
       'name' => 'und 8',
       'body' => 'genes',
       'type' => 'item',
-      'langcode' => LanguageInterface::LANGCODE_NOT_APPLICABLE,
+      'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
     ]);
     $count = \Drupal::entityQuery('entity_test_mulrev_changed')->count()->execute();
     $this->assertEquals(8, $count, "$count items inserted.");

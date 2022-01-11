@@ -1141,7 +1141,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $language_id = $item->getLanguage();
       if ($language_id === LanguageInterface::LANGCODE_NOT_APPLICABLE) {
         $language_id = LanguageInterface::LANGCODE_NOT_SPECIFIED;
-        $item->setLanguage(LanguageInterface::LANGCODE_NOT_SPECIFIED);
+        $item->setLanguage($language_id);
       }
       $field_names = $this->getLanguageSpecificSolrFieldNames($language_id, $index);
       $boost_terms = [];
