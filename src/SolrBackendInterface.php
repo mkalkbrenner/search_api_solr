@@ -2,7 +2,7 @@
 
 namespace Drupal\search_api_solr;
 
-use Drupal\search_api\Backend\BackendInterface;
+use Drupal\search_api\Contrib\AutocompleteBackendInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Item\ItemInterface;
 use Drupal\search_api\Query\QueryInterface;
@@ -15,14 +15,14 @@ use Solarium\QueryType\Update\Query\Query as UpdateQuery;
  * It extends the generic \Drupal\search_api\Backend\BackendInterface and covers
  * additional Solr specific methods.
  */
-interface SolrBackendInterface extends BackendInterface {
+interface SolrBackendInterface extends AutocompleteBackendInterface {
 
   /**
    * The current Solr schema version.
    *
    * @todo replace by an automatic detection when core provides module versions.
    */
-  public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.6';
+  public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.7';
 
   /**
    * The minimum required Solr schema version.

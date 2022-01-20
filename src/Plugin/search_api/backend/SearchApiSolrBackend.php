@@ -3598,14 +3598,14 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   }
 
   /**
-   * Implements autocomplete compatible to AutocompleteBackendInterface.
+   * {@inheritdoc}
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\search_api\SearchApiException
    *
    * @see \Drupal\search_api_autocomplete\AutocompleteBackendInterface
    */
-  public function getAutocompleteSuggestions(QueryInterface $query, $search, $incomplete_key, $user_input) {
+  public function getAutocompleteSuggestions(QueryInterface $query, SearchInterface $search, string $incomplete_key, string $user_input): array {
     $suggestions = [];
     if ($solarium_query = $this->getAutocompleteQuery($this, $incomplete_key, $user_input)) {
       try {
