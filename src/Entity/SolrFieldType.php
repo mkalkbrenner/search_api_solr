@@ -534,7 +534,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
       ];
 
       if (version_compare($solr_major_version, '5', '>=')) {
-        $collated_field['docValues'] = TRUE;
+        $collated_field['docValues'] = FALSE;
       }
     }
 
