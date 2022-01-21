@@ -174,7 +174,7 @@ class Utility {
    * @throws \Drupal\search_api\SearchApiException
    *   If a problem occurred while retrieving the files.
    */
-  public static function getServerFiles(ServerInterface $server, $dir_name = NULL) {
+  public static function getServerFiles(ServerInterface $server, string $dir_name = '') {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $server->getBackend();
     $response = $backend->getSolrConnector()->getFile($dir_name);
