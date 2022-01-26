@@ -530,7 +530,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
         'name' => SearchApiSolrUtility::encodeSolrName('sort' . SolrBackendInterface::SEARCH_API_SOLR_LANGUAGE_SEPARATOR . $this->field_type_language_code) . '_*',
         'type' => $this->collated_field_type['name'],
         'stored' => FALSE,
-        'indexed' => version_compare($solr_major_version, '5', '<'),
+        'indexed' => TRUE,
       ];
 
       if (version_compare($solr_major_version, '5', '>=')) {
