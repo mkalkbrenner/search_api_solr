@@ -54,7 +54,6 @@ jobs:
               run: |
                 cd drupal
                 composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
-                composer require solarium/solarium:"dev-master as 6.2.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:2.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --ignore-platform-reqs --no-interaction
                 composer require drupal/search_api_solr:4.99.0 drush/drush drupal/drush_language --ignore-platform-reqs --no-interaction
 
             - name: Install drupal
@@ -232,7 +231,6 @@ jobs:
                 composer require solarium/solarium:"dev-master as 6.2.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:2.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --ignore-platform-reqs --no-interaction
                 # search_api was installed as dendency above. This is a required check! Now switch to the latest dev version.
                 composer require drupal/search_api:1.x-dev --ignore-platform-reqs --no-interaction
-                composer run-script drupal-phpunit-upgrade
 
             - name: Create Solr collections
               run: |
@@ -275,8 +273,6 @@ jobs:
       steps:
         - name: Setup sqlite
           run: |
-            # Drupal 9 requires a newer sqlite version which is available using this ppa.
-            sudo add-apt-repository ppa:sergey-dryabzhinsky/packages
             sudo apt-get update
             sudo apt-get install sqlite3 libsqlite3-dev
 
@@ -323,7 +319,6 @@ jobs:
             composer require solarium/solarium:"dev-master as 6.2.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:2.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --ignore-platform-reqs --no-interaction
             # search_api was installed as dendency above. This is a required check! Now switch to the latest dev version.
             composer require drupal/search_api:1.x-dev --ignore-platform-reqs --no-interaction
-            composer run-script drupal-phpunit-upgrade
 
         - name: Run legacy tests
           env:
