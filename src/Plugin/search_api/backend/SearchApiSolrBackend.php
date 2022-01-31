@@ -4157,14 +4157,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         // @todo $step - 1 means 1km less. That opens a gap in the facets of
         //   1km that is not covered.
         $distance_max = $distance_min + $step - 1;
-        // Define our own facet key to transport the min and max values.
-        // These will be extracted in extractFacets().
-        $key = "spatial-{$distance_field}-{$distance_min}-{$distance_max}";
-        // Due to a limitation/bug in Solarium, it is not possible to use
-        // setQuery method for geo facets.
-        // So the key is misused to get a correct query.
-        // @see https://github.com/solariumphp/solarium/issues/229
-        $facet_set->createFacetQuery($key . ' frange l=' . $distance_min . ' u=' . $distance_max)->setQuery('geodist()');
+        $facet_set->createFacetQuery([
+          // Define our own facet key to transport the min and max values. These
+          // will be extracted in extractFacets().
+          'local_key' => "spatial-{$distance_field}-{$distance_min}-{$distance_max}",
+          'query' => '{!frange l=' . $distance_min . ' u=' . $distance_max . '}geodist()',
+        ]);
       }
     }
   }
