@@ -153,7 +153,7 @@ jobs:
             matrix:
                 drupal: ['9.2', '9.3']
                 solr: ['4', '5', '6', '7', '8']
-                php: ['7.4', '8.0']
+                php: ['7.3', '7.4', '8.0']
                 experimental: [false]
                 include:
                   - drupal: '9.4'
