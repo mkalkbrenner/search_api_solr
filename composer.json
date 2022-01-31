@@ -43,7 +43,7 @@
     "conflict": {
         "drupal/acquia_search_solr": "<1.0.0-beta8",
         "drupal/search_api_autocomplete": "<1.6.0",
-        "drupal/search_api_solr_multilingual": "<3.0.0",
+        "drupal/search_api_solr_multilingual": "<3.0.0"
     },
     "suggest": {
         "drupal/facets": "Provides facetted search.",
