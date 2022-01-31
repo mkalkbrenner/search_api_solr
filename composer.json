@@ -24,7 +24,7 @@
         "ext-dom": "*",
         "ext-json": "*",
         "ext-simplexml": "*",
-        "drupal/search_api": "~1.22",
+        "drupal/search_api": "~1.23",
         "composer/semver": "^1.0|^3.0",
         "consolidation/annotated-command": "^2.12|^4.1",
         "maennchen/zipstream-php": "^1.2|^2.0",
@@ -42,6 +42,7 @@
     },
     "conflict": {
         "drupal/acquia_search_solr": "<1.0.0-beta8",
+        "drupal/search_api_autocomplete": "<1.6.0",
         "drupal/search_api_solr_multilingual": "<3.0.0"
     },
     "suggest": {
