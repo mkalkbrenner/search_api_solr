@@ -12,7 +12,6 @@ use Drupal\search_api_solr\SearchApiSolrConflictingEntitiesException;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\Utility\Utility;
-use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 use ZipStream\Option\Archive;
@@ -29,7 +28,9 @@ class SolrConfigSetController extends ControllerBase {
   use EventDispatcherTrait;
 
   /**
-   * @var EventDispatcherInterface
+   * The event dispatcher.
+   *
+   * @var \Psr\EventDispatcher\EventDispatcherInterface
    */
   protected $eventDispatcher;
 
@@ -275,7 +276,7 @@ class SolrConfigSetController extends ControllerBase {
       '8.x' => $template_path . '8.x',
     ];
 
-    $this->moduleHandler()->alterDeprecated('hook_search_api_solr_configset_template_mapping_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigSetTemplateMappingEvent instead.','search_api_solr_configset_template_mapping', $solr_configset_template_mapping);
+    $this->moduleHandler()->alterDeprecated('hook_search_api_solr_configset_template_mapping_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigSetTemplateMappingEvent instead.', 'search_api_solr_configset_template_mapping', $solr_configset_template_mapping);
     $event = new PostConfigSetTemplateMappingEvent($solr_configset_template_mapping);
     $this->eventDispatcher()->dispatch($event);
     $solr_configset_template_mapping = $event->getConfigSetTemplateMapping();
@@ -325,7 +326,7 @@ class SolrConfigSetController extends ControllerBase {
 
     $solrcore_properties['solr.luceneMatchVersion'] = $connector->getLuceneMatchVersion($this->assumedMinimumVersion ?: '');
     if (!$connector->isCloud()) {
-      // @todo
+      // @todo Set the replication masterUrl.
       // $solrcore_properties['solr.replication.masterUrl']
       $solrcore_properties_string = '';
       foreach ($solrcore_properties as $property => $value) {
@@ -341,8 +342,16 @@ class SolrConfigSetController extends ControllerBase {
         $file_path = $search_api_solr_conf_path . '/' . $file;
         if (file_exists($file_path) && is_readable($file_path)) {
           $files[$file] = str_replace(
-            ['SEARCH_API_SOLR_SCHEMA_VERSION', 'SEARCH_API_SOLR_BRANCH', 'SEARCH_API_SOLR_JUMP_START_CONFIG_SET'],
-            [SolrBackendInterface::SEARCH_API_SOLR_SCHEMA_VERSION, $real_solr_branch, SEARCH_API_SOLR_JUMP_START_CONFIG_SET],
+            [
+              'SEARCH_API_SOLR_SCHEMA_VERSION',
+              'SEARCH_API_SOLR_BRANCH',
+              'SEARCH_API_SOLR_JUMP_START_CONFIG_SET',
+            ],
+            [
+              SolrBackendInterface::SEARCH_API_SOLR_SCHEMA_VERSION,
+              $real_solr_branch,
+              SEARCH_API_SOLR_JUMP_START_CONFIG_SET,
+            ],
             file_get_contents($search_api_solr_conf_path . '/' . $file)
           );
         }
@@ -362,7 +371,7 @@ class SolrConfigSetController extends ControllerBase {
     }
 
     $connector->alterConfigFiles($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
-    $this->moduleHandler()->alterDeprecated('hook_search_api_solr_config_files_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigFilesGenerationEvent instead.','search_api_solr_config_files', $files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
+    $this->moduleHandler()->alterDeprecated('hook_search_api_solr_config_files_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigFilesGenerationEvent instead.', 'search_api_solr_config_files', $files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
     $event = new PostConfigFilesGenerationEvent($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);
     $this->eventDispatcher()->dispatch($event);
 
@@ -398,7 +407,7 @@ class SolrConfigSetController extends ControllerBase {
     }
 
     $connector->alterConfigZip($zip, $lucene_match_version, $this->serverId);
-    $this->moduleHandler->alterDeprecated('hook_search_api_solr_config_zip_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigSetGenerationEvent instead.','search_api_solr_config_zip', $zip, $lucene_match_version, $this->serverId);
+    $this->moduleHandler->alterDeprecated('hook_search_api_solr_config_zip_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConfigSetGenerationEvent instead.', 'search_api_solr_config_zip', $zip, $lucene_match_version, $this->serverId);
     $event = new PostConfigSetGenerationEvent($zip, $lucene_match_version, $this->serverId);
     $this->eventDispatcher()->dispatch($event);
 
@@ -446,7 +455,7 @@ class SolrConfigSetController extends ControllerBase {
   }
 
   /**
-   * Streams a zip archive containing a complete Solr configuration currently in use.
+   * Streams a zip archive of a complete Solr configuration currently in use.
    *
    * @param \Drupal\search_api\ServerInterface $search_api_server
    *   The Search API server entity.

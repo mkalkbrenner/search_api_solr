@@ -4,8 +4,6 @@ namespace Drupal\search_api_solr\Commands;
 
 use Consolidation\AnnotatedCommand\Input\StdinAwareInterface;
 use Consolidation\AnnotatedCommand\Input\StdinAwareTrait;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\search_api\ConsoleException;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
@@ -13,7 +11,6 @@ use Drupal\search_api_solr\SolrCloudConnectorInterface;
 use Drupal\search_api_solr\Utility\SolrCommandHelper;
 use Drush\Commands\DrushCommands;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Defines Drush commands for the Search API Solr.
@@ -84,6 +81,8 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    *   The file name of the config zip that should be created.
    * @param string $solr_version
    *   The targeted Solr version.
+   * @param array $options
+   *   The options array.
    *
    * @throws \Drupal\search_api\ConsoleException
    * @throws \Drupal\search_api\SearchApiException
@@ -111,6 +110,8 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @param string $indexId
    *   (optional) A search index ID, or NULL to index items for all enabled
    *   indexes.
+   * @param array $options
+   *   The options array.
    *
    * @command search-api-solr:finalize-index
    *

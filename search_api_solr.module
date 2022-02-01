@@ -545,7 +545,7 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
 /**
  * Form validation.
  *
- * @param $element
+ * @param array $element
  *   The form element.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state.
@@ -554,7 +554,7 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
  *
  * @throws \Drupal\search_api\SearchApiException
  */
-function search_api_solr_form_search_api_index_form_validate_server(&$element, FormStateInterface $form_state, $form) {
+function search_api_solr_form_search_api_index_form_validate_server(array &$element, FormStateInterface $form_state, array $form) {
   if ($server = Server::load($form_state->getValue('server'))) {
     if ($server->getBackend() instanceof SolrBackendInterface) {
       /** @var \Drupal\Core\Entity\EntityFormInterface $form_object */
