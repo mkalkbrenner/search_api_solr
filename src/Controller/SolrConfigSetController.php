@@ -262,8 +262,11 @@ class SolrConfigSetController extends ControllerBase {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $this->getBackend();
     $connector = $backend->getSolrConnector();
-    $solr_branch = $real_solr_branch = $connector->getSolrBranch($this->assumedMinimumVersion);
     $solr_major_version = $connector->getSolrMajorVersion($this->assumedMinimumVersion);
+    if (!$solr_major_version) {
+      throw new SearchApiSolrException('The config-set could not be created because the targeted Solr version is missing. In case of an auto-detection of the version the Solr server might not be running or is not reachable or the API is blocked (check the log files). As a workaround you can manually configure the targeted Solr version in the settings.');
+    }
+    $solr_branch = $real_solr_branch = $connector->getSolrBranch($this->assumedMinimumVersion);
 
     $template_path = drupal_get_path('module', 'search_api_solr') . '/solr-conf-templates/';
     $solr_configset_template_mapping = [
@@ -276,6 +279,10 @@ class SolrConfigSetController extends ControllerBase {
     $event = new PostConfigSetTemplateMappingEvent($solr_configset_template_mapping);
     $this->eventDispatcher()->dispatch($event);
     $solr_configset_template_mapping = $event->getConfigSetTemplateMapping();
+
+    if (!isset($solr_configset_template_mapping[$solr_branch])) {
+      throw new SearchApiSolrException(sprintf('No config-set template found for Solr branch %s', $solr_branch));
+    }
 
     $search_api_solr_conf_path = $solr_configset_template_mapping[$solr_branch];
     $solrcore_properties_file = $search_api_solr_conf_path . '/solrcore.properties';
