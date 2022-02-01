@@ -1,10 +1,14 @@
 <?php
 
+/**
+ * @file
+ */
+
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\search_api_solr\SolrBackendInterface;
 
 /**
- * Implements hook_form_FORM_alter.
+ * Implements hook_form_FORM_ID_alter().
  */
 function search_api_solr_admin_form_search_api_server_status_alter(&$form, FormStateInterface $form_state, $form_id) {
   /** @var \Drupal\search_api\ServerInterface $server */
@@ -20,6 +24,14 @@ function search_api_solr_admin_form_search_api_server_status_alter(&$form, FormS
   }
 }
 
+/**
+ * Submit handler.
+ *
+ * @see search_api_solr_admin_form_search_api_server_status_alter()
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ */
 function search_api_solr_admin_form_search_api_server_status_submit_delete_collection(&$form, FormStateInterface $form_state) {
   // Redirect to the "delete collection" form.
   /** @var \Drupal\search_api\ServerInterface $server */

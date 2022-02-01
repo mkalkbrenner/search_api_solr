@@ -59,7 +59,6 @@ class SolariumRequestLogger implements EventSubscriberInterface {
   public function postCreateQuery(PostCreateQuery $event) {
     $query = $event->getQuery();
     if ($query instanceof Query) {
-      /** @var $query */
       $query->getDebug();
       $query->addParam('echoParams', 'all')
         ->setOmitHeader(FALSE);
@@ -96,6 +95,7 @@ class SolariumRequestLogger implements EventSubscriberInterface {
    *
    * @param $counter int
    *   The current Solr query counter.
+   *
    * @return array
    *   The timer array.
    */
@@ -108,7 +108,8 @@ class SolariumRequestLogger implements EventSubscriberInterface {
    *
    * @param $handler string
    *   The Solr handler. Examples: "admin/ping", "select", etc.
-   * @return boolean
+   *
+   * @return bool
    *   TRUE when we should skip debugging this query.
    */
   public function shouldIgnore($handler) {
@@ -181,4 +182,5 @@ class SolariumRequestLogger implements EventSubscriberInterface {
     // Log raw data to file (using NULL plugin)
     $this->develDumperManager->debug($debug, 'Search API Solr Debug: Response', 'default');
   }
+
 }

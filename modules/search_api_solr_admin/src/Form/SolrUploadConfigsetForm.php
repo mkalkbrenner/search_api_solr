@@ -2,14 +2,9 @@
 
 namespace Drupal\search_api_solr_admin\Form;
 
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\search_api\ServerInterface;
-use Drupal\Core\Messenger\MessengerInterface;
-use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\Utility\Utility;
-use Drupal\search_api_solr_admin\Utility\SolrAdminCommandHelper;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * The upload configset form.
@@ -29,12 +24,12 @@ class SolrUploadConfigsetForm extends SolrAdminFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, ServerInterface $search_api_server = NULL) {
-    $this->search_api_server = $search_api_server;
+    $this->searchApiServer = $search_api_server;
 
-    $connector = Utility::getSolrCloudConnector($this->search_api_server);
+    $connector = Utility::getSolrCloudConnector($this->searchApiServer);
     $configset = $connector->getConfigSetName();
     if (!$configset) {
-      $this->messenger->addWarning($this->t('No existing configset name could be detected on the Solr server for this collection. That\'s fine if you just create a new collection. Otherwise you should check the logs.'));
+      $this->messenger->addWarning($this->t('No existing configset name could be detected on the Solr server for this collection. That is fine if you just create a new collection. Otherwise you should check the logs.'));
     }
 
     $form['#title'] = $this->t('Upload Configset for %collection?', ['%collection' => $connector->getCollectionName()]);
@@ -85,14 +80,14 @@ class SolrUploadConfigsetForm extends SolrAdminFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     try {
-      $this->commandHelper->uploadConfigset($this->search_api_server->id(), (int) $form_state->getValue('num_shards'), TRUE);
+      $this->commandHelper->uploadConfigset($this->searchApiServer->id(), (int) $form_state->getValue('num_shards'), TRUE);
     }
     catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
       $this->logException($e);
     }
 
-    $form_state->setRedirect('entity.search_api_server.canonical', ['search_api_server' => $this->search_api_server->id()]);
+    $form_state->setRedirect('entity.search_api_server.canonical', ['search_api_server' => $this->searchApiServer->id()]);
   }
 
 }

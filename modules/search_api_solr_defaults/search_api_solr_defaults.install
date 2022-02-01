@@ -37,7 +37,10 @@ function search_api_solr_defaults_requirements($phase) {
           if (!isset($fields[$required_field])) {
             $requirements['search_api_solr_defaults:' . $required_type_id . ':' . $required_field] = [
               'severity' => REQUIREMENT_ERROR,
-              'description' => t('Field @field in content type @node_type not found. Solr Search Defaults module could not be installed', ['@node_type' => $required_type_id, '@field' => $required_field]),
+              'description' => t('Field @field in content type @node_type not found. Solr Search Defaults module could not be installed', [
+                '@node_type' => $required_type_id,
+                '@field' => $required_field,
+              ]),
             ];
           }
         }
@@ -54,8 +57,8 @@ function search_api_solr_defaults_requirements($phase) {
       /** @var \Drupal\Core\Entity\EntityTypeManager $entity_type_manager */
       $entity_type_manager = \Drupal::service('entity_type.manager');
       foreach ($entities_to_check as $entity_type => $entity_id) {
-        // Find out if the entity is already in place. If so, fail to install the
-        // module.
+        // Find out if the entity is already in place. If so, fail to install
+        // the module.
         $entity_storage = $entity_type_manager->getStorage($entity_type);
         $entity_storage->resetCache();
         $entity = $entity_storage->load($entity_id);

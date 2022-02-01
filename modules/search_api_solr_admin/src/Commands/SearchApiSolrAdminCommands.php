@@ -4,17 +4,9 @@ namespace Drupal\search_api_solr_admin\Commands;
 
 use Consolidation\AnnotatedCommand\Input\StdinAwareInterface;
 use Consolidation\AnnotatedCommand\Input\StdinAwareTrait;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
-use Drupal\search_api\ConsoleException;
-use Drupal\search_api_solr\SearchApiSolrException;
-use Drupal\search_api_solr\SolrBackendInterface;
-use Drupal\search_api_solr\SolrCloudConnectorInterface;
-use Drupal\search_api_solr\Utility\SolrCommandHelper;
 use Drupal\search_api_solr_admin\Utility\SolrAdminCommandHelper;
 use Drush\Commands\DrushCommands;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Defines Drush commands for the Search API Solr Admin.
@@ -61,7 +53,8 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
    * @command search-api-solr:reload
    *
    * @usage drush search-api-solr:reload server_id
-   *   Forces the Solr server to reload the core or collection to apply config changes.
+   *   Forces the Solr server to reload the core or collection to apply config
+   *   changes.
    *
    * @aliases solr-reload
    */
@@ -108,7 +101,8 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
    * @command search-api-solr:upload-configset
    *
    * @usage drush search-api-solr:upload-configset server_id num_shards
-   *   Upload a configset and reload the collection or create it with num_shards.
+   *   Upload a configset and reload the collection or create it with
+   *   num_shards.
    *
    * @aliases solr-upload-conf
    */

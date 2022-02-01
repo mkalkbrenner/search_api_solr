@@ -17,11 +17,15 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 class SolrAdminCommandHelper extends SolrCommandHelper {
 
   /**
+   * The file system.
+   *
    * @var \Drupal\Core\File\FileSystemInterface
    */
   protected $fileSystem;
 
   /**
+   * The messenger.
+   *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
   protected $messenger;
@@ -35,9 +39,10 @@ class SolrAdminCommandHelper extends SolrCommandHelper {
    *   The module handler.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   The event dispatcher.
-   * @param string|callable $translation_function
-   *   (optional) A callable for translating strings.
    * @param \Drupal\Core\File\FileSystemInterface $fileSystem
+   *   The file system.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   The messenger.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    *   Thrown if the "search_api_index" or "search_api_server" entity types'
@@ -96,7 +101,9 @@ class SolrAdminCommandHelper extends SolrCommandHelper {
    * @param string $server_id
    *   The ID of the server.
    * @param int $num_shards
+   *   The number of shards.
    * @param bool $messages
+   *   Indicate if messages should be displayed, default is FALSE.
    *
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_solr\SearchApiSolrException
@@ -136,7 +143,7 @@ class SolrAdminCommandHelper extends SolrCommandHelper {
     else {
       $connector->createCollection([
         'collection.configName' => $configset,
-        'numShards' => $num_shards
+        'numShards' => $num_shards,
       ]);
       if ($messages) {
         $this->messenger->addStatus($this->t('Successfully created collection %collection.', ['%collection' => $connector->getCollectionName()]));

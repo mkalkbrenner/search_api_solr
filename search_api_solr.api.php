@@ -5,18 +5,6 @@
  * Hooks provided by the Search API Solr search module.
  */
 
-use Drupal\search_api_solr\Event\PostConfigFilesGenerationEvent;
-use Drupal\search_api_solr\Event\PostConfigSetGenerationEvent;
-use Drupal\search_api_solr\Event\PostConvertedQueryEvent;
-use Drupal\search_api_solr\Event\PostCreateIndexDocumentsEvent;
-use Drupal\search_api_solr\Event\PostExtractResultsEvent;
-use Drupal\search_api_solr\Event\PostFieldMappingEvent;
-use Drupal\search_api_solr\Event\PreAutocompleteTermsQueryEvent;
-use Drupal\search_api_solr\Event\PreIndexFinalizationEvent;
-use Drupal\search_api_solr\Event\PreQueryEvent;
-use Drupal\search_api_solr_autocomplete\Event\PreSpellcheckQueryEvent;
-use Drupal\search_api_solr_autocomplete\Event\PreSuggesterQueryEvent;
-
 /**
  * @addtogroup hooks
  * @{
@@ -40,8 +28,10 @@ use Drupal\search_api_solr_autocomplete\Event\PreSuggesterQueryEvent;
  * @param \Drupal\search_api\Query\QueryInterface $query
  *   The Search API query object representing the executed search query.
  *
- * @deprecated This function will be removed in Search API Solr 4.3.0.
- *             Handle the PreQueryEvent instead.
+ * @deprecated in 4.2.0 and is removed from 4.3.0. Handle the PreQueryEvent
+ *   instead.
+ *
+ * @see \Drupal\search_api_solr\Event\PreQueryEvent
  */
 function hook_search_api_solr_query_alter(\Solarium\Core\Query\QueryInterface $solarium_query, \Drupal\search_api\Query\QueryInterface $query) {
   // To get a list of solrium events:
@@ -62,8 +52,10 @@ function hook_search_api_solr_query_alter(\Solarium\Core\Query\QueryInterface $s
  * @param \Drupal\search_api\Query\QueryInterface $query
  *   The Search API query object representing the executed search query.
  *
- * @deprecated This function will be removed in Search API Solr 4.3.0.
- *             Handle the PreAutocompleteTermsQueryEvent instead.
+ * @deprecated in 4.2.0 and is removed from 4.3.0. Handle the
+ *   PreAutocompleteTermsQueryEvent instead.
+ *
+ * @see \Drupal\search_api_solr\Event\PreAutocompleteTermsQueryEvent
  */
 function hook_search_api_solr_terms_autocomplete_query_alter(\Drupal\search_api\Query\QueryInterface $query) {
   // If the Search API query has a 'terms' component, set a custom option.
@@ -78,8 +70,10 @@ function hook_search_api_solr_terms_autocomplete_query_alter(\Drupal\search_api\
  * @param \Drupal\search_api\Query\QueryInterface $query
  *   The Search API query object representing the executed search query.
  *
- * @deprecated This function will be removed in Search API Solr 4.3.0.
- *             Handle the PreSpellcheckQueryEvent instead.
+ * @deprecated in 4.2.0 and is removed from 4.3.0. Handle the
+ *   PreSpellcheckQueryEvent instead.
+ *
+ * @see \Drupal\search_api_solr_autocomplete\Event\PreSpellcheckQueryEvent
  */
 function hook_search_api_solr_spellcheck_autocomplete_query_alter(\Drupal\search_api_solr\Solarium\Autocomplete\Query $solarium_query, \Drupal\search_api\Query\QueryInterface $query) {
   // If the Search API query has a 'spellcheck' component, set a custom
@@ -95,8 +89,10 @@ function hook_search_api_solr_spellcheck_autocomplete_query_alter(\Drupal\search
  * @param \Drupal\search_api\Query\QueryInterface $query
  *   The Search API query object representing the executed search query.
  *
- * @deprecated This function will be removed in Search API Solr 4.3.0.
- *             Handle the PreSuggesterQueryEvent instead.
+ * @deprecated in 4.2.0 and is removed from 4.3.0. Handle the
+ *   PreSuggesterQueryEvent instead.
+ *
+ * @see \Drupal\search_api_solr_autocomplete\Event\PreSuggesterQueryEvent
  */
 function hook_search_api_solr_suggester_autocomplete_query_alter(\Drupal\search_api_solr\Solarium\Autocomplete\Query $solarium_query, \Drupal\search_api\Query\QueryInterface $query) {
   // If the Search API query has a 'suggester' component, set a custom
@@ -117,8 +113,10 @@ function hook_search_api_solr_suggester_autocomplete_query_alter(\Drupal\search_
  * @param \Drupal\search_api\Query\QueryInterface $query
  *   The Search API query object representing the executed search query.
  *
- * @deprecated This function will be removed in Search API Solr 4.3.0.
- *             Handle the PostConvertedQueryEvent instead.
+ * @deprecated in 4.2.0 and is removed from 4.3.0. Handle the
+ *   PostConvertedQueryEvent instead.
+ *
+ * @see \Drupal\search_api_solr\Event\PostConvertedQueryEvent
  */
 function hook_search_api_solr_converted_query_alter(\Solarium\Core\Query\QueryInterface $solarium_query, \Drupal\search_api\Query\QueryInterface $query) {
   // If the Search API query has a 'I_know_what_I_am_doing' option set to
@@ -145,8 +143,10 @@ function hook_search_api_solr_converted_query_alter(\Solarium\Core\Query\QueryIn
  * @param string $language_id
  *   The language ID that applies for this field mapping.
  *
- * @deprecated This function will be removed in Search API Solr 4.3.0.
- *             Handle the PostFieldMappingEvent instead.
+ * @deprecated in 4.2.0 and is removed from 4.3.0. Handle the
+ *   PostFieldMappingEvent instead.
+ *
+ * @see \Drupal\search_api_solr\Event\PostFieldMappingEvent
  */
 function hook_search_api_solr_field_mapping_alter(\Drupal\search_api\IndexInterface $index, array &$fields, string $language_id) {
   $fields['fieldname'] = 'ss_fieldname';
@@ -163,8 +163,10 @@ function hook_search_api_solr_field_mapping_alter(\Drupal\search_api\IndexInterf
  * @param \Drupal\search_api\Item\ItemInterface[] $items
  *   An array of items to be indexed, keyed by their item IDs.
  *
- * @deprecated This function will be removed in Search API Solr 4.3.0.
- *             Handle the PostCreateIndexDocumentsEvent instead.
+ * @deprecated in 4.2.0 and is removed from 4.3.0. Handle the
+ *   PostCreateIndexDocumentsEvent instead.
+ *
+ * @see \Drupal\search_api_solr\Event\PostCreateIndexDocumentsEvent
  */
 function hook_search_api_solr_documents_alter(array &$documents, \Drupal\search_api\IndexInterface $index, array $items) {
   // Adds a "foo" field with value "bar" to all documents.
@@ -183,8 +185,10 @@ function hook_search_api_solr_documents_alter(array &$documents, \Drupal\search_
  * @param \Solarium\QueryType\Select\Result\Result $result
  *   The Solarium result object.
  *
- * @deprecated This function will be removed in Search API Solr 4.3.0.
- *             Handle the PostExtractResultsEvent instead.
+ * @deprecated in 4.2.0 and is removed from 4.3.0. Handle the
+ *   PostExtractResultsEvent instead.
+ *
+ * @see \Drupal\search_api_solr\Event\PostExtractResultsEvent
  */
 function hook_search_api_solr_search_results_alter(\Drupal\search_api\Query\ResultSetInterface $result_set, \Drupal\search_api\Query\QueryInterface $query, \Solarium\QueryType\Select\Result\Result $result) {
   $result_data = $result->getData();
@@ -241,8 +245,10 @@ function search_api_solr_hook_search_api_data_type_info() {
  * @param \Drupal\search_api\IndexInterface $index
  *   The search index.
  *
- * @deprecated This function will be removed in Search API Solr 4.3.0.
- *             Handle the PreIndexFinalizationEvent instead.
+ * @deprecated in 4.2.0 and is removed from 4.3.0. Handle the
+ *   PreIndexFinalizationEvent instead.
+ *
+ * @see \Drupal\search_api_solr\Event\PreIndexFinalizationEvent
  */
 function hook_search_api_solr_finalize_index(\Drupal\search_api\IndexInterface $index) {
 
@@ -259,8 +265,10 @@ function hook_search_api_solr_finalize_index(\Drupal\search_api\IndexInterface $
  *   Optional Search API server id. Will be set in most cases but might be
  *   empty when the config generation is triggered via UI or drush.
  *
- * @deprecated This function will be removed in Search API Solr 4.3.0.
- *             Handle the PostConfigFilesGenerationEvent instead.
+ * @deprecated in 4.2.0 and is removed from 4.3.0. Handle the
+ *   PostConfigFilesGenerationEvent instead.
+ *
+ * @see \Drupal\search_api_solr\Event\PostConfigFilesGenerationEvent
  */
 function hook_search_api_solr_config_files_alter(array &$files, string $lucene_match_version, string $server_id = '') {
   $files['solrconfig_extra.xml'] .= "<!-- Append additional stuff -->\n";
@@ -279,8 +287,10 @@ function hook_search_api_solr_config_files_alter(array &$files, string $lucene_m
  *   Optional Search API server id. Will be set in most cases but might be
  *   empty when the config generation is triggered via UI or drush.
  *
- * @deprecated This function will be removed in Search API Solr 4.3.0.
- *             Handle the PostConfigSetGenerationEvent instead.
+ * @deprecated in 4.2.0 and is removed from 4.3.0. Handle the
+ *   PostConfigSetGenerationEvent instead.
+ *
+ * @see \Drupal\search_api_solr\Event\PostConfigSetGenerationEvent
  */
 function hook_search_api_solr_config_zip_alter(\ZipStream\ZipStream $zip, string $lucene_match_version, string $server_id = '') {
 }
