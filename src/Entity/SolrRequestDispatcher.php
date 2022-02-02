@@ -26,10 +26,10 @@ use Drupal\search_api_solr\SolrRequestDispatcherInterface;
  *   config_export = {
  *     "id",
  *     "label",
- *     "minimum_solr_version" = "minimumSolrVersion",
+ *     "minimum_solr_version",
  *     "environments",
  *     "recommended",
- *     "request_dispatcher" = "requestDispatcher",
+ *     "request_dispatcher"
  *   },
  *   links = {
  *     "disable-for-server" = "/admin/config/search/search-api/server/{search_api_server}/solr_request_dispatcher/{solr_request_dispatcher}/disable",
@@ -45,7 +45,7 @@ class SolrRequestDispatcher extends AbstractSolrEntity implements SolrRequestDis
    *
    * @var array
    */
-  protected $requestDispatcher;
+  protected $request_dispatcher;
 
   /**
    * The targeted environments.
@@ -58,21 +58,21 @@ class SolrRequestDispatcher extends AbstractSolrEntity implements SolrRequestDis
    * {@inheritdoc}
    */
   public function getRequestDispatcher() {
-    return $this->requestDispatcher;
+    return $this->request_dispatcher;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getName(): string {
-    return $this->requestDispatcher['name'] . '_' . $this->isRecommended();
+    return $this->request_dispatcher['name'] . '_' . $this->isRecommended();
   }
 
   /**
    * {@inheritdoc}
    */
   public function getPurposeId(): string {
-    return $this->requestDispatcher['name'];
+    return $this->request_dispatcher['name'];
   }
 
   /**
@@ -110,8 +110,8 @@ class SolrRequestDispatcher extends AbstractSolrEntity implements SolrRequestDis
         "\n-->\n";
     }
 
-    $copy = $this->requestDispatcher;
-    $root = $this->requestDispatcher['name'];
+    $copy = $this->request_dispatcher;
+    $root = $this->request_dispatcher['name'];
     unset($copy['name']);
 
     $formatted_xml_string = $this->buildXmlFromArray($root, $copy);

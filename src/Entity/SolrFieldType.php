@@ -33,16 +33,16 @@ use Drupal\search_api_solr\SolrFieldTypeInterface;
  *   config_export = {
  *     "id",
  *     "label",
- *     "minimum_solr_version" = "minimumSolrVersion",
- *     "custom_code" = "customCode",
- *     "field_type_language_code" = "fieldTypeLanguageCode",
+ *     "minimum_solr_version",
+ *     "custom_code",
+ *     "field_type_language_code",
  *     "domains",
- *     "field_type" = "fieldType",
- *     "unstemmed_field_type" = "unstemmedFieldType",
- *     "spellcheck_field_type" = "spellcheckFieldType",
- *     "collated_field_type" = "collatedFieldType",
- *     "solr_configs" = "solrConfigs",
- *     "text_files" = "textFiles",
+ *     "field_type",
+ *     "unstemmed_field_type",
+ *     "spellcheck_field_type",
+ *     "collated_field_type",
+ *     "solr_configs",
+ *     "text_files"
  *   },
  *   links = {
  *     "edit-form" = "/admin/config/search/search-api/solr_field_type/{solr_field_type}",
@@ -60,42 +60,42 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    *
    * @var array
    */
-  protected $fieldType;
+  protected $field_type;
 
   /**
    * Solr Spellcheck Field Type definition.
    *
    * @var array
    */
-  protected $spellcheckFieldType;
+  protected $spellcheck_field_type;
 
   /**
    * Solr Collated Field Type definition.
    *
    * @var array
    */
-  protected $collatedFieldType;
+  protected $collated_field_type;
 
   /**
    * Solr Unstemmed Field Type definition.
    *
    * @var array
    */
-  protected $unstemmedFieldType;
+  protected $unstemmed_field_type;
 
   /**
    * The custom code targeted by this Solr Field Type.
    *
    * @var string
    */
-  protected $customCode;
+  protected $custom_code;
 
   /**
    * The language targeted by this Solr Field Type.
    *
    * @var string
    */
-  protected $fieldTypeLanguageCode;
+  protected $field_type_language_code;
 
   /**
    * The targeted content domains.
@@ -108,14 +108,14 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function getFieldType() {
-    return $this->fieldType;
+    return $this->field_type;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setFieldType(array $field_type) {
-    $this->fieldType = $field_type;
+    $this->field_type = $field_type;
     return $this;
   }
 
@@ -123,21 +123,21 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function getName(): string {
-    return $this->fieldType['name'];
+    return $this->field_type['name'];
   }
 
   /**
    * {@inheritdoc}
    */
   public function getSpellcheckFieldType() {
-    return $this->spellcheckFieldType;
+    return $this->spellcheck_field_type;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setSpellcheckFieldType(array $spellcheck_field_type) {
-    $this->spellcheckFieldType = $spellcheck_field_type;
+    $this->spellcheck_field_type = $spellcheck_field_type;
     return $this;
   }
 
@@ -145,14 +145,14 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function getCollatedFieldType() {
-    return $this->collatedFieldType;
+    return $this->collated_field_type;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setCollatedFieldType(array $collated_field_type) {
-    $this->collatedFieldType = $collated_field_type;
+    $this->collated_field_type = $collated_field_type;
     return $this;
   }
 
@@ -160,14 +160,14 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function getUnstemmedFieldType() {
-    return $this->unstemmedFieldType;
+    return $this->unstemmed_field_type;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setUnstemmedFieldType(array $unstemmed_field_type) {
-    $this->unstemmedFieldType = $unstemmed_field_type;
+    $this->unstemmed_field_type = $unstemmed_field_type;
     return $this;
   }
 
@@ -175,14 +175,14 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function getCustomCode() {
-    return $this->customCode;
+    return $this->custom_code;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getFieldTypeLanguageCode() {
-    return $this->fieldTypeLanguageCode;
+    return $this->field_type_language_code;
   }
 
   /**
@@ -235,10 +235,10 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
     // element names "indexAnalyzer", "queryAnalyzer" and "multiTermAnalyzer"
     // which are deprecated in the XML format. Therefor we need to add some
     // conversion logic.
-    $field_type = $this->fieldType;
+    $field_type = $this->field_type;
     unset($field_type['analyzers']);
 
-    foreach ($this->fieldType['analyzers'] as $analyzer) {
+    foreach ($this->field_type['analyzers'] as $analyzer) {
       $type = 'analyzer';
       if (!empty($analyzer['type'])) {
         if ('multiterm' === $analyzer['type']) {
@@ -262,7 +262,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function setFieldTypeAsJson($field_type) {
-    $field_type = $this->fieldType = Json::decode($field_type);
+    $field_type = $this->field_type = Json::decode($field_type);
 
     // Unfortunately the JSON encoded field type definition still uses the
     // element names "indexAnalyzer", "queryAnalyzer" and "multiTermAnalyzer"
@@ -276,11 +276,11 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
     ];
     foreach ($analyzers as $type => $analyzer) {
       if (!empty($field_type[$analyzer])) {
-        unset($this->fieldType[$analyzer]);
+        unset($this->field_type[$analyzer]);
         if ($type != $analyzer) {
           $field_type[$analyzer]['type'] = $type;
         }
-        $this->fieldType['analyzers'][] = $field_type[$analyzer];
+        $this->field_type['analyzers'][] = $field_type[$analyzer];
       }
     }
 
@@ -291,11 +291,11 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function getSpellcheckFieldTypeAsJson(bool $pretty = FALSE) {
-    if ($this->spellcheckFieldType) {
-      /* @noinspection PhpComposerExtensionStubsInspection */
+    if ($this->spellcheck_field_type) {
+      /** @noinspection PhpComposerExtensionStubsInspection */
       return $pretty ?
-        json_encode($this->spellcheckFieldType, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
-        Json::encode($this->spellcheckFieldType);
+        json_encode($this->spellcheck_field_type, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
+        Json::encode($this->spellcheck_field_type);
     }
 
     return '';
@@ -305,7 +305,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function setSpellcheckFieldTypeAsJson($spellcheck_field_type) {
-    $this->spellcheckFieldType = Json::decode($spellcheck_field_type);
+    $this->spellcheck_field_type = Json::decode($spellcheck_field_type);
 
     return $this;
   }
@@ -314,11 +314,11 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function getCollatedFieldTypeAsJson(bool $pretty = FALSE) {
-    if ($this->collatedFieldType) {
-      /* @noinspection PhpComposerExtensionStubsInspection */
+    if ($this->collated_field_type) {
+      /** @noinspection PhpComposerExtensionStubsInspection */
       return $pretty ?
-        json_encode($this->collatedFieldType, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
-        Json::encode($this->collatedFieldType);
+        json_encode($this->collated_field_type, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
+        Json::encode($this->collated_field_type);
     }
 
     return '';
@@ -328,7 +328,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function setCollatedFieldTypeAsJson($collated_field_type) {
-    $this->collatedFieldType = Json::decode($collated_field_type);
+    $this->collated_field_type = Json::decode($collated_field_type);
 
     return $this;
   }
@@ -337,11 +337,11 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function getUnstemmedFieldTypeAsJson(bool $pretty = FALSE) {
-    if ($this->unstemmedFieldType) {
+    if ($this->unstemmed_field_type) {
       /* @noinspection PhpComposerExtensionStubsInspection */
       return $pretty ?
-        json_encode($this->unstemmedFieldType, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
-        Json::encode($this->unstemmedFieldType);
+        json_encode($this->unstemmed_field_type, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
+        Json::encode($this->unstemmed_field_type);
     }
 
     return '';
@@ -351,7 +351,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function setUnstemmedFieldTypeAsJson($unstemmed_field_type) {
-    $this->unstemmedFieldType = Json::decode($unstemmed_field_type);
+    $this->unstemmed_field_type = Json::decode($unstemmed_field_type);
 
     return $this;
   }
@@ -360,31 +360,31 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function getAsXml(bool $add_comment = TRUE): string {
-    return $this->getSubFieldTypeAsXml($this->fieldType);
+    return $this->getSubFieldTypeAsXml($this->field_type);
   }
 
   /**
    * {@inheritdoc}
    */
   public function getSpellcheckFieldTypeAsXml($add_comment = TRUE) {
-    return $this->spellcheckFieldType ?
-      $this->getSubFieldTypeAsXml($this->spellcheckFieldType, ' spellcheck') : '';
+    return $this->spellcheck_field_type ?
+      $this->getSubFieldTypeAsXml($this->spellcheck_field_type, ' spellcheck') : '';
   }
 
   /**
    * {@inheritdoc}
    */
   public function getCollatedFieldTypeAsXml($add_comment = TRUE) {
-    return $this->collatedFieldType ?
-      $this->getSubFieldTypeAsXml($this->collatedFieldType, ' collated') : '';
+    return $this->collated_field_type ?
+      $this->getSubFieldTypeAsXml($this->collated_field_type, ' collated') : '';
   }
 
   /**
    * {@inheritdoc}
    */
   public function getUnstemmedFieldTypeAsXml($add_comment = TRUE) {
-    return $this->unstemmedFieldType ?
-      $this->getSubFieldTypeAsXml($this->unstemmedFieldType, ' unstemmed') : '';
+    return $this->unstemmed_field_type ?
+      $this->getSubFieldTypeAsXml($this->unstemmed_field_type, ' unstemmed') : '';
   }
 
   /**
@@ -417,7 +417,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function getSolrConfigs() {
-    return $this->solrConfigs;
+    return $this->solr_configs;
   }
 
   /**
@@ -426,25 +426,25 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   public function getDynamicFields(?int $solr_major_version = NULL) {
     $dynamic_fields = [];
 
-    $prefixes = $this->customCode ? [
-      'tc' . $this->customCode,
-      'toc' . $this->customCode,
-      'tuc' . $this->customCode,
+    $prefixes = $this->custom_code ? [
+      'tc' . $this->custom_code,
+      'toc' . $this->custom_code,
+      'tuc' . $this->custom_code,
     ] : ['t', 'to', 'tu'];
     foreach ($prefixes as $prefix_without_cardinality) {
       foreach (['s', 'm'] as $cardinality) {
         $prefix = $prefix_without_cardinality . $cardinality;
-        $name = $prefix . SolrBackendInterface::SEARCH_API_SOLR_LANGUAGE_SEPARATOR . $this->fieldTypeLanguageCode . '_';
+        $name = $prefix . SolrBackendInterface::SEARCH_API_SOLR_LANGUAGE_SEPARATOR . $this->field_type_language_code . '_';
         $dynamic_fields[] = $dynamic_field = [
           'name' => SearchApiSolrUtility::encodeSolrName($name) . '*',
-          'type' => ((strpos($prefix, 'tu') === 0 && !empty($this->unstemmedFieldType)) ? $this->unstemmedFieldType['name'] : $this->fieldType['name']),
+          'type' => ((strpos($prefix, 'tu') === 0 && !empty($this->unstemmed_field_type)) ? $this->unstemmed_field_type['name'] : $this->field_type['name']),
           'stored' => TRUE,
           'indexed' => TRUE,
           'multiValued' => ('m' === $cardinality),
           'termVectors' => TRUE,
           'omitNorms' => strpos($prefix, 'to') === 0,
         ];
-        if (LanguageInterface::LANGCODE_NOT_SPECIFIED === $this->fieldTypeLanguageCode) {
+        if (LanguageInterface::LANGCODE_NOT_SPECIFIED === $this->field_type_language_code) {
           // Add a language-unspecific default dynamic field as fallback for
           // languages we don't have a dedicated config for.
           $dynamic_field['name'] = SearchApiSolrUtility::encodeSolrName($prefix) . '_*';
@@ -458,7 +458,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
       // example de-at => de.
       $dynamic_fields[] = $spellcheck_field;
 
-      if (LanguageInterface::LANGCODE_NOT_SPECIFIED === $this->fieldTypeLanguageCode) {
+      if (LanguageInterface::LANGCODE_NOT_SPECIFIED === $this->field_type_language_code) {
         // Add a language-unspecific default dynamic spellcheck field as
         // fallback for languages we don't have a dedicated config for.
         $spellcheck_field['name'] = 'spellcheck_*';
@@ -469,7 +469,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
     if ($collated_field = $this->getCollatedField($solr_major_version)) {
       $dynamic_fields[] = $collated_field;
 
-      if (LanguageInterface::LANGCODE_NOT_SPECIFIED === $this->fieldTypeLanguageCode) {
+      if (LanguageInterface::LANGCODE_NOT_SPECIFIED === $this->field_type_language_code) {
         // Add a language-unspecific default dynamic sort field as fallback for
         // languages we don't have a dedicated config for.
         $collated_field['name'] = 'sort_*';
@@ -497,14 +497,14 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   protected function getSpellcheckField() {
     $spellcheck_field = NULL;
 
-    if ($this->spellcheckFieldType) {
+    if ($this->spellcheck_field_type) {
       $spellcheck_field = [
         // Don't use the language separator here! This field name is used
         // without it in the solrconfig.xml. Due to the fact that we leverage a
         // dynamic field here to enable the language fallback we need to append
         // '*', but not '_*' because we'll never append a field name!
-        'name' => 'spellcheck_' . $this->fieldTypeLanguageCode . '*',
-        'type' => $this->spellcheckFieldType['name'],
+        'name' => 'spellcheck_' . $this->field_type_language_code . '*',
+        'type' => $this->spellcheck_field_type['name'],
         'stored' => TRUE,
         'indexed' => TRUE,
         'multiValued' => TRUE,
@@ -530,10 +530,10 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
     $collated_field = NULL;
 
     // Solr 3 and 4 need the sort field to be indexed and no docValues.
-    if ($this->collatedFieldType) {
+    if ($this->collated_field_type) {
       $collated_field = [
-        'name' => SearchApiSolrUtility::encodeSolrName('sort' . SolrBackendInterface::SEARCH_API_SOLR_LANGUAGE_SEPARATOR . $this->fieldTypeLanguageCode) . '_*',
-        'type' => $this->collatedFieldType['name'],
+        'name' => SearchApiSolrUtility::encodeSolrName('sort' . SolrBackendInterface::SEARCH_API_SOLR_LANGUAGE_SEPARATOR . $this->field_type_language_code) . '_*',
+        'type' => $this->collated_field_type['name'],
         'stored' => FALSE,
         'indexed' => TRUE,
       ];
@@ -557,15 +557,15 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function getFieldTypeName() {
-    return isset($this->fieldType['name']) ? $this->fieldType['name'] : '';
+    return isset($this->field_type['name']) ? $this->field_type['name'] : '';
   }
 
   /**
    * {@inheritdoc}
    */
   public function requiresManagedSchema() {
-    if (isset($this->fieldType['analyzers'])) {
-      foreach ($this->fieldType['analyzers'] as $analyzer) {
+    if (isset($this->field_type['analyzers'])) {
+      foreach ($this->field_type['analyzers'] as $analyzer) {
         if (isset($analyzer['filters'])) {
           foreach ($analyzer['filters'] as $filter) {
             if (strpos($filter['class'], 'solr.Managed') === 0) {

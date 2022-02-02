@@ -26,11 +26,11 @@ use Drupal\search_api_solr\SolrRequestHandlerInterface;
  *   config_export = {
  *     "id",
  *     "label",
- *     "minimum_solr_version" = "minimumSolrVersion",
+ *     "minimum_solr_version",
  *     "environments",
  *     "recommended",
- *     "request_handler" = "requestHandler",
- *     "solr_configs" = "solrConfigs",
+ *     "request_handler",
+ *     "solr_configs"
  *   },
  *   links = {
  *     "disable-for-server" = "/admin/config/search/search-api/server/{search_api_server}/solr_request_handler/{solr_request_handler}/disable",
@@ -46,7 +46,7 @@ class SolrRequestHandler extends AbstractSolrEntity implements SolrRequestHandle
    *
    * @var array
    */
-  protected $requestHandler;
+  protected $request_handler;
 
   /**
    * The targeted environments.
@@ -59,22 +59,22 @@ class SolrRequestHandler extends AbstractSolrEntity implements SolrRequestHandle
    * {@inheritdoc}
    */
   public function getRequestHandler() {
-    return $this->requestHandler;
+    return $this->request_handler;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getName(): string {
-    $nested_name = $this->requestHandler['lst'][0]['name'] ?? 'default';
-    return $this->requestHandler['name'] . '_' . $nested_name;
+    $nested_name = $this->request_handler['lst'][0]['name'] ?? 'default';
+    return $this->request_handler['name'] . '_' . $nested_name;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getPurposeId(): string {
-    return $this->requestHandler['name'];
+    return $this->request_handler['name'];
   }
 
   /**
@@ -112,7 +112,7 @@ class SolrRequestHandler extends AbstractSolrEntity implements SolrRequestHandle
         "\n-->\n";
     }
 
-    $formatted_xml_string = $this->buildXmlFromArray('requestHandler', $this->requestHandler);
+    $formatted_xml_string = $this->buildXmlFromArray('requestHandler', $this->request_handler);
 
     return $comment . $formatted_xml_string . "\n";
   }

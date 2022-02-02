@@ -29,7 +29,7 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
    *
    * @var string
    */
-  protected $minimumSolrVersion;
+  protected $minimum_solr_version;
 
   /**
    * Recommended entity?
@@ -43,14 +43,14 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
    *
    * @var array
    */
-  protected $solrConfigs;
+  protected $solr_configs;
 
   /**
    * Array of various text files required by the Solr Field Type definition.
    *
    * @var array
    */
-  protected $textFiles;
+  protected $text_files;
 
   /**
    * {@inheritdoc}
@@ -133,14 +133,14 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
    * {@inheritdoc}
    */
   public function getTextFiles() {
-    return $this->textFiles;
+    return $this->text_files;
   }
 
   /**
    * {@inheritdoc}
    */
   public function addTextFile($name, $content) {
-    $this->textFiles[$name] = preg_replace('/\R/u', "\n", $content);
+    $this->text_files[$name] = preg_replace('/\R/u', "\n", $content);
     return $this;
   }
 
@@ -148,7 +148,7 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
    * {@inheritdoc}
    */
   public function setTextFiles(array $text_files) {
-    $this->textFiles = [];
+    $this->text_files = [];
     foreach ($text_files as $name => $content) {
       $this->addTextFile($name, $content);
     }
@@ -159,25 +159,25 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
    * {@inheritdoc}
    */
   public function getSolrConfigs() {
-    return $this->solrConfigs;
+    return $this->solr_configs;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setSolrConfigs(array $solr_configs) {
-    return $this->solrConfigs = $solr_configs;
+    return $this->solr_configs = $solr_configs;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getSolrConfigsAsXml($add_comment = TRUE) {
-    if (!$this->solrConfigs) {
+    if (!$this->solr_configs) {
       return '';
     }
 
-    $formatted_xml_string = $this->buildXmlFromArray('solrconfigs', $this->solrConfigs);
+    $formatted_xml_string = $this->buildXmlFromArray('solrconfigs', $this->solr_configs);
 
     $comment = '';
     if ($add_comment) {
@@ -194,14 +194,14 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
    * {@inheritdoc}
    */
   public function getMinimumSolrVersion() {
-    return $this->minimumSolrVersion;
+    return $this->minimum_solr_version;
   }
 
   /**
    * {@inheritdoc}
    */
   public function setMinimumSolrVersion($minimum_solr_version) {
-    $this->minimumSolrVersion = $minimum_solr_version;
+    $this->minimum_solr_version = $minimum_solr_version;
     return $this;
   }
 
