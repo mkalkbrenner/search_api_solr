@@ -73,7 +73,7 @@ interface SolrConfigInterface extends ConfigEntityInterface {
    * Gets the identifier that describes Solr Entity's purpose.
    *
    * @return string
-   *   The Solr Entity puprpose ID.
+   *   The Solr Entity purpose ID.
    */
   public function getPurposeId(): string;
 
