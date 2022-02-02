@@ -88,7 +88,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    *
    * @var string
    */
-  protected $custom_code;
+  protected $customCode;
 
   /**
    * The language targeted by this Solr Field Type.
@@ -175,7 +175,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * {@inheritdoc}
    */
   public function getCustomCode() {
-    return $this->custom_code;
+    return $this->customCode;
   }
 
   /**
@@ -426,10 +426,10 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   public function getDynamicFields(?int $solr_major_version = NULL) {
     $dynamic_fields = [];
 
-    $prefixes = $this->custom_code ? [
-      'tc' . $this->custom_code,
-      'toc' . $this->custom_code,
-      'tuc' . $this->custom_code,
+    $prefixes = $this->customCode ? [
+      'tc' . $this->customCode,
+      'toc' . $this->customCode,
+      'tuc' . $this->customCode,
     ] : ['t', 'to', 'tu'];
     foreach ($prefixes as $prefix_without_cardinality) {
       foreach (['s', 'm'] as $cardinality) {

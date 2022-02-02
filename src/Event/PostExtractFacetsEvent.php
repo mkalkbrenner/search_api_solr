@@ -5,6 +5,9 @@ namespace Drupal\search_api_solr\Event;
 use Drupal\search_api\Query\QueryInterface;
 use Solarium\QueryType\Select\Result\Result;
 
+/**
+ * Event after facets are extrected from the Solr response.
+ */
 final class PostExtractFacetsEvent extends AbstractSearchApiQuerySolariumResultEvent {
 
   /**

@@ -4,6 +4,9 @@ namespace Drupal\search_api_solr\Event;
 
 use Drupal\Component\EventDispatcher\Event;
 
+/**
+ * Search API Solr event base class.
+ */
 abstract class AbstractServerAwareEvent extends Event {
 
   /**

@@ -4,6 +4,9 @@ namespace Drupal\search_api_solr\Event;
 
 use Drupal\Component\EventDispatcher\Event;
 
+/**
+ * Event to be fired after the config-set template mapping is generated.
+ */
 final class PostConfigSetTemplateMappingEvent extends Event {
 
   /**
@@ -42,4 +45,5 @@ final class PostConfigSetTemplateMappingEvent extends Event {
   public function setConfigSetTemplateMapping(array $configset_template_mapping) {
     $this->configSetTemplateMapping = $configset_template_mapping;
   }
+
 }

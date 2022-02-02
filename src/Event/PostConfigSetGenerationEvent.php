@@ -4,6 +4,9 @@ namespace Drupal\search_api_solr\Event;
 
 use ZipStream\ZipStream;
 
+/**
+ * Event to be fired after a config-set is generated.
+ */
 final class PostConfigSetGenerationEvent extends AbstractServerAwareEvent {
 
   /**

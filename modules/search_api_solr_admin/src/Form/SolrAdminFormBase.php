@@ -67,7 +67,7 @@ abstract class SolrAdminFormBase extends FormBase {
    * Get Logger.
    *
    * @param string $channel
-   *    The log channel.
+   *   The log channel.
    *
    * @return \Psr\Log\LoggerInterface
    *   The logger.

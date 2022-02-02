@@ -2,6 +2,9 @@
 
 namespace Drupal\search_api_solr\Event;
 
+/**
+ * Event to be fired after config files are generated.
+ */
 final class PostConfigFilesGenerationEvent extends AbstractServerAwareEvent {
 
   /**

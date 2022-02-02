@@ -290,7 +290,7 @@ function hook_search_api_solr_config_files_alter(array &$files, string $lucene_m
 /**
  * Alter the zip archive of newly assembled Solr configuration files.
  *
- * @param \ZipStream\ZipStream $files
+ * @param \ZipStream\ZipStream $zip
  *   Zip archive.
  * @param string $lucene_match_version
  *   Lucene (Solr) minor version string.
