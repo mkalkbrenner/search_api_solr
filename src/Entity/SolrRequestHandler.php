@@ -26,11 +26,11 @@ use Drupal\search_api_solr\SolrRequestHandlerInterface;
  *   config_export = {
  *     "id",
  *     "label",
- *     "minimumSolrVersion" = "minimum_solr_version",
+ *     "minimum_solr_version" = "minimumSolrVersion",
  *     "environments",
  *     "recommended",
- *     "requestHandler" = "request_handler",
- *     "solrConfigs" = "solr_configs"
+ *     "request_handler" = "requestHandler",
+ *     "solr_configs" = "solrConfigs",
  *   },
  *   links = {
  *     "disable-for-server" = "/admin/config/search/search-api/server/{search_api_server}/solr_request_handler/{solr_request_handler}/disable",

@@ -26,10 +26,10 @@ use Drupal\search_api_solr\SolrCacheInterface;
  *   config_export = {
  *     "id",
  *     "label",
- *     "minimumSolrVersion" = "minimum_solr_version",
+ *     "minimum_solr_version" = "minimumSolrVersion",
  *     "environments",
  *     "cache",
- *     "solrConfigs" = "solr_configs"
+ *     "solr_configs" = "solrConfigs",
  *   },
  *   links = {
  *     "disable-for-server" = "/admin/config/search/search-api/server/{search_api_server}/solr_cache/{solr_cache}/disable",
