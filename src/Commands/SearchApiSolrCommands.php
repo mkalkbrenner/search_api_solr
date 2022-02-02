@@ -84,18 +84,20 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @param array $options
    *   The options array.
    *
-   * @throws \Drupal\search_api\ConsoleException
-   * @throws \Drupal\search_api\SearchApiException
-   * @throws \ZipStream\Exception\FileNotFoundException
-   * @throws \ZipStream\Exception\FileNotReadableException
-   * @throws \ZipStream\Exception\OverflowException
-   *
    * @command search-api-solr:get-server-config
+   *
+   * @default $options []
    *
    * @usage drush search-api-solr:get-server-config server_id file_name
    *   Get the config files for a solr server and save it as zip file.
    *
    * @aliases solr-gsc,sasm-gsc,search-api-solr-get-server-config,search-api-solr-multilingual-get-server-config
+   *
+   * @throws \Drupal\search_api\ConsoleException
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \ZipStream\Exception\FileNotFoundException
+   * @throws \ZipStream\Exception\FileNotReadableException
+   * @throws \ZipStream\Exception\OverflowException
    */
   public function getServerConfig($server_id, $file_name = NULL, $solr_version = NULL, array $options = []) {
     if (!$options['pipe'] && ($file_name === NULL)) {
@@ -118,6 +120,8 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @option force
    *   Force the finalization, even if the index isn't "dirty".
    *   Defaults to FALSE.
+   *
+   * @default $options []
    *
    * @usage drush search-api-solr:finalize-index
    *   Finalize all enabled indexes.
