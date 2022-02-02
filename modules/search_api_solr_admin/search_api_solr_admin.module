@@ -2,6 +2,7 @@
 
 /**
  * @file
+ * Solr Admin.
  */
 
 use Drupal\Core\Form\FormStateInterface;
@@ -29,8 +30,10 @@ function search_api_solr_admin_form_search_api_server_status_alter(&$form, FormS
  *
  * @see search_api_solr_admin_form_search_api_server_status_alter()
  *
- * @param $form
+ * @param array $form
+ *   The form array.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state.
  */
 function search_api_solr_admin_form_search_api_server_status_submit_delete_collection(&$form, FormStateInterface $form_state) {
   // Redirect to the "delete collection" form.

@@ -2,9 +2,6 @@
 
 namespace Drupal\search_api_solr\Controller;
 
-use Drupal\search_api\ServerInterface;
-use Drupal\search_api_solr\SolrConfigInterface;
-
 /**
  * Provides different listings of SolrRequestDispatcher.
  */

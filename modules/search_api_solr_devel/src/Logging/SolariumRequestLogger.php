@@ -68,11 +68,11 @@ class SolariumRequestLogger implements EventSubscriberInterface {
   /**
    * Show debug message and a data object dump.
    *
-   * @param $counter int
+   * @param int $counter
    *   The current Solr query counter.
-   * @param $data mixed
+   * @param mixed $data
    *   Data to dump.
-   * @param $message string
+   * @param string $message
    *   Message to show.
    */
   public function showMessage($counter, $data, $message) {
@@ -83,7 +83,7 @@ class SolariumRequestLogger implements EventSubscriberInterface {
   /**
    * Start timer for a query.
    *
-   * @param $counter int
+   * @param int $counter
    *   The current Solr query counter.
    */
   public function timerStart($counter) {
@@ -93,7 +93,7 @@ class SolariumRequestLogger implements EventSubscriberInterface {
   /**
    * Returns timer for a query.
    *
-   * @param $counter int
+   * @param int $counter
    *   The current Solr query counter.
    *
    * @return array
@@ -106,7 +106,7 @@ class SolariumRequestLogger implements EventSubscriberInterface {
   /**
    * Determine which Solr requests should be ignored.
    *
-   * @param $handler string
+   * @param string $handler
    *   The Solr handler. Examples: "admin/ping", "select", etc.
    *
    * @return bool

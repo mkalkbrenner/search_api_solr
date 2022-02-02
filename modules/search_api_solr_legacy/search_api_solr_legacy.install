@@ -2,8 +2,7 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the Search API Solr Legacy
- * module.
+ * Install, update and uninstall functions for the Search API Solr Legacy.
  */
 
 /**

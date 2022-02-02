@@ -89,7 +89,7 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
    *
    * @param string $server_id
    *   The ID of the server.
-   * @param string $num_shards
+   * @param int $num_shards
    *   (optional) The number of shards in case a new collection will be created.
    *
    * @throws \Drupal\search_api\SearchApiException

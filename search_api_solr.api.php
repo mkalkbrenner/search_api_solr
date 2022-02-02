@@ -31,6 +31,7 @@
  * @deprecated in search_api_solr:4.2.0 and is removed from
  *   search_api_solr:4.3.0. Handle the PreQueryEvent instead.
  *
+ * @see https://www.drupal.org/project/search_api_solr/issues/3203375
  * @see \Drupal\search_api_solr\Event\PreQueryEvent
  */
 function hook_search_api_solr_query_alter(\Solarium\Core\Query\QueryInterface $solarium_query, \Drupal\search_api\Query\QueryInterface $query) {
@@ -55,6 +56,7 @@ function hook_search_api_solr_query_alter(\Solarium\Core\Query\QueryInterface $s
  * @deprecated in search_api_solr:4.2.0 and is removed from
  *   search_api_solr:4.3.0. Handle the PreAutocompleteTermsQueryEvent instead.
  *
+ * @see https://www.drupal.org/project/search_api_solr/issues/3203375
  * @see \Drupal\search_api_solr\Event\PreAutocompleteTermsQueryEvent
  */
 function hook_search_api_solr_terms_autocomplete_query_alter(\Drupal\search_api\Query\QueryInterface $query) {
@@ -73,6 +75,7 @@ function hook_search_api_solr_terms_autocomplete_query_alter(\Drupal\search_api\
  * @deprecated in search_api_solr:4.2.0 and is removed from
  *   search_api_solr:4.3.0. Handle the PreSpellcheckQueryEvent instead.
  *
+ * @see https://www.drupal.org/project/search_api_solr/issues/3203375
  * @see \Drupal\search_api_solr_autocomplete\Event\PreSpellcheckQueryEvent
  */
 function hook_search_api_solr_spellcheck_autocomplete_query_alter(\Drupal\search_api_solr\Solarium\Autocomplete\Query $solarium_query, \Drupal\search_api\Query\QueryInterface $query) {
@@ -92,6 +95,7 @@ function hook_search_api_solr_spellcheck_autocomplete_query_alter(\Drupal\search
  * @deprecated in search_api_solr:4.2.0 and is removed from
  *   search_api_solr:4.3.0. Handle the PreSuggesterQueryEvent instead.
  *
+ * @see https://www.drupal.org/project/search_api_solr/issues/3203375
  * @see \Drupal\search_api_solr_autocomplete\Event\PreSuggesterQueryEvent
  */
 function hook_search_api_solr_suggester_autocomplete_query_alter(\Drupal\search_api_solr\Solarium\Autocomplete\Query $solarium_query, \Drupal\search_api\Query\QueryInterface $query) {
@@ -116,6 +120,7 @@ function hook_search_api_solr_suggester_autocomplete_query_alter(\Drupal\search_
  * @deprecated in search_api_solr:4.2.0 and is removed from
  *   search_api_solr:4.3.0. Handle the PostConvertedQueryEvent instead.
  *
+ * @see https://www.drupal.org/project/search_api_solr/issues/3203375
  * @see \Drupal\search_api_solr\Event\PostConvertedQueryEvent
  */
 function hook_search_api_solr_converted_query_alter(\Solarium\Core\Query\QueryInterface $solarium_query, \Drupal\search_api\Query\QueryInterface $query) {
@@ -146,6 +151,7 @@ function hook_search_api_solr_converted_query_alter(\Solarium\Core\Query\QueryIn
  * @deprecated in search_api_solr:4.2.0 and is removed from
  *   search_api_solr:4.3.0. Handle the PostFieldMappingEvent instead.
  *
+ * @see https://www.drupal.org/project/search_api_solr/issues/3203375
  * @see \Drupal\search_api_solr\Event\PostFieldMappingEvent
  */
 function hook_search_api_solr_field_mapping_alter(\Drupal\search_api\IndexInterface $index, array &$fields, string $language_id) {
@@ -166,6 +172,7 @@ function hook_search_api_solr_field_mapping_alter(\Drupal\search_api\IndexInterf
  * @deprecated in search_api_solr:4.2.0 and is removed from
  *   search_api_solr:4.3.0. Handle the PostCreateIndexDocumentsEvent instead.
  *
+ * @see https://www.drupal.org/project/search_api_solr/issues/3203375
  * @see \Drupal\search_api_solr\Event\PostCreateIndexDocumentsEvent
  */
 function hook_search_api_solr_documents_alter(array &$documents, \Drupal\search_api\IndexInterface $index, array $items) {
@@ -188,6 +195,7 @@ function hook_search_api_solr_documents_alter(array &$documents, \Drupal\search_
  * @deprecated in search_api_solr:4.2.0 and is removed from
  *   search_api_solr:4.3.0. Handle the PostExtractResultsEvent instead.
  *
+ * @see https://www.drupal.org/project/search_api_solr/issues/3203375
  * @see \Drupal\search_api_solr\Event\PostExtractResultsEvent
  */
 function hook_search_api_solr_search_results_alter(\Drupal\search_api\Query\ResultSetInterface $result_set, \Drupal\search_api\Query\QueryInterface $query, \Solarium\QueryType\Select\Result\Result $result) {
@@ -211,6 +219,7 @@ function hook_search_api_solr_search_results_alter(\Drupal\search_api\Query\Resu
  *     two existing dynamic fields definitions with names "{PREFIX}s_*" and
  *     "{PREFIX}m_*".
  *
+ * @see https://www.drupal.org/project/search_api_solr/issues/3203375
  * @see hook_search_api_data_type_info()
  */
 function search_api_solr_hook_search_api_data_type_info() {
@@ -248,6 +257,7 @@ function search_api_solr_hook_search_api_data_type_info() {
  * @deprecated in search_api_solr:4.2.0 and is removed from
  *   search_api_solr:4.3.0. Handle the PreIndexFinalizationEvent instead.
  *
+ * @see https://www.drupal.org/project/search_api_solr/issues/3203375
  * @see \Drupal\search_api_solr\Event\PreIndexFinalizationEvent
  */
 function hook_search_api_solr_finalize_index(\Drupal\search_api\IndexInterface $index) {
@@ -268,6 +278,7 @@ function hook_search_api_solr_finalize_index(\Drupal\search_api\IndexInterface $
  * @deprecated in search_api_solr:4.2.0 and is removed from
  *   search_api_solr:4.3.0. Handle the PostConfigFilesGenerationEvent instead.
  *
+ * @see https://www.drupal.org/project/search_api_solr/issues/3203375
  * @see \Drupal\search_api_solr\Event\PostConfigFilesGenerationEvent
  */
 function hook_search_api_solr_config_files_alter(array &$files, string $lucene_match_version, string $server_id = '') {
@@ -290,6 +301,7 @@ function hook_search_api_solr_config_files_alter(array &$files, string $lucene_m
  * @deprecated in search_api_solr:4.2.0 and is removed from
  *   search_api_solr:4.3.0. Handle the PostConfigSetGenerationEvent instead.
  *
+ * @see https://www.drupal.org/project/search_api_solr/issues/3203375
  * @see \Drupal\search_api_solr\Event\PostConfigSetGenerationEvent
  */
 function hook_search_api_solr_config_zip_alter(\ZipStream\ZipStream $zip, string $lucene_match_version, string $server_id = '') {
