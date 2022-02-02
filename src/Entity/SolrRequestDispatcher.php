@@ -26,10 +26,10 @@ use Drupal\search_api_solr\SolrRequestDispatcherInterface;
  *   config_export = {
  *     "id",
  *     "label",
- *     "minimumSolrVersion",
+ *     "minimumSolrVersion" = "minimum_solr_version",
  *     "environments",
  *     "recommended",
- *     "requestDispatcher"
+ *     "requestDispatcher" = "request_dispatcher"
  *   },
  *   links = {
  *     "disable-for-server" = "/admin/config/search/search-api/server/{search_api_server}/solr_request_dispatcher/{solr_request_dispatcher}/disable",

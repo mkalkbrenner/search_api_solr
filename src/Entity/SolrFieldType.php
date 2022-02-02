@@ -33,16 +33,16 @@ use Drupal\search_api_solr\SolrFieldTypeInterface;
  *   config_export = {
  *     "id",
  *     "label",
- *     "minimumSolrVersion",
- *     "customCode",
- *     "fieldTypeLanguageCode",
+ *     "minimumSolrVersion" = "minimum_solr_version",
+ *     "customCode" = "custom_code",
+ *     "fieldTypeLanguageCode" = "field_type_language_code",
  *     "domains",
- *     "fieldType",
- *     "unstemmedFieldType",
- *     "spellcheckFieldType",
- *     "collatedFieldType",
- *     "solrConfigs",
- *     "textFiles"
+ *     "fieldType" = "field_type",
+ *     "unstemmedFieldType" = "unstemmed_field_type",
+ *     "spellcheckFieldType" = "spellcheck_field_type",
+ *     "collatedFieldType" = "collated_field_type",
+ *     "solrConfigs" = "solr_configs",
+ *     "textFiles" = "text_files"
  *   },
  *   links = {
  *     "edit-form" = "/admin/config/search/search-api/solr_field_type/{solr_field_type}",
