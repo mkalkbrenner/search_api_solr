@@ -17,7 +17,9 @@ final class PostConfigFilesGenerationEvent extends AbstractServerAwareEvent {
    * @param array $files
    *   Reference to file array.
    * @param string $lucene_match_version
+   *   The lucene match version string.
    * @param string $server_id
+   *   The server ID.
    */
   public function __construct(array &$files, string $lucene_match_version, string $server_id) {
     parent::__construct($lucene_match_version, $server_id);
@@ -38,6 +40,7 @@ final class PostConfigFilesGenerationEvent extends AbstractServerAwareEvent {
    * Set the files array.
    *
    * @param array $files
+   *   The files array.
    */
   public function setConfigFiles(array $files) {
     $this->files = $files;

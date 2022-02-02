@@ -21,6 +21,7 @@ final class PostExtractResultsEvent extends AbstractSearchApiQuerySolariumResult
    * Constructs a new class instance.
    *
    * @param \Drupal\search_api\Query\ResultSetInterface $result_set
+   *   The result set.
    * @param \Drupal\search_api\Query\QueryInterface $search_api_query
    *   The search_api query.
    * @param \Solarium\QueryType\Select\Result\Result|\Solarium\QueryType\Stream\Result $solarium_result
@@ -35,6 +36,7 @@ final class PostExtractResultsEvent extends AbstractSearchApiQuerySolariumResult
    * Retrieves the search_api result set.
    *
    * @return \Drupal\search_api\Query\ResultSetInterface
+   *   The result set.
    */
   public function getSearchApiResultSet() : ResultSetInterface {
     return $this->result_set;

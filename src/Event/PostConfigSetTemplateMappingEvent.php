@@ -37,6 +37,7 @@ final class PostConfigSetTemplateMappingEvent extends Event {
    * Set the config-set template mapping.
    *
    * @param array $configset_template_mapping
+   *   The new config-set template mapping.
    */
   public function setConfigSetTemplateMapping(array $configset_template_mapping) {
     $this->configSetTemplateMapping = $configset_template_mapping;

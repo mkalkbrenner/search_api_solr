@@ -46,7 +46,7 @@ class SolrRequestHandler extends AbstractSolrEntity implements SolrRequestHandle
    *
    * @var array
    */
-  protected $request_handler;
+  protected $requestHandler;
 
   /**
    * The targeted environments.
@@ -59,22 +59,22 @@ class SolrRequestHandler extends AbstractSolrEntity implements SolrRequestHandle
    * {@inheritdoc}
    */
   public function getRequestHandler() {
-    return $this->request_handler;
+    return $this->requestHandler;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getName(): string {
-    $nested_name = $this->request_handler['lst'][0]['name'] ?? 'default';
-    return $this->request_handler['name'] . '_' . $nested_name;
+    $nested_name = $this->requestHandler['lst'][0]['name'] ?? 'default';
+    return $this->requestHandler['name'] . '_' . $nested_name;
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
   public function getPurposeId(): string {
-    return $this->request_handler['name'];
+    return $this->requestHandler['name'];
   }
 
   /**
@@ -112,7 +112,7 @@ class SolrRequestHandler extends AbstractSolrEntity implements SolrRequestHandle
         "\n-->\n";
     }
 
-    $formatted_xml_string = $this->buildXmlFromArray('requestHandler', $this->request_handler);
+    $formatted_xml_string = $this->buildXmlFromArray('requestHandler', $this->requestHandler);
 
     return $comment . $formatted_xml_string . "\n";
   }

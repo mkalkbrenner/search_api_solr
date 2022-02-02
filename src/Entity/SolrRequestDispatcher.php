@@ -45,7 +45,7 @@ class SolrRequestDispatcher extends AbstractSolrEntity implements SolrRequestDis
    *
    * @var array
    */
-  protected $request_dispatcher;
+  protected $requestDispatcher;
 
   /**
    * The targeted environments.
@@ -58,21 +58,21 @@ class SolrRequestDispatcher extends AbstractSolrEntity implements SolrRequestDis
    * {@inheritdoc}
    */
   public function getRequestDispatcher() {
-    return $this->request_dispatcher;
+    return $this->requestDispatcher;
   }
 
   /**
    * {@inheritdoc}
    */
   public function getName(): string {
-    return $this->request_dispatcher['name'] . '_' . $this->isRecommended();
+    return $this->requestDispatcher['name'] . '_' . $this->isRecommended();
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
   public function getPurposeId(): string {
-    return $this->request_dispatcher['name'];
+    return $this->requestDispatcher['name'];
   }
 
   /**
@@ -110,8 +110,8 @@ class SolrRequestDispatcher extends AbstractSolrEntity implements SolrRequestDis
         "\n-->\n";
     }
 
-    $copy = $this->request_dispatcher;
-    $root = $this->request_dispatcher['name'];
+    $copy = $this->requestDispatcher;
+    $root = $this->requestDispatcher['name'];
     unset($copy['name']);
 
     $formatted_xml_string = $this->buildXmlFromArray($root, $copy);
