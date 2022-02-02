@@ -70,8 +70,8 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    *
    * @param string $language_id
    *   The language to get the mapping for.
-   * @param \Drupal\search_api\IndexInterface $index
-   *   The Search API index entity.
+   * @param \Drupal\search_api\IndexInterface|null $index
+   *   (optional) The Search API index.
    * @param bool $reset
    *   (optional) Whether to reset the static cache.
    *
@@ -204,8 +204,10 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * In case of Solr Cloud an index might use a different Solr collection.
    *
    * @param \Drupal\search_api\IndexInterface $index
+   *  The Search API index.
    *
    * @return \Solarium\Core\Client\Endpoint
+   *   The solarium endpoint.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    * @throws \Drupal\search_api\SearchApiException
@@ -221,7 +223,12 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * @return array
    *   An associative array of settings.
    *
-   * @deprecated use \Drupal\search_api_solr\Utility\Utility::getIndexSolrSettings()
+   * @deprecated in search_api_solr:4.2.0 and is removed from
+   *   search_api_solr:4.3.0. Use
+   *   Utility::getIndexSolrSettings() instead.
+   *
+   * @see https://www.drupal.org/project/search_api_solr/issues/3254767
+   * @see \Drupal\search_api_solr\Utility\Utility::getIndexSolrSettings()
    */
   public function getIndexSolrSettings(IndexInterface $index);
 
@@ -362,6 +369,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * Gets a list of Solr Field Types that are disabled for this backend.
    *
    * @return String[]
+   *   The list of Solr Field Types that are disabled for this backend.
    */
   public function getDisabledFieldTypes(): array;
 
@@ -369,6 +377,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * Gets a list of Solr Caches that are disabled for this backend.
    *
    * @return String[]
+   *   The list of Solr Caches that are disabled for this backend.
    */
   public function getDisabledCaches(): array;
 
@@ -376,6 +385,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * Gets a list of Solr Request Handlers that are disabled for this backend.
    *
    * @return String[]
+   *   The list of Solr Request Handlers.
    */
   public function getDisabledRequestHandlers(): array;
 
@@ -383,6 +393,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * Gets a list of Solr Request Dispatchers that are disabled for this backend.
    *
    * @return String[]
+   *   The list of Solr Request Dispatchers.
    */
   public function getDisabledRequestDispatchers(): array;
 
@@ -390,6 +401,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * Indicates if the the current Solr config should not be verified.
    *
    * @return bool
+   *   Whether a non-drupal or an outdated config-set is allowed or not.
    */
   public function isNonDrupalOrOutdatedConfigSetAllowed(): bool;
 

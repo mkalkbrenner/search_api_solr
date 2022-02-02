@@ -1820,7 +1820,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr\Utility\Utility::ensureLanguageCondition()
    */
   protected function ensureLanguageCondition(QueryInterface $query) {
-    @trigger_error('SearchApiSolrBackend::ensureLanguageCondition() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SearchApiSolrBackend::ensureLanguageCondition() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
     return Utility::ensureLanguageCondition($query);
   }
 
@@ -2132,7 +2132,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr\Utility\Utility::hasIndexJustSolrDatasources()
    */
   protected function hasIndexJustSolrDatasources(IndexInterface $index) {
-    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDatasources() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDatasources() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
     return Utility::hasIndexJustSolrDatasources($index);
   }
 
@@ -2154,7 +2154,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr\Utility\Utility::hasIndexJustSolrDocumentDatasource()
    */
   protected function hasIndexJustSolrDocumentDatasource(IndexInterface $index) {
-    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
     return Utility::hasIndexJustSolrDocumentDatasource($index);
   }
 
@@ -3692,7 +3692,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see getAutocompleteSuggestions()
    */
   public function getTermsSuggestions(QueryInterface $query, SearchInterface $search, $incomplete_key, $user_input) {
-    @trigger_error('SolrAutocompleteInterface::getTermsSuggestions() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SolrAutocompleteInterface::getTermsSuggestions() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
     return $this->getAutocompleteSuggestions($query, $search, $incomplete_key, $user_input);
   }
 
@@ -3707,7 +3707,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\suggester\Spellcheck
    */
   public function getSpellcheckSuggestions(QueryInterface $query, SearchInterface $search, $incomplete_key, $user_input) {
-    @trigger_error('SolrAutocompleteInterface::getSpellcheckSuggestions() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SolrAutocompleteInterface::getSpellcheckSuggestions() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
     return [];
   }
 
@@ -3724,7 +3724,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\suggester\Suggester
    */
   public function getSuggesterSuggestions(QueryInterface $query, SearchInterface $search, $incomplete_key, $user_input, array $options = []) {
-    @trigger_error('SolrAutocompleteInterface::getSuggesterSuggestions() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SolrAutocompleteInterface::getSuggesterSuggestions() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
     return [];
   }
 
