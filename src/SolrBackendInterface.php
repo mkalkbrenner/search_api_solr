@@ -22,12 +22,12 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    *
    * @todo replace by an automatic detection when core provides module versions.
    */
-  public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.7';
+  public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.8';
 
   /**
    * The minimum required Solr schema version.
    */
-  public const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.1.1';
+  public const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.2.8';
 
   /**
    * The separator to indicate the start of a language ID.
