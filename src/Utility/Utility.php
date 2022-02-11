@@ -764,16 +764,8 @@ class Utility {
             case 'sloppy_phrase':
             case 'edismax':
             case 'keys':
-              $k[] = $queryHelper->escapePhrase($key);
-              break;
-
             case 'fuzzy_terms':
-              if (preg_match('/\s/u', $key)) {
-                $k[] = $queryHelper->escapePhrase($key);
-              }
-              else {
-                $k[] = $queryHelper->escapeTerm($key);
-              }
+              $k[] = $queryHelper->escapePhrase($key);
               break;
 
             default:
@@ -846,7 +838,7 @@ class Utility {
             if ($sloppiness && strpos($term_or_phrase, ' ') && strpos($term_or_phrase, '"') === 0) {
               $term_or_phrase .= $sloppiness;
             }
-            // Otherwise just add fuzziness when if we really have a term.
+            // Otherwise, just add fuzziness when if we really have a term.
             elseif ($fuzziness && !strpos($term_or_phrase, ' ') && strpos($term_or_phrase, '"') !== 0) {
               $term_or_phrase .= $fuzziness;
             }

@@ -2091,3 +2091,10 @@ function search_api_solr_update_8412() {
     }
   }
 }
+
+/**
+ * Add fulltext string field type.
+ */
+function search_api_solr_update_8413() {
+  search_api_solr_update_helper_install_configs();
+}
