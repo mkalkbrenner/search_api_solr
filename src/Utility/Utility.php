@@ -764,8 +764,16 @@ class Utility {
             case 'sloppy_phrase':
             case 'edismax':
             case 'keys':
-            case 'fuzzy_terms':
               $k[] = $queryHelper->escapePhrase($key);
+              break;
+
+            case 'fuzzy_terms':
+              if (preg_match('/\s/u', $key)) {
+                $k[] = $queryHelper->escapePhrase($key);
+              }
+              else {
+                $k[] = $queryHelper->escapeTerm($key);
+              }
               break;
 
             default:
