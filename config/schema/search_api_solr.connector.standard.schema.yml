@@ -50,6 +50,3 @@ plugin.plugin_configuration.search_api_solr_connector.standard:
     solr_install_dir:
       type: string
       label: 'solr.install.dir property'
-    context:
-      type: string
-      label: 'Solr host context'
