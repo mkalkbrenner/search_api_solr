@@ -157,6 +157,12 @@ search_api_solr.solr_common_field_type:
               mode:
                 type: string
                 label: 'JapaneseTokenizerFactory::'
+              sentenceModel:
+                type: string
+                label: 'OpenNLPTokenizerFactory::sentenceModel'
+              tokenizerModel:
+                type: string
+                label: 'OpenNLPTokenizerFactory::tokenizerModel'
           filters:
             type: search_api_solr.solr_field_type_filters
     similarity:
