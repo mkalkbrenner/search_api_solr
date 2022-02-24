@@ -106,12 +106,14 @@ function search_api_solr_requirements($phase) {
               }
               foreach ($new_config_set as $new_file_name => $new_file_body) {
                 if (stripos(strrev($new_file_name), 'lmx.') === 0) {
+                  $exception = FALSE;
                   try {
                     $server_file_data = $connector->getFile($new_file_name);
                     $server_file_body = $server_file_data->getBody();
                   }
                   catch (SearchApiSolrException $e) {
                     $server_file_body = '';
+                    $exception = $e;
                   }
 
                   [
@@ -138,10 +140,21 @@ function search_api_solr_requirements($phase) {
                     }
                     elseif ($version_number_server === $version_number_new && !$connector->isJumpStartConfigSet()) {
                       $requirements['search_api_solr_schema_' . $server_id . '_modifications']['title'] = t('Solr Server %server', ['%server' => $server->label()]);
-                      $requirements['search_api_solr_schema_' . $server_id . '_modifications']['value'] = t('Schema modified');
                       $requirements['search_api_solr_schema_' . $server_id . '_modifications']['severity'] = REQUIREMENT_WARNING;
-                      $requirements['search_api_solr_schema_' . $server_id . '_modifications']['description'] = t(
-                        'Your config-set contains manually added customizations. Be aware that these will be lost when the config-set needs to be regenerated.', []);
+                      if (!$exception) {
+                        $requirements['search_api_solr_schema_' . $server_id . '_modifications']['value'] = t('Schema modified');
+                        $requirements['search_api_solr_schema_' . $server_id . '_modifications']['description'] = t(
+                          'Your config-set contains manually added customizations. Be aware that these will be lost when the config-set needs to be regenerated.', []);
+                      }
+                      else {
+                        $requirements['search_api_solr_schema_' . $server_id . '_modifications']['value'] = t('Schema validation');
+                        $requirements['search_api_solr_schema_' . $server_id . '_modifications']['description'] = t(
+                          'File %filename could not be fetched from Solr server for validation: @message', [
+                            '%filename' => $new_file_name,
+                            '@message' => $exception->getMessage(),
+                          ]);
+                      }
+                      break;
                     }
                   }
                 }
