@@ -100,8 +100,7 @@ class SolrAdminCommandHelper extends SolrCommandHelper {
    *
    * @param string $server_id
    *   The ID of the server.
-   * @param int $num_shards
-   *   The number of shards.
+   * @param array $collection_params
    * @param bool $messages
    *   Indicate if messages should be displayed, default is FALSE.
    *
@@ -111,7 +110,7 @@ class SolrAdminCommandHelper extends SolrCommandHelper {
    * @throws \ZipStream\Exception\FileNotReadableException
    * @throws \ZipStream\Exception\OverflowException
    */
-  public function uploadConfigset(string $server_id, int $num_shards = 3, bool $messages = FALSE): void {
+  public function uploadConfigset(string $server_id, array $collection_params = [], bool $messages = FALSE): void {
     $server = $this->getServer($server_id);
     $connector = Utility::getSolrCloudConnector($server);
 
@@ -141,10 +140,49 @@ class SolrAdminCommandHelper extends SolrCommandHelper {
       }
     }
     else {
-      $connector->createCollection([
-        'collection.configName' => $configset,
-        'numShards' => $num_shards,
-      ]);
+      $options = [];
+      $allowed_options = [
+        'numShards' => 'int',
+        'maxShardsPerNode' => 'int',
+        'replicationFactor' => 'int',
+        'nrtReplicas' => 'int',
+        'tlogReplicas' => 'int',
+        'pullReplicas' => 'int',
+        'autoAddReplicas' => 'bool',
+        'alias' => 'string',
+        'waitForFinalState' => 'bool',
+        'createNodeSet' => 'string',
+      ];
+
+      foreach ($allowed_options as $option => $type) {
+        if (isset($collection_params[$option]) && $collection_params[$option]) {
+          switch ($type) {
+            case 'int':
+              $options[$option] = (int) $collection_params[$option];
+              break;
+
+            case'bool':
+              $options[$option] = (bool) $collection_params[$option];
+              break;
+
+            case'string':
+            default:
+              $options[$option] = $collection_params[$option];
+              break;
+          }
+        }
+      }
+
+      // Merge the param options.
+      $collection = array_merge(
+        [
+          'collection.configName' => $configset,
+        ],
+        $options
+      );
+
+      $connector->createCollection($collection);
+
       if ($messages) {
         $this->messenger->addStatus($this->t('Successfully created collection %collection.', ['%collection' => $connector->getCollectionName()]));
       }
