@@ -163,7 +163,7 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
    *
    * @command search-api-solr:upload-configset Json array of arguments to pass to the Collections API
    *
-   * @usage drush  --numShards=3 --replicationFactor=2 search-api-solr:upload-configset SERVER_ID
+   * @usage drush search-api-solr:upload-configset --numShards=3 --replicationFactor=2 SERVER_ID
    *   Upload a configset and reload the collection or create it with 3 shards
    *   and a replication factor of 2 for Search API Server SERVER_ID.
    *
