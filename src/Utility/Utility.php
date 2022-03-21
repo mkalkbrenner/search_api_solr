@@ -1219,7 +1219,7 @@ class Utility {
     // If there are no languages set, we need to set them. As an example, a
     // language might be set by a filter in a search view.
     if (empty($language_ids)) {
-      if (!$query->hasTag('views') && $settings['multilingual']['limit_to_content_language']) {
+      if (!$query->hasTag('views') && !$query->hasTag('server_index_status') && $settings['multilingual']['limit_to_content_language']) {
         // Limit the language to the current content language being used.
         $language_ids[] = \Drupal::languageManager()
           ->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)
