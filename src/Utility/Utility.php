@@ -683,7 +683,8 @@ class Utility {
    * @param array $fields
    *   (optional) An array of field names.
    * @param string $parse_mode_id
-   *   (optional) The parse mode ID. Defaults to "phrase".
+   *   (optional) The parse mode ID. Defaults to "phrase". "keys" is not a real
+   *   parse mode ID but used internally by Search API Solr.
    * @param array $options
    *   (optional) An array of options.
    *
@@ -760,20 +761,12 @@ class Utility {
             // "terms" should be handled like three phrases.
             case 'terms':
             case 'sloppy_terms':
+            case 'fuzzy_terms':
             case 'phrase':
             case 'sloppy_phrase':
             case 'edismax':
             case 'keys':
               $k[] = $queryHelper->escapePhrase($key);
-              break;
-
-            case 'fuzzy_terms':
-              if (preg_match('/\s/u', $key)) {
-                $k[] = $queryHelper->escapePhrase($key);
-              }
-              else {
-                $k[] = $queryHelper->escapeTerm($key);
-              }
               break;
 
             default:
@@ -926,6 +919,7 @@ class Utility {
             switch ($parse_mode_id) {
               case 'terms':
               case "sloppy_terms":
+              case 'fuzzy_terms':
               case 'edismax':
                 $k[] = $queryHelper->escapePhrase(trim($key));
                 break;
