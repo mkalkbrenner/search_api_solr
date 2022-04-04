@@ -761,12 +761,20 @@ class Utility {
             // "terms" should be handled like three phrases.
             case 'terms':
             case 'sloppy_terms':
-            case 'fuzzy_terms':
             case 'phrase':
             case 'sloppy_phrase':
             case 'edismax':
             case 'keys':
               $k[] = $queryHelper->escapePhrase($key);
+              break;
+
+            case 'fuzzy_terms':
+              if (preg_match('/\s/u', $key)) {
+                $k[] = $queryHelper->escapePhrase($key);
+              }
+              else {
+                $k[] = $queryHelper->escapeTerm($key);
+              }
               break;
 
             default:
