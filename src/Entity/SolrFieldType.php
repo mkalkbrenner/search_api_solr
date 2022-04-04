@@ -539,7 +539,10 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
       ];
 
       if (version_compare($solr_major_version, '5', '>=')) {
-        $collated_field['docValues'] = FALSE;
+        // @see https://issues.apache.org/jira/browse/SOLR-15712
+        $collated_field['indexed'] = FALSE;
+        $collated_field['docValues'] = TRUE;
+        $collated_field['useDocValuesAsStored'] = FALSE;
       }
     }
 
