@@ -186,7 +186,7 @@ Updating Solr
 -------------
 
 Whenever you update your Solr installation it is recommended that you generate a
-new config-set and deploy it. The deployment depends on the the installation
+new config-set and deploy it. The deployment depends on the installation
 variation you choose before. It is also recommended to re-index yur content
 after an update. But if it is a minor update it should be save to just queue all
 contentfor re-indexing.

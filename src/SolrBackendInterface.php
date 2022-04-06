@@ -398,7 +398,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
   public function getDisabledRequestDispatchers(): array;
 
   /**
-   * Indicates if the the current Solr config should not be verified.
+   * Indicates if the current Solr config should not be verified.
    *
    * @return bool
    *   Whether a non-drupal or an outdated config-set is allowed or not.
