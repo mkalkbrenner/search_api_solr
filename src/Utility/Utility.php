@@ -4,6 +4,7 @@ namespace Drupal\search_api_solr\Utility;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\ParseMode\ParseModeInterface;
@@ -135,12 +136,16 @@ class Utility {
    *   A unique site hash, containing only alphanumeric characters.
    */
   public static function getSiteHash() {
-    // Copied from apachesolr_site_hash().
-    if (!($hash = \Drupal::state()->get('search_api_solr.site_hash', FALSE))) {
-      global $base_url;
-      $hash = substr(base_convert(hash('sha256', uniqid($base_url, TRUE)), 16, 36), 0, 6);
-      \Drupal::state()->set('search_api_solr.site_hash', $hash);
+    if (!($hash = Settings::get('search_api_solr.site_hash'))) {
+      // Copied from apachesolr_site_hash().
+      if (!($hash = \Drupal::state()
+        ->get('search_api_solr.site_hash', FALSE))) {
+        global $base_url;
+        $hash = substr(base_convert(hash('sha256', uniqid($base_url, TRUE)), 16, 36), 0, 6);
+        \Drupal::state()->set('search_api_solr.site_hash', $hash);
+      }
     }
+
     return $hash;
   }
 
