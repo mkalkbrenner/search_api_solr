@@ -336,8 +336,8 @@
 <dynamicField name="tom_X3b_zh_X2d_hans_*" type="text_zh_hans" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="true" />
 <dynamicField name="tus_X3b_zh_X2d_hans_*" type="text_unstemmed_zh_hans" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />
 <dynamicField name="tum_X3b_zh_X2d_hans_*" type="text_unstemmed_zh_hans" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />
-<dynamicField name="spellcheck_zh-hans*" type="text_spell_zh_hans" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="true" />
-<dynamicField name="sort_X3b_zh_X2d_hans_*" type="collated_zh-hans" stored="false" indexed="false" docValues="true" useDocValuesAsStored="false" />
+<dynamicField name="spellcheck_zh_hans*" type="text_spell_zh_hans" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="true" />
+<dynamicField name="sort_X3b_zh_X2d_hans_*" type="collated_zh_hans" stored="false" indexed="false" docValues="true" useDocValuesAsStored="false" />
 <dynamicField name="ts_X3b_sk_*" type="text_sk" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />
 <dynamicField name="tm_X3b_sk_*" type="text_sk" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />
 <dynamicField name="tos_X3b_sk_*" type="text_sk" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="true" />
@@ -373,8 +373,8 @@
 <dynamicField name="tom_X3b_zh_X2d_hant_*" type="text_zh_hant" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="true" />
 <dynamicField name="tus_X3b_zh_X2d_hant_*" type="text_zh_hant" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />
 <dynamicField name="tum_X3b_zh_X2d_hant_*" type="text_zh_hant" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />
-<dynamicField name="spellcheck_zh-hant*" type="text_spell_zh_hant" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="true" />
-<dynamicField name="sort_X3b_zh_X2d_hant_*" type="collated_zh-hant" stored="false" indexed="false" docValues="true" useDocValuesAsStored="false" />
+<dynamicField name="spellcheck_zh_hant*" type="text_spell_zh_hant" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="true" />
+<dynamicField name="sort_X3b_zh_X2d_hant_*" type="collated_zh_hant" stored="false" indexed="false" docValues="true" useDocValuesAsStored="false" />
 <dynamicField name="ts_X3b_tr_*" type="text_tr" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="false" />
 <dynamicField name="tm_X3b_tr_*" type="text_tr" stored="true" indexed="true" multiValued="true" termVectors="true" omitNorms="false" />
 <dynamicField name="tos_X3b_tr_*" type="text_tr" stored="true" indexed="true" multiValued="false" termVectors="true" omitNorms="true" />

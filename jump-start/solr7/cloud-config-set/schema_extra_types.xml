@@ -1854,7 +1854,7 @@
   Simplified Chinese Text Field collated
   7.0.0
 -->
-<fieldType name="collated_zh-hans" class="solr.ICUCollationField" locale="zh" strength="primary" caseLevel="false"/>
+<fieldType name="collated_zh_hans" class="solr.ICUCollationField" locale="zh" strength="primary" caseLevel="false"/>
 <!--
   Simplified Chinese Text Field unstemmed
   7.0.0
@@ -2110,7 +2110,7 @@
   Traditional Chinese Text Field collated
   7.0.0
 -->
-<fieldType name="collated_zh-hant" class="solr.ICUCollationField" locale="zh-hant" strength="primary" caseLevel="false"/>
+<fieldType name="collated_zh_hant" class="solr.ICUCollationField" locale="zh-hant" strength="primary" caseLevel="false"/>
 <!--
   Turkish Text Field
   7.0.0
