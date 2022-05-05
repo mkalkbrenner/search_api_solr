@@ -3,6 +3,8 @@
 namespace Drupal\search_api_solr\Controller;
 
 use Drupal\search_api\ServerInterface;
+use Drupal\search_api_solr\SolrFieldTypeInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use ZipStream\Option\Archive;
 
 /**
@@ -48,6 +50,42 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
     }
 
     return [];
+  }
+
+  /**
+   * Disables a Solr Field Type on this server.
+   *
+   * @param \Drupal\search_api\ServerInterface $search_api_server
+   *   Search API server.
+   * @param \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type
+   *   Solr entity.
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   Redirect response.
+   *
+   * @throws \Drupal\Core\Entity\EntityMalformedException
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function disableOnServer(ServerInterface $search_api_server, SolrFieldTypeInterface $solr_field_type): RedirectResponse {
+    return $this->doDisableOnServer($search_api_server, $solr_field_type);
+  }
+
+  /**
+   * Enables a Solr Field Type on this server.
+   *
+   * @param \Drupal\search_api\ServerInterface $search_api_server
+   *   Search API server.
+   * @param \Drupal\search_api_solr\SolrConfigInterface $solr_field_type
+   *   Solr entity.
+   *
+   * @return \Symfony\Component\HttpFoundation\RedirectResponse
+   *   Redirect response.
+   *
+   * @throws \Drupal\Core\Entity\EntityMalformedException
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function enableOnServer(ServerInterface $search_api_server, SolrFieldTypeInterface $solr_field_type): RedirectResponse {
+    return $this->doEnableOnServer($search_api_server, $solr_field_type);
   }
 
 }

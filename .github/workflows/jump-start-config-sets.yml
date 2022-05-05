@@ -171,7 +171,7 @@ jobs:
                   - drupal: '9.4'
                     solr: '8'
                     php: '8.1'
-                    experimental: false
+                    experimental: true
                   - drupal: '10.0'
                     solr: '8'
                     php: '8.1'
