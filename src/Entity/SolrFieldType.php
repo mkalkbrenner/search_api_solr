@@ -503,7 +503,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
         // without it in the solrconfig.xml. Due to the fact that we leverage a
         // dynamic field here to enable the language fallback we need to append
         // '*', but not '_*' because we'll never append a field name!
-        'name' => 'spellcheck_' . $this->field_type_language_code . '*',
+        'name' => 'spellcheck_' . str_replace('-', '_', $this->field_type_language_code) . '*',
         'type' => $this->spellcheck_field_type['name'],
         'stored' => TRUE,
         'indexed' => TRUE,
