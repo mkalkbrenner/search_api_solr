@@ -52,7 +52,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    *
    * The special fields "search_api_id" and "search_api_relevance" are also
    * included. Any Solr fields that exist on search results are mapped back to
-   * to their local field names in the final result set.
+   * their local field names in the final result set.
    *
    * @param \Drupal\search_api\IndexInterface $index
    *   The Search Api index.

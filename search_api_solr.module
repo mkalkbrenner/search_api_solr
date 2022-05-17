@@ -81,7 +81,7 @@ function search_api_solr_cron() {
           $endpoint = $backend->getCollectionEndpoint($index);
 
           // Delete "cached" endpoint data and schema_parts once a day. We keep
-          // theses in states instead of a caches because we might need to
+          // these in states instead of a caches because we might need to
           // access this data even if Solr is temporarily not reachable and
           // caches have been cleared or Solr itself is used as caching backend.
           \Drupal::state()->delete('search_api_solr.endpoint.data');
