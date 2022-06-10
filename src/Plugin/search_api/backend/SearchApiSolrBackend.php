@@ -1944,7 +1944,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $returned_fields = array_unique(array_merge($highlight_fields, $required_fields));
         // Just highlight string and text fields to avoid Solr exceptions.
         $highlight_fields = array_filter($highlight_fields, function ($v) {
-          return preg_match('/^t.?[sm]_/', $v) || preg_match('/^s[sm]_/', $v);
+          return preg_match('/^t.*?[sm]_/', $v) || preg_match('/^s[sm]_/', $v);
         });
       }
       // ... Otherwise return all fields and score.
@@ -1969,7 +1969,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
       catch (SearchApiException $exception) {
         // Highlighting processor is not enabled for this index. Just use the
-        // the index configuration.
+        // index configuration.
         $this->setHighlighting($solarium_query, $query, $highlight_fields);
       }
     }
