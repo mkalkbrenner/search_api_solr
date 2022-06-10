@@ -1944,7 +1944,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $returned_fields = array_unique(array_merge($highlight_fields, $required_fields));
         // Just highlight string and text fields to avoid Solr exceptions.
         $highlight_fields = array_filter($highlight_fields, function ($v) {
-          return preg_match('/^t.?[sm]_/', $v) || preg_match('/^s[sm]_/', $v);
+          return preg_match('/^t.?[sm]_/', $v) || preg_match('/^s[sm]_/', $v) || preg_match('/^tcngramm_/', $v);
         });
       }
       // ... Otherwise return all fields and score.
