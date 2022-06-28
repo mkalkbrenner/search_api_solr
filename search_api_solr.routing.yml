@@ -334,3 +334,15 @@ entity.search_api_index.solr_multisite_update_form:
     _entity_form: 'search_api_index.solr_multisite_update'
   requirements:
     _entity_access: 'search_api_index.edit'
+
+entity.search_api_index.add_solr_document_fields:
+  path: '/admin/config/search/search-api/index/{search_api_index}/fields/add/solr-document'
+  options:
+    parameters:
+      search_api_index:
+        tempstore: TRUE
+        type: 'entity:search_api_index'
+  defaults:
+    _entity_form: 'search_api_index.add_solr_document_fields'
+  requirements:
+    _entity_access: 'search_api_index.fields'

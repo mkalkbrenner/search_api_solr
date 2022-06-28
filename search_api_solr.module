@@ -2,9 +2,10 @@
 
 /**
  * @file
- * Check module requirements and provude updates.
+ * Implement hooks.
  */
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -580,6 +581,38 @@ function search_api_solr_form_search_api_index_form_validate_server(array &$elem
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function search_api_solr_form_search_api_index_fields_alter(&$form, FormStateInterface $form_state, $form_id) {
+  /** @var \Drupal\Core\Entity\EntityFormInterface $form_object */
+  $form_object = $form_state->getFormObject();
+  /** @var IndexInterface $this_index */
+  $index = $form_object->getEntity();
+
+  if (Utility::hasIndexSolrDatasources($index)) {
+    $form['add-all-document-fields'] = [
+      '#type' => 'link',
+      '#title' => t('Add new Solr Document fields'),
+      '#url' => $index->toUrl('add-solr-document-fields'),
+      '#attributes' => [
+        'class' => [
+          'use-ajax',
+          'button',
+          'button-action',
+          'button--primary',
+          'button--small',
+        ],
+        'data-dialog-type' => 'modal',
+        'data-dialog-options' => Json::encode([
+          'width' => 700,
+        ]),
+      ],
+      '#weight' => -10,
+    ];
+  }
+}
+
+/**
  * Implements hook_views_data_alter().
  *
  * Remove fields from solr_document datasources from the views data. Datasource
@@ -682,6 +715,8 @@ function search_api_solr_entity_type_alter(array &$entity_types) {
   /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
   $entity_types['search_api_index']->setFormClass('solr_multisite_clone', IndexSolrMultisiteCloneForm::class);
   $entity_types['search_api_index']->setFormClass('solr_multisite_update', IndexSolrMultisiteUpdateForm::class);
+  $entity_types['search_api_index']->setFormClass('add_solr_document_fields', \Drupal\search_api_solr\Form\IndexAddSolrDocumentFieldsForm::class);
+  $entity_types['search_api_index']->setLinkTemplate('add-solr-document-fields', '/admin/config/search/search-api/index/{search_api_index}/fields/add/solr-document');
 }
 
 /**
