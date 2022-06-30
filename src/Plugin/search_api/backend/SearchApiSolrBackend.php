@@ -2644,8 +2644,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             // No break, now we have a string.
           case 'string':
           default:
-            // Keep $value as it is.
-            if (!$value) {
+            // Keep $value as it is. Keep '0' string.
+            if (!$value && $value !== '0') {
               continue 2;
             }
         }
