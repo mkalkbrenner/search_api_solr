@@ -121,6 +121,9 @@ jobs:
                 vendor/bin/drush -v solr-gsc solr config.zip 8
                 rm ../search_api_solr/jump-start/solr8/config-set/*
                 unzip -o -d ../search_api_solr/jump-start/solr8/config-set config.zip
+                vendor/bin/drush -v solr-gsc solr config.zip 9
+                rm ../search_api_solr/jump-start/solr9/config-set/*
+                unzip -o -d ../search_api_solr/jump-start/solr9/config-set config.zip
                 vendor/bin/drush -v solr-gsc solr_cloud config.zip 4.5
                 rm ../search_api_solr/jump-start/solr4/cloud-config-set/*
                 unzip -o -d ../search_api_solr/jump-start/solr4/cloud-config-set config.zip
