@@ -138,7 +138,7 @@ jobs:
                 unzip -o -d ../search_api_solr/jump-start/solr8/cloud-config-set config.zip
                 vendor/bin/drush -v solr-gsc solr_cloud config.zip 9
                 rm ../search_api_solr/jump-start/solr9/cloud-config-set/*
-                unzip -o -d ../search_api_solr/jump-start/solr8/cloud-config-set config.zip
+                unzip -o -d ../search_api_solr/jump-start/solr9/cloud-config-set config.zip
 
             - uses: actions/upload-artifact@v2
               with:
