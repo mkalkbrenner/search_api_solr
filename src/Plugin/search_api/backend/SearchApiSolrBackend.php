@@ -2820,7 +2820,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $result_item->setScore($doc_fields[$score_field]);
         unset($doc_fields[$score_field]);
       }
-      unset($doc_fields[$id_field]);
+      if (!in_array($id_field, $search_api_retrieved_field_values)) {
+        unset($doc_fields[$id_field]);
+      }
       // The language field should not be removed. We keep it in the values as
       // well for backward compatibility and for easy access.
       // Extract properties from the Solr document, translating from Solr to
