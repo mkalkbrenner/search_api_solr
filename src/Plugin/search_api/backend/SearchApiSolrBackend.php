@@ -1193,6 +1193,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $doc->setField('site', $base_urls[$language_id]);
       $item_fields = $item->getFields();
       $item_fields += $special_fields = $this->getSpecialFields($index, $item);
+      $auto_aggregate_values = [];
       /** @var \Drupal\search_api\Item\FieldInterface $field */
       foreach ($item_fields as $name => $field) {
         // If the field is not known for the index, something weird has
@@ -1208,7 +1209,23 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           break;
         }
 
-        $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $field->getType(), $boost_terms);
+        if ($field->getPropertyPath() === 'auto_aggregated_fulltext_field') {
+          $type = $field->getType();
+          if (!array_key_exists($type, $auto_aggregate_values)) {
+            foreach ($item_fields as $tmp_field) {
+              if ($tmp_field->getType() === $type && $tmp_field->getPropertyPath() !== 'auto_aggregated_fulltext_field') {
+                $auto_aggregate_values[$type][] = $tmp_field->getValues();
+              }
+            }
+            $auto_aggregate_values[$type] = array_merge(...$auto_aggregate_values[$type]);
+          }
+
+          $first_value = $this->addIndexField($doc, $field_names[$name], $auto_aggregate_values[$type], $field->getType(), $boost_terms);
+        }
+        else {
+          $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $field->getType(), $boost_terms);
+        }
+
         // Enable sorts in some special cases.
         if ($first_value && !array_key_exists($name, $special_fields)) {
           if (
