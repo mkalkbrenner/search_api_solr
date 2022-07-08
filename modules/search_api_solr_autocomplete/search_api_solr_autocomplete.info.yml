@@ -1,7 +1,7 @@
 type: module
 name: 'Search API Solr Autocomplete'
 description: 'Adds autocomplete functionality to Apache Solr searches.'
-core_version_requirement: ^9.2 || ^10.0
+core_version_requirement: ^9.3 || ^10.0
 package: Search
 dependencies:
   - search_api_autocomplete:search_api_autocomplete
