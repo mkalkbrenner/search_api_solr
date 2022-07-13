@@ -20,11 +20,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Arabic Text Field collated
-  7.0.0
--->
-<fieldType name="collated_ar" class="solr.ICUCollationField" locale="ar" strength="primary" caseLevel="false"/>
-<!--
   Arabic Text Field unstemmed
   7.0.0
 -->
@@ -66,11 +61,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Bulgarian Text Field collated
-  7.0.0
--->
-<fieldType name="collated_bg" class="solr.ICUCollationField" locale="bg" strength="primary" caseLevel="false"/>
 <!--
   Bulgarian Text Field unstemmed
   7.0.0
@@ -118,11 +108,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Catalan Text Field collated
-  7.0.0
--->
-<fieldType name="collated_ca" class="solr.ICUCollationField" locale="ca" strength="primary" caseLevel="false"/>
 <!--
   Catalan Text Field unstemmed
   7.0.0
@@ -174,11 +159,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Croatian Text Field collated
-  7.0.0
--->
-<fieldType name="collated_hr" class="solr.ICUCollationField" locale="hr" strength="primary" caseLevel="false"/>
-<!--
   Croatian Text Field unstemmed
   7.0.0
 -->
@@ -229,11 +209,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Czech Text Field collated
-  7.0.0
--->
-<fieldType name="collated_cs" class="solr.ICUCollationField" locale="cs" strength="primary" caseLevel="false"/>
 <!--
   Czech Text Field unstemmed
   7.0.0
@@ -287,11 +262,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Danish Text Field collated
-  7.0.0
--->
-<fieldType name="collated_da" class="solr.ICUCollationField" locale="da" strength="primary" caseLevel="false"/>
-<!--
   Danish Text Field unstemmed
   7.0.0
 -->
@@ -344,11 +314,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Dutch Text Field collated
-  7.0.0
--->
-<fieldType name="collated_nl" class="solr.ICUCollationField" locale="nl" strength="primary" caseLevel="false"/>
 <!--
   Dutch Text Field unstemmed
   7.0.0
@@ -443,11 +408,6 @@
   </analyzer>
 </fieldType>
 <!--
-  English Text Field collated
-  7.0.0
--->
-<fieldType name="collated_en" class="solr.ICUCollationField" locale="en" strength="primary" caseLevel="false"/>
-<!--
   English Text Field unstemmed
   7.0.0
 -->
@@ -502,11 +462,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Finnish Text Field collated
-  7.0.0
--->
-<fieldType name="collated_fi" class="solr.ICUCollationField" locale="fi" strength="primary" caseLevel="false"/>
-<!--
   Finnish Text Field unstemmed
   7.0.0
 -->
@@ -560,11 +515,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  French Text Field collated
-  7.0.0
--->
-<fieldType name="collated_fr" class="solr.ICUCollationField" locale="fr" strength="primary" caseLevel="false"/>
 <!--
   French Text Field unstemmed
   7.0.0
@@ -862,11 +812,6 @@
   </analyzer>
 </fieldType>
 <!--
-  German Text Field collated
-  7.0.0
--->
-<fieldType name="collated_de" class="solr.ICUCollationField" locale="de" strength="primary" caseLevel="false"/>
-<!--
   German Text Field unstemmed
   7.0.0
 -->
@@ -918,11 +863,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Greek Text Field collated
-  7.0.0
--->
-<fieldType name="collated_el" class="solr.ICUCollationField" locale="el" strength="primary" caseLevel="false"/>
-<!--
   Greek Text Field unstemmed
   7.0.0
 -->
@@ -966,11 +906,6 @@
     <filter class="solr.HindiStemFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Hindi Text Field collated
-  7.0.0
--->
-<fieldType name="collated_hi" class="solr.ICUCollationField" locale="hi" strength="primary" caseLevel="false"/>
 <!--
   Hindi Text Field unstemmed
   7.0.0
@@ -1016,11 +951,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Hungarian Text Field collated
-  7.0.0
--->
-<fieldType name="collated_hu" class="solr.ICUCollationField" locale="hu" strength="primary" caseLevel="false"/>
 <!--
   Hungarian Text Field unstemmed
   7.0.0
@@ -1072,11 +1002,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Indonesian Text Field collated
-  7.0.0
--->
-<fieldType name="collated_id" class="solr.ICUCollationField" locale="id" strength="primary" caseLevel="false"/>
 <!--
   Indonesian Text Field unstemmed
   7.0.0
@@ -1131,11 +1056,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Irish/Gaelic Text Field collated
-  7.7.0
--->
-<fieldType name="collated_ga" class="solr.ICUCollationField" locale="ga" strength="primary" caseLevel="false"/>
-<!--
   Irish/Gaelic Text Field unstemmed
   7.7.0
 -->
@@ -1186,11 +1106,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Italian Text Field collated
-  7.0.0
--->
-<fieldType name="collated_it" class="solr.ICUCollationField" locale="it" strength="primary" caseLevel="false"/>
 <!--
   Italian Text Field unstemmed
   7.0.0
@@ -1250,11 +1165,6 @@
     <filter class="solr.CJKWidthFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Japanese Text Field collated
-  8.0.0
--->
-<fieldType name="collated_ja" class="solr.ICUCollationField" locale="ja" strength="primary" caseLevel="false"/>
 <!--
   Japanese Text Field unstemmed
   8.0.0
@@ -1316,11 +1226,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Language Undefined Text Field collated
-  7.0.0
--->
-<fieldType name="collated_und" class="solr.ICUCollationField" locale="en" strength="primary" caseLevel="false"/>
-<!--
   Latvian Text Field
   7.0.0
 -->
@@ -1347,11 +1252,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Latvian Text Field collated
-  7.0.0
--->
-<fieldType name="collated_lv" class="solr.ICUCollationField" locale="lv" strength="primary" caseLevel="false"/>
 <!--
   Latvian Text Field unstemmed
   7.0.0
@@ -1447,11 +1347,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Norwegian Bokmal Text Field collated
-  7.0.0
--->
-<fieldType name="collated_nb" class="solr.ICUCollationField" locale="nb" strength="primary" caseLevel="false"/>
-<!--
   Norwegian Bokmal Text Field unstemmed
   7.0.0
 -->
@@ -1508,11 +1403,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Norwegian Nynorsk Text Field collated
-  7.0.0
--->
-<fieldType name="collated_nn" class="solr.ICUCollationField" locale="nn" strength="primary" caseLevel="false"/>
-<!--
   Norwegian Nynorsk Text Field unstemmed
   7.0.0
 -->
@@ -1561,11 +1451,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Persian Text Field collated
-  7.0.0
--->
-<fieldType name="collated_fa" class="solr.ICUCollationField" locale="fa" strength="primary" caseLevel="false"/>
-<!--
   Persian Text Field unstemmed
   7.0.0
 -->
@@ -1611,11 +1496,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Polish Text Field collated
-  7.0.0
--->
-<fieldType name="collated_pl" class="solr.ICUCollationField" locale="pl" strength="primary" caseLevel="false"/>
 <!--
   Polish Text Field unstemmed
   7.0.0
@@ -1667,11 +1547,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Portuguese, Brazilian Text Field collated
-  7.0.0
--->
-<fieldType name="collated_pt_br" class="solr.ICUCollationField" locale="pt" strength="primary" caseLevel="false"/>
-<!--
   Portuguese, Brazilian Text Field unstemmed
   7.0.0
 -->
@@ -1719,11 +1594,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Portuguese, Portugal Text Field collated
-  7.0.0
--->
-<fieldType name="collated_pt_pt" class="solr.ICUCollationField" locale="pt" strength="primary" caseLevel="false"/>
 <!--
   Portuguese, Portugal Text Field unstemmed
   7.0.0
@@ -1773,11 +1643,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Romanian Text Field collated
-  7.0.0
--->
-<fieldType name="collated_ro" class="solr.ICUCollationField" locale="ro" strength="primary" caseLevel="false"/>
-<!--
   Romanian Text Field unstemmed
   7.0.0
 -->
@@ -1823,11 +1688,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Russian Text Field collated
-  7.0.0
--->
-<fieldType name="collated_ru" class="solr.ICUCollationField" locale="ru" strength="primary" caseLevel="false"/>
 <!--
   Russian Text Field unstemmed
   7.0.0
@@ -1877,11 +1737,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Serbian Text Field collated
-  7.0.0
--->
-<fieldType name="collated_sr" class="solr.ICUCollationField" locale="sr" strength="primary" caseLevel="false"/>
 <!--
   Serbian Text Field unstemmed
   7.0.0
@@ -1940,11 +1795,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Simplified Chinese Text Field collated
-  7.0.0
--->
-<fieldType name="collated_zh_hans" class="solr.ICUCollationField" locale="zh" strength="primary" caseLevel="false"/>
-<!--
   Simplified Chinese Text Field unstemmed
   7.0.0
 -->
@@ -1988,11 +1838,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Slovak Text Field collated
-  7.0.0
--->
-<fieldType name="collated_sk" class="solr.ICUCollationField" locale="sk" strength="primary" caseLevel="false"/>
 <!--
   Slovak Text Field unstemmed
   7.0.0
@@ -2042,11 +1887,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Spanish Text Field collated
-  7.0.0
--->
-<fieldType name="collated_es" class="solr.ICUCollationField" locale="es" strength="primary" caseLevel="false"/>
 <!--
   Spanish Text Field unstemmed
   7.0.0
@@ -2099,11 +1939,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Swedish Text Field collated
-  7.0.0
--->
-<fieldType name="collated_sv" class="solr.ICUCollationField" locale="no" strength="primary" caseLevel="false"/>
 <!--
   Swedish Text Field unstemmed
   7.0.0
@@ -2161,11 +1996,6 @@
   </analyzer>
 </fieldType>
 <!--
-  Thai Text Field collated
-  7.0.0
--->
-<fieldType name="collated_th" class="solr.ICUCollationField" locale="th" strength="primary" caseLevel="false"/>
-<!--
   Traditional Chinese Text Field
   7.0.0
 -->
@@ -2195,11 +2025,6 @@
     <filter class="solr.LowerCaseFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Traditional Chinese Text Field collated
-  7.0.0
--->
-<fieldType name="collated_zh_hant" class="solr.ICUCollationField" locale="zh-hant" strength="primary" caseLevel="false"/>
 <!--
   Turkish Text Field
   7.0.0
@@ -2240,11 +2065,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Turkish Text Field collated
-  7.0.0
--->
-<fieldType name="collated_tr" class="solr.ICUCollationField" locale="tr" strength="primary" caseLevel="false"/>
 <!--
   Turkish Text Field unstemmed
   7.0.0
@@ -2293,11 +2113,6 @@
     <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
   </analyzer>
 </fieldType>
-<!--
-  Ukrainian Text Field collated
-  7.0.0
--->
-<fieldType name="collated_uk" class="solr.ICUCollationField" locale="uk" strength="primary" caseLevel="false"/>
 <!--
   Ukrainian Text Field unstemmed
   7.0.0
