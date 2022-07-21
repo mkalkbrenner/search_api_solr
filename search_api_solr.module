@@ -28,13 +28,14 @@ function search_api_solr_help($route_name, RouteMatchInterface $route_match) {
   if ($route_name === 'search_api.overview') {
     // Included because we need the REQUIREMENT_* constants.
     include_once DRUPAL_ROOT . '/core/includes/install.inc';
-    module_load_include('install', 'search_api_solr');
+    \Drupal::moduleHandler()->loadInclude('search_api_solr', 'install');
+    $messenger = \Drupal::messenger();
     $reqs = search_api_solr_requirements('runtime');
     foreach ($reqs as $req) {
       if (isset($req['description'])) {
         $type = $req['severity'] == REQUIREMENT_ERROR ? MessengerInterface::TYPE_ERROR :
           ($req['severity'] == REQUIREMENT_WARNING ? MessengerInterface::TYPE_WARNING : MessengerInterface::TYPE_STATUS);
-        \Drupal::messenger()->addMessage($req['description'], $type);
+        $messenger->addMessage($req['description'], $type);
       }
     }
   }
@@ -632,7 +633,7 @@ function search_api_solr_views_data_alter(array &$data) {
  * Re-install all default Solr Field Types from their yml files.
  */
 function search_api_solr_install_missing_field_types() {
-  module_load_include('install', 'search_api_solr');
+  \Drupal::moduleHandler()->loadInclude('search_api_solr', 'install');
   search_api_solr_update_helper_install_configs();
 }
 
@@ -640,7 +641,7 @@ function search_api_solr_install_missing_field_types() {
  * Get all Search API servers that use a Solr backend.
  *
  * @param bool $only_active
- *   Whether to only return only active servers or all.
+ *   Whether to only return active servers or all.
  *
  * @return \Drupal\search_api\ServerInterface[]
  *   The servers.
