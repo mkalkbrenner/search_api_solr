@@ -26,7 +26,7 @@ trait SolrBackendTrait {
     $config = '/config/install/search_api.server.solr_search_server' . ('true' === SOLR_CLOUD ? '_cloud' : '') . '.yml';
     $this->server = Server::create(
       Yaml::parse(file_get_contents(
-        \Drupal::service('extension.list.module')->getPath('search_api_solr') . $config
+        \Drupal::service('extension.list.module')->getPath('search_api_solr_test') . $config
       ))
     );
     $this->server->save();

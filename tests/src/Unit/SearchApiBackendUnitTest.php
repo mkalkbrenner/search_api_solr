@@ -18,6 +18,7 @@ use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginManager;
 use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 use Drupal\Tests\UnitTestCase;
+use Prophecy\PhpUnit\ProphecyTrait;
 use Solarium\Core\Query\Helper;
 use Solarium\QueryType\Update\Query\Document;
 
@@ -31,6 +32,7 @@ use Solarium\QueryType\Update\Query\Document;
 class SearchApiBackendUnitTest extends UnitTestCase {
 
   use InvokeMethodTrait;
+  use ProphecyTrait;
 
   /**
    * @var \Drupal\search_api_solr\Controller\AbstractSolrEntityListBuilder|\Prophecy\Prophecy\ObjectProphecy
@@ -55,7 +57,7 @@ class SearchApiBackendUnitTest extends UnitTestCase {
   /**
    *
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->listBuilder = $this->prophesize(AbstractSolrEntityListBuilder::class);

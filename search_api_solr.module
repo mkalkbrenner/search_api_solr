@@ -15,6 +15,7 @@ use Drupal\search_api\Entity\Server;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\ServerInterface;
+use Drupal\search_api_solr\Form\IndexAddSolrDocumentFieldsForm;
 use Drupal\search_api_solr\Form\IndexSolrMultisiteCloneForm;
 use Drupal\search_api_solr\Form\IndexSolrMultisiteUpdateForm;
 use Drupal\search_api_solr\SolrBackendInterface;
@@ -716,7 +717,7 @@ function search_api_solr_entity_type_alter(array &$entity_types) {
   /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
   $entity_types['search_api_index']->setFormClass('solr_multisite_clone', IndexSolrMultisiteCloneForm::class);
   $entity_types['search_api_index']->setFormClass('solr_multisite_update', IndexSolrMultisiteUpdateForm::class);
-  $entity_types['search_api_index']->setFormClass('add_solr_document_fields', \Drupal\search_api_solr\Form\IndexAddSolrDocumentFieldsForm::class);
+  $entity_types['search_api_index']->setFormClass('add_solr_document_fields', IndexAddSolrDocumentFieldsForm::class);
   $entity_types['search_api_index']->setLinkTemplate('add-solr-document-fields', '/admin/config/search/search-api/index/{search_api_index}/fields/add/solr-document');
 }
 
