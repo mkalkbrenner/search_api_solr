@@ -15,6 +15,37 @@ use Drupal\search_api\Utility\CommandHelper;
 class SolrCommandHelper extends CommandHelper {
 
   /**
+   * The module extension list.
+   *
+   * @var \Drupal\Core\Extension\ModuleExtensionList
+   */
+  protected $moduleExtensionList;
+
+  /**
+   * Constructs a CommandHelper object.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
+   * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $event_dispatcher
+   *   The event dispatcher.
+   * @param \Drupal\Core\Extension\ModuleExtensionList $module_extension_list
+   *   The module extension list.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   *   Thrown if the "search_api_index" or "search_api_server" entity types'
+   *   storage handlers couldn't be loaded.
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   *   Thrown if the "search_api_index" or "search_api_server" entity types are
+   *   unknown.
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, EventDispatcherInterface $event_dispatcher, ModuleExtensionList $module_extension_list) {
+    parent::__construct($entity_type_manager, $module_handler, $event_dispatcher);
+    $this->moduleExtensionList = $module_extension_list;
+  }
+
+  /**
    * Re-install all Solr Field Types from their yml files.
    */
   public function reinstallFieldtypesCommand() {
@@ -45,7 +76,7 @@ class SolrCommandHelper extends CommandHelper {
       $config['connector_config']['solr_version'] = $solr_version;
       $server->setBackendConfig($config);
     }
-    $solr_configset_controller = new SolrConfigSetController();
+    $solr_configset_controller = new SolrConfigSetController($this->moduleExtensionList);
     $solr_configset_controller->setServer($server);
 
     $archive_options = new Archive();
