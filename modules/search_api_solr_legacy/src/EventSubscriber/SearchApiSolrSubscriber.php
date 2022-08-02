@@ -36,7 +36,7 @@ class SearchApiSolrSubscriber implements EventSubscriberInterface {
    *   The event.
    */
   public function postConfigSetTemplateMapping(PostConfigSetTemplateMappingEvent $event) {
-    $template_path = $this->moduleExtensionList->getPath('search_api_solr') . '/solr-conf-templates/';
+    $template_path = $this->moduleExtensionList->getPath('search_api_solr_legacy') . '/solr-conf-templates/';
 
     $solr_configset_template_mapping = $event->getConfigSetTemplateMapping();
     $solr_configset_template_mapping += [
