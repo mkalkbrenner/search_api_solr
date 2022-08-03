@@ -2,11 +2,16 @@
 
 namespace Drupal\Tests\search_api_solr\Unit;
 
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Core\Config\Config;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Lock\LockBackendInterface;
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\State\StateInterface;
 use Drupal\search_api\Plugin\search_api\data_type\value\TextToken;
 use Drupal\search_api\Plugin\search_api\data_type\value\TextValue;
 use Drupal\search_api\Utility\DataTypeHelperInterface;
@@ -78,7 +83,13 @@ class SearchApiBackendUnitTest extends UnitTestCase {
       $this->prophesize(DataTypeHelperInterface::class)->reveal(),
       $this->queryHelper,
       $this->entityTypeManager->reveal(),
-      $this->prophesize(ContainerAwareEventDispatcher::class)->reveal());
+      $this->prophesize(ContainerAwareEventDispatcher::class)->reveal(),
+      $this->prophesize(TimeInterface::class)->reveal(),
+      $this->prophesize(StateInterface::class)->reveal(),
+      $this->prophesize(MessengerInterface::class)->reveal(),
+      $this->prophesize(LockBackendInterface::class)->reveal(),
+      $this->prophesize(ModuleExtensionList::class)->reveal()
+    );
   }
 
   /**
