@@ -1205,6 +1205,18 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $language_id = LanguageInterface::LANGCODE_NOT_SPECIFIED;
         $item->setLanguage($language_id);
       }
+
+      /** @see \Drupal\search_api\Plugin\search_api\processor\LanguageWithFallback */
+      $fallback_languages = [];
+      $fallback_field_names = [];
+      $language_with_fallback_field = $item->getField('language_with_fallback', FALSE);
+      if ($language_with_fallback_field) {
+        $fallback_languages = array_diff($language_with_fallback_field->getValues(), [$language_id, LanguageInterface::LANGCODE_NOT_SPECIFIED]);
+      }
+
+      foreach ($fallback_languages as $fallback_language) {
+        $fallback_field_names[$fallback_language] = $this->getLanguageSpecificSolrFieldNames($fallback_language, $index);
+      }
       $field_names = $this->getLanguageSpecificSolrFieldNames($language_id, $index);
       $boost_terms = [];
 
@@ -1271,9 +1283,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           }
 
           $first_value = $this->addIndexField($doc, $field_names[$name], $auto_aggregate_values[$type], $field->getType(), $boost_terms);
+          foreach ($fallback_languages as $fallback_language) {
+            $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $auto_aggregate_values[$type], $field->getType(), $boost_terms);
+          }
         }
         else {
           $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $field->getType(), $boost_terms);
+          foreach ($fallback_languages as $fallback_language) {
+            $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $field->getValues(), $field->getType(), $boost_terms);
+          }
         }
 
         // Enable sorts in some special cases.
@@ -1321,6 +1339,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               // we use the same hackish workaround like the DB backend: just
               // copy the first value in a single value field for sorting.
               $doc->addField($key, $first_value);
+            }
+            foreach ($fallback_languages as $fallback_language) {
+              $doc->addField(preg_replace('/^([a-z]+)m_/', '$1s_', $fallback_field_names[$fallback_language][$name]), $first_value);
             }
           }
         }
