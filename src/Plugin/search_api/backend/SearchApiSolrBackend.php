@@ -59,6 +59,7 @@ use Drupal\search_api_solr\Event\PostExtractResultsEvent;
 use Drupal\search_api_solr\Event\PostFieldMappingEvent;
 use Drupal\search_api_solr\Event\PostIndexFinalizationEvent;
 use Drupal\search_api_solr\Event\PostSetFacetsEvent;
+use Drupal\search_api_solr\Event\PreAddLanguageFallbackFieldEvent;
 use Drupal\search_api_solr\Event\PreAutocompleteTermsQueryEvent;
 use Drupal\search_api_solr\Event\PreCreateIndexDocumentEvent;
 use Drupal\search_api_solr\Event\PreExtractFacetsEvent;
@@ -1205,6 +1206,18 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $language_id = LanguageInterface::LANGCODE_NOT_SPECIFIED;
         $item->setLanguage($language_id);
       }
+
+      /** @see \Drupal\search_api\Plugin\search_api\processor\LanguageWithFallback */
+      $fallback_languages = [];
+      $fallback_field_names = [];
+      $language_with_fallback_field = $item->getField('language_with_fallback', FALSE);
+      if ($language_with_fallback_field) {
+        $fallback_languages = array_diff($language_with_fallback_field->getValues(), [$language_id, LanguageInterface::LANGCODE_NOT_SPECIFIED]);
+      }
+
+      foreach ($fallback_languages as $fallback_language) {
+        $fallback_field_names[$fallback_language] = $this->getLanguageSpecificSolrFieldNames($fallback_language, $index);
+      }
       $field_names = $this->getLanguageSpecificSolrFieldNames($language_id, $index);
       $boost_terms = [];
 
@@ -1259,8 +1272,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           break;
         }
 
+        $type = $field->getType();
         if ($field->getPropertyPath() === 'auto_aggregated_fulltext_field') {
-          $type = $field->getType();
           if (!array_key_exists($type, $auto_aggregate_values)) {
             foreach ($item_fields as $tmp_field) {
               if ($tmp_field->getType() === $type && $tmp_field->getPropertyPath() !== 'auto_aggregated_fulltext_field') {
@@ -1270,10 +1283,20 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $auto_aggregate_values[$type] = array_merge(...$auto_aggregate_values[$type]);
           }
 
-          $first_value = $this->addIndexField($doc, $field_names[$name], $auto_aggregate_values[$type], $field->getType(), $boost_terms);
+          $first_value = $this->addIndexField($doc, $field_names[$name], $auto_aggregate_values[$type], $type, $boost_terms);
+          foreach ($fallback_languages as $fallback_language) {
+            $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $auto_aggregate_values[$type], $type);
+            $this->eventDispatcher->dispatch($event);
+            $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $event->getValue(), $type, $boost_terms);
+          }
         }
         else {
-          $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $field->getType(), $boost_terms);
+          $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $type, $boost_terms);
+          foreach ($fallback_languages as $fallback_language) {
+            $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $field->getValues(), $type);
+            $this->eventDispatcher->dispatch($event);
+            $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $event->getValue(), $type, $boost_terms);
+          }
         }
 
         // Enable sorts in some special cases.
@@ -1321,6 +1344,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               // we use the same hackish workaround like the DB backend: just
               // copy the first value in a single value field for sorting.
               $doc->addField($key, $first_value);
+            }
+            foreach ($fallback_languages as $fallback_language) {
+              $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $first_value, $type);
+              $this->eventDispatcher->dispatch($event);
+              $doc->addField(preg_replace('/^([a-z]+)m_/', '$1s_', $fallback_field_names[$fallback_language][$name]), $event->getValue());
             }
           }
         }
