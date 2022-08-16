@@ -1191,6 +1191,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $index_id = $this->getTargetedIndexId($index);
     $site_hash = $this->getTargetedSiteHash($index);
     $languages = $this->languageManager->getLanguages();
+    $specific_languages = array_keys(array_filter($index->getThirdPartySetting('search_api_solr', 'multilingual')['specific_languages']));
     $fulltext_fields = $index->getFulltextFields();
     $request_time = $this->formatDate($this->time->getRequestTime());
     $base_urls = [];
@@ -1203,7 +1204,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     /** @var \Drupal\search_api\Item\ItemInterface[] $items */
     foreach ($items as $id => $item) {
       $language_id = $item->getLanguage();
-      if ($language_id === LanguageInterface::LANGCODE_NOT_APPLICABLE) {
+      if (
+        $language_id === LanguageInterface::LANGCODE_NOT_APPLICABLE ||
+        (!empty($specific_languages) && !in_array($language_id, $specific_languages))
+      ) {
         $language_id = LanguageInterface::LANGCODE_NOT_SPECIFIED;
         $item->setLanguage($language_id);
       }
@@ -1214,6 +1218,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $language_with_fallback_field = $item->getField('language_with_fallback', FALSE);
       if ($language_with_fallback_field) {
         $fallback_languages = array_diff($language_with_fallback_field->getValues(), [$language_id, LanguageInterface::LANGCODE_NOT_SPECIFIED]);
+        if (!empty($specific_languages)) {
+          $fallback_languages = array_intersect($fallback_languages, $specific_languages);
+        }
       }
 
       foreach ($fallback_languages as $fallback_language) {
@@ -1275,34 +1282,45 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
         $type = $field->getType();
         $field_identifier = $field->getFieldIdentifier();
-        if ($field->getPropertyPath() === 'auto_aggregated_fulltext_field') {
-          if (!array_key_exists($type, $auto_aggregate_values)) {
-            foreach ($item_fields as $tmp_field) {
-              if ($tmp_field->getType() === $type && $tmp_field->getPropertyPath() !== 'auto_aggregated_fulltext_field') {
-                $auto_aggregate_values[$type][] = $tmp_field->getValues();
+        switch ($field->getPropertyPath()) {
+          case 'auto_aggregated_fulltext_field':
+            if (!array_key_exists($type, $auto_aggregate_values)) {
+              foreach ($item_fields as $tmp_field) {
+                if ($tmp_field->getType() === $type && $tmp_field->getPropertyPath() !== 'auto_aggregated_fulltext_field') {
+                  $auto_aggregate_values[$type][] = $tmp_field->getValues();
+                }
+              }
+              $auto_aggregate_values[$type] = array_merge(...$auto_aggregate_values[$type]);
+            }
+
+            $first_value = $this->addIndexField($doc, $field_names[$name], $auto_aggregate_values[$type], $type, $boost_terms);
+            if (in_array($field_identifier, $fulltext_fields)) {
+              foreach ($fallback_languages as $fallback_language) {
+                $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $auto_aggregate_values[$type], $type);
+                $this->eventDispatcher->dispatch($event);
+                $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $event->getValue(), $type, $boost_terms);
               }
             }
-            $auto_aggregate_values[$type] = array_merge(...$auto_aggregate_values[$type]);
-          }
+            break;
 
-          $first_value = $this->addIndexField($doc, $field_names[$name], $auto_aggregate_values[$type], $type, $boost_terms);
-          if (in_array($field_identifier, $fulltext_fields)) {
-            foreach ($fallback_languages as $fallback_language) {
-              $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $auto_aggregate_values[$type], $type);
-              $this->eventDispatcher->dispatch($event);
-              $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $event->getValue(), $type, $boost_terms);
+          case 'language_with_fallback':
+            $values = $field->getValues();
+            if (!empty($specific_languages)) {
+              $values = array_intersect($values, $specific_languages);
             }
-          }
-        }
-        else {
-          $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $type, $boost_terms);
-          if (in_array($field_identifier, $fulltext_fields)) {
-            foreach ($fallback_languages as $fallback_language) {
-              $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $field->getValues(), $type);
-              $this->eventDispatcher->dispatch($event);
-              $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $event->getValue(), $type, $boost_terms);
+            $first_value = $this->addIndexField($doc, $field_names[$name], $values, $type, $boost_terms);
+            break;
+
+          default:
+            $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $type, $boost_terms);
+            if (in_array($field_identifier, $fulltext_fields)) {
+              foreach ($fallback_languages as $fallback_language) {
+                $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $field->getValues(), $type);
+                $this->eventDispatcher->dispatch($event);
+                $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $event->getValue(), $type, $boost_terms);
+              }
             }
-          }
+            break;
         }
 
         // Enable sorts in some special cases.
@@ -1334,6 +1352,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               // language-specific sort fields!
               $sort_languages = array_keys($this->languageManager
                 ->getLanguages());
+              if (!empty($specific_languages)) {
+                $sort_languages = array_intersect($sort_languages, $specific_languages);
+              }
               $sort_languages[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
               foreach ($sort_languages as $sort_language_id) {
                 $key = Utility::encodeSolrName('sort' . SolrBackendInterface::SEARCH_API_SOLR_LANGUAGE_SEPARATOR . $sort_language_id . '_' . $name);

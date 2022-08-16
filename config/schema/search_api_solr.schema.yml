@@ -129,6 +129,11 @@ search_api.index.*.third_party.search_api_solr:
         include_language_independent:
           type: boolean
           label: 'Include languages independent content in search results'
+        specific_languages:
+          type: sequence
+          label: 'Specific Languages'
+          sequence:
+            type: string
 
 search_api_solr.solr_configs:
   type: mapping

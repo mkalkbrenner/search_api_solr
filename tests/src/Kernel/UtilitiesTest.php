@@ -89,6 +89,10 @@ class UtilitiesTest extends KernelTestBase {
       'multilingual' => [
         'limit_to_content_language' => TRUE,
         'include_language_independent' => TRUE,
+        'specific_languages' =>  [
+          'en' => '0',
+          'de' => 'de',
+        ],
       ],
     ];
 
@@ -135,6 +139,10 @@ class UtilitiesTest extends KernelTestBase {
         'multilingual' => [
           'limit_to_content_language' => TRUE,
           'include_language_independent' => TRUE,
+          'specific_languages' =>  [
+            'en' => '0',
+            'de' => 'de',
+          ],
         ],
         'term_modifiers' => [
           'slop' => 3,

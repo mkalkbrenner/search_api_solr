@@ -2112,3 +2112,16 @@ function search_api_solr_update_8412() {
 function search_api_solr_update_8413() {
   search_api_solr_update_helper_install_configs();
 }
+
+/**
+ * Configure language-specific field usage individually per index.
+ */
+function search_api_solr_update_8414() {
+  $indexes = search_api_solr_update_helper_get_indexes();
+  foreach (search_api_solr_update_helper_get_index_third_party_settings() as $index_id => $third_party_settings) {
+    if (!isset($third_party_settings['multilingual']) || !isset($third_party_settings['multilingual']['specific_languages'])) {
+      $third_party_settings['multilingual']['specific_languages'] = [];
+    }
+    search_api_solr_update_helper_save_index_third_party_settings($index_id, $third_party_settings);
+  }
+}
