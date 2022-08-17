@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\search_api_solr\Unit;
 
+use Prophecy\PhpUnit\ProphecyTrait;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Core\Config\Config;
@@ -35,6 +36,7 @@ use Solarium\QueryType\Update\Query\Document;
  */
 class SearchApiBackendUnitTest extends UnitTestCase {
 
+  use ProphecyTrait;
   use InvokeMethodTrait;
 
   /**
