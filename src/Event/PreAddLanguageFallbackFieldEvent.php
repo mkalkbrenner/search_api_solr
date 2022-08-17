@@ -33,6 +33,13 @@ final class PreAddLanguageFallbackFieldEvent extends Event {
   protected $type;
 
   /**
+   * The Search API item_id the field belongs to.
+   *
+   * @var string
+   */
+  protected $item_id;
+
+  /**
    * Constructs a new class instance.
    *
    * @param string $langcode
@@ -41,11 +48,14 @@ final class PreAddLanguageFallbackFieldEvent extends Event {
    *   The filed value.
    * @param string $type
    *   The field type.
+   * @param string $item_id
+   *   The Search API item_id the field belongs to.
    */
-  public function __construct(string $langcode, mixed $value, string $type) {
+  public function __construct(string $langcode, mixed $value, string $type, string $item_id) {
     $this->langcode = $langcode;
     $this->value = $value;
     $this->type = $type;
+    $this->item_id = $item_id;
   }
 
   /**
@@ -87,6 +97,16 @@ final class PreAddLanguageFallbackFieldEvent extends Event {
    */
   public function getType(): string {
     return $this->type;
+  }
+
+  /**
+   * Retrieves the field type.
+   *
+   * @return string
+   *   The Search API item_id the field belongs to.
+   */
+  public function getItemId(): string {
+    return $this->item_id;
   }
 
 }
