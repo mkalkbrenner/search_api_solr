@@ -2697,6 +2697,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               foreach ($tokens as $token) {
                 $value = $token->getText();
 
+                if (is_object($value)) {
+                  // It might happen that we get TranslatableMarkup here.
+                  $value = (string) $value;
+                }
+
                 if (!$value && $this->configuration['index_empty_text_fields']) {
                   // Index a dummy value to keep the number of total documents
                   // containing a field consistent for IDF based similarity
@@ -2748,6 +2753,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             }
 
             $value = $value->getText();
+            if (is_object($value)) {
+              // It might happen that we get TranslatableMarkup here.
+              $value = (string) $value;
+            }
 
             if (!$value && $this->configuration['index_empty_text_fields']) {
               // Index a dummy value to keep the number of total documents
@@ -2763,6 +2772,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             if (!$value && $value !== '0') {
               continue 2;
             }
+
+            if (is_object($value)) {
+              // It might happen that we get TranslatableMarkup here.
+              $value = (string) $value;
+            }
+
         }
 
         $doc->addField($key, $value);
