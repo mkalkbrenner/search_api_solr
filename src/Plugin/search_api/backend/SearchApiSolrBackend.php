@@ -1296,7 +1296,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $first_value = $this->addIndexField($doc, $field_names[$name], $auto_aggregate_values[$type], $type, $boost_terms);
             if (in_array($field_identifier, $fulltext_fields)) {
               foreach ($fallback_languages as $fallback_language) {
-                $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $auto_aggregate_values[$type], $type, $id, $index);
+                $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $auto_aggregate_values[$type], $type, $item);
                 $this->eventDispatcher->dispatch($event);
                 $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $event->getValue(), $type, $boost_terms);
               }
@@ -1315,7 +1315,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $type, $boost_terms);
             if (in_array($field_identifier, $fulltext_fields)) {
               foreach ($fallback_languages as $fallback_language) {
-                $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $field->getValues(), $type, $id, $index);
+                $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $field->getValues(), $type, $item);
                 $this->eventDispatcher->dispatch($event);
                 $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $event->getValue(), $type, $boost_terms);
               }
