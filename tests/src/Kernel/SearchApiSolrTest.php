@@ -74,7 +74,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    *
    * @var string[]
    */
-  public static $modules = [
+  protected static $modules = [
     'language',
     'search_api_solr_legacy',
     'user',
