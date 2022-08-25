@@ -22,7 +22,6 @@ use Drupal\search_api_solr\Plugin\search_api\data_type\value\DateRangeValue;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginManager;
 use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
-use Drupal\Tests\UnitTestCase;
 use Solarium\Core\Query\Helper;
 use Solarium\QueryType\Update\Query\Document;
 
