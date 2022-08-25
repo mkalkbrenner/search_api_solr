@@ -555,7 +555,7 @@ class Utility {
    */
   public static function getSortableSolrField(string $field_name, array $solr_field_names, QueryInterface $query) {
     if (!isset($solr_field_names[$field_name])) {
-      throw new SearchApiSolrException(sprintf('Sort "%s" is not valid solr field.', $field_name));
+      throw new SearchApiSolrException(sprintf('Sorting by "%s" has no valid solr field.', $field_name));
     }
 
     $first_solr_field_name = reset($solr_field_names[$field_name]);
@@ -565,7 +565,7 @@ class Utility {
     }
 
     // First we need to handle special fields which are prefixed by
-    // 'search_api_'. Otherwise they will erroneously be treated as dynamic
+    // 'search_api_'. Otherwise, they will erroneously be treated as dynamic
     // string fields by the next detection below because they start with an
     // 's'. This way we for example ensure that search_api_relevance isn't
     // modified at all.
@@ -601,6 +601,47 @@ class Utility {
 
     // We could not simply put this into an else condition because that would
     // miss fields like search_api_relevance.
+    return $first_solr_field_name;
+  }
+
+  /**
+   * Gets the boostable equivalent of a dynamic Solr field.
+   *
+   * @param string $field_name
+   *   The Search API field name.
+   * @param array $solr_field_names
+   *   The dynamic Solr field names.
+   * @param \Drupal\search_api\Query\QueryInterface $query
+   *   The Search API query.
+   *
+   * @return string
+   *   The sortable Solr field name.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public static function getBoostableSolrField(string $field_name, array $solr_field_names, QueryInterface $query) {
+    if (!isset($solr_field_names[$field_name])) {
+      throw new SearchApiSolrException(sprintf('Boosting by "%s" has no valid solr field.', $field_name));
+    }
+
+    $first_solr_field_name = reset($solr_field_names[$field_name]);
+
+    if (!Utility::hasIndexJustSolrDocumentDatasource($query->getIndex())) {
+      if (strpos($first_solr_field_name, 'spellcheck') === 0 || strpos($first_solr_field_name, 'twm_suggest') === 0) {
+        throw new SearchApiSolrException("You should not boost by spellcheck or suggester catalogs.");
+      }
+      elseif (strpos($first_solr_field_name, 't') === 0) {
+        // For fulltext fields use the language specific field. If multiple
+        // languages are specified, use the first one as workaround.
+        $language_ids = $query->getLanguages() ?? [LanguageInterface::LANGCODE_NOT_SPECIFIED];
+        foreach ($language_ids as $language_id) {
+          if (!empty($solr_field_names[$field_name][$language_id])) {
+            return $solr_field_names[$field_name][$language_id];
+          }
+        }
+      }
+    }
+
     return $first_solr_field_name;
   }
 
