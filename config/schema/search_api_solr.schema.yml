@@ -186,3 +186,25 @@ search_api_solr.scalar_values:
       VALUE:
         type: string
         label: 'property value'
+
+field.formatter.settings.solr_highlighted_string:
+  type: mapping
+  label: 'Highlighted plain text (Search API Solr)'
+  mapping:
+    prefix:
+      type: string
+      label: 'Prefix'
+    suffix:
+      type: string
+      label: 'Suffix'
+
+field.formatter.settings.solr_highlighted_text_default:
+  type: mapping
+  label: 'Highlighted text (Search API Solr)'
+  mapping:
+    prefix:
+      type: string
+      label: 'Prefix'
+    suffix:
+      type: string
+      label: 'Suffix'
