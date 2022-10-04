@@ -23,14 +23,14 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
       '#title' => t('Prefix'),
       '#type' => 'textfield',
       '#default_value' => $this->getSetting('prefix'),
-      '#description' => t('The prefix for a highlighted snippet, usually a HTML tag. Ensure that the selected text format for this field allows this prefix.'),
+      '#description' => t('The prefix for a highlighted snippet, usually an opening HTML tag. Ensure that the selected text format for this field allows this tag.'),
     ];
 
     $form['suffix'] = [
       '#title' => t('Suffix'),
       '#type' => 'textfield',
       '#default_value' => $this->getSetting('suffix'),
-      '#description' => t('The prefix for a highlighted snippet, usually a HTML tag. Ensure that the selected text format for this field allows this suffix.'),
+      '#description' => t('The suffix for a highlighted snippet, usually a closing HTML tag. Ensure that the selected text format for this field allows this tag.'),
     ];
 
     return $form;
