@@ -24,7 +24,7 @@
         "ext-dom": "*",
         "ext-json": "*",
         "ext-simplexml": "*",
-        "drupal/search_api": "~1.24",
+        "drupal/search_api": "~1.26",
         "composer/semver": "^1.0|^3.0",
         "consolidation/annotated-command": "^2.12|^4.1",
         "maennchen/zipstream-php": "^2.2",

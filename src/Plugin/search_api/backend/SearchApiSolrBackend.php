@@ -37,6 +37,7 @@ use Drupal\search_api\Item\ItemInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Plugin\search_api\data_type\value\TextValue;
 use Drupal\search_api\Processor\ProcessorInterface;
+use Drupal\search_api\Processor\ProcessorProperty;
 use Drupal\search_api\Query\ConditionGroup;
 use Drupal\search_api\Query\ConditionInterface;
 use Drupal\search_api\Query\ResultSetInterface;
@@ -1704,12 +1705,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           }
         }
 
-        $unspecific_field_names = $this->getSolrFieldNames($index);
-        // For solr_document datasource, search_api_language might not be mapped.
-        if (!empty($unspecific_field_names['search_api_language'])) {
-          $solarium_query->createFilterQuery('language_filter')->setQuery(
-            $this->createFilterQuery($unspecific_field_names['search_api_language'], $language_ids, 'IN', new Field($index, 'search_api_language'), $options)
-          );
+        $search_api_language_ids = $query->getLanguages() ?? [];
+        if (!empty($search_api_language_ids)) {
+          $unspecific_field_names = $this->getSolrFieldNames($index);
+          // For solr_document datasource, search_api_language might not be mapped.
+          if (!empty($unspecific_field_names['search_api_language'])) {
+            $solarium_query->createFilterQuery('language_filter')->setQuery(
+              $this->createFilterQuery($unspecific_field_names['search_api_language'], $language_ids, 'IN', new Field($index, 'search_api_language'), $options)
+            );
+          }
         }
 
         $search_api_retrieved_field_values = array_flip($query->getOption('search_api_retrieved_field_values', []));
@@ -3219,12 +3223,23 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $index_fulltext_fields[$index_id] = $index->getFulltextFields();
     }
 
-    // If there's a language condition take this one anfd keep it for nested
+    // If there's a language condition take this one and keep it for nested
     // conditions until we get a new language condition.
     $conditions = $condition_group->getConditions();
     foreach ($conditions as $condition) {
       if ($condition instanceof ConditionInterface) {
-        if ('search_api_language' === $condition->getField()) {
+        $field = $condition->getField();
+        $use_condition_languages = ('search_api_language' !== $field);
+        if (!$use_condition_languages) {
+          if ($field_instance = $query->getIndex()->getField($field)) {
+            $dataDefinition = $field_instance->getDataDefinition();
+            if ($dataDefinition instanceof ProcessorProperty && $dataDefinition->getProcessorId() === 'language_with_fallback') {
+              $use_condition_languages = TRUE;
+            }
+          }
+        }
+
+        if ($use_condition_languages) {
           $language_ids = $condition->getValue();
           if (!is_array($language_ids)) {
             $language_ids = [$language_ids];
