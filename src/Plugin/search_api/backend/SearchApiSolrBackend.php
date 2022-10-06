@@ -3229,7 +3229,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     foreach ($conditions as $condition) {
       if ($condition instanceof ConditionInterface) {
         $field = $condition->getField();
-        $use_condition_languages = ('search_api_language' !== $field);
+        $use_condition_languages = ('search_api_language' === $field);
         if (!$use_condition_languages) {
           if ($field_instance = $query->getIndex()->getField($field)) {
             $dataDefinition = $field_instance->getDataDefinition();
@@ -3241,7 +3241,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
         if ($use_condition_languages) {
           $language_ids = $condition->getValue();
-          if (!is_array($language_ids)) {
+          if ($language_ids && !is_array($language_ids)) {
             $language_ids = [$language_ids];
           }
         }
