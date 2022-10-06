@@ -33,7 +33,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * The separator to indicate the start of a language ID.
    *
    * We must not use any character that has a special meaning within regular
-   * expressions. Additionaly we have to avoid characters that are valid for
+   * expressions. Additionally, we have to avoid characters that are valid for
    * Drupal machine names.
    * The end of a language ID is indicated by an underscore '_' which could not
    * occur within the language ID itself because Drupal uses language tags.

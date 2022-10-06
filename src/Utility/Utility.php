@@ -1263,10 +1263,13 @@ class Utility {
 
     $settings = self::getIndexSolrSettings($index);
     $language_ids = $query->getLanguages() ?? [];
-    // Included languages are set by the langauges with fallback processor.
-    $included_languages = $query->getOption('search_api_included_languages', []);
+    // Included languages are set by the "languages with fallback" processor.
+    $fallback_languages = array_diff(
+      $query->getOption('search_api_included_languages', []),
+      array_merge($language_ids, [LanguageInterface::LANGCODE_NOT_SPECIFIED])
+    );
 
-    if (empty($included_languages)) {
+    if (empty($fallback_languages)) {
       // If there are no languages set, we need to set them. As an example, a
       // language might be set by a filter in a search view.
       if (empty($language_ids)) {
@@ -1284,28 +1287,32 @@ class Utility {
             ->getLanguages());
         }
       }
+    }
 
-      $specific_languages = array_keys(array_filter($index->getThirdPartySetting('search_api_solr', 'multilingual', ['specific_languages' => []])['specific_languages']));
-      if (!empty($specific_languages)) {
-        $language_ids = array_intersect($language_ids, $specific_languages);
+    $specific_languages = array_keys(array_filter($index->getThirdPartySetting('search_api_solr', 'multilingual', ['specific_languages' => []])['specific_languages']));
+    if (!empty($specific_languages)) {
+      $language_ids = array_intersect($language_ids, $specific_languages);
+      $fallback_languages = array_intersect($fallback_languages, $specific_languages);
+    }
+
+    array_walk($language_ids, function (&$item, $key) {
+      if (LanguageInterface::LANGCODE_NOT_APPLICABLE === $item) {
+        $item = LanguageInterface::LANGCODE_NOT_SPECIFIED;
       }
+    });
 
-      array_walk($language_ids, function (&$item, $key) {
-        if (LanguageInterface::LANGCODE_NOT_APPLICABLE === $item) {
-          $item = LanguageInterface::LANGCODE_NOT_SPECIFIED;
-        }
-      });
+    if ($settings['multilingual']['include_language_independent']) {
+      $language_ids[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
+      // LanguageInterface::LANGCODE_NOT_APPLICABLE is mapped to
+      // LanguageInterface::LANGCODE_NOT_SPECIFIED above.
+    }
 
-      if ($settings['multilingual']['include_language_independent']) {
-        $language_ids[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
-        // LanguageInterface::LANGCODE_NOT_APPLICABLE is mapped to
-        // LanguageInterface::LANGCODE_NOT_SPECIFIED above.
-      }
 
+    if (empty($fallback_languages)) {
       $query->setLanguages(array_unique($language_ids));
     }
 
-    return array_unique(array_merge($language_ids, $included_languages));
+    return array_unique(array_merge($language_ids, $fallback_languages));
   }
 
 }
