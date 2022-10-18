@@ -4478,6 +4478,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           $grouping_component->setLimit($grouping_options['group_limit']);
         }
 
+        // Set group offset.
+        if (isset($grouping_options['group_offset'])) {
+          $grouping_component->setOffset($grouping_options['group_offset']);
+        }
+
         if (!empty($grouping_options['group_sort'])) {
           $sorts = [];
           foreach ($grouping_options['group_sort'] as $group_sort_field => $order) {
