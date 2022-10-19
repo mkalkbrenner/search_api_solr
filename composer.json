@@ -32,7 +32,6 @@
         "laminas/laminas-stdlib": "^3.2"
     },
     "require-dev": {
-        "phayes/geophp": "^1.2",
         "monolog/monolog": "^1.25",
         "drupal/devel": "^4.0",
         "drupal/facets": "1.x-dev",
