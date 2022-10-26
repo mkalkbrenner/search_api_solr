@@ -1923,7 +1923,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         // @see https://www.drupal.org/project/search_api_solr/issues/3133997
         $query->mergeCacheMaxAge(0);
       }
-      throw $e;
+
+      // Don't expose Solr error message details to the user. The search_api
+      // views integration forwards the exception message to the end user. Just
+      // log the datails.
+      $this->getLogger()->error($e->getMessage());
+
+      throw new SearchApiSolrException('An error occurred while searching, try again later.', $e->getCode());
     }
 }
 
