@@ -900,7 +900,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       $this->fail('Field uid must not yet exists in this index.');
     }
     catch (\Exception $e) {
-      $this->assertEquals('Filter term on unknown or unindexed field uid.', $e->getMessage());
+      // An expected exception occurred.
     }
 
     $index = $this->getIndex();
