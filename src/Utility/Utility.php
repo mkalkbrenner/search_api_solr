@@ -1289,7 +1289,7 @@ class Utility {
       }
     }
 
-    $specific_languages = array_keys(array_filter($index->getThirdPartySetting('search_api_solr', 'multilingual', ['specific_languages' => []])['specific_languages']));
+    $specific_languages = array_keys(array_filter($index->getThirdPartySetting('search_api_solr', 'multilingual', ['specific_languages' => []])['specific_languages'] ?? []));
     if (!empty($specific_languages)) {
       $language_ids = array_intersect($language_ids, $specific_languages);
       $fallback_languages = array_intersect($fallback_languages, $specific_languages);
