@@ -27,6 +27,11 @@ class SearchApiSolrTest extends SolrBackendTestBase {
   use SolrCommitTrait;
   use InvokeMethodTrait;
 
+  /**
+   * The language IDs.
+   *
+   * @var array
+   */
   protected $languageIds = [
     'ar' => 'ar',
     'bg' => 'bg',
@@ -132,7 +137,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
   protected function regressionTest2469547() {
     return;
 
-    // @todo
+    // @todo Fix coding standard.
     // @codingStandardsIgnoreStart
     $query = $this->buildSearch();
     $facets = [];
@@ -792,11 +797,11 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    * Tests retrieve_data options.
    */
   protected function checkIndexFallback() {
-    global $index_fallback_test;
+    global $_search_api_solr_test_index_fallback_test;
 
     // If set to TRUE, search_api_solr_test_search_api_solr_documents_alter()
     // turns one out of five test documents into an illegal one.
-    $index_fallback_test = TRUE;
+    $_search_api_solr_test_index_fallback_test = TRUE;
 
     // If five documents are updated as batch, one illegal document causes the
     // entire batch to fail.
@@ -813,7 +818,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $this->assertEquals($this->indexItems($this->indexId), 4);
 
     // Don't mess up the remaining document anymore.
-    $index_fallback_test = FALSE;
+    $_search_api_solr_test_index_fallback_test = FALSE;
     // Disable the fallback to index the documents one by one.
     $config['index_single_documents_fallback_count'] = 0;
     $server->setBackendConfig($config);
@@ -1049,9 +1054,8 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $backend = Server::load($this->serverId)->getBackend();
     $targeted_branch = $backend->getSolrConnector()->getSchemaTargetedSolrBranch();
     if ('3.x' !== $targeted_branch) {
-      // There's no real collated field for Solr 3.x. Therefore the sorting of
-      // of "non existing" values differ.
-
+      // There's no real collated field for Solr 3.x. Therefore, the sorting of
+      // "non-existing" values differ.
       // Type multi-value string. Uses first value.
       $results = $this->buildSearch(NULL, [], [], FALSE)
         ->sort('keywords')
@@ -1260,7 +1264,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $expected_results = [
       1 => 'en',
       2 => 'en',
-      7 => LanguageInterface::LANGCODE_NOT_APPLICABLE
+      7 => LanguageInterface::LANGCODE_NOT_APPLICABLE,
     ];
     $this->assertResults($expected_results, $results, 'Search content and unspecified language for "gene".');
 
@@ -1403,7 +1407,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       }
     }
 
-    $config_name = 'name="drupal-' . SolrBackendInterface::SEARCH_API_SOLR_SCHEMA_VERSION . '-solr-' . $solr_major_version . '.x-'. SEARCH_API_SOLR_JUMP_START_CONFIG_SET .'"';
+    $config_name = 'name="drupal-' . SolrBackendInterface::SEARCH_API_SOLR_SCHEMA_VERSION . '-solr-' . $solr_major_version . '.x-' . SEARCH_API_SOLR_JUMP_START_CONFIG_SET . '"';
     $this->assertStringContainsString($config_name, $config_files['solrconfig.xml']);
     $this->assertStringContainsString($config_name, $config_files['schema.xml']);
     $this->assertStringContainsString($server->id(), $config_files['test.txt']);
@@ -1420,8 +1424,17 @@ class SearchApiSolrTest extends SolrBackendTestBase {
 
     $backend_config['connector_config']['jmx'] = TRUE;
     $backend_config['connector_config']['jts'] = TRUE;
-    $backend_config['disabled_field_types'] = ['text_foo_en_4_5_0', 'text_foo_en_6_0_0', 'text_de_4_5_0', 'text_de_6_0_0', 'text_de_7_0_0'];
-    $backend_config['disabled_caches'] = ['cache_document_default_7_0_0', 'cache_filter_default_7_0_0'];
+    $backend_config['disabled_field_types'] = [
+      'text_foo_en_4_5_0',
+      'text_foo_en_6_0_0',
+      'text_de_4_5_0',
+      'text_de_6_0_0',
+      'text_de_7_0_0',
+    ];
+    $backend_config['disabled_caches'] = [
+      'cache_document_default_7_0_0',
+      'cache_filter_default_7_0_0',
+    ];
     $server->setBackendConfig($backend_config);
     $server->save();
     // Reset static caches.

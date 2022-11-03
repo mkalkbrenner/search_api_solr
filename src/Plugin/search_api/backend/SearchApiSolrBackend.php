@@ -4408,7 +4408,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $field_names = $this->getSolrFieldNames($query->getIndex());
     $rpt = reset($rpt_options);
     $solr_field = $field_names[$rpt['field']];
-    $rpt['geom'] = isset($rpt['geom']) ? $rpt['geom'] : '["-180 -90" TO "180 90"]';
+    $rpt['geom'] = $rpt['geom'] ?? '["-180 -90" TO "180 90"]';
 
     // Add location filter.
     $solarium_query->createFilterQuery($solr_field)->setQuery($solr_field . ':' . $rpt['geom']);
@@ -4641,7 +4641,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * {@inheritdoc}
    */
   public function isOptimizeEnabled() {
-    return isset($this->configuration['optimize']) ? $this->configuration['optimize'] : FALSE;
+    return $this->configuration['optimize'] ?? FALSE;
   }
 
   /**
