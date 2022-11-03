@@ -452,7 +452,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#options' => array_combine($domains, $domains),
       '#title' => $this->t('Targeted content domain'),
       '#description' => $this->t('For example "UltraBot3000" would be indexed as "Ultra" "Bot" "3000" in a generic domain, "CYP2D6" has to stay like it is in a scientific domain.'),
-      '#default_value' => isset($this->configuration['domain']) ? $this->configuration['domain'] : 'generic',
+      '#default_value' => $this->configuration['domain'] ?? 'generic',
     ];
 
     $environments = Utility::getAvailableEnvironments();
@@ -461,7 +461,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#options' => array_combine($environments, $environments),
       '#title' => $this->t('Targeted environment'),
       '#description' => $this->t('For example "dev", "stage" or "prod".'),
-      '#default_value' => isset($this->configuration['environment']) ? $this->configuration['environment'] : 'default',
+      '#default_value' => $this->configuration['environment'] ?? 'default',
     ];
 
     $form['advanced']['i_know_what_i_do'] = [
@@ -1213,12 +1213,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $item->setLanguage($language_id);
       }
 
-      /** @see \Drupal\search_api\Plugin\search_api\processor\LanguageWithFallback */
+      /* @see \Drupal\search_api\Plugin\search_api\processor\LanguageWithFallback */
       $fallback_languages = [];
       $fallback_field_names = [];
       $language_with_fallback_field = $item->getField('language_with_fallback', FALSE);
       if ($language_with_fallback_field) {
-        $fallback_languages = array_diff($language_with_fallback_field->getValues(), [$language_id, LanguageInterface::LANGCODE_NOT_SPECIFIED]);
+        $fallback_languages = array_diff($language_with_fallback_field->getValues(), [
+            $language_id,
+            LanguageInterface::LANGCODE_NOT_SPECIFIED,
+        ]);
         if (!empty($specific_languages)) {
           $fallback_languages = array_intersect($fallback_languages, $specific_languages);
         }
@@ -1708,7 +1711,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $search_api_language_ids = $query->getLanguages() ?? [];
         if (!empty($search_api_language_ids)) {
           $unspecific_field_names = $this->getSolrFieldNames($index);
-          // For solr_document datasource, search_api_language might not be mapped.
+          // For solr_document datasource, search_api_language might not be
+          // mapped.
           if (!empty($unspecific_field_names['search_api_language'])) {
             $solarium_query->createFilterQuery('language_filter')->setQuery(
               $this->createFilterQuery($unspecific_field_names['search_api_language'], $language_ids, 'IN', new Field($index, 'search_api_language'), $options)
@@ -1931,7 +1935,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
       throw new SearchApiSolrException('An error occurred while searching, try again later.', $e->getCode());
     }
-}
+  }
 
   /**
    * Ensures the given Search API query has a language condition applied.
@@ -2269,7 +2273,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @return bool
    *   TRUE if the index only contains "solr_*" datasources, FALSE otherwise.
    *
-   * @deprecated in search_api_solr:4.2.0 and is removed from
+   * @deprecated SearchApiSolrBackend::hasIndexJustSolrDatasources() is
+   *   deprecated in search_api_solr:4.2.0 and is removed from
    *   search_api_solr:4.3.0. Use
    *   Utility::hasIndexJustSolrDatasources() instead.
    *
@@ -2277,7 +2282,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr\Utility\Utility::hasIndexJustSolrDatasources()
    */
   protected function hasIndexJustSolrDatasources(IndexInterface $index) {
-    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDatasources() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDatasources() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0. Use Utility::hasIndexJustSolrDatasources() instead.', E_USER_DEPRECATED);
     return Utility::hasIndexJustSolrDatasources($index);
   }
 
@@ -2291,7 +2296,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   TRUE if the index only contains "solr_document" datasources, FALSE
    *   otherwise.
    *
-   * @deprecated in search_api_solr:4.2.0 and is removed from
+   * @deprecated SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is
+   *   deprecated in search_api_solr:4.2.0 and is removed from
    *   search_api_solr:4.3.0. Use
    *   Utility::hasIndexJustSolrDocumentDatasource() instead.
    *
@@ -2299,7 +2305,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr\Utility\Utility::hasIndexJustSolrDocumentDatasource()
    */
   protected function hasIndexJustSolrDocumentDatasource(IndexInterface $index) {
-    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0.', E_USER_DEPRECATED);
     return Utility::hasIndexJustSolrDocumentDatasource($index);
   }
 
