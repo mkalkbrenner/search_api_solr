@@ -1345,7 +1345,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       'type' => 'item',
       'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
     ]);
-    $count = \Drupal::entityQuery('entity_test_mulrev_changed')->count()->execute();
+    $count = \Drupal::entityQuery('entity_test_mulrev_changed')->count()->accessCheck()->execute();
     $this->assertEquals(8, $count, "$count items inserted.");
   }
 

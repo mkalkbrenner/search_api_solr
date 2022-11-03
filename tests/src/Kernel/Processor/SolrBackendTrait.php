@@ -53,7 +53,7 @@ trait SolrBackendTrait {
   /**
    * {@inheritdoc}
    */
-  protected function tearDown() {
+  protected function tearDown(): void {
     $this->index->clear();
     $this->ensureCommit($this->index);
     parent::tearDown();

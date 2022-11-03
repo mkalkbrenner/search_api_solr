@@ -110,7 +110,7 @@ use Laminas\Stdlib\ArrayUtils;
 class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInterface, PluginFormInterface {
 
   use PluginFormTrait {
-    submitConfigurationForm as traitSubmitConfigurationForm;
+    PluginFormTrait::submitConfigurationForm as traitSubmitConfigurationForm;
   }
 
   use PluginDependencyTrait;
