@@ -263,6 +263,8 @@ jobs:
 
       needs: generate-config-sets
 
+      continue-on-error: ${{ matrix.experimental }}
+
       strategy:
         matrix:
           drupal: ['9.4', '9.5']
