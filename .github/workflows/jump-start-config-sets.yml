@@ -265,13 +265,15 @@ jobs:
 
       strategy:
         matrix:
-          drupal: ['9.4', '9.5', '10.0']
+          drupal: ['9.4', '9.5']
           solr: ['3']
           php: ['7.4', '8.1']
-          exclude:
+          experimental: [false]
+          include:
             - drupal: '10.0'
               solr: '3'
-              php: '7.4'
+              php: '8.1'
+              experimental: true
 
       name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
 
