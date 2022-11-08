@@ -2126,7 +2126,7 @@ function search_api_solr_update_8414() {
 }
 
 /**
- * Offer language undefined ad fallback language.
+ * Offer language undefined as fallback language.
  */
 function search_api_solr_update_8415() {
   foreach (search_api_solr_update_helper_get_index_third_party_settings() as $index_id => $third_party_settings) {
