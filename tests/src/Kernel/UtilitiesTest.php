@@ -143,6 +143,7 @@ class UtilitiesTest extends KernelTestBase {
             'en' => '0',
             'de' => 'de',
           ],
+          'use_language_undefined_as_fallback_language' => FALSE,
         ],
         'term_modifiers' => [
           'slop' => 3,
@@ -150,7 +151,7 @@ class UtilitiesTest extends KernelTestBase {
         ],
         'debug_finalize' => FALSE,
       ],
-      search_api_solr_merge_default_index_third_party_settings($third_party_settings)
+      search_api_solr_merge_default_index_third_bparty_settings($third_party_settings)
     );
   }
 
