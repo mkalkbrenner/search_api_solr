@@ -2124,3 +2124,15 @@ function search_api_solr_update_8414() {
     search_api_solr_update_helper_save_index_third_party_settings($index_id, $third_party_settings);
   }
 }
+
+/**
+ * Offer language undefined ad fallback language.
+ */
+function search_api_solr_update_8415() {
+  foreach (search_api_solr_update_helper_get_index_third_party_settings() as $index_id => $third_party_settings) {
+    if (!isset($third_party_settings['multilingual']) || !isset($third_party_settings['multilingual']['use_language_undefined_as_fallback_language'])) {
+      $third_party_settings['multilingual']['use_language_undefined_as_fallback_language'] = FALSE;
+    }
+    search_api_solr_update_helper_save_index_third_party_settings($index_id, $third_party_settings);
+  }
+}

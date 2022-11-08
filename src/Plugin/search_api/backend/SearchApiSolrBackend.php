@@ -1188,11 +1188,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   public function getDocuments(IndexInterface $index, array $items, UpdateQuery $update_query = NULL) {
+    $index_third_party_settings = $index->getThirdPartySettings('search_api_solr') + search_api_solr_default_index_third_party_settings();
     $documents = [];
     $index_id = $this->getTargetedIndexId($index);
     $site_hash = $this->getTargetedSiteHash($index);
     $languages = $this->languageManager->getLanguages();
-    $specific_languages = array_keys(array_filter($index->getThirdPartySetting('search_api_solr', 'multilingual', ['specific_languages' => []])['specific_languages'] ?? []));
+    $specific_languages = array_keys(array_filter($index_third_party_settings['multilingual']['specific_languages'] ?? []));
+    $use_language_undefined_as_fallback_language = $index_third_party_settings['multilingual']['use_language_undefined_as_fallback_language'] ?? FALSE;
     $fulltext_fields = $index->getFulltextFields();
     $request_time = $this->formatDate($this->time->getRequestTime());
     $base_urls = [];
@@ -1228,7 +1230,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
 
       foreach ($fallback_languages as $fallback_language) {
-        $fallback_field_names[$fallback_language] = $this->getLanguageSpecificSolrFieldNames($fallback_language, $index);
+        $fallback_field_names[$fallback_language] = $this->getLanguageSpecificSolrFieldNames($use_language_undefined_as_fallback_language ? LanguageInterface::LANGCODE_NOT_SPECIFIED : $fallback_language, $index);
       }
       $field_names = $this->getLanguageSpecificSolrFieldNames($language_id, $index);
       $boost_terms = [];
@@ -1298,11 +1300,16 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             }
 
             $first_value = $this->addIndexField($doc, $field_names[$name], $auto_aggregate_values[$type], $type, $boost_terms);
-            if (in_array($field_identifier, $fulltext_fields)) {
-              foreach ($fallback_languages as $fallback_language) {
+            $fallback_values = [];
+            foreach ($fallback_languages as $fallback_language) {
+              if (!isset($fallback_values[$fallback_language])) {
                 $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $auto_aggregate_values[$type], $type, $item);
                 $this->eventDispatcher->dispatch($event);
-                $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $event->getValue(), $type, $boost_terms);
+                $value = trim($event->getValue());
+                if ($value) {
+                  $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $value, $type, $boost_terms);
+                }
+                $fallback_values[$fallback_language] = $value;
               }
             }
             break;
@@ -1318,10 +1325,17 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           default:
             $first_value = $this->addIndexField($doc, $field_names[$name], $field->getValues(), $type, $boost_terms);
             if (in_array($field_identifier, $fulltext_fields)) {
+              $fallback_values = [];
               foreach ($fallback_languages as $fallback_language) {
-                $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $field->getValues(), $type, $item);
-                $this->eventDispatcher->dispatch($event);
-                $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $event->getValue(), $type, $boost_terms);
+                if (!isset($fallback_values[$fallback_language])) {
+                  $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $field->getValues(), $type, $item);
+                  $this->eventDispatcher->dispatch($event);
+                  $value = trim($event->getValue());
+                  if ($value) {
+                    $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $value, $type, $boost_terms);
+                  }
+                  $fallback_values[$fallback_language] = $value;
+                }
               }
             }
             break;
