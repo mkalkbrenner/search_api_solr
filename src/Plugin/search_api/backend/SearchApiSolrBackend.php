@@ -1305,7 +1305,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               if (!isset($fallback_values[$fallback_language])) {
                 $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $auto_aggregate_values[$type], $type, $item);
                 $this->eventDispatcher->dispatch($event);
-                $value = trim($event->getValue());
+                $value = $event->getValue();
                 if ($value) {
                   $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $value, $type, $boost_terms);
                 }
@@ -1330,7 +1330,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                 if (!isset($fallback_values[$fallback_language])) {
                   $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $field->getValues(), $type, $item);
                   $this->eventDispatcher->dispatch($event);
-                  $value = trim($event->getValue());
+                  $value = $event->getValue();
                   if ($value) {
                     $this->addIndexField($doc, $fallback_field_names[$fallback_language][$name], $value, $type, $boost_terms);
                   }
