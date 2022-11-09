@@ -2938,6 +2938,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
 
       $item_id = $doc_fields[$id_field];
+      // For an unknown reason we sometimes get an array here. See
+      // https://www.drupal.org/project/search_api_solr/issues/3281703
+      if (is_array($item_id)) {
+        $item_id = current($item_id);
+      }
       // For items coming from a different site, we need to adapt the item ID.
       if (isset($doc_fields['hash']) && !$this->configuration['site_hash'] && $doc_fields['hash'] != $site_hash) {
         $item_id = $doc_fields['hash'] . '--' . $item_id;
@@ -2966,6 +2971,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
       if ($language_field && isset($doc_fields[$language_field])) {
         $language_id = $doc_fields[$language_field];
+        // For an unknown reason we sometimes get an array here. See
+        // https://www.drupal.org/project/search_api_solr/issues/3281703
+        if (is_array($language_id)) {
+          $language_id = current($language_id);
+        }
         $result_item->setLanguage($language_id);
         $field_names = $this->getLanguageSpecificSolrFieldNames($language_id, $index);
       }
