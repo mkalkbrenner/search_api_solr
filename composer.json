@@ -34,7 +34,7 @@
     "require-dev": {
         "monolog/monolog": "^1.25|^3",
         "drupal/devel": "^4.0|^5.0",
-        "drupal/facets": "^3.0.x-dev",
+        "drupal/facets": "^2.0.x-dev",
         "drupal/geofield": "1.x-dev",
         "drupal/search_api_autocomplete": "1.x-dev",
         "drupal/search_api_location": "1.x-dev",
