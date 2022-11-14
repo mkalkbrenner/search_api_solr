@@ -1945,7 +1945,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       // Don't expose Solr error message details to the user. The search_api
       // views integration forwards the exception message to the end user. Just
       // log the datails.
-      $this->getLogger()->error($e->getMessage());
+      $this->getLogger()->error('@exception', ['@exception' => $e->getMessage()]);
 
       throw new SearchApiSolrException('An error occurred while searching, try again later.', $e->getCode());
     }
@@ -3729,9 +3729,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             //   considered. And the results have to be combined across
             //   languages. One way to implement it might be facet queries.
             //   For now, log an error and throw an exception.
-            $msg = sprintf('Facets for fulltext fields are not yet supported. Consider converting the following field to a string or index it twice as string: %s.', $info['field']);
-            $this->getLogger()->error($msg);
-            throw new SearchApiSolrException($msg);
+            $msg = 'Facets for fulltext fields are not yet supported. Consider converting the following field to a string or indexing it one more time as string:';
+            $this->getLogger()->error($msg . ' @field', ['@field' => $info['field']]);
+            throw new SearchApiSolrException(sprintf($msg . ' %s', $info['field']));
           }
           else {
             // Create the Solarium facet field object.
@@ -3773,9 +3773,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             // Trie based field types were deprecated in Solr 6 and with Solr 7
             // we switched to the point based equivalents. But lucene doesn't
             // support a mincount of "0" for these field types.
-            $msg = sprintf('Facets having a mincount of "0" is not yet supported by Solr for point based field types. Consider converting the following field to a string or index it twice as string: %s.', $info['field']);
-            $this->getLogger()->error($msg);
-            throw new SearchApiSolrException($msg);
+            $msg = 'Facets having a mincount of "0" are not yet supported by Solr for point based field types. Consider converting the following field to a string or indexing it one more time as string:';
+            $this->getLogger()->error($msg . ' @field', ['@field' => $info['field']]);
+            throw new SearchApiSolrException(sprintf($msg . ' %s', $info['field']));
           }
         }
 
@@ -4268,9 +4268,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         // switched to the point based equivalents. But lucene doesn't support
         // mlt based on these field types. Date fields don't seem to be
         // supported at all in MLT queries.
-        $msg = sprintf('More like this (MLT) is not yet supported by Solr for point based field types. Consider converting the following field to a string or index it twice as string: %s.', $mlt_field);
-        $this->getLogger()->error($msg);
-        throw new SearchApiSolrException($msg);
+        $msg = 'More like this (MLT) is not yet supported by Solr for point based field types. Consider converting the following field to a string or indexing it one more time as string:';
+        $this->getLogger()->error($msg . ' @field', ['@field' => $mlt_field]);
+        throw new SearchApiSolrException(sprintf($msg . ' %s', $mlt_field));
       }
 
       if (strpos($first_field, 't') !== 0) {
