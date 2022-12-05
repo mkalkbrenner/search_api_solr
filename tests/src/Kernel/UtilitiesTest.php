@@ -144,6 +144,7 @@ class UtilitiesTest extends KernelTestBase {
             'de' => 'de',
           ],
           'use_language_undefined_as_fallback_language' => FALSE,
+          'use_universal_collation' => FALSE,
         ],
         'term_modifiers' => [
           'slop' => 3,
