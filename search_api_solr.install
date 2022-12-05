@@ -2146,7 +2146,7 @@ function search_api_solr_update_8416() {
       $field_type_config['field_type_language_code'] === LanguageInterface::LANGCODE_NOT_SPECIFIED &&
       !empty($field_type_config['collated_field_type'])
     ) {
-      $field_type_config['collated_field_type']['locale'] = '';
+      $field_type_config['collated_field_type']['locale'] = NULL;
       search_api_solr_update_helper_save_field_type_config($field_type_name, $field_type_config);
     }
   }
