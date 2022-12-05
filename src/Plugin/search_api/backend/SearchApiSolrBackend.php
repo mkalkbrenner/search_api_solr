@@ -4687,20 +4687,27 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * {@inheritdoc}
    */
   public function getSchemaLanguageStatistics(?Endpoint $endpoint = NULL) {
-    $available = $this->getSolrConnector()->pingServer();
-
     $stats = [];
-    foreach ($this->languageManager->getLanguages() as $language) {
-      $language_id = $language->getId();
+    $language_ids = array_keys($this->languageManager->getLanguages());
+    $language_ids[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
+    foreach ($language_ids as $language_id) {
       // Convert zk-hans to zk_hans.
       $converted_language_id = str_replace('-', '_', $language_id);
-      $stats[$language_id] = $available ? ($this->isPartOfSchema('fieldTypes', 'text_' . $converted_language_id, $endpoint) ? $converted_language_id : FALSE) : FALSE;
-      if (!$stats[$language_id]) {
-        // Try language fallback.
-        $converted_language_id = preg_replace('/-.+$/', '', $language_id);
-        $stats[$language_id] = $available ? ($this->isPartOfSchema('fieldTypes', 'text_' . $converted_language_id, $endpoint) ? $converted_language_id : FALSE) : FALSE;
+
+      $stats[$language_id] = FALSE;
+      try {
+        $stats[$language_id] = $this->isPartOfSchema('fieldTypes', 'text_' . $converted_language_id, $endpoint) ? $converted_language_id : FALSE;
+        if (!$stats[$language_id]) {
+          // Try language fallback.
+          $converted_language_id = preg_replace('/-.+$/', '', $language_id);
+          $stats[$language_id] = $this->isPartOfSchema('fieldTypes', 'text_' . $converted_language_id, $endpoint) ? $converted_language_id : FALSE;
+        }
+      }
+      catch (SearchApiSolrException $e) {
+        $stats[$language_id] = FALSE;
       }
     }
+
     return $stats;
   }
 
