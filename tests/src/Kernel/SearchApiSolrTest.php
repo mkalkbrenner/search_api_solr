@@ -322,6 +322,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
         }
       }
     }
+    $language_ids[LanguageInterface::LANGCODE_NOT_SPECIFIED] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
     $this->assertEquals($language_ids, $backend->getSchemaLanguageStatistics());
   }
 
