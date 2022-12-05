@@ -137,7 +137,9 @@ search_api.index.*.third_party.search_api_solr:
           label: 'Specific Languages'
           sequence:
             type: string
-
+        use_universal_collation:
+          type: boolean
+          label: 'Use universal UTF-8 collation'
 search_api_solr.solr_configs:
   type: mapping
   mapping:
