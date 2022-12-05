@@ -92,7 +92,10 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
    */
   protected static function buildXmlFromArrayRecursive(\SimpleXMLElement $element, array $attributes) {
     foreach ($attributes as $key => $value) {
-      if (is_scalar($value)) {
+      if ($value === '') {
+          $element->addAttribute($key);
+      }
+      elseif (is_scalar($value)) {
         if (is_bool($value) === TRUE) {
           // SimpleXMLElement::addAtribute() converts booleans to integers 0
           // and 1. But Solr requires the strings 'false' and 'true'.
