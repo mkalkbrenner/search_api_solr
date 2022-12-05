@@ -93,7 +93,7 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
   protected static function buildXmlFromArrayRecursive(\SimpleXMLElement $element, array $attributes) {
     foreach ($attributes as $key => $value) {
       if ($value === '') {
-          $element->addAttribute($key, '');
+          $element->addAttribute($key, '17');
       }
       elseif (is_scalar($value)) {
         if (is_bool($value) === TRUE) {
