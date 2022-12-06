@@ -1195,6 +1195,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $languages = $this->languageManager->getLanguages();
     $specific_languages = array_keys(array_filter($index_third_party_settings['multilingual']['specific_languages'] ?? []));
     $use_language_undefined_as_fallback_language = $index_third_party_settings['multilingual']['use_language_undefined_as_fallback_language'] ?? FALSE;
+    $use_universal_collation = $index_third_party_settings['multilingual']['use_universal_collation'] ?? FALSE;
     $fulltext_fields = $index->getFulltextFields();
     $request_time = $this->formatDate($this->time->getRequestTime());
     $base_urls = [];
@@ -1364,14 +1365,16 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                 $first_value = Unicode::truncate($first_value, 128);
               }
 
-              // Always copy fulltext and string fields to a dedicated sort
-              // fields for faster sorts and language specific collations. To
-              // allow sorted multilingual searches we need to fill *all*
-              // language-specific sort fields!
-              $sort_languages = array_keys($this->languageManager
-                ->getLanguages());
-              if (!empty($specific_languages)) {
-                $sort_languages = array_intersect($sort_languages, $specific_languages);
+              if (!$use_universal_collation) {
+                // Copy fulltext and string fields to a dedicated sort fields
+                // for faster sorts and language specific collations. To
+                // allow sorted multilingual searches we need to fill *all*
+                // language-specific sort fields!
+                $sort_languages = array_keys($this->languageManager
+                  ->getLanguages());
+                if (!empty($specific_languages)) {
+                  $sort_languages = array_intersect($sort_languages, $specific_languages);
+                }
               }
               $sort_languages[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
               foreach ($sort_languages as $sort_language_id) {

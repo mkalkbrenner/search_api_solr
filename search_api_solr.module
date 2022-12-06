@@ -172,6 +172,7 @@ function search_api_solr_default_index_third_party_settings() {
       'include_language_independent' => TRUE,
       'use_language_undefined_as_fallback_language' => FALSE,
       'specific_languages' => [],
+      'use_universal_collation' => FALSE,
     ],
   ];
 }
@@ -307,6 +308,13 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#description' => t('Selected languages will use language-specific fields when a values gets indexed. Others will use the language-unspecific default. If nothing is selected, all translations will be indexed using language-specific fields.'),
       '#options' => $langcode_options,
       '#default_value' => $settings['multilingual']['specific_languages'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['multilingual']['use_universal_collation'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Use universal UTF-8 collation.'),
+      '#description' => t('By default, language-specific collations are used. That provides the best collation results. But to save index disk space you can use a universal UTF-8 collation.'),
+      '#default_value' => $settings['multilingual']['use_universal_collation'],
     ];
 
     $form['third_party_settings']['search_api_solr']['highlighter'] = [
