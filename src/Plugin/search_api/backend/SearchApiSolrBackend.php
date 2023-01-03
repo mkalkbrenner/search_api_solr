@@ -1222,8 +1222,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $language_with_fallback_field = $item->getField('language_with_fallback', FALSE);
       if ($language_with_fallback_field) {
         $fallback_languages = array_diff($language_with_fallback_field->getValues(), [
-            $language_id,
-            LanguageInterface::LANGCODE_NOT_SPECIFIED,
+          $language_id,
+          LanguageInterface::LANGCODE_NOT_SPECIFIED,
         ]);
         if (!empty($specific_languages)) {
           $fallback_languages = array_intersect($fallback_languages, $specific_languages);

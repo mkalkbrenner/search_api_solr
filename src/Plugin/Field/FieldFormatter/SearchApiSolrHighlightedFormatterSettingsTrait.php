@@ -9,17 +9,23 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\search_api\Utility\Utility;
 
 /**
- * Common formatter settings for SearchApiSolrHighlighted* formatters
+ * Common formatter settings for SearchApiSolrHighlighted* formatters.
  */
 trait SearchApiSolrHighlightedFormatterSettingsTrait {
 
+  /**
+   *
+   */
   public static function defaultSettings() {
     return [
-        'prefix' => '<strong>',
-        'suffix' => '</strong>',
-      ] + parent::defaultSettings();
+      'prefix' => '<strong>',
+      'suffix' => '</strong>',
+    ] + parent::defaultSettings();
   }
 
+  /**
+   *
+   */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form = parent::settingsForm($form, $form_state);
 
@@ -78,7 +84,7 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
         $id_langcode = $langcode;
       }
     }
-    $item_id = Utility::createCombinedId('entity:' . $entity->getEntityTypeId(),$entity->id() . ':' . $id_langcode);
+    $item_id = Utility::createCombinedId('entity:' . $entity->getEntityTypeId(), $entity->id() . ':' . $id_langcode);
     $highlighted_keys = [];
 
     $cacheableMetadata->addCacheableDependency($entity);
@@ -96,7 +102,7 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
     }
 
     foreach ($highlighted_keys as $key) {
-      $value = preg_replace('/'. preg_quote($key, '/') . '/', $this->getSetting('prefix') . $key . $this->getSetting('suffix'), $value);
+      $value = preg_replace('/' . preg_quote($key, '/') . '/', $this->getSetting('prefix') . $key . $this->getSetting('suffix'), $value);
     }
 
     return $value;
