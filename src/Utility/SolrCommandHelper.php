@@ -166,10 +166,11 @@ class SolrCommandHelper extends CommandHelper {
    * @throws \Drupal\search_api\SearchApiException
    */
   protected function reindex(ServerInterface $server): void {
-    foreach($server->getIndexes() as $index) {
+    foreach ($server->getIndexes() as $index) {
       if ($index->status() && !$index->isReadOnly()) {
         $index->reindex();
       }
     }
   }
+
 }
