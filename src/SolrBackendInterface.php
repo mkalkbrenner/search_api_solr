@@ -204,7 +204,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * In case of Solr Cloud an index might use a different Solr collection.
    *
    * @param \Drupal\search_api\IndexInterface $index
-   *  The Search API index.
+   *   The Search API index.
    *
    * @return \Solarium\Core\Client\Endpoint
    *   The solarium endpoint.

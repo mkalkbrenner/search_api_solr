@@ -617,7 +617,7 @@ function search_api_solr_form_search_api_index_form_validate_server(array &$elem
 function search_api_solr_form_search_api_index_fields_alter(&$form, FormStateInterface $form_state, $form_id) {
   /** @var \Drupal\Core\Entity\EntityFormInterface $form_object */
   $form_object = $form_state->getFormObject();
-  /** @var IndexInterface $this_index */
+  /** @var \Drupal\search_api\IndexInterface $this_index */
   $index = $form_object->getEntity();
 
   if (Utility::hasIndexSolrDatasources($index)) {

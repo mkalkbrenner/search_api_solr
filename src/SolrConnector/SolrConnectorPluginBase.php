@@ -1109,6 +1109,8 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    *   (optional) The configured timeout to use. Default is self::QUERY_TIMEOUT.
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
    *   (optional) The Solarium endpoint object.
+   *
+   * @return mixed
    */
   protected function useTimeout(string $timeout = self::QUERY_TIMEOUT, ?Endpoint $endpoint = NULL) {
     $this->connect();

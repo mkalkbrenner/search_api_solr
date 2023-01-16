@@ -4,7 +4,6 @@ namespace Drupal\search_api_solr\Event;
 
 /**
  * Event to be fired after all solarium.
- *
  * Documents have been created for indexing.
  *
  * @code
