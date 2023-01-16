@@ -28,14 +28,14 @@ function search_api_solr_admin_form_search_api_server_status_alter(&$form, FormS
 /**
  * Submit handler.
  *
- * @see search_api_solr_admin_form_search_api_server_status_alter()
- *
  * @param array $form
  *   The form array.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state.
+ *
+ * @see search_api_solr_admin_form_search_api_server_status_alter()
  */
-function search_api_solr_admin_form_search_api_server_status_submit_delete_collection(&$form, FormStateInterface $form_state) {
+function search_api_solr_admin_form_search_api_server_status_submit_delete_collection(array &$form, FormStateInterface $form_state) {
   // Redirect to the "delete collection" form.
   /** @var \Drupal\search_api\ServerInterface $server */
   $server = $form['#server'];

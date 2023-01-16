@@ -943,7 +943,7 @@ class Utility {
    * @param array|string $keys
    *   The keys array to flatten, formatted as specified by
    *   \Drupal\search_api\Query\QueryInterface::getKeys() or a phrase string.
-   * @param ParseModeInterface $parse_mode
+   * @param \Drupal\search_api\ParseMode\ParseModeInterface $parse_mode
    *   (optional) The parse mode. Defaults to "terms" if null.
    *
    * @return string
@@ -951,7 +951,7 @@ class Utility {
    *
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  public static function flattenKeysToPayloadScore($keys, ?ParseModeInterface $parse_mode = NULL): string {
+  public static function flattenKeysToPayloadScore($keys, ParseModeInterface $parse_mode = NULL): string {
     $payload_scores = [];
     $conjunction = $parse_mode ? $parse_mode->getConjunction() : 'OR';
     if ('OR' === $conjunction) {
@@ -1144,8 +1144,11 @@ class Utility {
    * collisions.
    *
    * @param string $checkpoint
+   *   The check point value.
    * @param string $index_id
+   *   The index-id.
    * @param string $site_hash
+   *   The site_hash.
    *
    * @return string
    *   The formatted checkpoint ID.
@@ -1220,13 +1223,14 @@ class Utility {
    *   The Search API Server.
    *
    * @return \Drupal\search_api_solr\SolrConnectorInterface
+   *   Returns the Solr connector used for this backend.
    *
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   public static function getSolrConnector(ServerInterface $server): SolrConnectorInterface {
     $backend = $server->getBackend();
-     if (!($backend instanceof SolrBackendInterface)) {
+    if (!($backend instanceof SolrBackendInterface)) {
       throw new SearchApiSolrException(sprintf('Server %s is not a Solr server', $server->label()));
     }
 
@@ -1240,6 +1244,7 @@ class Utility {
    *   The Search API Server.
    *
    * @return \Drupal\search_api_solr\SolrCloudConnectorInterface
+   *   The Solr Cloud connector interface.
    *
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_solr\SearchApiSolrException
@@ -1250,7 +1255,7 @@ class Utility {
       throw new SearchApiSolrException(sprintf('The configured connector for server %s (%s) is not a cloud connector.', $server->label(), $server->id()));
     }
 
-    /** @var SolrCloudConnectorInterface $connector */
+    /** @var \Drupal\search_api_solr\SolrCloudConnectorInterface $connector */
     return $connector;
   }
 
@@ -1312,7 +1317,6 @@ class Utility {
       // LanguageInterface::LANGCODE_NOT_APPLICABLE is mapped to
       // LanguageInterface::LANGCODE_NOT_SPECIFIED above.
     }
-
 
     if (empty($fallback_languages)) {
       $query->setLanguages(array_unique($language_ids));

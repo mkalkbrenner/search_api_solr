@@ -2,6 +2,7 @@
 
 /**
  * @file
+ * Support module for Search API Solr search tests.
  */
 
 use Drupal\search_api\IndexInterface;
@@ -19,14 +20,6 @@ function search_api_solr_test_search_api_solr_config_files_alter(array &$files, 
 
 /**
  * Implements hook_search_api_solr_documents_alter().
- *
- * @param \Solarium\QueryType\Update\Query\Document[] $documents
- *   An array of \Solarium\QueryType\Update\Query\Document\Document objects
- *   ready to be indexed, generated from $items array.
- * @param \Drupal\search_api\IndexInterface $index
- *   The search index for which items are being indexed.
- * @param \Drupal\search_api\Item\ItemInterface[] $items
- *   An array of items to be indexed, keyed by their item IDs.
  */
 function search_api_solr_test_search_api_solr_documents_alter(array &$documents, IndexInterface $index, array $items) {
   global $_search_api_solr_test_index_fallback_test;

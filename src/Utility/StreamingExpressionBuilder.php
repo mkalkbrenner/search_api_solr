@@ -31,6 +31,8 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
   protected $checkpointsCollection;
 
   /**
+   * The index filter query.
+   *
    * @var string
    */
   protected $indexFilterQuery;
@@ -296,7 +298,13 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    *   A list of all Solr field names for the index.
    */
   public function _all_fields_list(string $delimiter = ',', bool $include_sorts = TRUE, array $blacklist = [], string $language_id = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
-    $blacklist = array_merge($blacklist, ['search_api_relevance', 'search_api_random']);
+    $blacklist = array_merge(
+      $blacklist,
+      [
+        'search_api_relevance',
+        'search_api_random',
+      ]
+    );
     return implode($delimiter, array_diff_key(
       ($include_sorts ? array_merge($this->allFieldsMapped[$language_id], $this->sortFieldsMapped[$language_id]) : $this->allFieldsMapped[$language_id]),
       array_flip($blacklist))
@@ -319,7 +327,13 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    *   A list of all Solr field names for the index.
    */
   public function _all_doc_value_fields_list(string $delimiter = ',', bool $include_sorts = TRUE, array $blacklist = [], string $language_id = LanguageInterface::LANGCODE_NOT_SPECIFIED) {
-    $blacklist = array_merge($blacklist, ['search_api_relevance', 'search_api_random']);
+    $blacklist = array_merge(
+      $blacklist,
+      [
+        'search_api_relevance',
+        'search_api_random',
+      ]
+    );
     return implode($delimiter, array_diff_key(
       // All sort fields have docValues.
       ($include_sorts ? array_merge($this->allDocValueFieldsMapped[$language_id], $this->sortFieldsMapped[$language_id]) : $this->allDocValueFieldsMapped[$language_id]),
@@ -745,6 +759,7 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    * collisions.
    *
    * @param string $checkpoint
+   *   The checkpoint.
    *
    * @return string
    *   Formatted checkpoint parameter.

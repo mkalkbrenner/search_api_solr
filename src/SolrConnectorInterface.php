@@ -28,6 +28,7 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * Sets the event dispatcher.
    *
    * @param \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher $eventDispatcher
+   *   The container aware event dispatcher.
    */
   public function setEventDispatcher(ContainerAwareEventDispatcher $eventDispatcher): SolrConnectorInterface;
 
@@ -230,6 +231,7 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * Pings the Solr endpoint to tell whether it can be accessed.
    *
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   The endpoint.
    * @param array $options
    *   (optional) An array of options.
    *
@@ -255,6 +257,7 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * @param string $path
    *   The path to append to the base URI.
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   The endpoint.
    *
    * @return string
    *   The decoded response.
@@ -271,6 +274,7 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * @param string $command_json
    *   The command to send encoded as JSON.
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   The endpoint.
    *
    * @return string
    *   The decoded response.
@@ -659,7 +663,7 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   /**
    * Alter the zip archive of newly assembled Solr configuration files.
    *
-   * @param ZipStream $zip
+   * @param \ZipStream\ZipStream $zip
    *   Zip archive.
    * @param string $lucene_match_version
    *   Lucene (Solr) minor version string.

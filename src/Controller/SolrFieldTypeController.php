@@ -75,7 +75,7 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
    *
    * @param \Drupal\search_api\ServerInterface $search_api_server
    *   Search API server.
-   * @param \Drupal\search_api_solr\SolrConfigInterface $solr_field_type
+   * @param \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type
    *   Solr entity.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse

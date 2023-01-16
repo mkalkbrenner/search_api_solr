@@ -3,4 +3,3 @@ name: 'Search API Solr Search Defaults'
 description: 'This Module is deprecated and should be uninstalled.'
 package: Search
 core_version_requirement: ^9.3 || ^10.0
-

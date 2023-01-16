@@ -106,7 +106,8 @@ sudo -u solr $SOLR/bin/solr create_core -c $CORE -d $CONF -n $CORE
 
 You will see something like
 ```
-$ sudo -u solr /opt/solr/bin/solr create_core -c test-core -d /tmp/solr-conf -n test-core
+$ sudo -u solr /opt/solr/bin/solr create_core -c test-core -d /tmp/solr-conf -n
+  test-core
 
 Copying configuration to new core instance directory:
 /var/solr/data/test-core

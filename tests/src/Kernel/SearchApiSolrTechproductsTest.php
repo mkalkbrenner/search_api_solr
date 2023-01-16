@@ -105,6 +105,8 @@ class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
   }
 
   /**
+   * Tests streaming expressions.
+   *
    * @group not_solr3
    * @group not_solr4
    * @group not_solr5

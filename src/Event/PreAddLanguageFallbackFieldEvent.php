@@ -87,7 +87,7 @@ final class PreAddLanguageFallbackFieldEvent extends Event {
    *   The field value. If you supply NULL as the value and no modifier the
    *   field will be removed.
    */
-  public function setValue($value): void {
+  public function setValue(array $value): void {
     $this->value = $value;
   }
 

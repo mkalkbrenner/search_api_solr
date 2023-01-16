@@ -85,7 +85,9 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
   }
 
   /**
-   * Upload a configset and reload the collection or create it using the given options.
+   * Upload a configset and reload the collection or create it.
+   *
+   * Using the given options.
    *
    * @param string $server_id
    *   The ID of the server.
@@ -188,7 +190,7 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
     'createNodeSet' => '',
   ]): void {
     if ($num_shards) {
-      @trigger_error('Parameter num_shards is deprecated in 4.2.8 and is removed from 4.3.0. Use the --numShards option instead.', E_USER_DEPRECATED);
+      @trigger_error('The ' . __NAMESPACE__ . 'num_shards is deprecated in search_api_solr_admin:4.x-2.8 and is removed from search_api_solr_admin:4.x-3.0. Instead use the --numShards. See https://www.drupal.org/node/3254186', E_USER_DEPRECATED);
       $options['numShards'] = $num_shards;
     }
     $this->commandHelper->uploadConfigset($server_id, $options, $this->output()->isVerbose());
