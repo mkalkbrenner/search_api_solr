@@ -1317,7 +1317,17 @@ class Utility {
       $query->setLanguages(array_unique($language_ids));
     }
 
-    return array_unique(array_merge($language_ids, $fallback_languages));
+    $language_ids = array_unique(array_merge($language_ids, $fallback_languages));
+
+    // In case of wrong configurations of the site, it could happen that an
+    // index is limited to some languages but the fallback processor or an old
+    // link might request another language. Instead of returning an empty array
+    // we set language undefined to avoid exceptions.
+    if (empty($language_ids)) {
+      $language_ids[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
+    }
+
+    return $language_ids;
   }
 
 }
