@@ -63,6 +63,13 @@ function search_api_solr_cron() {
   // (more or less) stay the same.
   if ($request_time - \Drupal::state()->get('search_api_solr.last_optimize') > 86340) {
     \Drupal::state()->set('search_api_solr.last_optimize', $request_time);
+    // Delete "cached" endpoint data and schema_parts once a day. We keep
+    // these in states instead of a caches because we might need to
+    // access this data even if Solr is temporarily not reachable and
+    // caches have been cleared or Solr itself is used as caching backend.
+    \Drupal::state()->delete('search_api_solr.endpoint.data');
+    \Drupal::state()->delete('search_api_solr.endpoint.schema_parts');
+
     $end_of_day = TRUE;
   }
 
@@ -80,21 +87,11 @@ function search_api_solr_cron() {
           }
         }
 
-        if ($end_of_day) {
+        if ($end_of_day && $backend->isOptimizeEnabled()) {
           $endpoint = $backend->getCollectionEndpoint($index);
-
-          // Delete "cached" endpoint data and schema_parts once a day. We keep
-          // these in states instead of a caches because we might need to
-          // access this data even if Solr is temporarily not reachable and
-          // caches have been cleared or Solr itself is used as caching backend.
-          \Drupal::state()->delete('search_api_solr.endpoint.data');
-          \Drupal::state()->delete('search_api_solr.endpoint.schema_parts');
-
-          if ($backend->isOptimizeEnabled()) {
-            $connector->optimize($endpoint);
-            $backend->getLogger()
-              ->info('Optimized Solr server @server.', ['@server' => $server->label()]);
-          }
+          $connector->optimize($endpoint);
+          $backend->getLogger()
+            ->info('Optimized Solr server @server.', ['@server' => $server->label()]);
         }
       }
     }
