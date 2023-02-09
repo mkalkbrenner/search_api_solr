@@ -230,11 +230,11 @@ jobs:
                 composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
                 composer require solarium/solarium:"dev-master as 6.2.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:3.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --ignore-platform-reqs --no-interaction
                 # search_api was installed as dependency above. This is a required check! Now switch to the latest dev version.
-                #composer require drupal/search_api:1.x-dev --ignore-platform-reqs --no-interaction
-                # cd modules/contrib/search_api
-                # wget https://www.drupal.org/files/issues/2022-11-04/3318187-19--fix_views_filter_regressions.patch
-                # patch -p1 < 3318187-19--fix_views_filter_regressions.patch
-                # cd -
+                composer require drupal/search_api:1.x-dev --ignore-platform-reqs --no-interaction
+                cd modules/contrib/search_api
+                wget https://www.drupal.org/files/issues/2023-02-09/3323594_avoid_bc_break.patch
+                patch -p1 < 3323594_avoid_bc_break.patch
+                cd -
 
             - name: Create Solr collections
               run: |
