@@ -7,8 +7,6 @@
 
 use Drupal\search_api\IndexInterface;
 
-$_search_api_solr_test_index_fallback_test = FALSE;
-
 /**
  * Implements hook_search_api_solr_config_files_alter().
  */

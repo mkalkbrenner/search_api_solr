@@ -106,7 +106,7 @@ class SolrLegacyTest extends SearchApiSolrTest {
     $this->assertStringNotContainsString('ts_X3b_de_*', $config_files['schema.xml']);
 
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
-    $backend = $server->getBackend();
+    // $backend = $server->getBackend();
     $this->assertStringContainsString('solr.install.dir', $config_files['solrcore.properties']);
     $this->assertStringContainsString('solr.replication', $config_files['solrcore.properties']);
     $this->assertStringContainsString('"/replication"', $config_files['solrconfig.xml']);
