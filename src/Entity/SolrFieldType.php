@@ -60,42 +60,42 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    *
    * @var array
    */
-  protected $field_type;
+  protected $fieldType;
 
   /**
    * Solr Spellcheck Field Type definition.
    *
    * @var array
    */
-  protected $spellcheck_field_type;
+  protected $spellcheckFieldType;
 
   /**
    * Solr Collated Field Type definition.
    *
    * @var array
    */
-  protected $collated_field_type;
+  protected $collatedFieldType;
 
   /**
    * Solr Unstemmed Field Type definition.
    *
    * @var array
    */
-  protected $unstemmed_field_type;
+  protected $unstemmedFieldType;
 
   /**
    * The custom code targeted by this Solr Field Type.
    *
    * @var string
    */
-  protected $custom_code;
+  protected $customCode;
 
   /**
    * The language targeted by this Solr Field Type.
    *
    * @var string
    */
-  protected $field_type_language_code;
+  protected $fieldTypeLanguageCode;
 
   /**
    * The targeted content domains.
@@ -114,8 +114,8 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   /**
    * {@inheritdoc}
    */
-  public function setFieldType(array $field_type) {
-    $this->field_type = $field_type;
+  public function setFieldType(array $fieldType) {
+    $this->field_type = $fieldType;
     return $this;
   }
 
@@ -136,8 +136,8 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   /**
    * {@inheritdoc}
    */
-  public function setSpellcheckFieldType(array $spellcheck_field_type) {
-    $this->spellcheck_field_type = $spellcheck_field_type;
+  public function setSpellcheckFieldType(array $spellcheckFieldType) {
+    $this->spellcheck_field_type = $spellcheckFieldType;
     return $this;
   }
 
@@ -151,8 +151,8 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   /**
    * {@inheritdoc}
    */
-  public function setCollatedFieldType(array $collated_field_type) {
-    $this->collated_field_type = $collated_field_type;
+  public function setCollatedFieldType(array $collatedFieldType) {
+    $this->collated_field_type = $collatedFieldType;
     return $this;
   }
 
@@ -166,8 +166,8 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   /**
    * {@inheritdoc}
    */
-  public function setUnstemmedFieldType(array $unstemmed_field_type) {
-    $this->unstemmed_field_type = $unstemmed_field_type;
+  public function setUnstemmedFieldType(array $unstemmedFieldType) {
+    $this->unstemmed_field_type = $unstemmedFieldType;
     return $this;
   }
 
@@ -216,15 +216,15 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    *   An array of custom codes as strings.
    */
   public static function getAvailableCustomCodes() {
-    $custom_codes = [];
+    $customCodes = [];
     $config_factory = \Drupal::configFactory();
-    foreach ($config_factory->listAll('search_api_solr.solr_field_type.') as $field_type_name) {
-      $config = $config_factory->get($field_type_name);
-      if ($custom_code = $config->get('custom_code')) {
-        $custom_codes[] = $custom_code;
+    foreach ($config_factory->listAll('search_api_solr.solr_field_type.') as $fieldType_name) {
+      $config = $config_factory->get($fieldType_name);
+      if ($customCode = $config->get('custom_code')) {
+        $customCodes[] = $customCode;
       }
     }
-    return array_unique($custom_codes);
+    return array_unique($customCodes);
   }
 
   /**
@@ -235,8 +235,8 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
     // element names "indexAnalyzer", "queryAnalyzer" and "multiTermAnalyzer"
     // which are deprecated in the XML format. Therefor we need to add some
     // conversion logic.
-    $field_type = $this->field_type;
-    unset($field_type['analyzers']);
+    $fieldType = $this->field_type;
+    unset($fieldType['analyzers']);
 
     foreach ($this->field_type['analyzers'] as $analyzer) {
       $type = 'analyzer';
@@ -249,20 +249,20 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
         }
         unset($analyzer['type']);
       }
-      $field_type[$type] = $analyzer;
+      $fieldType[$type] = $analyzer;
     }
 
     /* @noinspection PhpComposerExtensionStubsInspection */
     return $pretty ?
-      json_encode($field_type, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
-      Json::encode($field_type);
+      json_encode($fieldType, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
+      Json::encode($fieldType);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setFieldTypeAsJson($field_type) {
-    $field_type = $this->field_type = Json::decode($field_type);
+  public function setFieldTypeAsJson($fieldType) {
+    $fieldType = $this->field_type = Json::decode($fieldType);
 
     // Unfortunately the JSON encoded field type definition still uses the
     // element names "indexAnalyzer", "queryAnalyzer" and "multiTermAnalyzer"
@@ -275,12 +275,12 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
       'analyzer' => 'analyzer',
     ];
     foreach ($analyzers as $type => $analyzer) {
-      if (!empty($field_type[$analyzer])) {
+      if (!empty($fieldType[$analyzer])) {
         unset($this->field_type[$analyzer]);
         if ($type != $analyzer) {
-          $field_type[$analyzer]['type'] = $type;
+          $fieldType[$analyzer]['type'] = $type;
         }
-        $this->field_type['analyzers'][] = $field_type[$analyzer];
+        $this->field_type['analyzers'][] = $fieldType[$analyzer];
       }
     }
 
@@ -292,7 +292,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    */
   public function getSpellcheckFieldTypeAsJson(bool $pretty = FALSE) {
     if ($this->spellcheck_field_type) {
-      /** @noinspection PhpComposerExtensionStubsInspection */
+      // @noinspection PhpComposerExtensionStubsInspection
       return $pretty ?
         json_encode($this->spellcheck_field_type, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
         Json::encode($this->spellcheck_field_type);
@@ -304,8 +304,8 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   /**
    * {@inheritdoc}
    */
-  public function setSpellcheckFieldTypeAsJson($spellcheck_field_type) {
-    $this->spellcheck_field_type = Json::decode($spellcheck_field_type);
+  public function setSpellcheckFieldTypeAsJson($spellcheckFieldType) {
+    $this->spellcheck_field_type = Json::decode($spellcheckFieldType);
 
     return $this;
   }
@@ -315,7 +315,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    */
   public function getCollatedFieldTypeAsJson(bool $pretty = FALSE) {
     if ($this->collated_field_type) {
-      /** @noinspection PhpComposerExtensionStubsInspection */
+      // @noinspection PhpComposerExtensionStubsInspection
       return $pretty ?
         json_encode($this->collated_field_type, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
         Json::encode($this->collated_field_type);
@@ -327,8 +327,8 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   /**
    * {@inheritdoc}
    */
-  public function setCollatedFieldTypeAsJson($collated_field_type) {
-    $this->collated_field_type = Json::decode($collated_field_type);
+  public function setCollatedFieldTypeAsJson($collatedFieldType) {
+    $this->collated_field_type = Json::decode($collatedFieldType);
 
     return $this;
   }
@@ -350,8 +350,8 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   /**
    * {@inheritdoc}
    */
-  public function setUnstemmedFieldTypeAsJson($unstemmed_field_type) {
-    $this->unstemmed_field_type = Json::decode($unstemmed_field_type);
+  public function setUnstemmedFieldTypeAsJson($unstemmedFieldType) {
+    $this->unstemmed_field_type = Json::decode($unstemmedFieldType);
 
     return $this;
   }
@@ -390,7 +390,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   /**
    * Serializes a field type as XML fragment as required by Solr.
    *
-   * @param array $field_type
+   * @param array $fieldType
    *   The filed type array.
    * @param string $additional_label
    *   An additioanl label to add to the XML fragment.
@@ -400,8 +400,8 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    * @return string
    *   The XML fragment.
    */
-  protected function getSubFieldTypeAsXml(array $field_type, string $additional_label = '', bool $add_comment = TRUE) {
-    $formatted_xml_string = $this->buildXmlFromArray('fieldType', $field_type);
+  protected function getSubFieldTypeAsXml(array $fieldType, string $additional_label = '', bool $add_comment = TRUE) {
+    $formatted_xml_string = $this->buildXmlFromArray('fieldType', $fieldType);
 
     $comment = '';
     if ($add_comment) {

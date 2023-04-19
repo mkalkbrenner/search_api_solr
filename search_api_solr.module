@@ -512,7 +512,11 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
 
     $form['third_party_settings']['search_api_solr']['mlt']['interestingTerms'] = [
       '#type' => 'select',
-      '#options' => ['none' => 'none', 'list' => 'list', 'details' => 'details'],
+      '#options' => [
+        'none' => t('none'),
+        'list' => t('list'),
+        'details' => t('details'),
+      ],
       '#title' => t('interestingTerms'),
       '#description' => t('Controls how the MoreLikeThis component presents the "interesting" terms (the top TF/IDF terms) for the query. Supports three settings. The setting "list" lists the terms. The setting "none" lists no terms. The setting "details" lists the terms along with the boost value used for each term. Unless mlt.boost=true, all terms will have boost=1.0.'),
       '#default_value' => $settings['mlt']['interestingTerms'],

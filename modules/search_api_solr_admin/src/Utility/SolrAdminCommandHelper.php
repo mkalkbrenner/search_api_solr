@@ -54,7 +54,7 @@ class SolrAdminCommandHelper extends SolrCommandHelper {
    *   Thrown if the "search_api_index" or "search_api_server" entity types are
    *   unknown.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, EventDispatcherInterface $event_dispatcher, ModuleExtensionList $module_extension_list, FileSystemInterface $fileSystem, MessengerInterface $messenger) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, EventDispatcherInterface $event_dispatcher, FileSystemInterface $fileSystem, MessengerInterface $messenger, ModuleExtensionList $module_extension_list) {
     parent::__construct($entity_type_manager, $module_handler, $event_dispatcher, $module_extension_list);
     $this->fileSystem = $fileSystem;
     $this->messenger = $messenger;
@@ -104,6 +104,7 @@ class SolrAdminCommandHelper extends SolrCommandHelper {
    * @param string $server_id
    *   The ID of the server.
    * @param array $collection_params
+   *   The collection of parameters.
    * @param bool $messages
    *   Indicate if messages should be displayed, default is FALSE.
    *

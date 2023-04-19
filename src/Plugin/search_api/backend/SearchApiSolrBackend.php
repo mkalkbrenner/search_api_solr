@@ -95,6 +95,7 @@ use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Select\Result\Result;
 use Solarium\QueryType\Update\Query\Document;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Laminas\Stdlib\ArrayUtils;
 
@@ -122,6 +123,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   use SolrAutocompleteBackendTrait;
 
   use SolrSpellcheckBackendTrait;
+
+  use StringTranslationTrait;
 
   /**
    * The module handler.
@@ -406,8 +409,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     $form['advanced']['index_empty_text_fields'] = [
       '#type' => 'checkbox',
-      '#title' => t('Index empty Fulltext fields'),
-      '#description' => t('By default, empty fields of type fulltext will be removed from the indexed document. In some cases like multilingual searches across different language-specific fields that might impact the IDF similarity and therefore the scoring in an unwanted way. By indexing a dummy value instead you can "normalize" the IDF by ensuring the same number of total documents for each field (per language).'),
+      '#title' => $this->t('Index empty Fulltext fields'),
+      '#description' => $this->t('By default, empty fields of type fulltext will be removed from the indexed document. In some cases like multilingual searches across different language-specific fields that might impact the IDF similarity and therefore the scoring in an unwanted way. By indexing a dummy value instead you can "normalize" the IDF by ensuring the same number of total documents for each field (per language).'),
       '#default_value' => $this->configuration['index_empty_text_fields'],
     ];
 
@@ -427,8 +430,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     $form['advanced']['suppress_missing_languages'] = [
       '#type' => 'checkbox',
-      '#title' => t('Suppress warnings about missing language-specific field types'),
-      '#description' => t("By default, fields of type fulltext will be indexed using language-specific Solr field types. But Search API Solr doesn't provide such a language-specific filed type configuration for any language supported by Drupal. In this case the language-undefined field type will be used as fall-back. Or in case of language variations like 'de-at' the 'de' will be used as fallback. But in both cases a warning will be shown on the status report page to inform about this fact. By activating this chackbox you can suppress these warnings permanently."),
+      '#title' => $this->t('Suppress warnings about missing language-specific field types'),
+      '#description' => $this->t("By default, fields of type fulltext will be indexed using language-specific Solr field types. But Search API Solr doesn't provide such a language-specific filed type configuration for any language supported by Drupal. In this case the language-undefined field type will be used as fall-back. Or in case of language variations like 'de-at' the 'de' will be used as fallback. But in both cases a warning will be shown on the status report page to inform about this fact. By activating this chackbox you can suppress these warnings permanently."),
       '#default_value' => $this->configuration['suppress_missing_languages'],
     ];
 
@@ -441,8 +444,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     $form['advanced']['server_prefix'] = [
       '#type' => 'textfield',
-      '#title' => t('All index prefix'),
-      '#description' => t("By default, the index ID in the Solr server is the same as the index's machine name in Drupal. This setting will let you specify an additional prefix. Only use alphanumeric characters and underscores. Since changing the prefix makes the currently indexed data inaccessible, you should not change this variable when no data is indexed."),
+      '#title' => $this->t('All index prefix'),
+      '#description' => $this->t("By default, the index ID in the Solr server is the same as the index's machine name in Drupal. This setting will let you specify an additional prefix. Only use alphanumeric characters and underscores. Since changing the prefix makes the currently indexed data inaccessible, you should not change this variable when no data is indexed."),
       '#default_value' => $this->configuration['server_prefix'],
     ];
 
@@ -1971,7 +1974,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr\Utility\Utility::ensureLanguageCondition()
    */
   protected function ensureLanguageCondition(QueryInterface $query) {
-    @trigger_error('SearchApiSolrBackend::ensureLanguageCondition() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SearchApiSolrBackend::ensureLanguageCondition() is deprecated in search_api_solr:4.x-2.0 and is removed from search_api_solr:4.x-3.0. Use
+    *   Utility::ensureLanguageCondition() instead. See https://www.drupal.org/project/search_api_solr/issues/3254767', E_USER_DEPRECATED);
     return Utility::ensureLanguageCondition($query);
   }
 
@@ -2290,8 +2294,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @return bool
    *   TRUE if the index only contains "solr_*" datasources, FALSE otherwise.
    *
-   * @deprecated SearchApiSolrBackend::hasIndexJustSolrDatasources() is
-   *   deprecated in search_api_solr:4.2.0 and is removed from
+   * @deprecated in search_api_solr:4.2.0 and is removed from
    *   search_api_solr:4.3.0. Use
    *   Utility::hasIndexJustSolrDatasources() instead.
    *
@@ -2299,7 +2302,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr\Utility\Utility::hasIndexJustSolrDatasources()
    */
   protected function hasIndexJustSolrDatasources(IndexInterface $index) {
-    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDatasources() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0. Use Utility::hasIndexJustSolrDatasources() instead.', E_USER_DEPRECATED);
+    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDatasources() is deprecated in search_api_solr:4.x-2.0 and is removed from search_api_solr:4.x-3.0. Use Utility::hasIndexJustSolrDatasources() instead. See https://www.drupal.org/project/search_api_solr/issues/3254767', E_USER_DEPRECATED);
     return Utility::hasIndexJustSolrDatasources($index);
   }
 
@@ -2313,8 +2316,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   TRUE if the index only contains "solr_document" datasources, FALSE
    *   otherwise.
    *
-   * @deprecated SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is
-   *   deprecated in search_api_solr:4.2.0 and is removed from
+   * @deprecated in search_api_solr:4.2.0 and is removed from
    *   search_api_solr:4.3.0. Use
    *   Utility::hasIndexJustSolrDocumentDatasource() instead.
    *
@@ -2322,7 +2324,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr\Utility\Utility::hasIndexJustSolrDocumentDatasource()
    */
   protected function hasIndexJustSolrDocumentDatasource(IndexInterface $index) {
-    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is deprecated in search_api_solr:4.x-2.0 and is removed from search_api_solr:4.x-3.0. Use Utility::hasIndexJustSolrDocumentDatasource() instead. See https://www.drupal.org/project/search_api_solr/issues/3254767', E_USER_DEPRECATED);
     return Utility::hasIndexJustSolrDocumentDatasource($index);
   }
 
@@ -3898,7 +3900,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see getAutocompleteSuggestions()
    */
   public function getTermsSuggestions(QueryInterface $query, SearchInterface $search, $incomplete_key, $user_input) {
-    @trigger_error('SolrAutocompleteInterface::getTermsSuggestions() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SolrAutocompleteInterface::getTermsSuggestions() is deprecated in search_api_solr:4.x-2.0 and is removed from search_api_solr:4.x-3.0. Use getAutocompleteSuggestions() instead. See https://www.drupal.org/project/search_api_solr/issues/3254767', E_USER_DEPRECATED);
     return $this->getAutocompleteSuggestions($query, $search, $incomplete_key, $user_input);
   }
 
@@ -3913,7 +3915,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\suggester\Spellcheck
    */
   public function getSpellcheckSuggestions(QueryInterface $query, SearchInterface $search, $incomplete_key, $user_input) {
-    @trigger_error('SolrAutocompleteInterface::getSpellcheckSuggestions() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SolrAutocompleteInterface::getSpellcheckSuggestions() is deprecated in search_api_solr:4.x-2.0 and is removed from search_api_solr:4.x-3.0. This function was moved to
+    *   Spellcheck::getSpellcheckSuggestions(). See https://www.drupal.org/project/search_api_solr/issues/3254767', E_USER_DEPRECATED);
     return [];
   }
 
@@ -3930,7 +3933,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @see \Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\suggester\Suggester
    */
   public function getSuggesterSuggestions(QueryInterface $query, SearchInterface $search, $incomplete_key, $user_input, array $options = []) {
-    @trigger_error('SolrAutocompleteInterface::getSuggesterSuggestions() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
+    @trigger_error('SolrAutocompleteInterface::getSuggesterSuggestions() is deprecated in search_api_solr:4.x-2.0 and is removed from search_api_solr:4.x-3.0. This function was moved to
+    *   Spellcheck::getSuggesterSuggestions(). See https://www.drupal.org/project/search_api_solr/issues/3254767', E_USER_DEPRECATED);
     return [];
   }
 

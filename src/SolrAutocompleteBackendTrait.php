@@ -11,6 +11,7 @@ trait SolrAutocompleteBackendTrait {
    * Returns a Solarium autocomplete query.
    *
    * @param \Drupal\search_api_solr\SolrBackendInterface $backend
+   *   Defines an interface for Solr search backend plugins.
    * @param string $incomplete_key
    *   The start of another fulltext keyword for the search, which should be
    *   completed.

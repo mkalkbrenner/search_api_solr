@@ -2,7 +2,9 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the Search API Solr defaults module.
+ * Install, update and uninstall functions for the Search API Solr.
+ *
+ * Defaults module.
  */
 
 /**

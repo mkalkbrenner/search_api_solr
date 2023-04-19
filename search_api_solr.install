@@ -163,7 +163,7 @@ function search_api_solr_requirements($phase) {
             }
 
             if ($indexes = $server->getIndexes()) {
-              foreach ($indexes as $index_id => $index) {
+              foreach ($indexes as $index) {
                 $endpoint = $backend->getCollectionEndpoint($index);
                 if ($connector->pingEndpoint($endpoint)) {
                   if (!$configuration['suppress_missing_languages']) {
@@ -1380,7 +1380,7 @@ function search_api_solr_update_8316() {
         if (is_array($components)) {
           foreach ($components as &$analyzers) {
             if (is_array($analyzers)) {
-              foreach ($analyzers['filters'] as $key => &$filter) {
+              foreach ($analyzers['filters'] as &$filter) {
                 if ('solr.SnowballPorterFilterFactory' === $filter['class']) {
                   $filter['class'] = 'solr.MorfologikFilterFactory';
                   unset($filter['language']);
@@ -1423,7 +1423,7 @@ function search_api_solr_update_8318() {
         if (is_array($components)) {
           foreach ($components as &$analyzers) {
             if (is_array($analyzers)) {
-              foreach ($analyzers['filters'] as $key => &$filter) {
+              foreach ($analyzers['filters'] as &$filter) {
                 if ('solr.MorphologikFilterFactory' === $filter['class']) {
                   $filter['class'] = 'solr.MorfologikFilterFactory';
                   $filter['dictionary'] = 'org/apache/lucene/analysis/uk/ukrainian.dict';
@@ -1453,7 +1453,7 @@ function search_api_solr_update_8319() {
         if (is_array($components)) {
           foreach ($components as &$analyzers) {
             if (is_array($analyzers)) {
-              foreach ($analyzers['filters'] as $key => &$filter) {
+              foreach ($analyzers['filters'] as &$filter) {
                 if ('solr.RemoveDuplicatesTokenFilterFactor' === $filter['class']) {
                   $filter['class'] = 'solr.RemoveDuplicatesTokenFilterFactory';
                   $save = TRUE;
@@ -1660,7 +1660,7 @@ function search_api_solr_update_8322() {
           if (is_array($components)) {
             foreach ($components as &$analyzers) {
               if (is_array($analyzers)) {
-                foreach ($analyzers['filters'] as $key => &$filter) {
+                foreach ($analyzers['filters'] as &$filter) {
                   if ('stopwords_tr.tx' === $filter['words']) {
                     $filter['words'] = 'stopwords_tr.txt';
                     $save = TRUE;
@@ -1727,7 +1727,7 @@ function search_api_solr_update_8325() {
           if (is_array($components)) {
             foreach ($components as &$analyzers) {
               if (is_array($analyzers) && 'query' === $analyzers['type']) {
-                foreach ($analyzers['filters'] as $key => &$filter) {
+                foreach ($analyzers['filters'] as &$filter) {
                   if ('solr.WordDelimiterGraphFilterFactory' === $filter['class'] && 'protwords_de.txt' === $filter['protected']) {
                     $filter['protected'] = 'protwords_pl.txt';
                     $save = TRUE;
@@ -1779,7 +1779,7 @@ function search_api_solr_update_8326() {
  * Update the Portuguese, Portugal config locale from 'pt' to 'pt-pt'.
  */
 function search_api_solr_update_8327() {
-  foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_name => $field_type_config) {
+  foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_config) {
     if (!empty($field_type_config['field_type'])) {
       if ('pt' === $field_type_config['field_type_language_code']) {
         $config_factory = \Drupal::configFactory();

@@ -68,8 +68,6 @@ class RegexReplace extends FieldsProcessorPluginBase {
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::validateConfigurationForm($form, $form_state);
 
-    $regex_replace = $form_state->getValue('regex_replace');
-
     $regexes = [];
     $value = rtrim(preg_replace('/\r\n|\r|\n/', "\n", $form_state->getValue('regexes')), "\n");
     if (!empty($value)) {

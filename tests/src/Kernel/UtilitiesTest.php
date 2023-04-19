@@ -66,7 +66,7 @@ class UtilitiesTest extends KernelTestBase {
   }
 
   /**
-   *
+   * Tests merge default index third-party settings.
    */
   public function testMergeDefaultIndexThirdPartySettings() {
     $third_party_settings = [

@@ -45,7 +45,7 @@ class SolrRequestDispatcher extends AbstractSolrEntity implements SolrRequestDis
    *
    * @var array
    */
-  protected $request_dispatcher;
+  protected $requestDispatcher;
 
   /**
    * The targeted environments.

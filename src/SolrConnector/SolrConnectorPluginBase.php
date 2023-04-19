@@ -136,8 +136,8 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       '#description' => $this->t('The HTTP protocol to use for sending queries.'),
       '#default_value' => $this->configuration['scheme'] ?? 'http',
       '#options' => [
-        'http' => 'http',
-        'https' => 'https',
+        'http' => $this->t('http'),
+        'https' => $this->t('https'),
       ],
     ];
 
@@ -246,8 +246,8 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       '#default_value' => $this->configuration['http_method'] ?? 'AUTO',
       '#options' => [
         'AUTO' => $this->t('AUTO'),
-        'POST' => 'POST',
-        'GET' => 'GET',
+        'POST' => $this->t('POST'),
+        'GET' => $this->t('GET'),
       ],
     ];
 
@@ -750,6 +750,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * @param string $command_json
    *   The command to send encoded as JSON.
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   The endpoint.
    *
    * @return array
    *   The decoded response.
@@ -1054,8 +1055,11 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * Could be overwritten by other connectors according to their needs.
    *
    * @param \Solarium\Core\Client\Endpoint $endpoint
+   *   The endpoint.
    *
    * @return string
+   *   Returns the server uri, required for non core/collection specific
+   *   requests.
    */
   protected function getEndpointUri(Endpoint $endpoint): string {
     return $endpoint->getServerUri();
@@ -1105,8 +1109,6 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    *   (optional) The configured timeout to use. Default is self::QUERY_TIMEOUT.
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
    *   (optional) The Solarium endpoint object.
-   *
-   * @return mixed
    */
   protected function useTimeout(string $timeout = self::QUERY_TIMEOUT, ?Endpoint $endpoint = NULL) {
     $this->connect();
@@ -1222,7 +1224,10 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    */
   public function createEndpoint(string $key, array $additional_configuration = []) {
     $this->connect();
-    $configuration = ['key' => $key, self::QUERY_TIMEOUT => $this->configuration['timeout']] + $additional_configuration + $this->configuration;
+    $configuration = [
+      'key' => $key,
+      self::QUERY_TIMEOUT => $this->configuration['timeout'],
+    ] + $additional_configuration + $this->configuration;
     unset($configuration['timeout']);
 
     return $this->solr->createEndpoint($configuration, TRUE);

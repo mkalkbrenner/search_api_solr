@@ -161,7 +161,10 @@ class SolrCommandHelper extends CommandHelper {
   }
 
   /**
+   * Re-index the index.
+   *
    * @param \Drupal\search_api\ServerInterface $server
+   *   Defines the interface of server entities.
    *
    * @throws \Drupal\search_api\SearchApiException
    */

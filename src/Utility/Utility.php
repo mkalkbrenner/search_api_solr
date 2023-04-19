@@ -951,7 +951,7 @@ class Utility {
    *
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  public static function flattenKeysToPayloadScore($keys, ?ParseModeInterface $parse_mode = NULL): string {
+  public static function flattenKeysToPayloadScore($keys, ParseModeInterface $parse_mode = NULL): string {
     $payload_scores = [];
     $conjunction = $parse_mode ? $parse_mode->getConjunction() : 'OR';
     if ('OR' === $conjunction) {
@@ -1144,8 +1144,11 @@ class Utility {
    * collisions.
    *
    * @param string $checkpoint
+   *   The check point value.
    * @param string $index_id
+   *   The index-id.
    * @param string $site_hash
+   *   The site_hash.
    *
    * @return string
    *   The formatted checkpoint ID.
@@ -1220,6 +1223,7 @@ class Utility {
    *   The Search API Server.
    *
    * @return \Drupal\search_api_solr\SolrConnectorInterface
+   *   Returns the Solr connector used for this backend.
    *
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_solr\SearchApiSolrException
@@ -1240,6 +1244,7 @@ class Utility {
    *   The Search API Server.
    *
    * @return \Drupal\search_api_solr\SolrCloudConnectorInterface
+   *   The Solr Cloud connector interface.
    *
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_solr\SearchApiSolrException
