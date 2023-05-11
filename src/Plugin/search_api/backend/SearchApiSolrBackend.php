@@ -1905,7 +1905,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $solarium_result = $connector->createSearchResult($solarium_query, $search_api_response);
 
         // Extract results.
-        $search_api_result_set = $this->extractResults($query, $solarium_result);
+        $search_api_result_set = $this->extractResults($query, $solarium_result, $language_ids);
 
         if ($solarium_result instanceof Result) {
           // Extract facets.
@@ -2026,14 +2026,25 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   protected function getRequiredFields(QueryInterface $query) {
     $index = $query->getIndex();
     $field_names = $this->getSolrFieldNames($index);
-    // The list of fields Solr must return to built a Search API result.
+    // The list of fields Solr must return to build a Search API result.
     $required_fields = [
       $field_names['search_api_id'],
       $field_names['search_api_language'],
       $field_names['search_api_relevance'],
     ];
+
     if (!$this->configuration['site_hash']) {
       $required_fields[] = 'hash';
+    }
+
+    try {
+      $index->getProcessor('language_with_fallback');
+      if ($query->getIndex()->getField('language_with_fallback')) {
+        $required_fields[] = $field_names['language_with_fallback'];
+      }
+    }
+    catch (SearchApiException $exception) {
+      // Processor not active.
     }
 
     if (Utility::hasIndexJustSolrDocumentDatasource($index)) {
@@ -2848,13 +2859,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   The Search API query object.
    * @param \Solarium\Core\Query\Result\ResultInterface $result
    *   A Solarium select response object.
+   * @param $languages
    *
    * @return \Drupal\search_api\Query\ResultSetInterface
    *   A result set object.
    *
    * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  protected function extractResults(QueryInterface $query, ResultInterface $result) {
+  protected function extractResults(QueryInterface $query, ResultInterface $result, $languages = []) {
     $index = $query->getIndex();
     $fields = $index->getFields(TRUE);
     $site_hash = $this->getTargetedSiteHash($index);
@@ -2865,6 +2878,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $id_field = $language_unspecific_field_names['search_api_id'];
     $score_field = $language_unspecific_field_names['search_api_relevance'];
     $language_field = $language_unspecific_field_names['search_api_language'];
+    $fallback_language_field = $language_unspecific_field_names['language_with_fallback'] ?? NULL;
     $backend_defined_fields = [];
 
     /** @var \Solarium\Component\Result\Debug\DocumentSet $explain */
@@ -2972,13 +2986,25 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $result_item = $this->fieldsHelper->createItem($index, $item_id);
       }
 
-      if ($language_field && isset($doc_fields[$language_field])) {
+      $language_id = '';
+
+      if ($fallback_language_field && !empty($languages)) {
+        $fallback_languages = $doc_fields[$fallback_language_field];
+        $language_id = array_intersect($languages, $fallback_languages);
+      }
+
+      if (!$language_id && $language_field && isset($doc_fields[$language_field])) {
         $language_id = $doc_fields[$language_field];
-        // For an unknown reason we sometimes get an array here. See
-        // https://www.drupal.org/project/search_api_solr/issues/3281703
-        if (is_array($language_id)) {
-          $language_id = current($language_id);
-        }
+      }
+
+      // For an unknown reason we sometimes get an array here. See
+      // https://www.drupal.org/project/search_api_solr/issues/3281703
+      // Fallback languages are arrays as well.
+      if (is_array($language_id)) {
+        $language_id = reset($language_id);
+      }
+
+      if ($language_id) {
         $result_item->setLanguage($language_id);
         $field_names = $this->getLanguageSpecificSolrFieldNames($language_id, $index);
       }
