@@ -27,7 +27,7 @@
         "drupal/search_api": "~1.28",
         "composer/semver": "^1.0|^3.0",
         "consolidation/annotated-command": "^2.12|^4.1",
-        "maennchen/zipstream-php": "^2.2.1",
+        "maennchen/zipstream-php": "^2.2.1|^3.0",
         "solarium/solarium": "^6.2.8",
         "laminas/laminas-stdlib": "^3.2"
     },
