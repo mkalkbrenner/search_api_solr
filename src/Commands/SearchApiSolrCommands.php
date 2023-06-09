@@ -88,7 +88,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    *
    * @default $options []
    *
-   * @usage drush search-api-solr:get-server-config solr_server config-solr_8-11-2.zip 8.11.2
+   * @usage drush search-api-solr:get-server-config server_id config-solr_8-11-2.zip 8.11.2
    * Get the config files for a solr server and save it as zip file.
    *
    * @aliases solr-gsc,sasm-gsc,search-api-solr-get-server-config,search-api-solr-multilingual-get-server-config
