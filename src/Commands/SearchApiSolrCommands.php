@@ -108,6 +108,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
       $this->output()->writeln('The server config was succesfully exported to ' . $file_name);
     }
   }
+
   /**
    * Indexes items for one or all enabled search indexes.
    *
