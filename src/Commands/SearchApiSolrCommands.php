@@ -88,8 +88,8 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    *
    * @default $options []
    *
-   * @usage drush search-api-solr:get-server-config server_id file_name
-   *   Get the config files for a solr server and save it as zip file.
+   * @usage drush search-api-solr:get-server-config solr_server config-solr_8-11-2.zip 8.11.2
+   * Get the config files for a solr server and save it as zip file.
    *
    * @aliases solr-gsc,sasm-gsc,search-api-solr-get-server-config,search-api-solr-multilingual-get-server-config
    *
@@ -100,12 +100,14 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @throws \ZipStream\Exception\OverflowException
    */
   public function getServerConfig($server_id, $file_name = NULL, $solr_version = NULL, array $options = []) {
-    if (!$options['pipe'] && ($file_name === NULL)) {
-      throw new ConsoleException('Required argument missing ("file_name"), and no --pipe option specified.');
+    if (isset($options['pipe'])) {
+      if (!$options['pipe'] && ($file_name === NULL)) {
+        throw new ConsoleException('Required argument missing ("file_name"), and no --pipe option specified.');
+      }
+      $this->commandHelper->getServerConfigCommand($server_id, $file_name, $solr_version);
+      $this->output()->writeln('The server config was succesfully exported to ' . $file_name);
     }
-    $this->commandHelper->getServerConfigCommand($server_id, $file_name, $solr_version);
   }
-
   /**
    * Indexes items for one or all enabled search indexes.
    *
