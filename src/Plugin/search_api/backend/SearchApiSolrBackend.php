@@ -946,7 +946,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                   $variables[':min_version'] = SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION;
                   if (preg_match('/^drupal-(.*?)-solr/', $stats_summary['@schema_version'], $matches)) {
                     if (Comparator::lessThan($matches[1], SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION)) {
-                      $this->messenger->addError($this->t('Solr is using outdated config files from Search API Solr :min_version or before. Please follow the instructions in the <a href=":url">README.md</a> file on how to update Solr config files.', $variables));
+                      $this->messenger->addError($this->t('Solr is using outdated config files. Please update to at least Search API Solr :min_version, and follow the instructions in the <a href=":url">README.md</a> file on how to update Solr config files.', $variables));
                       $status = 'error';
                     }
                   }
