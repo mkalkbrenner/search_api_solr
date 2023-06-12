@@ -940,13 +940,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                   'label' => $this->t('%key: Delay', ['%key' => $key]),
                   'info' => $this->t('@autocommit_time before updates are processed.', $stats_summary),
                 ];
-
                 $status = 'ok';
                 if (!$this->isNonDrupalOrOutdatedConfigSetAllowed()) {
                   $variables[':url'] = Url::fromUri('internal:/' . $this->moduleExtensionList->getPath('search_api_solr') . '/README.md')->toString();
+                  $variables[':min_version'] = SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION;
                   if (preg_match('/^drupal-(.*?)-solr/', $stats_summary['@schema_version'], $matches)) {
                     if (Comparator::lessThan($matches[1], SolrBackendInterface::SEARCH_API_SOLR_MIN_SCHEMA_VERSION)) {
-                      $this->messenger->addError($this->t('You are using outdated Solr configuration set. Please follow the instructions described in the <a href=":url">README.md</a> file for setting up Solr.', $variables));
+                      $this->messenger->addError($this->t('Solr is using outdated config files from Search API Solr :min_version or before. Please follow the instructions in the <a href=":url">README.md</a> file on how to to update Solr config files.', $variables));
                       $status = 'error';
                     }
                   }
