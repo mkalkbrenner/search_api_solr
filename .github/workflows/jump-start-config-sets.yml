@@ -228,7 +228,7 @@ jobs:
               run: |
                 cd drupal
                 composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
-                composer require solarium/solarium:"dev-master as 6.2.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:3.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --ignore-platform-reqs --no-interaction
+                composer require solarium/solarium:"dev-master as 6.3.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:3.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --ignore-platform-reqs --no-interaction
                 # search_api was installed as dependency above. This is a required check! Now switch to the latest dev version.
                 composer require drupal/search_api:1.x-dev --ignore-platform-reqs --no-interaction
                 # cd modules/contrib/search_api
@@ -328,7 +328,7 @@ jobs:
           run: |
             cd drupal
             composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
-            composer require solarium/solarium:"dev-master as 6.2.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:3.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --ignore-platform-reqs --no-interaction
+            composer require solarium/solarium:"dev-master as 6.3.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:3.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --ignore-platform-reqs --no-interaction
             # search_api was installed as dependency above. This is a required check! Now switch to the latest dev version.
             composer require drupal/search_api:1.x-dev --ignore-platform-reqs --no-interaction
             # cd modules/contrib/search_api
