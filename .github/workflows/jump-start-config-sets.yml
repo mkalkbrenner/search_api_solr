@@ -151,31 +151,31 @@ jobs:
 
         strategy:
             matrix:
-                drupal: ['9.5']
+                drupal: ['9.5', '10.0']
                 solr: ['4', '5', '6', '7', '8']
-                php: ['7.4', '8.1']
+                php: ['8.1', '8.2']
                 experimental: [false]
                 include:
-                  - drupal: '10.0'
+                  - drupal: '10.1'
                     solr: '4'
-                    php: '8.1'
-                    experimental: false
-                  - drupal: '10.0'
+                    php: '8.2'
+                    experimental: true
+                  - drupal: '10.1'
                     solr: '5'
-                    php: '8.1'
-                    experimental: false
-                  - drupal: '10.0'
+                    php: '8.2'
+                    experimental: true
+                  - drupal: '10.1'
                     solr: '6'
-                    php: '8.1'
-                    experimental: false
-                  - drupal: '10.0'
+                    php: '8.2'
+                    experimental: true
+                  - drupal: '10.1'
                     solr: '7'
-                    php: '8.1'
-                    experimental: false
-                  - drupal: '10.0'
+                    php: '8.2'
+                    experimental: true
+                  - drupal: '10.1'
                     solr: '8'
-                    php: '8.1'
-                    experimental: false
+                    php: '8.2'
+                    experimental: true
 
         name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
 
@@ -267,15 +267,15 @@ jobs:
 
       strategy:
         matrix:
-          drupal: ['9.4', '9.5']
+          drupal: ['9.5', '10.0']
           solr: ['3']
-          php: ['7.4', '8.1']
+          php: ['8.1', '8.2']
           experimental: [false]
           include:
-            - drupal: '10.0'
+            - drupal: '10.1'
               solr: '3'
-              php: '8.1'
-              experimental: false
+              php: '8.2'
+              experimental: true
 
       name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
 
