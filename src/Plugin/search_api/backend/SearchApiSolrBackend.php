@@ -4285,33 +4285,35 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     $mlt_fl = [];
     foreach ($mlt_options['fields'] as $mlt_field) {
-      $first_field = reset($field_names[$mlt_field]);
-      if (
-        strpos($first_field, 'd') === 0 ||
-        (
-          version_compare($solr_version, '7.0', '>=') &&
-          preg_match('/^[ifph]/', $first_field, $matches)
-        )
-      ) {
-        // Trie based field types were deprecated in Solr 6 and with Solr 7 we
-        // switched to the point based equivalents. But lucene doesn't support
-        // mlt based on these field types. Date fields don't seem to be
-        // supported at all in MLT queries.
-        $msg = 'More like this (MLT) is not yet supported by Solr for point based field types. Consider converting the following field to a string or indexing it one more time as string:';
-        $this->getLogger()->error($msg . ' @field', ['@field' => $mlt_field]);
-        throw new SearchApiSolrException(sprintf($msg . ' %s', $mlt_field));
+      if ($mlt_field && isset($field_names[$mlt_field])) {
+        $first_field = reset($field_names[$mlt_field]);
+        if (
+          strpos($first_field, 'd') === 0 ||
+          (
+            version_compare($solr_version, '7.0', '>=') &&
+            preg_match('/^[ifph]/', $first_field, $matches)
+          )
+        ) {
+          // Trie based field types were deprecated in Solr 6 and with Solr 7 we
+          // switched to the point based equivalents. But lucene doesn't support
+          // mlt based on these field types. Date fields don't seem to be
+          // supported at all in MLT queries.
+          $msg = 'More like this (MLT) is not yet supported by Solr for point based field types. Consider converting the following field to a string or indexing it one more time as string:';
+          $this->getLogger()->error($msg . ' @field', ['@field' => $mlt_field]);
+          throw new SearchApiSolrException(sprintf($msg . ' %s', $mlt_field));
+        }
+        if (strpos($first_field, 't') !== 0) {
+          // Non-text fields are not language-specific.
+          $mlt_fl[] = [$first_field];
+        }
+        else {
+          // Add all language-specific field names. This should work for
+          // non Drupal Solr Documents as well which contain only a single
+          // name.
+          $mlt_fl[] = array_values($field_names[$mlt_field]);
+        }
       }
 
-      if (strpos($first_field, 't') !== 0) {
-        // Non-text fields are not language-specific.
-        $mlt_fl[] = [$first_field];
-      }
-      else {
-        // Add all language-specific field names. This should work for
-        // non Drupal Solr Documents as well which contain only a single
-        // name.
-        $mlt_fl[] = array_values($field_names[$mlt_field]);
-      }
     }
 
     $settings = Utility::getIndexSolrSettings($query->getIndex());
