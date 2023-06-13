@@ -16,7 +16,6 @@ use Drupal\search_api_solr\Utility\Utility;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
-use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
 
 defined('SEARCH_API_SOLR_JUMP_START_CONFIG_SET') || define('SEARCH_API_SOLR_JUMP_START_CONFIG_SET', getenv('SEARCH_API_SOLR_JUMP_START_CONFIG_SET') ?: 0);
@@ -409,7 +408,7 @@ class SolrConfigSetController extends ControllerBase {
   /**
    * Returns a ZipStream of all configuration files.
    *
-   * @param \ZipStream\Option\Archive $archive_options
+   * @param ressource|NUll $archive_options
    *   Archive options.
    *
    * @return \ZipStream\ZipStream
@@ -419,15 +418,14 @@ class SolrConfigSetController extends ControllerBase {
    * @throws \ZipStream\Exception\FileNotFoundException
    * @throws \ZipStream\Exception\FileNotReadableException
    */
-  public function getConfigZip(Archive $archive_options): ZipStream {
+  public function getConfigZip($outputStream = NULL): ZipStream {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $this->getBackend();
     $connector = $backend->getSolrConnector();
     $solr_branch = $connector->getSolrBranch($this->assumedMinimumVersion);
     $lucene_match_version = $connector->getLuceneMatchVersion($this->assumedMinimumVersion ?: '');
 
-    $zip = new ZipStream('solr_' . $solr_branch . '_config.zip', $archive_options);
-
+    $zip = new ZipStream(outputStream: $outputStream, outputName: 'solr_' . $solr_branch . '_config.zip');
     $files = $this->getConfigFiles();
 
     foreach ($files as $name => $content) {
@@ -457,15 +455,12 @@ class SolrConfigSetController extends ControllerBase {
     $this->setServer($search_api_server);
 
     try {
-      $archive_options = new Archive();
-      $archive_options->setSendHttpHeaders(TRUE);
-
       @ob_clean();
       // If you are using nginx as a webserver, it will try to buffer the
       // response. We have to disable this with a custom header.
       // @see https://github.com/maennchen/ZipStream-PHP/wiki/nginx
       header('X-Accel-Buffering: no');
-      $zip = $this->getConfigZip($archive_options);
+      $zip = $this->getConfigZip();
       $zip->finish();
       @ob_end_flush();
 

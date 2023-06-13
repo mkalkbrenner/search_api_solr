@@ -10,7 +10,6 @@ use Drupal\search_api_solr\Controller\SolrConfigSetController;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use ZipStream\Option\Archive;
 use Drupal\search_api\Utility\CommandHelper;
 
 /**
@@ -83,15 +82,13 @@ class SolrCommandHelper extends CommandHelper {
     $solr_configset_controller = new SolrConfigSetController($this->moduleExtensionList);
     $solr_configset_controller->setServer($server);
 
-    $archive_options = new Archive();
-    $stream = FALSE;
+    $stream = NULL;
     if ($file_name !== NULL) {
       // If no filename is provided, output stream is standard output.
       $stream = fopen($file_name, 'w+b');
-      $archive_options->setOutputStream($stream);
     }
 
-    $zip = $solr_configset_controller->getConfigZip($archive_options);
+    $zip = $solr_configset_controller->getConfigZip($stream);
     $zip->finish();
 
     if ($stream) {
@@ -100,7 +97,7 @@ class SolrCommandHelper extends CommandHelper {
   }
 
   /**
-   * Finalizes one ore more indexes.
+   * Finalizes one or more indexes.
    *
    * @param string[]|null $indexIds
    *   (optional) An array of index IDs, or NULL if we should finalize all
