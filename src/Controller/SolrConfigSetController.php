@@ -426,15 +426,15 @@ class SolrConfigSetController extends ControllerBase {
     $lucene_match_version = $connector->getLuceneMatchVersion($this->assumedMinimumVersion ?: '');
 
     if ($outputStream) {
-      $zip = new ZipStream(outputStream: $outputStream, defaultEnableZeroHeader: FALSE);
+      $zip = new ZipStream(outputStream: $outputStream, enableZip64: FALSE, defaultEnableZeroHeader: FALSE);
     }
     else {
-      $zip = new ZipStream(defaultEnableZeroHeader: FALSE, outputName: 'solr_' . $solr_branch . '_config.zip');
+      $zip = new ZipStream(enableZip64: FALSE, defaultEnableZeroHeader: FALSE, outputName: 'solr_' . $solr_branch . '_config.zip');
     }
-    $files = $this->getConfigFiles();
 
+    $files = $this->getConfigFiles();
     foreach ($files as $name => $content) {
-      $zip->addFile($name, $content);
+      $zip->addFile(fileName: $name, data: $content);
     }
 
     $connector->alterConfigZip($zip, $lucene_match_version, $this->serverId);
