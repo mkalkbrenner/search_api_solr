@@ -425,7 +425,12 @@ class SolrConfigSetController extends ControllerBase {
     $solr_branch = $connector->getSolrBranch($this->assumedMinimumVersion);
     $lucene_match_version = $connector->getLuceneMatchVersion($this->assumedMinimumVersion ?: '');
 
-    $zip = new ZipStream(outputStream: $outputStream, outputName: 'solr_' . $solr_branch . '_config.zip');
+    if ($outputStream) {
+      $zip = new ZipStream(outputStream: $outputStream, defaultEnableZeroHeader: FALSE);
+    }
+    else {
+      $zip = new ZipStream(defaultEnableZeroHeader: FALSE, outputName: 'solr_' . $solr_branch . '_config.zip');
+    }
     $files = $this->getConfigFiles();
 
     foreach ($files as $name => $content) {
