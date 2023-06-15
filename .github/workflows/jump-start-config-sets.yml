@@ -267,6 +267,7 @@ jobs:
             - name: Install dependencies
               run: |
                 cd drupal
+                php -v
                 composer config platform.php ${{ matrix.php }}
                 composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
                 composer require solarium/solarium:"dev-master as 6.3.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:3.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --ignore-platform-reqs --no-interaction
@@ -297,6 +298,7 @@ jobs:
                 vendor/bin/drush si standard --db-url=sqlite://sites/default/files/db.sqlite --yes
                 vendor/bin/drush en search_api_solr_admin,search_api_solr_devel,search_api_solr_legacy --yes
                 vendor/bin/drush en search_api_spellcheck,search_api_solr_autocomplete,facets,search_api_location --yes
+                vendor/bin/phpunit -v -c core --group search_api_solr --exclude-group not_drupal${{ matrix.drupal }},not_solr${{ matrix.solr }} modules/contrib/search_api_solr
                 vendor/bin/drush cim --partial --source=modules/contrib/search_api_solr/jump-start/drupal_configs --yes
                 vendor/bin/drush -v solr-gsc solr_cloud test-config-generation.zip
 
