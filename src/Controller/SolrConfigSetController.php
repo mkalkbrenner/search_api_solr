@@ -13,6 +13,7 @@ use Drupal\search_api_solr\SearchApiSolrConflictingEntitiesException;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\Utility\Utility;
+use Drupal\search_api_solr\Utility\ZipStreamFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -425,18 +426,7 @@ class SolrConfigSetController extends ControllerBase {
     $solr_branch = $connector->getSolrBranch($this->assumedMinimumVersion);
     $lucene_match_version = $connector->getLuceneMatchVersion($this->assumedMinimumVersion ?: '');
 
-    if (class_exists('\ZipStream\Option\Archive')) {
-      // Version 2.x.
-      $zip = new ZipStream('solr_' . $solr_branch . '_config.zip', $archive_options_or_ressource);
-    }
-    elseif ($archive_options_or_ressource) {
-      // Version 3.x.
-      $zip = new ZipStream(outputStream: $archive_options_or_ressource, enableZip64: FALSE, defaultEnableZeroHeader: FALSE);
-    }
-    else {
-      // Version 3.x.
-      $zip = new ZipStream(enableZip64: FALSE, defaultEnableZeroHeader: FALSE, outputName: 'solr_' . $solr_branch . '_config.zip');
-    }
+    $zip = ZipStreamFactory::createInstance('solr_' . $solr_branch . '_config.zip', $archive_options_or_ressource);
 
     $files = $this->getConfigFiles();
     foreach ($files as $name => $content) {
