@@ -4367,7 +4367,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $solr_distance_field = $field_names[$distance_field];
     $spatial['lat'] = (float) $spatial['lat'];
     $spatial['lon'] = (float) $spatial['lon'];
-    $spatial['radius'] = isset($spatial['radius']) ? (float) $spatial['radius'] : 0.0;
+    $spatial['radius'] = isset($spatial['radius']) ? (int) $spatial['radius'] : 0;
     $spatial['min_radius'] = isset($spatial['min_radius']) ? (float) $spatial['min_radius'] : 0.0;
 
     if (!isset($spatial['filter_query_conditions'])) {
@@ -4386,7 +4386,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $spatial_query->setDistance($spatial['radius']);
     $spatial_query->setField($solr_field);
     $spatial_query->setPoint($spatial['lat'] . ',' . $spatial['lon']);
-    // Add the conditions of the spatial query. This might adust the values of
+    // Add the conditions of the spatial query. This might adjust the values of
     // 'radius' and 'min_radius' required later for facets.
     $solarium_query->createFilterQuery($solr_field)
       ->setQuery($this->createLocationFilterQuery($spatial));
