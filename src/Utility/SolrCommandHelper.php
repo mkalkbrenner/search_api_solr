@@ -88,7 +88,17 @@ class SolrCommandHelper extends CommandHelper {
       $stream = fopen($file_name, 'w+b');
     }
 
-    $zip = $solr_configset_controller->getConfigZip($stream);
+    if (class_exists('\ZipStream\Option\Archive')) {
+      // Version 2.x.
+      $archive_options_or_ressource = new \ZipStream\Option\Archive();
+      $archive_options_or_ressource->setOutputStream($stream);
+    }
+    else {
+      // Version 3.x.
+      $archive_options_or_ressource = $stream;
+    }
+
+      $zip = $solr_configset_controller->getConfigZip($archive_options_or_ressource);
     $zip->finish();
 
     if ($stream) {

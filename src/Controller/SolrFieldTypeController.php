@@ -29,6 +29,12 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
    */
   public function getConfigZip(ServerInterface $search_api_server) {
     try {
+      $archive_options = NULL;
+      if (class_exists('\ZipStream\Option\Archive')) {
+        // Version 2.x. Version 3.x uses named parameters instead of options.
+        $archive_options = new \ZipStream\Option\Archive();
+        $archive_options->setSendHttpHeaders(TRUE);
+      }
       @ob_clean();
       // If you are using nginx as a webserver, it will try to buffer the
       // response. We have to disable this with a custom header.
@@ -36,7 +42,7 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
       header('X-Accel-Buffering: no');
       /** @var SolrConfigSetController $solrConfigSetController */
       $solrConfigSetController = $this->getListBuilder($search_api_server);
-      $zip = $solrConfigSetController->getConfigZip();
+      $zip = $solrConfigSetController->getConfigZip($archive_options);
       $zip->finish();
       @ob_end_flush();
 

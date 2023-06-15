@@ -408,7 +408,7 @@ class SolrConfigSetController extends ControllerBase {
   /**
    * Returns a ZipStream of all configuration files.
    *
-   * @param ressource|NUll $archive_options
+   * @param \ZipStream\Option\Archive|ressource|NUll $archive_options_or_ressource
    *   Archive options.
    *
    * @return \ZipStream\ZipStream
@@ -418,23 +418,29 @@ class SolrConfigSetController extends ControllerBase {
    * @throws \ZipStream\Exception\FileNotFoundException
    * @throws \ZipStream\Exception\FileNotReadableException
    */
-  public function getConfigZip($outputStream = NULL): ZipStream {
+  public function getConfigZip($archive_options_or_ressource = NULL): ZipStream {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $this->getBackend();
     $connector = $backend->getSolrConnector();
     $solr_branch = $connector->getSolrBranch($this->assumedMinimumVersion);
     $lucene_match_version = $connector->getLuceneMatchVersion($this->assumedMinimumVersion ?: '');
 
-    if ($outputStream) {
-      $zip = new ZipStream(outputStream: $outputStream, enableZip64: FALSE, defaultEnableZeroHeader: FALSE);
+    if (class_exists('\ZipStream\Option\Archive')) {
+      // Version 2.x.
+      $zip = new ZipStream('solr_' . $solr_branch . '_config.zip', $archive_options_or_ressource);
+    }
+    elseif ($archive_options_or_ressource) {
+      // Version 3.x.
+      $zip = new ZipStream(outputStream: $archive_options_or_ressource, enableZip64: FALSE, defaultEnableZeroHeader: FALSE);
     }
     else {
+      // Version 3.x.
       $zip = new ZipStream(enableZip64: FALSE, defaultEnableZeroHeader: FALSE, outputName: 'solr_' . $solr_branch . '_config.zip');
     }
 
     $files = $this->getConfigFiles();
     foreach ($files as $name => $content) {
-      $zip->addFile(fileName: $name, data: $content);
+      $zip->addFile($name, $content);
     }
 
     $connector->alterConfigZip($zip, $lucene_match_version, $this->serverId);
@@ -460,12 +466,18 @@ class SolrConfigSetController extends ControllerBase {
     $this->setServer($search_api_server);
 
     try {
+      $archive_options = NULL;
+      if (class_exists('\ZipStream\Option\Archive')) {
+        // Version 2.x. Version 3.x uses named parameters instead of options.
+        $archive_options = new \ZipStream\Option\Archive();
+        $archive_options->setSendHttpHeaders(TRUE);
+      }
       @ob_clean();
       // If you are using nginx as a webserver, it will try to buffer the
       // response. We have to disable this with a custom header.
       // @see https://github.com/maennchen/ZipStream-PHP/wiki/nginx
       header('X-Accel-Buffering: no');
-      $zip = $this->getConfigZip();
+      $zip = $this->getConfigZip($archive_options);
       $zip->finish();
       @ob_end_flush();
 
