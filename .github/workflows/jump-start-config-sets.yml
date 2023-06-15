@@ -54,7 +54,6 @@ jobs:
               run: |
                 cd drupal
                 php -v
-                composer config platform.php ${{ matrix.php }}.0
                 composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
                 composer require drupal/search_api_solr:4.99.0 drush/drush drupal/drush_language --no-interaction
 
