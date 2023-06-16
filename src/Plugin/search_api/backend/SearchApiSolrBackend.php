@@ -891,7 +891,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               if ($cloud && 0 === $index_id) {
                 $info[] = [
                   'label' => $this->t('Default Collection'),
-                  'info' => $this->t("Default collection isn't set. Ensure that the collections are properly set on the indexes in their advanced section od the Solr specific index options."),
+                  'info' => $this->t("Default collection isn't set. Ensure that the collections are properly set on the indexes in their advanced section of the Solr specific index options."),
                   'status' => 'error',
                 ];
               }
