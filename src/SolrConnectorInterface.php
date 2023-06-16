@@ -326,7 +326,7 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   /**
    * Creates a new Solarium more like this query.
    *
-   * @return \Solarium\QueryType\MorelikeThis\Query
+   * @return \Solarium\QueryType\MoreLikeThis\Query
    *   The MoreLikeThis query.
    */
   public function getMoreLikeThisQuery();

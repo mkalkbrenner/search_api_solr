@@ -4223,7 +4223,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @param \Drupal\search_api\Query\QueryInterface $query
    *   The Search API query to build the mlt query from.
    *
-   * @return \Solarium\QueryType\MorelikeThis\Query
+   * @return \Solarium\QueryType\MoreLikeThis\Query
    *   The Solarium MorelikeThis query.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
