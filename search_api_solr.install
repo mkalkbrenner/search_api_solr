@@ -209,17 +209,17 @@ function search_api_solr_requirements($phase) {
             }
           }
         }
-      }
-      else {
-        $requirements['search_api_solr_' . $server_id . '_modifications'] = [
-          'title' => t('Solr Server %server', ['%server' => $server->label()]),
-          'value' => t('Solr not reachable'),
-          'description' => t('Solr server <a href=":url">@server</a> is not reachable.', [
-            ':url' => $server->toUrl('canonical')->toString(),
-            '@server' => $server->label(),
-          ]),
-          'severity' => REQUIREMENT_ERROR,
-        ];
+        else {
+          $requirements['search_api_solr_' . $server_id . '_modifications'] = [
+            'title' => t('Solr Server %server', ['%server' => $server->label()]),
+            'value' => t('Solr not reachable'),
+            'description' => t('Solr server <a href=":url">@server</a> is not reachable.', [
+              ':url' => $server->toUrl('canonical')->toString(),
+              '@server' => $server->label(),
+            ]),
+            'severity' => REQUIREMENT_ERROR,
+          ];
+        }
       }
     }
 
