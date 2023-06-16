@@ -36,6 +36,7 @@ use Drupal\search_api\Item\FieldInterface;
 use Drupal\search_api\Item\ItemInterface;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Plugin\search_api\data_type\value\TextValue;
+use Drupal\search_api\Plugin\search_api\processor\Property\AggregatedFieldProperty;
 use Drupal\search_api\Processor\ProcessorInterface;
 use Drupal\search_api\Processor\ProcessorProperty;
 use Drupal\search_api\Query\ConditionGroup;
@@ -2433,6 +2434,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               else {
                 if ($field->getDataDefinition()->isList() || $this->isHierarchicalField($field)) {
                   $pref .= 'm';
+                }
+                elseif ($field->getDataDefinition() instanceof AggregatedFieldProperty) {
+                  $pref .= $field->getDataDefinition()->isList() ? 'm' : 's';
                 }
                 else {
                   try {
