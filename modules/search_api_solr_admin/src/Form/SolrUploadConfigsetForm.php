@@ -30,7 +30,7 @@ class SolrUploadConfigsetForm extends SolrAdminFormBase {
 
     $collection_name = $connector->getCollectionName();
     if (!$collection_name) {
-      $this->messenger->addError($this->t("There's no default collection specified for this server. Edit this server and provide the default collection's name."));
+      $this->messenger->addError($this->t("Upload isn't possible! There's no default collection specified for this server. Edit this server and provide the default collection's name."));
     }
 
     $configset = $connector->getConfigSetName();
