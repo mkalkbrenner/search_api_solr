@@ -98,7 +98,7 @@ class SolrCommandHelper extends CommandHelper {
       $archive_options_or_ressource = $stream;
     }
 
-      $zip = $solr_configset_controller->getConfigZip($archive_options_or_ressource);
+    $zip = $solr_configset_controller->getConfigZip($archive_options_or_ressource);
     $zip->finish();
 
     if ($stream) {

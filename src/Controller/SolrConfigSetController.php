@@ -498,16 +498,20 @@ class SolrConfigSetController extends ControllerBase {
       /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
       $backend = $search_api_server->getBackend();
 
-      $archive_options = new Archive();
-      $archive_options->setSendHttpHeaders(TRUE);
+      if (class_exists('\ZipStream\Option\Archive')) {
+        $archive_options_or_ressource = new \ZipStream\Option\Archive();
+        $archive_options_or_ressource->setSendHttpHeaders(TRUE);
+      }
+      else {
+        $archive_options_or_ressource = NULL;
+      }
 
       @ob_clean();
       // If you are using nginx as a webserver, it will try to buffer the
       // response. We have to disable this with a custom header.
       // @see https://github.com/maennchen/ZipStream-PHP/wiki/nginx
       header('X-Accel-Buffering: no');
-
-      $zip = new ZipStream('solr_current_config.zip', $archive_options);
+      $zip = ZipStreamFactory::createInstance('solr_current_config.zip', $archive_options_or_ressource);
 
       /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
       $backend = $search_api_server->getBackend();
