@@ -290,6 +290,9 @@ class SolrConfigSetController extends ControllerBase {
   public function getConfigFiles(): array {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $this->getBackend();
+    if (!$backend) {
+      throw new SearchApiSolrException('Backend not set on SolrConfigSetController.');
+    }
     $connector = $backend->getSolrConnector();
     $solr_major_version = $connector->getSolrMajorVersion($this->assumedMinimumVersion);
     if (!$solr_major_version) {
