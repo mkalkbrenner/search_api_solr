@@ -3,7 +3,6 @@
 namespace Drupal\search_api_solr\Utility;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\Controller\SolrConfigSetController;
