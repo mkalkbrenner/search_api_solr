@@ -1442,8 +1442,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       // _root_ field which assures children (nested) documents will be removed
       // too. The field _root_ is assigned to the ID of the top-level document
       // across an entire block of parent + children.
-      $update_query->addDeleteQuery('_root_:("' . implode('" OR "', $solr_ids) . '")');
-      $update_query->addDeleteByIds($solr_ids);
+      foreach (array_chunk($solr_ids, 30) as $solr_ids_chunk) {
+        $update_query->addDeleteQuery('{!terms f=_root_}("' . implode('","', $solr_ids_chunk) . '")');
+        $update_query->addDeleteByIds($solr_ids_chunk);
+      }
       $connector->update($update_query, $this->getCollectionEndpoint($index));
       $this->state->set('search_api_solr.' . $index->id() . '.last_update', $this->time->getCurrentTime());
     }
