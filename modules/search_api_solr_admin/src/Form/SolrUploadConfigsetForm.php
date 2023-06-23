@@ -35,7 +35,7 @@ class SolrUploadConfigsetForm extends SolrAdminFormBase {
 
     $configset = $connector->getConfigSetName();
     if (!$configset) {
-      $this->messenger->addWarning($this->t('No existing configset name could be detected on the Solr server for this collection. That is fine if you just create a new collection. Otherwise you should check the logs.'));
+      $this->messenger->addWarning($this->t('No existing configset name could be detected on the Solr server for this collection. That is fine if you are creating a new collection. Otherwise check the logs for errors.'));
     }
 
     $form['#title'] = $collection_name ? $this->t('Upload Configset for %collection?', ['%collection' => $collection_name]) : $this->t('Upload Configset requires a default collection to be specified for this server.');
