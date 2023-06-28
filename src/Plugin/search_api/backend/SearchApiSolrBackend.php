@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_solr\Plugin\search_api\backend;
 
+use Composer\InstalledVersions;
 use Composer\Semver\Comparator;
 use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Component\Utility\Html;
@@ -274,6 +275,22 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $container->get('lock'),
       $container->get('extension.list.module')
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getPreferredSchemaVersion(): string {
+    $installed_version = InstalledVersions::getPrettyVersion('drupal/search_api_solr');
+
+    return preg_match('/^\d+\.\d+\.\d+$/', $installed_version, $matches) ? $installed_version : self::SEARCH_API_SOLR_MIN_SCHEMA_VERSION;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getMinimalRequiredSchemaVersion(): string {
+    return self::SEARCH_API_SOLR_MIN_SCHEMA_VERSION;
   }
 
   /**
@@ -858,6 +875,16 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         'label' => $cloud ? $this->t('Collection Connection') : $this->t('Core Connection'),
         'info' => $msg,
         'status' => $ping ? 'ok' : 'error',
+      ];
+
+      $info[] = [
+        'label' => $this->t('Minimal required schema version'),
+        'info' => $this->getMinimalRequiredSchemaVersion(),
+      ];
+
+      $info[] = [
+        'label' => $this->t('Preferred schema version'),
+        'info' => $this->getPreferredSchemaVersion(),
       ];
 
       $version = $connector->getSolrVersion();

@@ -379,7 +379,7 @@ class SolrConfigSetController extends ControllerBase {
               'SEARCH_API_SOLR_JUMP_START_CONFIG_SET',
             ],
             [
-              SolrBackendInterface::SEARCH_API_SOLR_SCHEMA_VERSION,
+              $backend->getPreferredSchemaVersion(),
               $real_solr_branch,
               SEARCH_API_SOLR_JUMP_START_CONFIG_SET,
             ],

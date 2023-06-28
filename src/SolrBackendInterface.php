@@ -20,7 +20,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
   /**
    * The current Solr schema version.
    *
-   * @todo replace by an automatic detection when core provides module versions.
+   * @deprecated use getPreferredSchemaVersion()
    */
   public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.12';
 
@@ -46,6 +46,20 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
   public const FIELD_PLACEHOLDER = 'FIELD_PLACEHOLDER';
 
   public const EMPTY_TEXT_FIELD_DUMMY_VALUE = 'aöbäcüdöeäfüg';
+
+  /**
+   * Get preferred schema version.
+   *
+   * @return string
+   */
+  public function getPreferredSchemaVersion(): string;
+
+  /**
+   * Get minmal required schema version.
+   *
+   * @return string
+   */
+  public function getMinimalRequiredSchemaVersion(): string;
 
   /**
    * Creates a list of all indexed field names mapped to their Solr field names.
