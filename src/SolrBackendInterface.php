@@ -22,12 +22,12 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    *
    * @deprecated use getPreferredSchemaVersion()
    */
-  public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.12';
+  public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.13';
 
   /**
    * The minimum required Solr schema version.
    */
-  public const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.2.11';
+  public const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.2.13';
 
   /**
    * The separator to indicate the start of a language ID.
