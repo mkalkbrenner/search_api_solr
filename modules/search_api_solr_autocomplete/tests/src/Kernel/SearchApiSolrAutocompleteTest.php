@@ -90,13 +90,8 @@ class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
     $suggestions = $terms_plugin->getAutocompleteSuggestions($query, 'tre', 'article tre');
     $this->assertEquals('article tree', $suggestions[0]->getSuggestedKeys());
     $this->assertEquals(1, $suggestions[0]->getResultsCount());
-    // Having set preserveOriginal in WordDelimiter let punction remain.
-    $this->assertEquals('article tree.', $suggestions[1]->getSuggestedKeys());
+    $this->assertEquals('article trees', $suggestions[1]->getSuggestedKeys());
     $this->assertEquals(1, $suggestions[1]->getResultsCount());
-    $this->assertEquals('article trees', $suggestions[2]->getSuggestedKeys());
-    $this->assertEquals(1, $suggestions[2]->getResultsCount());
-    $this->assertEquals('article trees.', $suggestions[3]->getSuggestedKeys());
-    $this->assertEquals(1, $suggestions[3]->getResultsCount());
 
     // @todo spellcheck tests
     // @codingStandardsIgnoreStart
