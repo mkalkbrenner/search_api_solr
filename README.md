@@ -61,7 +61,7 @@ details page (see installation steps below), or use `drush` to do this with
 ddev drush --numShards=1 search-api-solr:upload-configset SEARCH_API_SERVER_ID
 ```
 
-Note: `SEARCH_API_SERVER_ID` is the machine name of your Search API server.
+Note:  Replace `SEARCH_API_SERVER_ID` with your Search API server machine name.
 The number of "shards" should always be "1" as this local installation only
 runs a single Solr node.
 
