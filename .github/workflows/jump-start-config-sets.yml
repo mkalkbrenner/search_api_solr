@@ -48,14 +48,14 @@ jobs:
             - name: Tag search_api_solr
               run: |
                 cd search_api_solr
-                git tag 4.99.0
+                git tag 99.99.99
 
             - name: Install dependencies
               run: |
                 cd drupal
                 php -v
                 composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
-                composer require drupal/search_api_solr:4.99.0 drush/drush drupal/drush_language --no-interaction
+                composer require drupal/search_api_solr:99.99.99 drush/drush drupal/drush_language --no-interaction
 
             - name: Install drupal
               run: |
@@ -283,7 +283,7 @@ jobs:
             - name: Tag search_api_solr
               run: |
                 cd search_api_solr
-                git tag 4.99.0
+                git tag 99.99.99
 
             - name: Install dependencies
               run: |
@@ -291,7 +291,7 @@ jobs:
                 php -v
                 composer config platform.php ${{ matrix.php }}.0
                 composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
-                composer require solarium/solarium:"dev-master as 6.3.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:3.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --no-interaction
+                composer require solarium/solarium:"dev-master as 6.3.99" drupal/search_api_solr:99.99.99 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:3.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --no-interaction
                 # search_api was installed as dependency above. This is a required check! Now switch to the latest dev version.
                 composer require drupal/search_api:1.x-dev --no-interaction
                 # cd modules/contrib/search_api
@@ -399,7 +399,7 @@ jobs:
         - name: Tag search_api_solr
           run: |
             cd search_api_solr
-            git tag 4.99.0
+            git tag 99.99.99
 
         - name: Install dependencies
           run: |
@@ -407,7 +407,7 @@ jobs:
             php -v
             composer config platform.php ${{ matrix.php }}.0
             composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
-            composer require solarium/solarium:"dev-master as 6.3.99" drupal/search_api_solr:4.99.0 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:3.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --no-interaction
+            composer require solarium/solarium:"dev-master as 6.3.99" drupal/search_api_solr:99.99.99 drupal/search_api_autocomplete:1.x-dev drupal/search_api_spellcheck:3.x-dev drupal/facets:3.0.x-dev drupal/devel drupal/search_api_location:1.x-dev drupal/geofield drush/drush monolog/monolog --no-interaction
             # search_api was installed as dependency above. This is a required check! Now switch to the latest dev version.
             composer require drupal/search_api:1.x-dev --no-interaction
             # cd modules/contrib/search_api
