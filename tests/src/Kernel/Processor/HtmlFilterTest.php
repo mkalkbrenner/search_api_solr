@@ -157,21 +157,23 @@ class HtmlFilterTest extends ProcessorTestBase {
       'entity:node/4:en',
     ], array_keys($result->getResultItems()));
 
-    $query = new Query($this->index);
-    $query->keys(['😀😎👾']);
-    $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
-    $query->sort('search_api_id');
-    $query->getParseMode()->setConjunction('OR');
-    $result = $query->execute();
-    $this->assertEquals([
-      'entity:node/7:en',
-      'entity:node/6:en',
-      'entity:node/8:en',
-    ], array_keys($result->getResultItems()));
+    if (version_compare($solr_major_version, '8', '>=')) {
+      $query = new Query($this->index);
+      $query->keys(['😀😎👾']);
+      $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
+      $query->sort('search_api_id');
+      $query->getParseMode()->setConjunction('OR');
+      $result = $query->execute();
+      $this->assertEquals([
+        'entity:node/7:en',
+        'entity:node/6:en',
+        'entity:node/8:en',
+      ], array_keys($result->getResultItems()));
+    }
 
     $this->createNode([
       'type' => 'page',
-      'title' => "<b>VeryLongStingsWithMoreThanOneHoundredCharactersShouldNotNeitherBeIndexedAsTextNorAsBoostedTokenAndShouldNotLeadToExceptionsDuringIndexing<b>",
+      'title' => "<b>VeryLongStingsWithMoreThanOneHundredCharactersOrMoreShouldNotNeitherBeIndexedAsTextNorAsBoostedTokenAndShouldNotLeadToExceptionsDuringIndexing<b>",
     ]);
 
     $this->indexItems();
@@ -186,13 +188,13 @@ class HtmlFilterTest extends ProcessorTestBase {
 
     $this->createNode([
       'type' => 'page',
-      'title' => "<b>VeryLongStingsWithMoreThanOneHoundredCharactersShouldNotNeitherBeIndexedAsTextNorAsBoostedTokenAndShouldNotLeadToExceptionsDuringIndexing<b>",
+      'title' => "<b>VeryLongStingsWithMoreThanOneHundredCharactersOrMoreShouldNotNeitherBeIndexedAsTextNorAsBoostedTokenAndShouldNotLeadToExceptionsDuringIndexing<b>",
     ]);
 
     $this->indexItems();
 
     $query = new Query($this->index);
-    $query->keys(['VeryLongStingsWithMoreThanOneHoundredCharactersShouldNotNeitherBeIndexedAsTextNorAsBoostedTokenAndShouldNotLeadToExceptionsDuringIndexing']);
+    $query->keys(['VeryLongStingsWithMoreThanOneHundredCharactersOrMoreShouldNotNeitherBeIndexedAsTextNorAsBoostedTokenAndShouldNotLeadToExceptionsDuringIndexing']);
     $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
     $query->sort('search_api_id');
     $query->getParseMode()->setConjunction('OR');
