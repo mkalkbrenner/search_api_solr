@@ -53,7 +53,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @usage drush search-api-solr:reinstall-fieldtypes
    *   Deletes all Solr Field Type and re-installs them from their yml files.
    *
-   * @aliases solr-reinstall-ft,sasm-reinstall-ft,search-api-solr-delete-and-reinstall-all-field-types,search-api-solr-multilingual-delete-and-reinstall-all-field-types
+   * @aliases solr-reinstall-ft
    */
   public function reinstallFieldtypes() {
     $this->commandHelper->reinstallFieldtypesCommand();
@@ -91,7 +91,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @usage drush search-api-solr:get-server-config server_id file_name
    *   Get the config files for a solr server and save it as zip file.
    *
-   * @aliases solr-gsc,sasm-gsc,search-api-solr-get-server-config,search-api-solr-multilingual-get-server-config
+   * @aliases solr-gsc
    *
    * @throws \Drupal\search_api\ConsoleException
    * @throws \Drupal\search_api\SearchApiException
