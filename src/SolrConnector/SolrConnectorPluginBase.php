@@ -267,7 +267,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     $form['advanced']['jmx'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enable JMX'),
-      '#description' => $this->t('Enable JMX based monitoring.'),
+      '#description' => $this->t('Enable JMX based monitoring. Note: Only valid for Solr versions before Solr 9.'),
       '#default_value' => $this->configuration['jmx'] ?? FALSE,
     ];
 
@@ -1265,7 +1265,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function alterConfigFiles(array &$files, string $lucene_match_version, string $server_id = '') {
-    if (!empty($this->configuration['jmx'])) {
+    if (!empty($this->configuration['jmx']) && version_compare($this->getSolrVersion(), '9.0', '<')) {
       $files['solrconfig_extra.xml'] .= "<jmx />\n";
     }
 

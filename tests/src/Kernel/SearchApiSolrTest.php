@@ -1444,7 +1444,12 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $solr_configset_controller->setServer($server);
 
     $config_files = $solr_configset_controller->getConfigFiles();
-    $this->assertStringContainsString('<jmx />', $config_files['solrconfig_extra.xml']);
+    if (version_compare($solr_major_version, '9', '>=')) {
+      $this->assertStringNotContainsString('<jmx />', $config_files['solrconfig_extra.xml']);
+    }
+    else {
+      $this->assertStringContainsString('<jmx />', $config_files['solrconfig_extra.xml']);
+    }
     $this->assertStringContainsString('JtsSpatialContextFactory', $config_files['schema.xml']);
     $this->assertStringContainsString('text_en', $config_files['schema_extra_types.xml']);
     $this->assertStringNotContainsString('text_foo_en', $config_files['schema_extra_types.xml']);
