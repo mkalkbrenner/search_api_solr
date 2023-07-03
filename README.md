@@ -8,7 +8,7 @@ delete it and install it again via composer!
 Simply change into the Drupal directory and use composer to install
 search_api_solr:
 
-```
+```shell
 cd $DRUPAL
 composer require drupal/search_api_solr
 ```
@@ -34,24 +34,51 @@ the [Apache Solr Reference Guide](https://solr.apache.org/guide/) or use
 docker-compose with
 https://github.com/docker-solr/docker-solr-examples/blob/master/docker-compose/docker-compose.yml
 
-The preferred way for local development is to use DDev where you can easily add
-the pre-defined
-[solr-cloud service](https://github.com/drud/ddev-contrib/tree/master/docker-compose-services/solr).
-
-Once Solr Cloud is running with DDev you don't need to deal with any configset
-files like described in the sections below. Just enable the
-search_api_solr_admin sub-module and configure the Search API Server to use
-the Solr Cloud Connector with Basic Auth. The username "solr" and the password
-"SolrRocks" are pre-configured in `.ddev/solr-cloud/security.json`. Now you
-create or update your collection any time by clicking the "Upload Configset"
-button on the Serch API server details page. Or automate things using
-```
-ddev drush search_api_solr:upload-configset SERVER_ID
+The preferred way for local development is to use DDEV where you can easily add
+[ddev-solr](https://github.com/mkalkbrenner/ddev-solr) using this command:
+```shell
+ddev get mkalkbrenner/ddev-solr
+ddev restart
 ```
 
-Check the
-[Apache Solr (Cloud) Integration for DDEV-Local README](https://github.com/drud/ddev-contrib/blob/master/docker-compose-services/solr/README.md)
-for more detailed instructions.
+For Drupal and Search API Solr you need to configure a Search API server using
+Solr as backend and `Solr Cloud with Basic Auth` as its connector. As mentioned
+above, username "solr" and password "SolrRocks" are the pre-configured
+credentials for Basic Authentication in `.ddev/solr/security.json`.
+
+Solr requires a Drupal-specific configset for any collection that should be used
+to index Drupal's content. (In Solr Cloud "collections" are the equivalent to
+"cores" in classic Solr installations. Actually, in a big Solr Cloud installation
+a collection might consist of multiple cores across all Solr Cloud nodes.)
+
+Starting from Search API Solr module version 4.2.1 you don't need to deal with
+configsets manually anymore. Just enable the `search_api_solr_admin` sub-module
+which is part of Search API Solr. Now you create or update your "collections" at
+any time by clicking the "Upload Configset" button on the Search API server
+details page (see installation steps below), or use `drush` to do this with
+
+```
+ddev drush --numShards=1 search-api-solr:upload-configset SEARCH_API_SERVER_ID
+```
+
+Note:  Replace `SEARCH_API_SERVER_ID` with your Search API server machine name.
+The number of "shards" should always be "1" as this local installation only
+runs a single Solr node.
+
+### Installation steps
+
+1. Enable the `search_api_solr_admin` module. (This sub-module is included in Search API Solr >= 4.2.1)
+2. Create a search server using the Solr backend and select `Solr Cloud with Basic Auth` as connector:
+    - HTTP protocol: `http`
+    - Solr node: `solr`
+    - Solr port: `8983`
+    - Solr path: `/`
+    - Default Solr collection: `techproducts` (You can define any name here. The collection will be created automatically.)
+    - Username: `solr`
+    - Password: `SolrRocks`
+3. On the server's "view" page click the `Upload Configset` button and check the "Upload (and overwrite) configset" checkbox.
+4. Set the number of shards to `1`.
+5. Press `Upload`.Once Solr is running with DDEV you don't need to deal with any configset
 
 Setting up Solr (single core) - the classic way
 -----------------------------------------------
@@ -421,3 +448,4 @@ drupal folder:
 phpunit -c core --group search_api_solr
 ```
 (The exact command varies on your setup and paths.)
+

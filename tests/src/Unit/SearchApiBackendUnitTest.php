@@ -22,7 +22,6 @@ use Drupal\search_api_solr\Plugin\search_api\data_type\value\DateRangeValue;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginManager;
 use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
-use Drupal\Tests\UnitTestCase;
 use Solarium\Core\Query\Helper;
 use Solarium\QueryType\Update\Query\Document;
 
@@ -33,7 +32,7 @@ use Solarium\QueryType\Update\Query\Document;
  *
  * @group search_api_solr
  */
-class SearchApiBackendUnitTest extends UnitTestCase {
+class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
 
   use InvokeMethodTrait;
 
@@ -249,4 +248,5 @@ class SearchApiBackendUnitTest extends UnitTestCase {
       [NULL, 'text', SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE],
     ];
   }
+
 }

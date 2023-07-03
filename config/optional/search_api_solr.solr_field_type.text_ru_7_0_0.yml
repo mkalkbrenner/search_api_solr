@@ -20,7 +20,7 @@ field_type:
     -
       type: index
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory
@@ -32,6 +32,8 @@ field_type:
           preserveOriginal: 1
           catenateAll: 0
           catenateWords: 0
+        -
+          class: solr.FlattenGraphFilterFactory
         -
           class: solr.LowerCaseFilterFactory
         -
@@ -47,7 +49,7 @@ field_type:
     -
       type: query
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory
@@ -84,7 +86,7 @@ unstemmed_field_type:
     -
       type: index
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory
@@ -97,6 +99,8 @@ unstemmed_field_type:
           catenateAll: 0
           catenateWords: 0
         -
+          class: solr.FlattenGraphFilterFactory
+        -
           class: solr.LowerCaseFilterFactory
         -
           class: solr.StopFilterFactory
@@ -107,7 +111,7 @@ unstemmed_field_type:
     -
       type: query
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory

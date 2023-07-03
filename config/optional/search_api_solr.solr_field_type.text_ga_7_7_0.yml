@@ -24,7 +24,7 @@ field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_ga.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.ElisionFilterFactory
@@ -42,6 +42,8 @@ field_type:
           preserveOriginal: 1
           catenateAll: 0
           catenateWords: 1
+        -
+          class: solr.FlattenGraphFilterFactory
         -
           class: solr.LengthFilterFactory
           min: 2
@@ -61,7 +63,7 @@ field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_ga.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.SynonymGraphFilterFactory
@@ -106,7 +108,7 @@ unstemmed_field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_ga.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.ElisionFilterFactory
@@ -125,6 +127,8 @@ unstemmed_field_type:
           catenateAll: 0
           catenateWords: 1
         -
+          class: solr.FlattenGraphFilterFactory
+        -
           class: solr.LengthFilterFactory
           min: 2
           max: 100
@@ -139,7 +143,7 @@ unstemmed_field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_ga.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.SynonymGraphFilterFactory

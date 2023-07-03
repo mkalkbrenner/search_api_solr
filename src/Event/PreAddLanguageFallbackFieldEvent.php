@@ -3,6 +3,8 @@
 namespace Drupal\search_api_solr\Event;
 
 use Drupal\Component\EventDispatcher\Event;
+use Drupal\search_api\IndexInterface;
+use Drupal\search_api\Item\ItemInterface;
 
 /**
  * Event to be fired before a value gets indexed as language fallback.
@@ -33,6 +35,13 @@ final class PreAddLanguageFallbackFieldEvent extends Event {
   protected $type;
 
   /**
+   * The Search API item the field belongs to.
+   *
+   * @var \Drupal\search_api\Item\ItemInterface
+   */
+  protected $item;
+
+  /**
    * Constructs a new class instance.
    *
    * @param string $langcode
@@ -41,11 +50,14 @@ final class PreAddLanguageFallbackFieldEvent extends Event {
    *   The filed value.
    * @param string $type
    *   The field type.
+   * @param \Drupal\search_api\Item\ItemInterface $item
+   *   The Search API item the field belongs to.
    */
-  public function __construct(string $langcode, mixed $value, string $type) {
+  public function __construct(string $langcode, $value, string $type, ItemInterface $item) {
     $this->langcode = $langcode;
     $this->value = $value;
     $this->type = $type;
+    $this->item = $item;
   }
 
   /**
@@ -64,7 +76,7 @@ final class PreAddLanguageFallbackFieldEvent extends Event {
    * @return mixed
    *   The field values.
    */
-  public function getValue(): mixed {
+  public function getValue() {
     return $this->value;
   }
 
@@ -75,7 +87,7 @@ final class PreAddLanguageFallbackFieldEvent extends Event {
    *   The field value. If you supply NULL as the value and no modifier the
    *   field will be removed.
    */
-  public function setValue(mixed $value): void {
+  public function setValue($value): void {
     $this->value = $value;
   }
 
@@ -87,6 +99,26 @@ final class PreAddLanguageFallbackFieldEvent extends Event {
    */
   public function getType(): string {
     return $this->type;
+  }
+
+  /**
+   * Retrieves the Search API item ID.
+   *
+   * @return \Drupal\search_api\Item\ItemInterface
+   *   The Search API item the field belongs to.
+   */
+  public function getItem(): ItemInterface {
+    return $this->item;
+  }
+
+  /**
+   * Retrieves the Search API index.
+   *
+   * @return string
+   *   The Search API index the field belongs to.
+   */
+  public function getIndex(): IndexInterface {
+    return $this->item->getIndex();
   }
 
 }

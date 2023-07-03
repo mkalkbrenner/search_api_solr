@@ -21,7 +21,7 @@ class SearchApiSolrLocationTest extends SolrBackendTestBase {
    *
    * @var string[]
    */
-  public static $modules = [
+  protected static $modules = [
     'language',
     'search_api_location',
     'search_api_test_example_content',
@@ -106,7 +106,7 @@ class SearchApiSolrLocationTest extends SolrBackendTestBase {
       'type' => 'item',
       'location' => 'POINT(4.355607 50.878899)',
     ]);
-    $count = \Drupal::entityQuery('entity_test_mulrev_changed')->count()->execute();
+    $count = \Drupal::entityQuery('entity_test_mulrev_changed')->count()->accessCheck()->execute();
     $this->assertEquals(3, $count, "$count items inserted.");
   }
 

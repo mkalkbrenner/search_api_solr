@@ -183,6 +183,10 @@ class Utility {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $server->getBackend();
     $response = $backend->getSolrConnector()->getFile($dir_name);
+    if (is_array($response)) {
+      // A connector might return a prepared list;
+      return $response;
+    }
 
     // Search for directories and recursively merge directory files.
     $files_data = json_decode($response->getBody(), TRUE);
@@ -555,7 +559,7 @@ class Utility {
    */
   public static function getSortableSolrField(string $field_name, array $solr_field_names, QueryInterface $query) {
     if (!isset($solr_field_names[$field_name])) {
-      throw new SearchApiSolrException(sprintf('Sort "%s" is not valid solr field.', $field_name));
+      throw new SearchApiSolrException(sprintf('Sorting by "%s" has no valid solr field.', $field_name));
     }
 
     $first_solr_field_name = reset($solr_field_names[$field_name]);
@@ -565,7 +569,7 @@ class Utility {
     }
 
     // First we need to handle special fields which are prefixed by
-    // 'search_api_'. Otherwise they will erroneously be treated as dynamic
+    // 'search_api_'. Otherwise, they will erroneously be treated as dynamic
     // string fields by the next detection below because they start with an
     // 's'. This way we for example ensure that search_api_relevance isn't
     // modified at all.
@@ -588,8 +592,14 @@ class Utility {
     elseif (strpos($first_solr_field_name, 's') === 0 || strpos($first_solr_field_name, 't') === 0) {
       // For string and fulltext fields use the dedicated sort field for faster
       // and language specific sorts. If multiple languages are specified, use
-      // the first one.
-      $language_ids = $query->getLanguages() ?? [LanguageInterface::LANGCODE_NOT_SPECIFIED];
+      // the first one or the universal collation field if enabled.
+      $index_third_party_settings = $query->getIndex()->getThirdPartySettings('search_api_solr') + search_api_solr_default_index_third_party_settings();
+      if (!($index_third_party_settings['multilingual']['use_universal_collation'] ?? FALSE)) {
+        $language_ids = $query->getLanguages() ?? [LanguageInterface::LANGCODE_NOT_SPECIFIED];
+      }
+      else {
+        $language_ids = [LanguageInterface::LANGCODE_NOT_SPECIFIED];
+      }
       return Utility::encodeSolrName('sort' . SolrBackendInterface::SEARCH_API_SOLR_LANGUAGE_SEPARATOR . reset($language_ids) . '_' . $field_name);
     }
     elseif (preg_match('/^([a-z]+)m(_.*)/', $first_solr_field_name, $matches)) {
@@ -601,6 +611,47 @@ class Utility {
 
     // We could not simply put this into an else condition because that would
     // miss fields like search_api_relevance.
+    return $first_solr_field_name;
+  }
+
+  /**
+   * Gets the boostable equivalent of a dynamic Solr field.
+   *
+   * @param string $field_name
+   *   The Search API field name.
+   * @param array $solr_field_names
+   *   The dynamic Solr field names.
+   * @param \Drupal\search_api\Query\QueryInterface $query
+   *   The Search API query.
+   *
+   * @return string
+   *   The sortable Solr field name.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public static function getBoostableSolrField(string $field_name, array $solr_field_names, QueryInterface $query) {
+    if (!isset($solr_field_names[$field_name])) {
+      throw new SearchApiSolrException(sprintf('Boosting by "%s" has no valid solr field.', $field_name));
+    }
+
+    $first_solr_field_name = reset($solr_field_names[$field_name]);
+
+    if (!Utility::hasIndexJustSolrDocumentDatasource($query->getIndex())) {
+      if (strpos($first_solr_field_name, 'spellcheck') === 0 || strpos($first_solr_field_name, 'twm_suggest') === 0) {
+        throw new SearchApiSolrException("You should not boost by spellcheck or suggester catalogs.");
+      }
+      elseif (strpos($first_solr_field_name, 't') === 0) {
+        // For fulltext fields use the language specific field. If multiple
+        // languages are specified, use the first one as workaround.
+        $language_ids = $query->getLanguages() ?? [LanguageInterface::LANGCODE_NOT_SPECIFIED];
+        foreach ($language_ids as $language_id) {
+          if (!empty($solr_field_names[$field_name][$language_id])) {
+            return $solr_field_names[$field_name][$language_id];
+          }
+        }
+      }
+    }
+
     return $first_solr_field_name;
   }
 
@@ -896,7 +947,7 @@ class Utility {
    * @param array|string $keys
    *   The keys array to flatten, formatted as specified by
    *   \Drupal\search_api\Query\QueryInterface::getKeys() or a phrase string.
-   * @param ParseModeInterface $parse_mode
+   * @param \Drupal\search_api\ParseMode\ParseModeInterface $parse_mode
    *   (optional) The parse mode. Defaults to "terms" if null.
    *
    * @return string
@@ -1179,7 +1230,7 @@ class Utility {
    */
   public static function getSolrConnector(ServerInterface $server): SolrConnectorInterface {
     $backend = $server->getBackend();
-     if (!($backend instanceof SolrBackendInterface)) {
+    if (!($backend instanceof SolrBackendInterface)) {
       throw new SearchApiSolrException(sprintf('Server %s is not a Solr server', $server->label()));
     }
 
@@ -1203,7 +1254,7 @@ class Utility {
       throw new SearchApiSolrException(sprintf('The configured connector for server %s (%s) is not a cloud connector.', $server->label(), $server->id()));
     }
 
-    /** @var SolrCloudConnectorInterface $connector */
+    /** @var \Drupal\search_api_solr\SolrCloudConnectorInterface $connector */
     return $connector;
   }
 
@@ -1221,26 +1272,40 @@ class Utility {
     $index = $query->getIndex();
 
     $settings = self::getIndexSolrSettings($index);
-    $language_ids = $query->getLanguages();
+    $language_ids = $query->getLanguages() ?? [];
+    // Included languages are set by the "languages with fallback" processor.
+    $fallback_languages = array_diff(
+      $query->getOption('search_api_included_languages', []),
+      array_merge($language_ids, [LanguageInterface::LANGCODE_NOT_SPECIFIED])
+    );
 
-    // If there are no languages set, we need to set them. As an example, a
-    // language might be set by a filter in a search view.
-    if (empty($language_ids)) {
-      if (!$query->hasTag('views') && !$query->hasTag('server_index_status') && $settings['multilingual']['limit_to_content_language']) {
-        // Limit the language to the current content language being used.
-        $language_ids[] = \Drupal::languageManager()
-          ->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)
-          ->getId();
-      }
-      else {
-        // If the query is generated by views and/or the query isn't limited
-        // by any languages we have to search for all languages using their
-        // specific fields.
-        $language_ids = array_keys(\Drupal::languageManager()->getLanguages());
+    if (empty($fallback_languages)) {
+      // If there are no languages set, we need to set them. As an example, a
+      // language might be set by a filter in a search view.
+      if (empty($language_ids)) {
+        if (!$query->hasTag('views') && !$query->hasTag('server_index_status') && $settings['multilingual']['limit_to_content_language']) {
+          // Limit the language to the current content language being used.
+          $language_ids[] = \Drupal::languageManager()
+            ->getCurrentLanguage(LanguageInterface::TYPE_CONTENT)
+            ->getId();
+        }
+        else {
+          // If the query is generated by views and/or the query isn't limited
+          // by any languages we have to search for all languages using their
+          // specific fields.
+          $language_ids = array_keys(\Drupal::languageManager()
+            ->getLanguages());
+        }
       }
     }
 
-    array_walk($language_ids, function(&$item, $key) {
+    $specific_languages = array_keys(array_filter($index->getThirdPartySetting('search_api_solr', 'multilingual', ['specific_languages' => []])['specific_languages'] ?? []));
+    if (!empty($specific_languages)) {
+      $language_ids = array_intersect($language_ids, $specific_languages);
+      $fallback_languages = array_intersect($fallback_languages, $specific_languages);
+    }
+
+    array_walk($language_ids, function (&$item, $key) {
       if (LanguageInterface::LANGCODE_NOT_APPLICABLE === $item) {
         $item = LanguageInterface::LANGCODE_NOT_SPECIFIED;
       }
@@ -1252,7 +1317,19 @@ class Utility {
       // LanguageInterface::LANGCODE_NOT_SPECIFIED above.
     }
 
-    $query->setLanguages(array_unique($language_ids));
+    if (empty($fallback_languages)) {
+      $query->setLanguages(array_unique($language_ids));
+    }
+
+    $language_ids = array_unique(array_merge($language_ids, $fallback_languages));
+
+    // In case of wrong configurations of the site, it could happen that an
+    // index is limited to some languages but the fallback processor or an old
+    // link might request another language. Instead of returning an empty array
+    // we set language undefined to avoid exceptions.
+    if (empty($language_ids)) {
+      $language_ids[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
+    }
 
     return $language_ids;
   }

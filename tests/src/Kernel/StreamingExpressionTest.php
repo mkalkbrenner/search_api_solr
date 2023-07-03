@@ -16,7 +16,7 @@ class StreamingExpressionTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'field',
     'entity_test',
     'search_api',
@@ -47,6 +47,13 @@ class StreamingExpressionTest extends KernelTestBase {
    * @var \Drupal\search_api_solr\Utility\StreamingExpressionBuilder
    */
   protected $exp;
+
+  /**
+   * The search index.
+   *
+   * @var \Drupal\search_api\Entity\Index
+   */
+  protected $index;
 
   /**
    * {@inheritdoc}

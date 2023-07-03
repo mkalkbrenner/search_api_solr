@@ -63,10 +63,17 @@ function search_api_solr_cron() {
   // (more or less) stay the same.
   if ($request_time - \Drupal::state()->get('search_api_solr.last_optimize') > 86340) {
     \Drupal::state()->set('search_api_solr.last_optimize', $request_time);
+    // Delete "cached" endpoint data and schema_parts once a day. We keep
+    // these in states instead of a caches because we might need to
+    // access this data even if Solr is temporarily not reachable and
+    // caches have been cleared or Solr itself is used as caching backend.
+    \Drupal::state()->delete('search_api_solr.endpoint.data');
+    \Drupal::state()->delete('search_api_solr.endpoint.schema_parts');
+
     $end_of_day = TRUE;
   }
 
-  foreach (search_api_solr_get_servers() as $server) {
+  foreach (search_api_solr_get_servers(TRUE) as $server) {
     try {
       /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
       $backend = $server->getBackend();
@@ -80,21 +87,11 @@ function search_api_solr_cron() {
           }
         }
 
-        if ($end_of_day) {
+        if ($end_of_day && $backend->isOptimizeEnabled()) {
           $endpoint = $backend->getCollectionEndpoint($index);
-
-          // Delete "cached" endpoint data and schema_parts once a day. We keep
-          // these in states instead of a caches because we might need to
-          // access this data even if Solr is temporarily not reachable and
-          // caches have been cleared or Solr itself is used as caching backend.
-          \Drupal::state()->delete('search_api_solr.endpoint.data');
-          \Drupal::state()->delete('search_api_solr.endpoint.schema_parts');
-
-          if ($backend->isOptimizeEnabled()) {
-            $connector->optimize($endpoint);
-            $backend->getLogger()
-              ->info('Optimized Solr server @server.', ['@server' => $server->label()]);
-          }
+          $connector->optimize($endpoint);
+          $backend->getLogger()
+            ->info('Optimized Solr server @server.', ['@server' => $server->label()]);
         }
       }
     }
@@ -170,6 +167,9 @@ function search_api_solr_default_index_third_party_settings() {
     'multilingual' => [
       'limit_to_content_language' => FALSE,
       'include_language_independent' => TRUE,
+      'use_language_undefined_as_fallback_language' => FALSE,
+      'specific_languages' => [],
+      'use_universal_collation' => FALSE,
     ],
   ];
 }
@@ -284,8 +284,34 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
     $form['third_party_settings']['search_api_solr']['multilingual']['include_language_independent'] = [
       '#type' => 'checkbox',
       '#title' => t('Include language independent content in search results.'),
-      '#description' => t('This option will include content without a language assigned in the results of custom queries or search pages not managed by Views. For example, if you search for English content, but have an article with languague of "undefined", you will see those results as well. If you disable this option, you will only see content that matches the language.'),
+      '#description' => t('This option will include content without a language assigned in the results of custom queries or search pages not managed by Views. For example, if you search for English content, but have an article with language of "undefined", you will see those results as well. If you disable this option, you will only see content that matches the language.'),
       '#default_value' => $settings['multilingual']['include_language_independent'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['multilingual']['use_language_undefined_as_fallback_language'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Index language fallback fulltext fields using "language undefined".'),
+      '#description' => t('By default, fulltext fields of a language added by the Search API "language with fallback" field will be indexed using a corresponding language-specific fulltext field. That might lead to bad results if you for example define English as Fallback for Japanese. Using this option, the language undefinded fulltext field will be used for all fallback languages. Unless you do custom searches, it is recommended that you also enable "Include language independent content in search results" above.'),
+      '#default_value' => $settings['multilingual']['use_language_undefined_as_fallback_language'],
+    ];
+
+    foreach (\Drupal::languageManager()->getLanguages() as $language) {
+      $langcode_options[$language->getId()] = $language->getName();
+    }
+
+    $form['third_party_settings']['search_api_solr']['multilingual']['specific_languages'] = [
+      '#type' => 'checkboxes',
+      '#title' => t('Languages to index using language-specific fields'),
+      '#description' => t('Selected languages will use language-specific fields when a values gets indexed. Others will use the language-unspecific default. If nothing is selected, all translations will be indexed using language-specific fields.'),
+      '#options' => $langcode_options,
+      '#default_value' => $settings['multilingual']['specific_languages'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['multilingual']['use_universal_collation'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Use universal UTF-8 collation.'),
+      '#description' => t('By default, language-specific collations are used. That provides the best collation results. But to save index disk space you can use a universal UTF-8 collation.'),
+      '#default_value' => $settings['multilingual']['use_universal_collation'],
     ];
 
     $form['third_party_settings']['search_api_solr']['highlighter'] = [
@@ -588,7 +614,7 @@ function search_api_solr_form_search_api_index_form_validate_server(array &$elem
 function search_api_solr_form_search_api_index_fields_alter(&$form, FormStateInterface $form_state, $form_id) {
   /** @var \Drupal\Core\Entity\EntityFormInterface $form_object */
   $form_object = $form_state->getFormObject();
-  /** @var IndexInterface $this_index */
+  /** @var \Drupal\search_api\IndexInterface $this_index */
   $index = $form_object->getEntity();
 
   if (Utility::hasIndexSolrDatasources($index)) {

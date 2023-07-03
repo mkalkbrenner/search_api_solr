@@ -15,7 +15,7 @@ class UtilitiesTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $modules = [
+  protected static $modules = [
     'search_api',
     'search_api_solr',
     'user',
@@ -89,6 +89,10 @@ class UtilitiesTest extends KernelTestBase {
       'multilingual' => [
         'limit_to_content_language' => TRUE,
         'include_language_independent' => TRUE,
+        'specific_languages' => [
+          'en' => '0',
+          'de' => 'de',
+        ],
       ],
     ];
 
@@ -135,6 +139,12 @@ class UtilitiesTest extends KernelTestBase {
         'multilingual' => [
           'limit_to_content_language' => TRUE,
           'include_language_independent' => TRUE,
+          'specific_languages' => [
+            'en' => '0',
+            'de' => 'de',
+          ],
+          'use_language_undefined_as_fallback_language' => FALSE,
+          'use_universal_collation' => FALSE,
         ],
         'term_modifiers' => [
           'slop' => 3,

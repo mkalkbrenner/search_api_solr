@@ -20,23 +20,23 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
   /**
    * The current Solr schema version.
    *
-   * @todo replace by an automatic detection when core provides module versions.
+   * @deprecated use getPreferredSchemaVersion()
    */
-  public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.8';
+  public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.13';
 
   /**
    * The minimum required Solr schema version.
    */
-  public const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.2.8';
+  public const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.2.13';
 
   /**
    * The separator to indicate the start of a language ID.
    *
    * We must not use any character that has a special meaning within regular
-   * expressions. Additionally we have to avoid characters that are valid for
+   * expressions. Additionally, we have to avoid characters that are valid for
    * Drupal machine names.
    * The end of a language ID is indicated by an underscore '_' which could not
-   * occur within the language ID itself because Drupal uses lanague tags.
+   * occur within the language ID itself because Drupal uses language tags.
    *
    * @see http://de2.php.net/manual/en/regexp.reference.meta.php
    * @see https://www.w3.org/International/articles/language-tags/
@@ -46,6 +46,20 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
   public const FIELD_PLACEHOLDER = 'FIELD_PLACEHOLDER';
 
   public const EMPTY_TEXT_FIELD_DUMMY_VALUE = 'aöbäcüdöeäfüg';
+
+  /**
+   * Get preferred schema version.
+   *
+   * @return string
+   */
+  public function getPreferredSchemaVersion(): string;
+
+  /**
+   * Get minmal required schema version.
+   *
+   * @return string
+   */
+  public function getMinimalRequiredSchemaVersion(): string;
 
   /**
    * Creates a list of all indexed field names mapped to their Solr field names.
@@ -204,7 +218,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * In case of Solr Cloud an index might use a different Solr collection.
    *
    * @param \Drupal\search_api\IndexInterface $index
-   *  The Search API index.
+   *   The Search API index.
    *
    * @return \Solarium\Core\Client\Endpoint
    *   The solarium endpoint.

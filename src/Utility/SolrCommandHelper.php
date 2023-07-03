@@ -3,14 +3,12 @@
 namespace Drupal\search_api_solr\Utility;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\Controller\SolrConfigSetController;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use ZipStream\Option\Archive;
 use Drupal\search_api\Utility\CommandHelper;
 
 /**
@@ -19,11 +17,11 @@ use Drupal\search_api\Utility\CommandHelper;
 class SolrCommandHelper extends CommandHelper {
 
   /**
-   * The module extension list.
+   * The configset controller.
    *
-   * @var \Drupal\Core\Extension\ModuleExtensionList
+   * @var \Drupal\search_api_solr\Controller\SolrConfigSetController
    */
-  protected $moduleExtensionList;
+  protected $configsetController;
 
   /**
    * Constructs a CommandHelper object.
@@ -34,8 +32,8 @@ class SolrCommandHelper extends CommandHelper {
    *   The module handler.
    * @param \Symfony\Contracts\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   The event dispatcher.
-   * @param \Drupal\Core\Extension\ModuleExtensionList $module_extension_list
-   *   The module extension list.
+   * @param \Drupal\search_api_solr\Controller\SolrConfigSetController $configset_controller
+   *   The configset controller.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    *   Thrown if the "search_api_index" or "search_api_server" entity types'
@@ -44,9 +42,9 @@ class SolrCommandHelper extends CommandHelper {
    *   Thrown if the "search_api_index" or "search_api_server" entity types are
    *   unknown.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, EventDispatcherInterface $event_dispatcher, ModuleExtensionList $module_extension_list) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, EventDispatcherInterface $event_dispatcher, SolrConfigSetController $configset_controller) {
     parent::__construct($entity_type_manager, $module_handler, $event_dispatcher);
-    $this->moduleExtensionList = $module_extension_list;
+    $this->configsetController = $configset_controller;
   }
 
   /**
@@ -80,18 +78,25 @@ class SolrCommandHelper extends CommandHelper {
       $config['connector_config']['solr_version'] = $solr_version;
       $server->setBackendConfig($config);
     }
-    $solr_configset_controller = new SolrConfigSetController($this->moduleExtensionList);
-    $solr_configset_controller->setServer($server);
+    $this->configsetController->setServer($server);
 
-    $archive_options = new Archive();
-    $stream = FALSE;
+    $stream = NULL;
     if ($file_name !== NULL) {
       // If no filename is provided, output stream is standard output.
       $stream = fopen($file_name, 'w+b');
-      $archive_options->setOutputStream($stream);
     }
 
-    $zip = $solr_configset_controller->getConfigZip($archive_options);
+    if (class_exists('\ZipStream\Option\Archive')) {
+      // Version 2.x.
+      $archive_options_or_ressource = new \ZipStream\Option\Archive();
+      $archive_options_or_ressource->setOutputStream($stream);
+    }
+    else {
+      // Version 3.x.
+      $archive_options_or_ressource = $stream;
+    }
+
+    $zip = $this->configsetController->getConfigZip($archive_options_or_ressource);
     $zip->finish();
 
     if ($stream) {
@@ -100,7 +105,7 @@ class SolrCommandHelper extends CommandHelper {
   }
 
   /**
-   * Finalizes one ore more indexes.
+   * Finalizes one or more indexes.
    *
    * @param string[]|null $indexIds
    *   (optional) An array of index IDs, or NULL if we should finalize all
@@ -166,10 +171,11 @@ class SolrCommandHelper extends CommandHelper {
    * @throws \Drupal\search_api\SearchApiException
    */
   protected function reindex(ServerInterface $server): void {
-    foreach($server->getIndexes() as $index) {
+    foreach ($server->getIndexes() as $index) {
       if ($index->status() && !$index->isReadOnly()) {
         $index->reindex();
       }
     }
   }
+
 }
