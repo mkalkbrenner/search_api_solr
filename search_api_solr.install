@@ -1938,7 +1938,7 @@ function search_api_solr_update_8331() {
     $manager->updateEntityType($entity_type);
   }
 
-  search_api_solr_update_helper_install_configs();
+  // search_api_solr_update_helper_install_configs();
 }
 
 /**
@@ -2070,7 +2070,7 @@ function search_api_solr_update_8408() {
  * Add Hungarian field type.
  */
 function search_api_solr_update_8409() {
-  search_api_solr_update_helper_install_configs();
+  // search_api_solr_update_helper_install_configs();
 }
 
 /**
@@ -2110,7 +2110,7 @@ function search_api_solr_update_8412() {
  * Add fulltext string field type.
  */
 function search_api_solr_update_8413() {
-  search_api_solr_update_helper_install_configs();
+  // search_api_solr_update_helper_install_configs();
 }
 
 /**
@@ -2236,4 +2236,11 @@ function search_api_solr_update_8419() {
       }
     }
   }
+}
+
+/**
+ * Add Solr 9 configs.
+ */
+function search_api_solr_update_8420() {
+  search_api_solr_update_helper_install_configs();
 }

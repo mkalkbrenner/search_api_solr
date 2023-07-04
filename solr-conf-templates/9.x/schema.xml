@@ -170,56 +170,56 @@
        the last letter is 's' for single valued, 'm' for multi-valued -->
 
   <!-- We use plong for integer since 64 bit ints are now common in PHP. -->
-  <dynamicField name="is_*"  type="plong"    indexed="true"  stored="false" docValues="true" termVectors="true"/>
-  <dynamicField name="im_*"  type="plongs"    indexed="true"  stored="false" docValues="true" termVectors="true"/>
+  <dynamicField name="is_*" type="plong" indexed="true" stored="false" docValues="true" termVectors="true"/>
+  <dynamicField name="im_*" type="plongs" indexed="true" stored="false" docValues="true" termVectors="true"/>
   <!-- List of floats can be saved in a regular float field -->
-  <dynamicField name="fs_*"  type="pfloat"   indexed="true"  stored="false" docValues="true"/>
-  <dynamicField name="fm_*"  type="pfloats"   indexed="true"  stored="false" docValues="true"/>
+  <dynamicField name="fs_*" type="pfloat" indexed="true" stored="false" docValues="true"/>
+  <dynamicField name="fm_*" type="pfloats" indexed="true" stored="false" docValues="true"/>
   <!-- List of doubles can be saved in a regular double field -->
-  <dynamicField name="ps_*"  type="pdouble"   indexed="true"  stored="false" docValues="true"/>
-  <dynamicField name="pm_*"  type="pdoubles"   indexed="true"  stored="false" docValues="true"/>
+  <dynamicField name="ps_*" type="pdouble" indexed="true" stored="false" docValues="true"/>
+  <dynamicField name="pm_*" type="pdoubles" indexed="true" stored="false" docValues="true"/>
   <!-- List of booleans can be saved in a regular boolean field -->
-  <dynamicField name="bm_*"  type="booleans" indexed="true"  stored="false" docValues="true" termVectors="true"/>
-  <dynamicField name="bs_*"  type="boolean" indexed="true"  stored="false" docValues="true" termVectors="true"/>
+  <dynamicField name="bm_*" type="booleans" indexed="true" stored="false" docValues="true" termVectors="true"/>
+  <dynamicField name="bs_*" type="boolean" indexed="true" stored="false" docValues="true" termVectors="true"/>
   <!-- Regular text (without processing) can be stored in a string field-->
-  <dynamicField name="ss_*"  type="string"  indexed="true"  stored="false" docValues="true" termVectors="true"/>
+  <dynamicField name="ss_*" type="string" indexed="true" stored="false" docValues="true" termVectors="true"/>
   <!-- For field types using SORTED_SET, multiple identical entries are collapsed into a single value.
        Thus if I insert values 4, 5, 2, 4, 1, my return will be 1, 2, 4, 5 when enabling docValues.
        If you need to preserve the order and duplicate entries, consider to store the values as zm_* (twice). -->
-  <dynamicField name="sm_*"  type="strings"  indexed="true"  stored="false" docValues="true" termVectors="true"/>
+  <dynamicField name="sm_*" type="strings" indexed="true" stored="false" docValues="true" termVectors="true"/>
   <!-- Special-purpose text fields -->
   <dynamicField name="tws_*" type="text_ws" indexed="true" stored="true" multiValued="false"/>
   <dynamicField name="twm_*" type="text_ws" indexed="true" stored="true" multiValued="true"/>
 
-  <dynamicField name="ds_*"  type="pdate"   indexed="true"  stored="false" docValues="true"/>
-  <dynamicField name="dm_*"  type="pdates"   indexed="true"  stored="false" docValues="true"/>
+  <dynamicField name="ds_*" type="pdate" indexed="true" stored="false" docValues="true"/>
+  <dynamicField name="dm_*" type="pdates" indexed="true" stored="false" docValues="true"/>
   <!-- This field is used to store date ranges -->
-  <dynamicField name="drs_*" type="date_range" indexed="true" stored="true" multiValued="false"/>
-  <dynamicField name="drm_*" type="date_range" indexed="true" stored="true" multiValued="true"/>
+  <dynamicField name="drs_*" type="date_range" indexed="true" stored="true"/>
+  <dynamicField name="drm_*" type="date_ranges" indexed="true" stored="true"/>
   <!-- Trie fields are deprecated. Point fields solve all needs. But we keep the dedicated field names for backward compatibility. -->
-  <dynamicField name="its_*" type="plong"   indexed="true"  stored="false" multiValued="false" docValues="true" termVectors="true"/>
-  <dynamicField name="itm_*" type="plong"   indexed="true"  stored="false" multiValued="true" docValues="true" termVectors="true"/>
-  <dynamicField name="fts_*" type="pfloat"  indexed="true"  stored="false" multiValued="false" docValues="true"/>
-  <dynamicField name="ftm_*" type="pfloat"  indexed="true"  stored="false" multiValued="true" docValues="true"/>
-  <dynamicField name="pts_*" type="pdouble" indexed="true"  stored="false" multiValued="false" docValues="true"/>
-  <dynamicField name="ptm_*" type="pdouble" indexed="true"  stored="false" multiValued="true" docValues="true"/>
+  <dynamicField name="its_*" type="plong" indexed="true" stored="false" docValues="true" termVectors="true"/>
+  <dynamicField name="itm_*" type="plongs" indexed="true" stored="false" docValues="true" termVectors="true"/>
+  <dynamicField name="fts_*" type="pfloat" indexed="true" stored="false" docValues="true"/>
+  <dynamicField name="ftm_*" type="pfloats" indexed="true" stored="false" docValues="true"/>
+  <dynamicField name="pts_*" type="pdouble" indexed="true" stored="false" docValues="true"/>
+  <dynamicField name="ptm_*" type="pdoubles" indexed="true" stored="false" docValues="true"/>
   <!-- Binary fields can be populated using base64 encoded data. Useful e.g. for embedding
        a small image in a search result using the data URI scheme -->
-  <dynamicField name="xs_*"  type="binary"  indexed="false" stored="true" multiValued="false"/>
-  <dynamicField name="xm_*"  type="binary"  indexed="false" stored="true" multiValued="true"/>
+  <dynamicField name="xs_*" type="binary" indexed="false" stored="true" multiValued="false"/>
+  <dynamicField name="xm_*" type="binary" indexed="false" stored="true" multiValued="true"/>
   <!-- Trie fields are deprecated. Point fields solve all needs. But we keep the dedicated field names for backward compatibility. -->
-  <dynamicField name="dds_*" type="pdate"    indexed="true"  stored="false" multiValued="false" docValues="true"/>
-  <dynamicField name="ddm_*" type="pdate"    indexed="true"  stored="false" multiValued="true" docValues="true"/>
+  <dynamicField name="dds_*" type="pdate" indexed="true" stored="false" docValues="true"/>
+  <dynamicField name="ddm_*" type="pdates" indexed="true" stored="false" docValues="true"/>
   <!-- In case a 32 bit int is really needed, we provide these fields. 'h' is mnemonic for 'half word', i.e. 32 bit on 64 arch -->
-  <dynamicField name="hs_*" type="pint" indexed="true"  stored="false" multiValued="false" docValues="true"/>
-  <dynamicField name="hm_*" type="pint" indexed="true"  stored="false" multiValued="true" docValues="true"/>
+  <dynamicField name="hs_*" type="pint" indexed="true" stored="false" docValues="true"/>
+  <dynamicField name="hm_*" type="pints" indexed="true" stored="false" docValues="true"/>
   <!-- Trie fields are deprecated. Point fields solve all needs. But we keep the dedicated field names for backward compatibility. -->
-  <dynamicField name="hts_*" type="pint"   indexed="true"  stored="false" multiValued="false" docValues="true"/>
-  <dynamicField name="htm_*" type="pint"   indexed="true"  stored="false" multiValued="true" docValues="true"/>
+  <dynamicField name="hts_*" type="pint" indexed="true" stored="false" docValues="true"/>
+  <dynamicField name="htm_*" type="pints" indexed="true" stored="false" docValues="true"/>
 
   <!-- Unindexed string fields that can be used to store values that won't be searchable -->
-  <dynamicField name="zs_*" type="string"   indexed="false"  stored="true" multiValued="false"/>
-  <dynamicField name="zm_*" type="string"   indexed="false"  stored="true" multiValued="true"/>
+  <dynamicField name="zs_*" type="string" indexed="false" stored="true"/>
+  <dynamicField name="zm_*" type="strings" indexed="false" stored="true"/>
 
   <!-- Fields for location searches.
        http://wiki.apache.org/solr/SpatialSearch#geodist_-_The_distance_function -->
@@ -264,9 +264,11 @@
        single-valued and either required or have a default value.
       -->
     <fieldType name="string" class="solr.StrField"/>
+    <fieldType name="strings" class="solr.StrField" multiValued="true"/>
 
     <!-- boolean type: "true" or "false" -->
     <fieldType name="boolean" class="solr.BoolField"/>
+    <fieldType name="booleans" class="solr.BoolField" multiValued="true"/>
 
     <!-- sortMissingLast and sortMissingFirst attributes are optional attributes are
          currently supported on types that are sorted internally as strings
@@ -331,6 +333,7 @@
 
     <!-- A date range field -->
     <fieldType name="date_range" class="solr.DateRangeField"/>
+    <fieldType name="date_ranges" class="solr.DateRangeField" multiValued="true"/>
 
     <!--Binary data type. The data should be sent/retrieved in as Base64 encoded Strings -->
     <fieldType name="binary" class="solr.BinaryField"/>
