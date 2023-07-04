@@ -482,6 +482,42 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
+  public function getLuceneVersion(): string {
+    $info = [];
+    try {
+      $info = $this->getCoreInfo();
+    }
+    catch (\Exception $e) {
+      try {
+        $info = $this->getServerInfo();
+      }
+      catch (SearchApiSolrException $e) {
+      }
+    }
+
+    if (isset($info['lucene']['lucene-spec-version'])) {
+      if (preg_match('/^(\d+\.\d+\.\d+)/', $info['lucene']['lucene-spec-version'], $matches)) {
+        return $matches[1];
+      }
+    }
+
+    $version = $this->getSolrVersion();
+    if (version_compare($version, '9.0.0', '<')) {
+      [$major, $minor] = explode('.', $version);
+      return $major . '.' . $minor;
+    }
+    else {
+      if (version_compare($version, '9.2.0', '>=')) {
+        return '9.4.2';
+      }
+    }
+
+    return '9.1.0';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getSolrMajorVersion($version = ''): int {
     [$major] = explode('.', $version ?: $this->getSolrVersion());
     return (int) $major;
@@ -497,9 +533,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
-  public function getLuceneMatchVersion($version = '') {
-    [$major, $minor] = explode('.', $version ?: $this->getSolrVersion());
-    return $major . '.' . $minor;
+  public function getLuceneMatchVersion($minimal_version = '') {
+    $preferred_version = $this->getLuceneVersion();
+    if ($minimal_version && version_compare($preferred_version, $minimal_version, '<=')) {
+      return $minimal_version;
+    }
+
+    return $preferred_version;
   }
 
   /**
