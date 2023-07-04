@@ -1437,6 +1437,8 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $backend_config['disabled_caches'] = [
       'cache_document_default_7_0_0',
       'cache_filter_default_7_0_0',
+      'cache_document_default_9_0_0',
+      'cache_filter_default_9_0_0',
     ];
     $server->setBackendConfig($backend_config);
     $server->save();
