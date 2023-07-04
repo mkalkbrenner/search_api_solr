@@ -17,6 +17,7 @@ field_type:
   name: text_phonetic_ru
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
