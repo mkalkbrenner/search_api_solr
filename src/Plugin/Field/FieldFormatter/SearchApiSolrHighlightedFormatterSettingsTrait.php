@@ -99,6 +99,7 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
     $cacheableMetadata->addCacheableDependency($entity);
 
     foreach ($queryHelper->getAllResults() as $resultSet) {
+      $cacheableMetadata->addCacheableDependency($resultSet->getQuery());
       $query_keys = $resultSet->getQuery()->getKeys() ?: [];
       foreach ($query_keys as $index => $key) {
         if (is_numeric($index)) {
@@ -112,7 +113,6 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
 
       foreach ($resultSet->getResultItems() as $resultItem) {
         if ($resultItem->getId() === $item_id) {
-          $cacheableMetadata->addCacheableDependency($resultSet->getQuery());
           if ($highlighted_keys_tmp = $resultItem->getExtraData('highlighted_keys')) {
             $highlighted_keys = array_merge($highlighted_keys, $highlighted_keys_tmp);
           }
