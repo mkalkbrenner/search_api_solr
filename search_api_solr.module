@@ -78,12 +78,21 @@ function search_api_solr_cron() {
       /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
       $backend = $server->getBackend();
       $connector = $backend->getSolrConnector();
+      $is_drupal_writeable = [];
+
       if ($indexes = $server->getIndexes()) {
         $document_counts[$server->id()] = $backend->getDocumentCounts();
+        $is_drupal_writeable[$server->id()] = TRUE;
+        $last_update_on_server[$server->id()] = 0;
 
         foreach ($indexes as $index) {
           if ($backend->finalizeIndex($index)) {
             $backend->getLogger()->info('Cron finalized Solr server @server.', ['@server' => $server->label()]);
+          }
+          $is_drupal_writeable[$server->id()] &= !Utility::hasIndexJustSolrDocumentDatasource($index);
+          $last_update = \Drupal::state()->get('search_api_solr.' . $index->id() . '.last_update', 0);
+          if ($last_update > $last_update_on_server[$server->id()]) {
+            $last_update_on_server[$server->id()] = $last_update;
           }
         }
 
@@ -93,6 +102,16 @@ function search_api_solr_cron() {
           $backend->getLogger()
             ->info('Optimized Solr server @server.', ['@server' => $server->label()]);
         }
+      }
+      else {
+        $is_drupal_writeable[$server->id()] = FALSE;
+      }
+
+      if ($is_drupal_writeable[$server->id()] && \Drupal::state()->get('search_api_solr.' . $server->id() . '.last_build', 0) < $last_update_on_server[$server->id()]) {
+        $query = $connector->getSuggesterQuery();
+        $query->addParam('suggest.buildAll', TRUE);
+        $connector->execute($query);
+        \Drupal::state()->set('search_api_solr.' . $server->id() . '.last_build', $request_time);
       }
     }
     catch (SearchApiException $e) {
