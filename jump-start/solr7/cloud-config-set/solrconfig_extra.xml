@@ -544,7 +544,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_ar</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -555,7 +555,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_bg</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -566,7 +566,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_ca</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -577,7 +577,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_hr</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -588,7 +588,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_cs</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -599,7 +599,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_da</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -610,7 +610,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_nl</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -621,7 +621,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_en</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -632,7 +632,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_fi</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -643,7 +643,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_fr</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -654,7 +654,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_de</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -665,7 +665,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_el</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -676,7 +676,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_hi</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -687,7 +687,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_hu</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -698,7 +698,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_id</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -709,7 +709,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_it</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -720,7 +720,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_und</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -731,7 +731,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_lv</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -742,7 +742,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_nb</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -753,7 +753,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_nn</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -764,7 +764,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_fa</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -775,7 +775,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_pl</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -786,7 +786,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_pt_br</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -797,7 +797,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_pt_pt</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -808,7 +808,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_ro</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -819,7 +819,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_ru</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -830,7 +830,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_sr</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -841,7 +841,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_sk</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -852,7 +852,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_es</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -863,7 +863,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_sv</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -874,7 +874,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_th</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -885,7 +885,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_tr</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   
@@ -896,7 +896,7 @@
       <str name="field">twm_suggest</str>
       <str name="suggestAnalyzerFieldType">text_uk</str>
       <str name="contextField">sm_context_tags</str>
-      <str name="buildOnCommit">true</str>
+      <str name="buildOnCommit">false</str>
       <str name="buildOnStartup">false</str>
     </lst>
   </searchComponent>

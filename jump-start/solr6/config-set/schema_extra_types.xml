@@ -2,7 +2,7 @@
   Arabic Text Field
   6.0.0
 -->
-<fieldType name="text_ar" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_ar" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <tokenizer class="solr.StandardTokenizerFactory"/>
     <filter class="solr.LowerCaseFilterFactory"/>
@@ -28,7 +28,7 @@
   Arabic Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_ar" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_ar" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <tokenizer class="solr.StandardTokenizerFactory"/>
     <filter class="solr.LowerCaseFilterFactory"/>
@@ -47,7 +47,7 @@
   Czech Text Field
   6.0.0
 -->
-<fieldType name="text_cs" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_cs" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_cs.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -79,7 +79,7 @@
   Czech Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_cs" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_cs" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_cs.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -104,7 +104,7 @@
   Dutch Text Field
   6.0.0
 -->
-<fieldType name="text_nl" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_nl" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_nl.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -137,7 +137,7 @@
   Dutch Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_nl" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_nl" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_nl.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -163,7 +163,7 @@
   Edge NGram String Field
   6.0.0
 -->
-<fieldType name="text_edgenstring" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_edgenstring" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <tokenizer class="solr.KeywordTokenizerFactory"/>
     <filter class="solr.LowerCaseFilterFactory"/>
@@ -180,7 +180,7 @@
   Edge NGram Text Field
   6.0.0
 -->
-<fieldType name="text_edge" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_edge" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_und.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -203,7 +203,7 @@
   English Text Field
   6.0.0
 -->
-<fieldType name="text_en" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_en" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_en.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -235,7 +235,7 @@
   English Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_en" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_en" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_en.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -260,7 +260,7 @@
   Finnish Text Field
   6.0.0
 -->
-<fieldType name="text_fi" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_fi" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_fi.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -294,7 +294,7 @@
   Finnish Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_fi" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_fi" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_fi.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -321,7 +321,7 @@
   French Text Field
   6.0.0
 -->
-<fieldType name="text_fr" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_fr" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_fr.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -353,7 +353,7 @@
   French Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_fr" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_fr" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_fr.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -377,7 +377,7 @@
   Fulltext String Field
   6.0.0
 -->
-<fieldType name="text_string" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_string" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <tokenizer class="solr.PatternTokenizerFactory" pattern="[\t\r\n]"/>
     <filters/>
@@ -391,7 +391,7 @@
   German Text Field
   6.0.0
 -->
-<fieldType name="text_de" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_de" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_de.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -424,7 +424,7 @@
   German Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_de" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_de" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_de.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -450,7 +450,7 @@
   Greek Text Field
   6.0.0
 -->
-<fieldType name="text_el" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_el" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_el.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -480,7 +480,7 @@
   Greek Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_el" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_el" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_el.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -503,7 +503,7 @@
   Hungarian Text Field
   6.0.0
 -->
-<fieldType name="text_hu" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_hu" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_hu.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -534,7 +534,7 @@
   Hungarian Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_hu" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_hu" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_hu.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -558,7 +558,7 @@
   Italian Text Field
   6.0.0
 -->
-<fieldType name="text_it" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_it" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_it.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -588,7 +588,7 @@
   Italian Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_it" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_it" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_it.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -611,7 +611,7 @@
   Japanese Text Field
   6.0.0
 -->
-<fieldType name="text_ja" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_ja" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <tokenizer class="solr.StandardTokenizerFactory"/>
     <filter class="solr.CJKWidthFilterFactory"/>
@@ -629,7 +629,7 @@
   Japanese Text Field spellcheck
   6.0.0
 -->
-<fieldType name="text_spell_ja" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_spell_ja" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer>
     <tokenizer class="solr.StandardTokenizerFactory"/>
     <filter class="solr.CJKWidthFilterFactory"/>
@@ -644,7 +644,7 @@
   Language Undefined Text Field
   6.0.0
 -->
-<fieldType name="text_und" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_und" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_und.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -669,7 +669,7 @@
   Language Undefined Text Field spellcheck
   6.0.0
 -->
-<fieldType name="text_spell_und" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_spell_und" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer>
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_und.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -687,7 +687,7 @@
   NGram String Field
   6.0.0
 -->
-<fieldType name="text_ngramstring" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_ngramstring" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <tokenizer class="solr.KeywordTokenizerFactory"/>
     <filter class="solr.LowerCaseFilterFactory"/>
@@ -704,7 +704,7 @@
   NGram Text Field
   6.0.0
 -->
-<fieldType name="text_ngram" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_ngram" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_und.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -727,7 +727,7 @@
   Russian Text Field
   6.0.0
 -->
-<fieldType name="text_ru" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_ru" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <tokenizer class="solr.StandardTokenizerFactory"/>
     <filter class="solr.WordDelimiterFilterFactory" catenateNumbers="0" generateNumberParts="0" protected="protwords_ru.txt" splitOnCaseChange="1" generateWordParts="1" preserveOriginal="1" catenateAll="0" catenateWords="0"/>
@@ -755,7 +755,7 @@
   Russian Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_ru" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_ru" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <tokenizer class="solr.StandardTokenizerFactory"/>
     <filter class="solr.WordDelimiterFilterFactory" catenateNumbers="0" generateNumberParts="0" protected="protwords_ru.txt" splitOnCaseChange="1" generateWordParts="1" preserveOriginal="1" catenateAll="0" catenateWords="0"/>
@@ -776,7 +776,7 @@
   Slovak Text Field
   6.0.0
 -->
-<fieldType name="text_sk" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_sk" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_sk.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -807,7 +807,7 @@
   Slovak Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_sk" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_sk" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_sk.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -831,7 +831,7 @@
   Spanish Text Field
   6.0.0
 -->
-<fieldType name="text_es" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_es" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_es.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -861,7 +861,7 @@
   Spanish Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_es" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_es" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <charFilter class="solr.MappingCharFilterFactory" mapping="accents_es.txt"/>
     <tokenizer class="solr.StandardTokenizerFactory"/>
@@ -884,7 +884,7 @@
   Ukrainian Text Field
   6.0.0
 -->
-<fieldType name="text_uk" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_uk" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <tokenizer class="solr.StandardTokenizerFactory"/>
     <filter class="solr.WordDelimiterFilterFactory" catenateNumbers="0" generateNumberParts="0" protected="protwords_uk.txt" splitOnCaseChange="1" generateWordParts="1" preserveOriginal="1" catenateAll="0" catenateWords="0"/>
@@ -912,7 +912,7 @@
   Ukrainian Text Field unstemmed
   6.0.0
 -->
-<fieldType name="text_unstemmed_uk" class="solr.TextField" positionIncrementGap="100">
+<fieldType name="text_unstemmed_uk" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
   <analyzer type="index">
     <tokenizer class="solr.StandardTokenizerFactory"/>
     <filter class="solr.WordDelimiterFilterFactory" catenateNumbers="0" generateNumberParts="0" protected="protwords_uk.txt" splitOnCaseChange="1" generateWordParts="1" preserveOriginal="1" catenateAll="0" catenateWords="0"/>
