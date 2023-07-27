@@ -48,7 +48,15 @@ class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
 
     /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend $backend */
     $backend = Server::load($this->serverId)->getBackend();
+    $connector = $backend->getSolrConnector();
     $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
+
+    if (version_compare($solr_major_version, '6', '>=')) {
+      $query = $connector->getSuggesterQuery();
+      $query->addParam('suggest.buildAll', TRUE);
+      $connector->execute($query);
+    }
+
     $autocompleteSearch = new Search(['index_id' => $this->indexId], 'search_api_autocomplete_search');
 
     /** @var \Drupal\search_api_autocomplete\Utility\PluginHelper $plugin_helper */

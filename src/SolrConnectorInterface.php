@@ -103,9 +103,17 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *   An optional Solr version string.
    *
    * @return string
-   *   The lucene match version in V.V format.
+   *   The lucene match version in Major.Minor(.Patch) format.
    */
   public function getLuceneMatchVersion($version = '');
+
+  /**
+   * Gets the current Lucene version deployed on Solr server.
+   *
+   * @return string
+   *   The full Lucene version string.
+   */
+  public function getLuceneVersion();
 
   /**
    * Gets information about the Solr server.

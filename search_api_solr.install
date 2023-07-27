@@ -1938,7 +1938,7 @@ function search_api_solr_update_8331() {
     $manager->updateEntityType($entity_type);
   }
 
-  search_api_solr_update_helper_install_configs();
+  // search_api_solr_update_helper_install_configs();
 }
 
 /**
@@ -2070,7 +2070,7 @@ function search_api_solr_update_8408() {
  * Add Hungarian field type.
  */
 function search_api_solr_update_8409() {
-  search_api_solr_update_helper_install_configs();
+  // search_api_solr_update_helper_install_configs();
 }
 
 /**
@@ -2110,7 +2110,7 @@ function search_api_solr_update_8412() {
  * Add fulltext string field type.
  */
 function search_api_solr_update_8413() {
-  search_api_solr_update_helper_install_configs();
+  // search_api_solr_update_helper_install_configs();
 }
 
 /**
@@ -2236,4 +2236,44 @@ function search_api_solr_update_8419() {
       }
     }
   }
+}
+
+/**
+ * Add Solr 9 configs, don't build suggesters on commit, add offsets for unified highlighter.
+ */
+function search_api_solr_update_8420() {
+  foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_name => $field_type_config) {
+    if (str_starts_with($field_type_name, 'search_api_solr.solr_field_type.text_')) {
+      $save = FALSE;
+
+      foreach (['field_type', 'unstemmed_field_type', 'spellcheck_field_type'] as $field_type) {
+        if (isset($field_type_config[$field_type]['positionIncrementGap']) && !isset($field_type_config[$field_type]['storeOffsetsWithPositions'])) {
+          $field_type_config[$field_type]['storeOffsetsWithPositions'] = TRUE;
+          $save = TRUE;
+        }
+      }
+
+      if (!empty($field_type_config['solr_configs']) && !empty($field_type_config['solr_configs']['searchComponents'])) {
+        foreach ($field_type_config['solr_configs']['searchComponents'] as &$component) {
+          if ($component['name'] === 'suggest') {
+            foreach ($component['lst'] as &$lst) {
+              foreach ($lst['str'] as &$entry) {
+                if ($entry['name'] === 'buildOnCommit') {
+                  $entry['VALUE'] = 'false';
+                  $save = TRUE;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      if ($save) {
+        search_api_solr_update_helper_save_field_type_config($field_type_name, $field_type_config);
+      }
+    }
+  }
+
+  search_api_solr_update_helper_install_configs();
 }

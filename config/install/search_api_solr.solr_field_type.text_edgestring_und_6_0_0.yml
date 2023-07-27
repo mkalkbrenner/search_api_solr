@@ -13,6 +13,7 @@ field_type:
   name: text_edgenstring
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index

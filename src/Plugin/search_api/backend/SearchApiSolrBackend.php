@@ -1333,14 +1333,16 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                   $auto_aggregate_values[$type][] = $tmp_field->getValues();
                 }
               }
-              $auto_aggregate_values[$type] = array_merge(...$auto_aggregate_values[$type]);
+              if (array_key_exists($type, $auto_aggregate_values)) {
+                $auto_aggregate_values[$type] = array_merge(...$auto_aggregate_values[$type]);
+              }
             }
 
-            $first_value = $this->addIndexField($doc, $field_names[$name], $auto_aggregate_values[$type], $type, $boost_terms);
+            $first_value = $this->addIndexField($doc, $field_names[$name], $auto_aggregate_values[$type] ?? [], $type, $boost_terms);
             $fallback_values = [];
             foreach ($fallback_languages as $fallback_language) {
               if (!isset($fallback_values[$fallback_language])) {
-                $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $auto_aggregate_values[$type], $type, $item);
+                $event = new PreAddLanguageFallbackFieldEvent($fallback_language, $auto_aggregate_values[$type] ?? [], $type, $item);
                 $this->eventDispatcher->dispatch($event);
                 $value = $event->getValue();
                 if ($value) {
