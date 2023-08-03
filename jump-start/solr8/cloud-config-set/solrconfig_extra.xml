@@ -269,6 +269,20 @@
     </lst>
   
     <lst name="spellchecker">
+      <str name="name">ko</str>
+      <str name="field">spellcheck_ko</str>
+      <str name="classname">solr.DirectSolrSpellChecker</str>
+      <str name="distanceMeasure">internal</str>
+      <str name="accuracy">0.5</str>
+      <str name="maxEdits">1</str>
+      <str name="minPrefix">1</str>
+      <str name="maxInspections">5</str>
+      <str name="minQueryLength">1</str>
+      <str name="maxQueryFrequency">0.01</str>
+      <str name="onlyMorePopular">true</str>
+    </lst>
+  
+    <lst name="spellchecker">
       <str name="name">und</str>
       <str name="field">spellcheck_und</str>
       <str name="classname">solr.DirectSolrSpellChecker</str>

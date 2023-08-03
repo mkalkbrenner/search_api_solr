@@ -1374,6 +1374,64 @@
   </analyzer>
 </fieldType>
 <!--
+  Korean Text Field
+  7.5.0
+-->
+<fieldType name="text_ko" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
+  <analyzer type="index">
+    <tokenizer class="solr.StandardTokenizerFactory"/>
+    <filter class="solr.CJKWidthFilterFactory"/>
+    <filter class="solr.LowerCaseFilterFactory"/>
+    <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords_ko.txt"/>
+    <filter class="solr.CJKBigramFilterFactory"/>
+  </analyzer>
+  <analyzer type="query">
+    <tokenizer class="solr.StandardTokenizerFactory"/>
+    <filter class="solr.CJKWidthFilterFactory"/>
+    <filter class="solr.LowerCaseFilterFactory"/>
+    <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords_ko.txt"/>
+    <filter class="solr.CJKBigramFilterFactory"/>
+  </analyzer>
+</fieldType>
+<!--
+  Korean Text Field spellcheck
+  7.5.0
+-->
+<fieldType name="text_spell_ko" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
+  <analyzer>
+    <tokenizer class="solr.StandardTokenizerFactory"/>
+    <filter class="solr.CJKWidthFilterFactory"/>
+    <filter class="solr.LowerCaseFilterFactory"/>
+    <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords_ko.txt"/>
+    <filter class="solr.CJKBigramFilterFactory"/>
+  </analyzer>
+</fieldType>
+<!--
+  Korean Text Field collated
+  7.5.0
+-->
+<fieldType name="collated_ko" class="solr.ICUCollationField" locale="ko" strength="primary" caseLevel="false"/>
+<!--
+  Korean Text Field unstemmed
+  7.5.0
+-->
+<fieldType name="text_unstemmed_ko" class="solr.TextField" positionIncrementGap="100" storeOffsetsWithPositions="true">
+  <analyzer type="index">
+    <tokenizer class="solr.StandardTokenizerFactory"/>
+    <filter class="solr.CJKWidthFilterFactory"/>
+    <filter class="solr.LowerCaseFilterFactory"/>
+    <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords_ko.txt"/>
+    <filter class="solr.CJKBigramFilterFactory"/>
+  </analyzer>
+  <analyzer type="query">
+    <tokenizer class="solr.StandardTokenizerFactory"/>
+    <filter class="solr.CJKWidthFilterFactory"/>
+    <filter class="solr.LowerCaseFilterFactory"/>
+    <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords_ko.txt"/>
+    <filter class="solr.CJKBigramFilterFactory"/>
+  </analyzer>
+</fieldType>
+<!--
   Language Undefined Text Field
   7.0.0
 -->
