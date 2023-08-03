@@ -81,6 +81,7 @@ jobs:
                 vendor/bin/drush language-add id
                 vendor/bin/drush language-add it
                 vendor/bin/drush language-add ja
+                vendor/bin/drush language-add ko
                 vendor/bin/drush language-add lv
                 vendor/bin/drush language-add nb
                 vendor/bin/drush language-add nl
