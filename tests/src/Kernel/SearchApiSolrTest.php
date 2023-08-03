@@ -54,6 +54,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     'id' => 'id',
     'it' => 'it',
     'ja' => 'ja',
+    'ko' => 'ko',
     'lv' => 'lv',
     'nb' => 'nb',
     'nl' => 'nl',
@@ -289,6 +290,8 @@ class SearchApiSolrTest extends SolrBackendTestBase {
       if (version_compare($targeted_solr_major_version, '8', '<')) {
         // 'ga' requires Solr 7.7, the jump-start-config targets 7.0.
         $language_ids['ga'] = FALSE;
+        // 'ko' requires Solr 7.5, the jump-start-config targets 7.0.
+        $language_ids['ko'] = FALSE;
         if (version_compare($targeted_solr_major_version, '7', '<')) {
           $language_ids['bg'] = FALSE;
           $language_ids['ca'] = FALSE;

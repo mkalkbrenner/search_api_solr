@@ -2275,5 +2275,12 @@ function search_api_solr_update_8420() {
     }
   }
 
+  // search_api_solr_update_helper_install_configs();
+}
+
+/**
+ * Install new Korean configs.
+ */
+function search_api_solr_update_8421() {
   search_api_solr_update_helper_install_configs();
 }
