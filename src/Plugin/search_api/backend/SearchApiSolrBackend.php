@@ -1964,7 +1964,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           }
         }
 
-        $this->postQuery($search_api_result_set, $query, $solarium_result);
         $event = new PostExtractResultsEvent($search_api_result_set, $query, $solarium_result);
         $this->dispatch($event);
         $search_api_result_set = $event->getSearchApiResultSet();
