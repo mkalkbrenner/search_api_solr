@@ -176,7 +176,6 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
         $suggestion_factory = new SuggestionFactory($user_input);
         $this->setAutocompleteSuggesterQuery($query, $solarium_query, $user_input, $options);
         // Allow modules to alter the solarium autocomplete query.
-        \Drupal::moduleHandler()->alterDeprecated('hook_search_api_solr_suggester_autocomplete_query_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PreSpellcheckQueryEvent instead.', 'search_api_solr_suggester_autocomplete_query', $solarium_query, $query);
         $event = new PreSuggesterQueryEvent($query, $solarium_query);
         $backend->dispatch($event);
         $result = $backend->getSolrConnector()->autocomplete($solarium_query, $backend->getCollectionEndpoint($query->getIndex()));

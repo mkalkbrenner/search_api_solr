@@ -1447,7 +1447,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
 
     // Let other modules alter documents before sending them to solr.
-    $this->moduleHandler->alterDeprecated('hook_search_api_solr_documents_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostCreateIndexDocumentsEvent instead.', 'search_api_solr_documents', $documents, $index, $items);
     $event = new PostCreateIndexDocumentsEvent($items, $documents);
     $this->dispatch($event);
 
@@ -1588,7 +1587,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               $this->ensureCommit($index);
             }
 
-            $this->moduleHandler->invokeAllDeprecated('hook_search_api_solr_finalize_index is deprecated will be removed in Search API Solr 4.3.0. Handle the PreIndexFinalizationEvent instead.', 'search_api_solr_finalize_index', [$index]);
             $this->dispatch(new PreIndexFinalizationEvent($index));
 
             if (!empty($settings['commit_after_finalize'])) {
@@ -1664,8 +1662,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           // Extract results.
           $search_api_result_set = $this->extractResults($query, $solarium_result);
 
-          $this->moduleHandler->alterDeprecated('hook_search_api_solr_search_results_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostExtractResultsEvent instead.', 'search_api_solr_search_results', $search_api_result_set, $query, $solarium_result);
-          $this->postQuery($search_api_result_set, $query, $solarium_result);
           $event = new PostExtractResultsEvent($search_api_result_set, $query, $solarium_result);
           $this->dispatch($event);
           $solarium_result = $event->getSolariumResult();
@@ -1843,8 +1839,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $this->applySearchWorkarounds($solarium_query, $query);
 
         // Allow modules to alter the solarium query.
-        $this->moduleHandler->alterDeprecated('hook_search_api_solr_query_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PreQueryEvent instead.', 'search_api_solr_query', $solarium_query, $query);
-        $this->preQuery($solarium_query, $query);
         $event = new PreQueryEvent($query, $solarium_query);
         $this->dispatch($event);
         $solarium_query = $event->getSolariumQuery();
@@ -1929,7 +1923,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         }
 
         // Allow modules to alter the converted solarium query.
-        $this->moduleHandler->alterDeprecated('hook_search_api_solr_converted_query_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostConvertedQueryEvent instead.', 'search_api_solr_converted_query', $solarium_query, $query);
         $event = new PostConvertedQueryEvent($query, $solarium_query);
         $this->dispatch($event);
         $solarium_query = $event->getSolariumQuery();
@@ -1971,7 +1964,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           }
         }
 
-        $this->moduleHandler->alterDeprecated('hook_search_api_solr_search_results_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostExtractResultsEvent instead.', 'search_api_solr_search_results', $search_api_result_set, $query, $solarium_result);
         $this->postQuery($search_api_result_set, $query, $solarium_result);
         $event = new PostExtractResultsEvent($search_api_result_set, $query, $solarium_result);
         $this->dispatch($event);
@@ -1992,27 +1984,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
       throw new SearchApiSolrException('An error occurred while searching, try again later.', $e->getCode(), $e);
     }
-  }
-
-  /**
-   * Ensures the given Search API query has a language condition applied.
-   *
-   * @param \Drupal\search_api\Query\QueryInterface $query
-   *   The Search API query.
-   *
-   * @return array
-   *   An array of language IDs applied to the query.
-   *
-   * @deprecated in search_api_solr:4.2.0 and is removed from
-   *   search_api_solr:4.3.0. Use
-   *   Utility::ensureLanguageCondition() instead.
-   *
-   * @see https://www.drupal.org/project/search_api_solr/issues/3254767
-   * @see \Drupal\search_api_solr\Utility\Utility::ensureLanguageCondition()
-   */
-  protected function ensureLanguageCondition(QueryInterface $query) {
-    @trigger_error('SearchApiSolrBackend::ensureLanguageCondition() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
-    return Utility::ensureLanguageCondition($query);
   }
 
   /**
@@ -2333,51 +2304,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   }
 
   /**
-   * Returns whether the index only contains "solr_*" datasources.
-   *
-   * @param \Drupal\search_api\IndexInterface $index
-   *   The Search API index entity.
-   *
-   * @return bool
-   *   TRUE if the index only contains "solr_*" datasources, FALSE otherwise.
-   *
-   * @deprecated SearchApiSolrBackend::hasIndexJustSolrDatasources() is
-   *   deprecated in search_api_solr:4.2.0 and is removed from
-   *   search_api_solr:4.3.0. Use
-   *   Utility::hasIndexJustSolrDatasources() instead.
-   *
-   * @see https://www.drupal.org/project/search_api_solr/issues/3254767
-   * @see \Drupal\search_api_solr\Utility\Utility::hasIndexJustSolrDatasources()
-   */
-  protected function hasIndexJustSolrDatasources(IndexInterface $index) {
-    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDatasources() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0. Use Utility::hasIndexJustSolrDatasources() instead.', E_USER_DEPRECATED);
-    return Utility::hasIndexJustSolrDatasources($index);
-  }
-
-  /**
-   * Returns whether the index only contains "solr_document" datasources.
-   *
-   * @param \Drupal\search_api\IndexInterface $index
-   *   The Search API index entity.
-   *
-   * @return bool
-   *   TRUE if the index only contains "solr_document" datasources, FALSE
-   *   otherwise.
-   *
-   * @deprecated SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is
-   *   deprecated in search_api_solr:4.2.0 and is removed from
-   *   search_api_solr:4.3.0. Use
-   *   Utility::hasIndexJustSolrDocumentDatasource() instead.
-   *
-   * @see https://www.drupal.org/project/search_api_solr/issues/3254767
-   * @see \Drupal\search_api_solr\Utility\Utility::hasIndexJustSolrDocumentDatasource()
-   */
-  protected function hasIndexJustSolrDocumentDatasource(IndexInterface $index) {
-    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0.', E_USER_DEPRECATED);
-    return Utility::hasIndexJustSolrDocumentDatasource($index);
-  }
-
-  /**
    * Returns a language-specific mapping from Drupal to Solr field names.
    *
    * @param string $language_id
@@ -2525,7 +2451,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
 
     // Let modules adjust the field mappings.
-    $this->moduleHandler->alterDeprecated('hook_search_api_solr_field_mapping_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PostFieldMappingEvent instead.', 'search_api_solr_field_mapping', $index, $field_mapping, $language_id);
     $event = new PostFieldMappingEvent($index, $field_mapping, $language_id);
     $this->dispatch($event);
 
@@ -3859,49 +3784,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   }
 
   /**
-   * Allow custom changes before sending a search query to Solr.
-   *
-   * This allows subclasses to apply custom changes before the query is sent to
-   * Solr. Works exactly like hook_search_api_solr_query_alter().
-   *
-   * @param \Solarium\Core\Query\QueryInterface $solarium_query
-   *   The Solarium query object.
-   * @param \Drupal\search_api\Query\QueryInterface $query
-   *   The \Drupal\search_api\Query\Query object representing the executed
-   *   search query.
-   *
-   * @deprecated in search_api_solr:4.2.0 and is removed from
-   *   search_api_solr:4.3.0. Handle the PreQueryEvent instead.
-   *
-   * @see https://www.drupal.org/project/search_api_solr/issues/3203375
-   * @see \Drupal\search_api_solr\Event\PreQueryEvent
-   */
-  protected function preQuery(SolariumQueryInterface $solarium_query, QueryInterface $query) {
-  }
-
-  /**
-   * Allow custom changes before search results are returned for subclasses.
-   *
-   * Works exactly like hook_search_api_solr_search_results_alter().
-   *
-   * @param \Drupal\search_api\Query\ResultSetInterface $results
-   *   The results array that will be returned for the search.
-   * @param \Drupal\search_api\Query\QueryInterface $query
-   *   The \Drupal\search_api\Query\Query object representing the executed
-   *   search query.
-   * @param object $response
-   *   The response object returned by Solr.
-   *
-   * @deprecated in search_api_solr:4.2.0 and is removed from
-   *   search_api_solr:4.3.0. Handle the PostExtractResultsEvent instead.
-   *
-   * @see https://www.drupal.org/project/search_api_solr/issues/3203375
-   * @see \Drupal\search_api_solr\Event\PostExtractResultsEvent
-   */
-  protected function postQuery(ResultSetInterface $results, QueryInterface $query, $response) {
-  }
-
-  /**
    * {@inheritdoc}
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
@@ -3917,7 +3799,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         Utility::ensureLanguageCondition($query);
         $this->setAutocompleteTermQuery($query, $solarium_query, $incomplete_key);
         // Allow modules to alter the solarium autocomplete query.
-        $this->moduleHandler->alterDeprecated('hook_search_api_solr_terms_autocomplete_query_alter is deprecated will be removed in Search API Solr 4.3.0. Handle the PreSpellcheckQueryEvent instead.', 'search_api_solr_terms_autocomplete_query', $solarium_query, $query);
         $event = new PreAutocompleteTermsQueryEvent($query, $solarium_query);
         $this->dispatch($event);
         $result = $this->getSolrConnector()->autocomplete($solarium_query, $this->getCollectionEndpoint($query->getIndex()));
@@ -3953,54 +3834,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $fl[] = array_values($field_names[$fulltext_field]);
     }
     return array_unique(array_merge(...$fl));
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * @throws \Drupal\Component\Plugin\Exception\PluginException
-   *
-   * @deprecated in search_api_solr:4.2.0 and is removed from
-   *   search_api_solr:4.3.0. Use getAutocompleteSuggestions() instead.
-   *
-   * @see https://www.drupal.org/project/search_api_solr/issues/3254767
-   * @see getAutocompleteSuggestions()
-   */
-  public function getTermsSuggestions(QueryInterface $query, SearchInterface $search, $incomplete_key, $user_input) {
-    @trigger_error('SolrAutocompleteInterface::getTermsSuggestions() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
-    return $this->getAutocompleteSuggestions($query, $search, $incomplete_key, $user_input);
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * @deprecated in search_api_solr:4.2.0 and is removed from
-   *   search_api_solr:4.3.0. This function was moved to
-   *   Spellcheck::getSpellcheckSuggestions().
-   *
-   * @see https://www.drupal.org/project/search_api_solr/issues/3254767
-   * @see \Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\suggester\Spellcheck
-   */
-  public function getSpellcheckSuggestions(QueryInterface $query, SearchInterface $search, $incomplete_key, $user_input) {
-    @trigger_error('SolrAutocompleteInterface::getSpellcheckSuggestions() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
-    return [];
-  }
-
-  /**
-   * {@inheritdoc}
-   *
-   * @throws \Drupal\Component\Plugin\Exception\PluginException
-   *
-   * @deprecated in search_api_solr:4.2.0 and is removed from
-   *   search_api_solr:4.3.0. This function was moved to
-   *   Spellcheck::getSuggesterSuggestions().
-   *
-   * @see https://www.drupal.org/project/search_api_solr/issues/3254767
-   * @see \Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\suggester\Suggester
-   */
-  public function getSuggesterSuggestions(QueryInterface $query, SearchInterface $search, $incomplete_key, $user_input, array $options = []) {
-    @trigger_error('SolrAutocompleteInterface::getSuggesterSuggestions() is deprecated in 4.2.0 and is removed from 4.3.0.', E_USER_DEPRECATED);
-    return [];
   }
 
   /**
@@ -4832,13 +4665,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
 
     return in_array($name, $schema_parts[$endpoint_key][$kind]);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getIndexSolrSettings(IndexInterface $index) {
-    return Utility::getIndexSolrSettings($index);
   }
 
   /**
