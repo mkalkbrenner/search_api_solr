@@ -33,15 +33,31 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    * @var array
    */
   protected $languageIds = [
+    'de' => 'de',
+    'de-at' => 'de',
+    'en' => 'en',
+    'nl' => 'nl',
+  ];
+
+  /**
+   * More language IDs.
+   *
+   * Keeping all languages installed will lead to massive multilingual
+   * queries in search_api's tests. Therefore we split the language list
+   * into languages that should be available in all test and those only
+   * required for special tests.
+   *
+   * @see checkSchemaLanguages()
+   *
+   * @var array
+   */
+  protected $moreLanguageIds = [
     'ar' => 'ar',
     'bg' => 'bg',
     'ca' => 'ca',
     'cs' => 'cs',
     'da' => 'da',
-    'de' => 'de',
-    'de-at' => 'de',
     'el' => 'el',
-    'en' => 'en',
     'es' => 'es',
     'et' => 'et',
     'fa' => 'fa',
@@ -57,7 +73,6 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     'ko' => 'ko',
     'lv' => 'lv',
     'nb' => 'nb',
-    'nl' => 'nl',
     'nn' => 'nn',
     'pl' => 'pl',
     'pt-br' => 'pt_br',
@@ -279,6 +294,13 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    * Tests if all supported languages are deployed correctly.
    */
   protected function checkSchemaLanguages() {
+    $languages = [];
+    foreach (array_keys($this->moreLanguageIds) as $language_id) {
+      $language = ConfigurableLanguage::createFromLangcode($language_id);
+      $language->save();
+      $languages[$language->id()] = $language;
+    }
+
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = Server::load($this->serverId)->getBackend();
     $connector = $backend->getSolrConnector();
@@ -327,6 +349,10 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     }
     $language_ids[LanguageInterface::LANGCODE_NOT_SPECIFIED] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
     $this->assertEquals($language_ids, $backend->getSchemaLanguageStatistics());
+
+    foreach ($languages as $language) {
+      $language->delete();
+    }
   }
 
   /**
