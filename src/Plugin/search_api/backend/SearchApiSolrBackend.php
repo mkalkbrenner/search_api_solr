@@ -1989,6 +1989,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       // views integration forwards the exception message to the end user. Just
       // log the datails.
       $this->getLogger()->error('@exception', ['@exception' => $e->getMessage()]);
+      var_dump($solarium_query);
 
       throw new SearchApiSolrException('An error occurred while searching, try again later.', $e->getCode(), $e);
     }
