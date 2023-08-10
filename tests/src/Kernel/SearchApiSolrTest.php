@@ -305,7 +305,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $backend = Server::load($this->serverId)->getBackend();
     $connector = $backend->getSolrConnector();
     $targeted_solr_major_version = (int) $connector->getSchemaTargetedSolrBranch();
-    $language_ids = $this->languageIds;
+    $language_ids = $this->languageIds + $this->moreLanguageIds;
     if (version_compare($targeted_solr_major_version, '9', '<')) {
       // 'et' requires Solr 8.2, the jump-start-config targets 8.0.
       $language_ids['et'] = FALSE;
