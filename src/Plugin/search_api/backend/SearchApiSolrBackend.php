@@ -1990,7 +1990,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       // log the datails.
       $this->getLogger()->error('@exception', ['@exception' => $e->getMessage()]);
 
-      throw new SearchApiSolrException('An error occurred while searching, try again later.', $e->getCode());
+      throw new SearchApiSolrException('An error occurred while searching, try again later.', $e->getCode(), $e);
     }
   }
 
