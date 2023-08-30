@@ -2921,15 +2921,25 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         throw new SearchApiSolrException(sprintf('The result does not contain the essential ID field "%s".', $id_field));
       }
 
+      // For an unknown reason we sometimes get arrays here.
+      // @see https://www.drupal.org/project/search_api_solr/issues/3281703
+      // @see https://www.drupal.org/project/search_api_solr/issues/3320713
       $item_id = $doc_fields[$id_field];
-      // For an unknown reason we sometimes get an array here. See
-      // https://www.drupal.org/project/search_api_solr/issues/3281703
       if (is_array($item_id)) {
         $item_id = current($item_id);
       }
+
+      $hash = NULL;
+      if (isset($doc_fields['hash'])) {
+        $hash = $doc_fields['hash'];
+        if (is_array($hash)) {
+          $hash = current($hash);
+        }
+      }
+
       // For items coming from a different site, we need to adapt the item ID.
-      if (isset($doc_fields['hash']) && !$this->configuration['site_hash'] && $doc_fields['hash'] != $site_hash) {
-        $item_id = $doc_fields['hash'] . '--' . $item_id;
+      if (!is_null($hash) && !$this->configuration['site_hash'] && $hash != $site_hash) {
+        $item_id = $hash . '--' . $item_id;
       }
 
       $result_item = NULL;
