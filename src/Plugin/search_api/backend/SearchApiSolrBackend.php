@@ -3613,7 +3613,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * Format a value for filtering on a field of a specific type.
    */
   protected function formatFilterValue($value, $type) {
-    $value = trim($value);
+    $value = trim($value ?? '');
     switch ($type) {
       case 'boolean':
         $value = $value ? 'true' : 'false';
@@ -3626,7 +3626,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         }
         break;
     }
-    return $value ?? '';
+    return $value;
   }
 
   /**
