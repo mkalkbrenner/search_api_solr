@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\LoggerTrait;
+use Drupal\search_api\SearchApiException;
 use Drupal\search_api_solr\TypedData\SolrFieldDefinition;
 use Psr\Log\LoggerInterface;
 
@@ -37,6 +38,13 @@ class SolrFieldManager implements SolrFieldManagerInterface {
   protected $serverStorage;
 
   /**
+   * HTTP Client to request shard servers.
+   *
+   * @var \GuzzleHttp\ClientInterface
+   */
+  protected $httpClient;
+
+  /**
    * Constructs a new SorFieldManager.
    *
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
@@ -53,6 +61,7 @@ class SolrFieldManager implements SolrFieldManagerInterface {
     $this->cacheBackend = $cache_backend;
     $this->serverStorage = $entityTypeManager->getStorage('search_api_server');
     $this->setLogger($logger);
+    $this->httpClient = new \GuzzleHttp\Client();
   }
 
   /**
@@ -107,7 +116,15 @@ class SolrFieldManager implements SolrFieldManagerInterface {
    * @throws \Drupal\search_api\SearchApiException
    */
   protected function buildFieldDefinitions(IndexInterface $index) {
-    $solr_fields = $this->buildFieldDefinitionsFromSolr($index);
+    $solr_fields = [];
+
+    if ($this->isShardEnabled($index) === TRUE) {
+      $solr_fields = $this->buildFieldDefinitionsFromShardServers($index);
+    }
+    elseif ($this->isShardEnabled($index) === FALSE) {
+      $solr_fields = $this->buildFieldDefinitionsFromSolr($index);
+    }
+
     $config_fields = $this->buildFieldDefinitionsFromConfig($index);
     $fields = $solr_fields + $config_fields;
     /*** @var \Drupal\Core\TypedData\DataDefinitionInterface $field */
@@ -116,6 +133,15 @@ class SolrFieldManager implements SolrFieldManagerInterface {
       $fields[$key]->setDataType($field->getDataType());
     }
     return $fields;
+  }
+
+  protected function isShardEnabled(IndexInterface $index) {
+    if ($index->getDatasources()) {
+      return (bool)$index->getDatasource('solr_document')
+        ->getConfiguration()['enable_shards'];
+    }
+
+    return NULL;
   }
 
   /**
@@ -181,49 +207,9 @@ class SolrFieldManager implements SolrFieldManagerInterface {
 
         $luke = $connector->getLuke();
         foreach ($luke['fields'] as $name => $definition) {
-          $field = new SolrFieldDefinition($definition);
-          $label = Unicode::ucfirst(trim(str_replace('_', ' ', $name)));
-          $field->setLabel($label);
-          // The Search API can't deal with arbitrary item types. To make things
-          // easier, just use one of those known to the Search API. Using strpos
-          // matches point and trie variants as well, for example int, pint and
-          // tint. Finally this function only feeds the presets for the config
-          // form, so mismatches aren't critical.
-          $type = $field->getDataType();
-          if (strpos($type, 'text') !== FALSE) {
-            $field->setDataType('search_api_text');
-          }
-          elseif (strpos($type, 'date_range') !== FALSE) {
-            $field->setDataType('solr_date_range');
-          }
-          elseif (strpos($type, 'date') !== FALSE) {
-            // The field config UI uses "date" but converts that to "timestamp"
-            // internally. We handle this in the mapping.
-            /** @see \Drupal\search_api_solr\EventSubscriber\SearchApiSubscriber::onMappingViewsFieldHandlers() */
-            $field->setDataType('date');
-          }
-          elseif (strpos($type, 'int') !== FALSE) {
-            $field->setDataType('integer');
-          }
-          elseif (strpos($type, 'long') !== FALSE) {
-            $field->setDataType('integer');
-          }
-          elseif (strpos($type, 'float') !== FALSE) {
-            $field->setDataType('float');
-          }
-          elseif (strpos($type, 'double') !== FALSE) {
-            $field->setDataType('float');
-          }
-          elseif (strpos($type, 'bool') !== FALSE) {
-            $field->setDataType('boolean');
-          }
-          else {
-            $field->setDataType('string');
-          }
-          $fields[$name] = $field;
+          $fields[$name] = $this->setFieldDataType($name, $definition);
         }
-      }
-      catch (SearchApiSolrException $e) {
+      } catch (SearchApiSolrException $e) {
         $this->getLogger()
           ->error('Could not connect to server %server, %message', [
             '%server' => $server->id(),
@@ -232,6 +218,135 @@ class SolrFieldManager implements SolrFieldManagerInterface {
       }
     }
     return $fields;
+  }
+
+  /**
+   * Builds the field definitions for a Solr server from its Luke handler.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *   The index from which we are retrieving field information.
+   *
+   * @return \Drupal\Core\TypedData\DataDefinitionInterface[]
+   *   The array of field definitions for the server, keyed by field name.
+   *
+   * @throws \InvalidArgumentException
+   * @throws \Drupal\search_api\SearchApiException
+   */
+  protected function buildFieldDefinitionsFromShardServers(IndexInterface $index) {
+    $fields = [];
+    $shards = $this->getShardServers($index);
+    $server = $index->getServerInstance();
+
+    foreach ($shards as $shard) {
+      try {
+        $response = $this->httpClient->get($shard);
+        $shardFields = json_decode((string)$response->getBody(), TRUE)['fields'];
+        foreach ($shardFields as $name => $definition) {
+          $fields[$name] = $this->setFieldDataType($name, $definition);
+        }
+      } catch (Exception $e) {
+        $this->logger
+          ->error('Could not recieve shard servers or their fields, %message', [
+            '%server' => $server->id(),
+            '%message' => $e->getMessage(),
+          ]);
+      }
+    }
+
+    return $fields;
+  }
+
+  /**
+   * Maps the Solr field type to a Search API field type.
+   *
+   * @param $name
+   * @param $definition
+   *
+   * @return \Drupal\search_api_solr\TypedData\SolrFieldDefinition
+   */
+  protected function setFieldDataType($name, $definition) {
+    $field = new SolrFieldDefinition($definition);
+    $label = Unicode::ucfirst(trim(str_replace('_', ' ', $name)));
+    $field->setLabel($label);
+
+    $type = $field->getDataType();
+    if (strpos($type, 'text') !== FALSE) {
+      $field->setDataType('search_api_text');
+    } elseif (strpos($type, 'date_range') !== FALSE) {
+      $field->setDataType('solr_date_range');
+    } elseif (strpos($type, 'date') !== FALSE) {
+      // The field config UI uses "date" but converts that to "timestamp"
+      // internally. We handle this in the mapping.
+      /** @see \Drupal\search_api_solr\EventSubscriber\SearchApiSubscriber::onMappingViewsFieldHandlers() */
+      $field->setDataType('date');
+    } elseif (strpos($type, 'int') !== FALSE) {
+      $field->setDataType('integer');
+    } elseif (strpos($type, 'long') !== FALSE) {
+      $field->setDataType('integer');
+    } elseif (strpos($type, 'float') !== FALSE) {
+      $field->setDataType('float');
+    } elseif (strpos($type, 'double') !== FALSE) {
+      $field->setDataType('float');
+    } elseif (strpos($type, 'bool') !== FALSE) {
+      $field->setDataType('boolean');
+    } else {
+      $field->setDataType('string');
+    }
+    return $field;
+  }
+
+  /**
+   * Extract from shards servers the list of servers to query.
+   *
+   * @param \Drupal\search_api\IndexInterface $index
+   *
+   * @return array|mixed|string[]
+   * @throws \Drupal\search_api\SearchApiException
+   */
+  protected function getShardServers(IndexInterface $index) {
+    $shards = [];
+
+    if ($index->getServerInstance()) {
+      /** @var \Drupal\search_api_solr_shards\Plugin\search_api\datasource\ShardDocument $shardDocument */
+      try {
+        $shardDocument = $index->getDatasource('solr_document');
+        $solrconfig = empty($shardDocument->getConfiguration()['solrconfig'])
+          ? 'solrconfig.xml' : $shardDocument->getConfiguration()['solrconfig'];
+      } catch (SearchApiException $e) {
+        $solrconfig = 'solrconfig.xml';
+      }
+
+      try {
+        $server = $index->getServerInstance();
+        $backend = $server->getBackend();
+        $connector = $backend->getSolrConnector();
+        $solrconfig = $connector->getFile($solrconfig)->getBody();
+
+        $xml = simplexml_load_string($solrconfig);
+        $shards = ((array)$xml->xpath('//*[@name="shards"]')[0])[0];
+        if ($shards) {
+          $shards = explode(',', $shards);
+        }
+
+        // Include the segment to retrieve field-schema information.
+        foreach ($shards as &$shard) {
+          $shard = "${shard}/admin/luke?wt=json";
+        }
+      } catch (SearchApiException $e) {
+        $this->logger
+          ->error('Could not read %file file from remote, %message', [
+            '%message' => $e->getMessage(),
+            '%file' => $solrconfig
+          ]);
+      } catch (\Exception $e) {
+        $this->logger
+          ->error('An error occurred retrieving shards servers, %message', [
+            '%message' => $e->getMessage()
+          ]);
+      }
+    }
+
+    return $shards;
   }
 
 }
