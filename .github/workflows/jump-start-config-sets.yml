@@ -159,87 +159,11 @@ jobs:
 
         strategy:
             matrix:
-                drupal: ['10.0', '10.1']
+                drupal: ['10.1']
                 solr: ['4', '5', '6', '7', '8', '9']
                 php: ['8.1', '8.2']
                 solarium: ['solarium/solarium:"dev-master as 6.3.99"']
                 experimental: [false]
-                include:
-                  - drupal: '9.5'
-                    solr: '4'
-                    php: '7.4'
-                    solarium: 'solarium/solarium'
-                    experimental: true
-                  - drupal: '9.5'
-                    solr: '5'
-                    php: '7.4'
-                    solarium: 'solarium/solarium'
-                    experimental: true
-                  - drupal: '9.5'
-                    solr: '6'
-                    php: '7.4'
-                    solarium: 'solarium/solarium'
-                    experimental: true
-                  - drupal: '9.5'
-                    solr: '7'
-                    php: '7.4'
-                    solarium: 'solarium/solarium'
-                    experimental: true
-                  - drupal: '9.5'
-                    solr: '8'
-                    php: '7.4'
-                    solarium: 'solarium/solarium'
-                    experimental: true
-                  - drupal: '9.5'
-                    solr: '4'
-                    php: '8.0'
-                    solarium: 'solarium/solarium'
-                    experimental: false
-                  - drupal: '9.5'
-                    solr: '5'
-                    php: '8.0'
-                    solarium: 'solarium/solarium'
-                    experimental: false
-                  - drupal: '9.5'
-                    solr: '6'
-                    php: '8.0'
-                    solarium: 'solarium/solarium'
-                    experimental: false
-                  - drupal: '9.5'
-                    solr: '7'
-                    php: '8.0'
-                    solarium: 'solarium/solarium'
-                    experimental: false
-                  - drupal: '9.5'
-                    solr: '8'
-                    php: '8.0'
-                    solarium: 'solarium/solarium'
-                    experimental: false
-                  - drupal: '9.5'
-                    solr: '4'
-                    php: '8.1'
-                    solarium: 'solarium/solarium'
-                    experimental: false
-                  - drupal: '9.5'
-                    solr: '5'
-                    php: '8.1'
-                    solarium: 'solarium/solarium'
-                    experimental: false
-                  - drupal: '9.5'
-                    solr: '6'
-                    php: '8.1'
-                    solarium: 'solarium/solarium'
-                    experimental: false
-                  - drupal: '9.5'
-                    solr: '7'
-                    php: '8.1'
-                    solarium: 'solarium/solarium'
-                    experimental: false
-                  - drupal: '9.5'
-                    solr: '8'
-                    solarium: 'solarium/solarium'
-                    php: '8.1'
-                    experimental: false
 
         name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
 
@@ -337,23 +261,10 @@ jobs:
 
       strategy:
         matrix:
-          drupal: ['10.0', '10.1']
+          drupal: ['10.1']
           solr: ['3']
           php: ['8.1', '8.2']
           experimental: [false]
-          include:
-            - drupal: '9.5'
-              solr: '3'
-              php: '7.4'
-              experimental: true
-            - drupal: '9.5'
-              solr: '3'
-              php: '8.0'
-              experimental: false
-            - drupal: '9.5'
-              solr: '3'
-              php: '8.1'
-              experimental: false
 
       name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
 
