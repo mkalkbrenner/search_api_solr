@@ -4252,7 +4252,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $solr_distance_field = $field_names[$distance_field];
     $spatial['lat'] = (float) $spatial['lat'];
     $spatial['lon'] = (float) $spatial['lon'];
-    $spatial['radius'] = isset($spatial['radius']) ? (int) $spatial['radius'] : 0;
+    $spatial['radius'] = isset($spatial['radius']) ? (float) $spatial['radius'] : 0.0;
     $spatial['min_radius'] = isset($spatial['min_radius']) ? (float) $spatial['min_radius'] : 0.0;
 
     if (!isset($spatial['filter_query_conditions'])) {

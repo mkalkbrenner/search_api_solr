@@ -127,7 +127,7 @@ class SearchApiSolrLocationTest extends SolrBackendTestBase {
         'field' => 'location',
         'lat' => '51.260197',
         'lon' => '4.402771',
-        'radius' => '500',
+        'radius' => '500.00000',
       ],
     ];
     /** @var \Drupal\search_api\Query\ResultSet $result */
@@ -171,13 +171,13 @@ class SearchApiSolrLocationTest extends SolrBackendTestBase {
       'missing' => TRUE,
     ];
 
-    // Search 1000km from Antwerp.
+    // Search 1000.1145km from Antwerp.
     $location_options = [
       [
         'field' => 'location',
         'lat' => '51.260197',
         'lon' => '4.402771',
-        'radius' => '1000',
+        'radius' => '1000.1145',
       ],
     ];
     $query = $this->buildSearch(NULL, [], NULL, FALSE)
@@ -208,18 +208,18 @@ class SearchApiSolrLocationTest extends SolrBackendTestBase {
       'missing' => TRUE,
     ];
 
-    // Search between 100km and 1000km from Antwerp.
+    // Search between 100.00km and 1000.1145km from Antwerp.
     $location_options = [
       [
         'field' => 'location',
         'lat' => '51.260197',
         'lon' => '4.402771',
-        'radius' => '1000',
+        'radius' => '1000.1145',
       ],
     ];
 
     $query = $this->buildSearch(NULL, [], NULL, FALSE)
-      ->addCondition('location', ['100', '1000'], 'BETWEEN')
+      ->addCondition('location', ['100.00', '1000.1145'], 'BETWEEN')
       ->sort('location__distance');
 
     $query->setOption('search_api_location', $location_options);
