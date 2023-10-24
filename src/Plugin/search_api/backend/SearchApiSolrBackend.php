@@ -1273,7 +1273,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       $boost_terms = [];
 
       /** @var \Solarium\QueryType\Update\Query\Document $doc */
-      $event = new PreCreateIndexDocumentEvent($item, $update_query->createDocument());
+      $event = new PreCreateIndexDocumentEvent($item, $update_query->createDocument(), $index);
       $this->dispatch($event);
       $doc = $event->getSolariumDocument();
 
@@ -1440,7 +1440,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       }
 
       if ($doc) {
-        $event = new PostCreateIndexDocumentEvent($item, $doc);
+        $event = new PostCreateIndexDocumentEvent($item, $doc, $index);
         $this->dispatch($event);
         $documents[] = $event->getSolariumDocument();
       }
