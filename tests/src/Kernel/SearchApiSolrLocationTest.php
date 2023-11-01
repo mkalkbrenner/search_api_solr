@@ -230,7 +230,7 @@ class SearchApiSolrLocationTest extends SolrBackendTestBase {
 
     $expected = [
       [
-        'filter' => '[100 399]',
+        'filter' => '[100 399.03816666667]',
         'count' => 1,
       ],
     ];
