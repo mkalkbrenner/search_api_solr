@@ -108,9 +108,21 @@ function search_api_solr_cron() {
       }
 
       if ($is_drupal_only_writeable[$server->id()] && \Drupal::state()->get('search_api_solr.' . $server->id() . '.last_build', 0) < $last_update_on_server[$server->id()]) {
-        $query = $connector->getSuggesterQuery();
-        $query->addParam('suggest.buildAll', TRUE);
-        $connector->execute($query);
+        $suggester = TRUE;
+
+        foreach ($backend->getDisabledRequestHandlers() as $disabledRequestHandler) {
+          if (str_starts_with($disabledRequestHandler, 'request_handler_suggest_')) {
+            $suggester = FALSE;
+            break;
+          }
+        }
+
+        if ($suggester) {
+          $query = $connector->getSuggesterQuery();
+          $query->addParam('suggest.buildAll', TRUE);
+          $connector->execute($query);
+        }
+
         \Drupal::state()->set('search_api_solr.' . $server->id() . '.last_build', $request_time);
       }
     }
