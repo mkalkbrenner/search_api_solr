@@ -2775,7 +2775,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               $value = SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE;
             }
 
-            // No break, now we have a string.
+          // No break, now we have a string.
           case 'string':
           default:
             // Keep $value as it is. Keep '0' string.
@@ -4684,7 +4684,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#total' => 0,
     ];
 
-    if ($indexes = $this->getServer()->getIndexes()) {
+    if ($indexes = $this->getServer()->getIndexes(['status' => TRUE])) {
       $connector_endpoints_queried = [];
       foreach ($indexes as $index) {
         $collection_endpoint = $this->getCollectionEndpoint($index);
