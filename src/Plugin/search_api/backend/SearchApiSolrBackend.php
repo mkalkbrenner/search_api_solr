@@ -3658,7 +3658,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         break;
 
       case 'decimal':
-      case 'location':
         $value = (float) $value;
         break;
 
@@ -3666,6 +3665,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $value = (int) $value;
         break;
 
+      case 'location':
+        // Solr type point must be in 'lat, lon' or 'x y'. So it is a string.
+        // Unfortunately search_api_location doesn't set the correct fallback
+        // type.
       case 'string':
       case 'text':
         // In case these types are used as fallback types, don't touch the
