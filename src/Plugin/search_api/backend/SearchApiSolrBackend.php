@@ -3464,7 +3464,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     foreach ($value as &$v) {
       if (NULL !== $v || !in_array($operator, ['=', '<>', 'IN', 'NOT IN'])) {
-        $v = $this->formatFilterValue($v, $index_field->getType());
+        $v = $this->formatFilterValue($v, $index_field);
         // Remaining NULL values are now converted to empty strings.
       }
     }
@@ -3493,7 +3493,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       foreach ($options['search_api_location'] as &$spatial) {
         if (!empty($spatial['field']) && $index_field->getFieldIdentifier() == $spatial['field']) {
           // Spatial filter queries need modifications to the query itself.
-          // Therefore we just store the parameters an let them be handled
+          // Therefore, we just store the parameters and let them be handled
           // later.
           // @see setSpatial()
           // @see createLocationFilterQuery()
@@ -3621,9 +3621,30 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
   /**
    * Format a value for filtering on a field of a specific type.
+   *
+   * All values that are used with text and string based Search API field types
+   * will be escaped. But for other types
+   *
+   * @param bool|float|int|string|null $value
+   *   The value to be formatted.
+   * @param \Drupal\search_api\Item\FieldInterface $field
+   *   The Search API field the value should be formatted for.
+   * @param string|null $type
+   *   Optionally force a different Search API field type the value should be
+   *   formatted for.
+   *
+   * @return float|int|string
+   *   The formatted value.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  protected function formatFilterValue($value, $type) {
+  protected function formatFilterValue($value, FieldInterface $field, ?string $type = NULL) {
     $value = trim($value ?? '');
+
+    if (!$type) {
+      $type = $field->getType();
+    }
+
     switch ($type) {
       case 'boolean':
         $value = $value ? 'true' : 'false';
@@ -3635,7 +3656,37 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           return 0;
         }
         break;
+
+      case 'decimal':
+        $value = (float) $value;
+        break;
+
+      case 'integer':
+        $value = (int) $value;
+        break;
+
+      case 'string':
+      case 'text':
+        // In case these types are used as fallback types, don't touch the
+        // value. Such values should be escaped by the caller. A NULL value has
+        // been converted to an empty string at the beginning of this function.
+        break;
+
+      default:
+        $fallback_type = $field->getDataTypePlugin()->getFallbackType();
+        if ($fallback_type) {
+          if ($fallback_type !== $type) {
+            $value = $this->formatFilterValue($value, $field, $fallback_type);
+          }
+          else {
+            throw new SearchApiSolrException('Unable to format field type ' . $type . '. Fallback type is not valid.');
+          }
+        }
+        else {
+          throw new SearchApiSolrException('Unable to format field type ' . $type . '. No fallback type specified.');
+        }
     }
+
     return $value;
   }
 
