@@ -3658,6 +3658,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         break;
 
       case 'decimal':
+      case 'location':
         $value = (float) $value;
         break;
 

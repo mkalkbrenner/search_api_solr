@@ -653,24 +653,24 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $query = $this->buildSearch();
     $query->setLanguages([LanguageInterface::LANGCODE_NOT_SPECIFIED]);
     $conditions = $query->createConditionGroup('OR', ['facet:id']);
-    $conditions->addCondition('id', 'A');
-    $conditions->addCondition('id', 'B');
+    $conditions->addCondition('id', '27');
+    $conditions->addCondition('id', '28');
     $query->addConditionGroup($conditions);
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
     $this->assertEquals(1, count($fq));
     $this->assertEquals(['facet:id' => 'facet:id'], $fq[0]['tags']);
-    $this->assertEquals('(its_id:"A" its_id:"B")', $fq[0]['query']);
+    $this->assertEquals('(its_id:"27" its_id:"28")', $fq[0]['query']);
 
     $query = $this->buildSearch();
     $query->setLanguages([LanguageInterface::LANGCODE_NOT_SPECIFIED]);
     $conditions = $query->createConditionGroup('AND', ['facet:id']);
-    $conditions->addCondition('id', 'A');
-    $conditions->addCondition('id', 'B');
+    $conditions->addCondition('id', '27');
+    $conditions->addCondition('id', '28');
     $query->addConditionGroup($conditions);
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
     $this->assertEquals(1, count($fq));
     $this->assertEquals(['facet:id' => 'facet:id'], $fq[0]['tags']);
-    $this->assertEquals('(+its_id:"A" +its_id:"B")', $fq[0]['query']);
+    $this->assertEquals('(+its_id:"27" +its_id:"28")', $fq[0]['query']);
 
     $query = $this->buildSearch();
     $query->setLanguages(['en']);
@@ -940,8 +940,8 @@ class SearchApiSolrTest extends SolrBackendTestBase {
 
     $index = $this->getIndex();
     $index->set('datasource_settings', $index->get('datasource_settings') + [
-      'entity:user' => [],
-    ]);
+        'entity:user' => [],
+      ]);
     $info = [
       'label' => 'uid',
       'type' => 'integer',
@@ -1530,7 +1530,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
         'fieldType name="text_en" class="solr.TextField"',
         'fieldType name="text_de" class="solr.TextField"',
         '<fieldType name="collated_und" class="solr.ICUCollationField" locale="" strength="primary" caseLevel="false"/>',
-'<fieldType name="text_foo_en" class="solr.TextField" positionIncrementGap="100">
+        '<fieldType name="text_foo_en" class="solr.TextField" positionIncrementGap="100">
   <analyzer type="index">
     <tokenizer class="solr.WhitespaceTokenizerFactory"/>
     <filter class="solr.LengthFilterFactory" min="2" max="100"/>
