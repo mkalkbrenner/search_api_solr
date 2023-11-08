@@ -1768,7 +1768,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           // mapped.
           if (!empty($unspecific_field_names['search_api_language'])) {
             $solarium_query->createFilterQuery('language_filter')->setQuery(
-              $this->createFilterQuery($unspecific_field_names['search_api_language'], $language_ids, 'IN', new Field($index, 'search_api_language'), $options)
+              $this->createFilterQuery($unspecific_field_names['search_api_language'], $language_ids, 'IN', $index_fields['search_api_language'], $options)
             );
           }
         }
