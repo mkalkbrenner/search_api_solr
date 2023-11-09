@@ -4015,7 +4015,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $cache_list_builder->setBackend($this);
     $solr_caches = $cache_list_builder->load();
     foreach ($solr_caches as $solr_cache) {
-      if (!$solr_cache->disabledOnServer) {
+      if (!$solr_cache->isDisabledOnServer()) {
         $this->addDependency('config', $solr_cache->getConfigDependencyName());
       }
     }
@@ -4025,7 +4025,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $request_handler_list_builder->setBackend($this);
     $solr_request_handlers = $request_handler_list_builder->load();
     foreach ($solr_request_handlers as $request_handler) {
-      if (!$request_handler->disabledOnServer) {
+      if (!$request_handler->isDisabledOnServer()) {
         $this->addDependency('config', $request_handler->getConfigDependencyName());
       }
     }
@@ -4035,7 +4035,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $request_dispatcher_list_builder->setBackend($this);
     $solr_request_dispatchers = $request_dispatcher_list_builder->load();
     foreach ($solr_request_dispatchers as $request_dispatcher) {
-      if (!$request_dispatcher->disabledOnServer) {
+      if (!$request_dispatcher->isDisabledOnServer()) {
         $this->addDependency('config', $request_dispatcher->getConfigDependencyName());
       }
     }

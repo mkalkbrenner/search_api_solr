@@ -101,4 +101,20 @@ interface SolrConfigInterface extends ConfigEntityInterface {
    */
   public function isRecommended(): bool;
 
+  /**
+   * Set if the configuration should be disabled on the server.
+   *
+   * @param bool $disabled_on_server
+   *   Set if the configuration should be disabled on the server.
+   */
+  public function setDisabledOnServer(bool $disabled_on_server): void;
+
+  /**
+   * Indicates if this configuration/feature is disabled on the server.
+   *
+   * @return bool
+   *   Indicates if this configuration/feature is disabled on the server.
+   */
+  public function isDisabledOnServer(): bool;
+
 }
