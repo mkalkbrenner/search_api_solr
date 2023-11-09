@@ -583,6 +583,7 @@
 <searchComponent name="suggest" class="solr.SuggestComponent">
     <lst name="suggester">
       <str name="name">ar</str>
+      <str name="indexPath">./ar</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -594,6 +595,7 @@
   
     <lst name="suggester">
       <str name="name">bg</str>
+      <str name="indexPath">./bg</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -605,6 +607,7 @@
   
     <lst name="suggester">
       <str name="name">ca</str>
+      <str name="indexPath">./ca</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -616,6 +619,7 @@
   
     <lst name="suggester">
       <str name="name">hr</str>
+      <str name="indexPath">./hr</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -627,6 +631,7 @@
   
     <lst name="suggester">
       <str name="name">cs</str>
+      <str name="indexPath">./cs</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -638,6 +643,7 @@
   
     <lst name="suggester">
       <str name="name">da</str>
+      <str name="indexPath">./da</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -649,6 +655,7 @@
   
     <lst name="suggester">
       <str name="name">nl</str>
+      <str name="indexPath">./nl</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -660,6 +667,7 @@
   
     <lst name="suggester">
       <str name="name">en</str>
+      <str name="indexPath">./en</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -671,6 +679,7 @@
   
     <lst name="suggester">
       <str name="name">et</str>
+      <str name="indexPath">./et</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -682,6 +691,7 @@
   
     <lst name="suggester">
       <str name="name">fi</str>
+      <str name="indexPath">./fi</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -693,6 +703,7 @@
   
     <lst name="suggester">
       <str name="name">fr</str>
+      <str name="indexPath">./fr</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -704,6 +715,7 @@
   
     <lst name="suggester">
       <str name="name">de</str>
+      <str name="indexPath">./de</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -715,6 +727,7 @@
   
     <lst name="suggester">
       <str name="name">el</str>
+      <str name="indexPath">./el</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -726,6 +739,7 @@
   
     <lst name="suggester">
       <str name="name">hi</str>
+      <str name="indexPath">./hi</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -737,6 +751,7 @@
   
     <lst name="suggester">
       <str name="name">hu</str>
+      <str name="indexPath">./hu</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -748,6 +763,7 @@
   
     <lst name="suggester">
       <str name="name">id</str>
+      <str name="indexPath">./id</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -759,6 +775,7 @@
   
     <lst name="suggester">
       <str name="name">ga</str>
+      <str name="indexPath">./ga</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -770,6 +787,7 @@
   
     <lst name="suggester">
       <str name="name">it</str>
+      <str name="indexPath">./it</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -781,6 +799,7 @@
   
     <lst name="suggester">
       <str name="name">und</str>
+      <str name="indexPath">./und</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -792,6 +811,7 @@
   
     <lst name="suggester">
       <str name="name">lv</str>
+      <str name="indexPath">./lv</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -803,6 +823,7 @@
   
     <lst name="suggester">
       <str name="name">nb</str>
+      <str name="indexPath">./nb</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -814,6 +835,7 @@
   
     <lst name="suggester">
       <str name="name">nn</str>
+      <str name="indexPath">./nn</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -825,6 +847,7 @@
   
     <lst name="suggester">
       <str name="name">fa</str>
+      <str name="indexPath">./fa</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -836,6 +859,7 @@
   
     <lst name="suggester">
       <str name="name">pl</str>
+      <str name="indexPath">./pl</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -847,6 +871,7 @@
   
     <lst name="suggester">
       <str name="name">pt_br</str>
+      <str name="indexPath">./pt_br</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -858,6 +883,7 @@
   
     <lst name="suggester">
       <str name="name">pt_pt</str>
+      <str name="indexPath">./pt_pt</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -869,6 +895,7 @@
   
     <lst name="suggester">
       <str name="name">ro</str>
+      <str name="indexPath">./ro</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -880,6 +907,7 @@
   
     <lst name="suggester">
       <str name="name">ru</str>
+      <str name="indexPath">./ru</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -891,6 +919,7 @@
   
     <lst name="suggester">
       <str name="name">sr</str>
+      <str name="indexPath">./sr</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -902,6 +931,7 @@
   
     <lst name="suggester">
       <str name="name">sk</str>
+      <str name="indexPath">./sk</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -913,6 +943,7 @@
   
     <lst name="suggester">
       <str name="name">es</str>
+      <str name="indexPath">./es</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -924,6 +955,7 @@
   
     <lst name="suggester">
       <str name="name">sv</str>
+      <str name="indexPath">./sv</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -935,6 +967,7 @@
   
     <lst name="suggester">
       <str name="name">th</str>
+      <str name="indexPath">./th</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -946,6 +979,7 @@
   
     <lst name="suggester">
       <str name="name">tr</str>
+      <str name="indexPath">./tr</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
@@ -957,6 +991,7 @@
   
     <lst name="suggester">
       <str name="name">uk</str>
+      <str name="indexPath">./uk</str>
       <str name="lookupImpl">AnalyzingInfixLookupFactory</str>
       <str name="dictionaryImpl">DocumentDictionaryFactory</str>
       <str name="field">twm_suggest</str>
