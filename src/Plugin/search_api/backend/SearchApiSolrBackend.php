@@ -2113,8 +2113,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           return preg_match('/^t.*?[sm]_/', $v) || preg_match('/^s[sm]_/', $v);
         });
       }
-      // ... Otherwise return all fields and score.
+      elseif ($query->hasTag('views')) {
+        // The view seems to be configured to display rendered entities, just
+        // return the required fields to identify the entities.
+        $returned_fields = $required_fields;
+      }
       else {
+        // Otherwise, return all fields and score.
         $returned_fields = ['*', reset($field_names['search_api_relevance'])];
       }
     }
