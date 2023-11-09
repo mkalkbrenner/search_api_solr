@@ -2284,3 +2284,41 @@ function search_api_solr_update_8420() {
 function search_api_solr_update_8421() {
   search_api_solr_update_helper_install_configs();
 }
+
+/**
+ * Build suggesters in dedicated directories per language.
+ */
+function search_api_solr_update_8422() {
+  foreach (search_api_solr_update_helper_get_field_type_configs() as $field_type_name => $field_type_config) {
+    if (str_starts_with($field_type_name, 'search_api_solr.solr_field_type.text_')) {
+      $save = FALSE;
+
+      if (!empty($field_type_config['solr_configs']) && !empty($field_type_config['solr_configs']['searchComponents'])) {
+        foreach ($field_type_config['solr_configs']['searchComponents'] as &$component) {
+          if ($component['name'] === 'suggest') {
+            foreach ($component['lst'] as &$lst) {
+              $name = '.';
+              foreach ($lst['str'] as &$entry) {
+                if ($entry['name'] === 'name') {
+                  $name = $entry['VALUE'];
+                }
+                if ($entry['name'] === 'indexPath') {
+                  break(2);
+                }
+              }
+              $lst['str'][] = [
+                'name' => 'indexPath',
+                'VALUE' => './' . $name,
+              ];
+              $save = TRUE;
+            }
+          }
+        }
+      }
+
+      if ($save) {
+        search_api_solr_update_helper_save_field_type_config($field_type_name, $field_type_config);
+      }
+    }
+  }
+}

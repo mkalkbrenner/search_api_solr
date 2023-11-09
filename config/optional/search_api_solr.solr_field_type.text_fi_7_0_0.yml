@@ -254,6 +254,9 @@ solr_configs:
               name: name
               VALUE: fi
             -
+              name: indexPath
+              VALUE: ./fi
+            -
               name: lookupImpl
               VALUE: AnalyzingInfixLookupFactory
             -

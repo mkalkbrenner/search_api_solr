@@ -212,6 +212,9 @@ solr_configs:
               name: name
               VALUE: ro
             -
+              name: indexPath
+              VALUE: ./ro
+            -
               name: lookupImpl
               VALUE: AnalyzingInfixLookupFactory
             -

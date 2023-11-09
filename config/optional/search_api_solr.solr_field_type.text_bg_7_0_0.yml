@@ -196,6 +196,9 @@ solr_configs:
               name: name
               VALUE: bg
             -
+              name: indexPath
+              VALUE: ./bg
+            -
               name: lookupImpl
               VALUE: AnalyzingInfixLookupFactory
             -

@@ -212,6 +212,9 @@ solr_configs:
               name: name
               VALUE: pt_br
             -
+              name: indexPath
+              VALUE: ./pt_br
+            -
               name: lookupImpl
               VALUE: AnalyzingInfixLookupFactory
             -
