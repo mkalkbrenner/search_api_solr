@@ -1661,10 +1661,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         if ($solarium_result = $this->executeStreamingExpression($query)) {
           // Extract results.
           $search_api_result_set = $this->extractResults($query, $solarium_result);
-
-          $event = new PostExtractResultsEvent($search_api_result_set, $query, $solarium_result);
-          $this->dispatch($event);
-          $solarium_result = $event->getSolariumResult();
         }
         else {
           throw new SearchApiSolrException('Streaming expression has no result.');
@@ -1963,11 +1959,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             $search_api_result_set->setExtraData('search_api_spellcheck', $search_api_spellcheck);
           }
         }
-
-        $event = new PostExtractResultsEvent($search_api_result_set, $query, $solarium_result);
-        $this->dispatch($event);
-        $search_api_result_set = $event->getSearchApiResultSet();
       }
+
+      $event = new PostExtractResultsEvent($search_api_result_set, $query, $solarium_result);
+      $this->dispatch($event);
     }
     catch (\Exception $e) {
       if ($query instanceof RefinableCacheableDependencyInterface) {
