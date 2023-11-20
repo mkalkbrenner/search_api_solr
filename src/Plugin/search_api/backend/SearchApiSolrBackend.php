@@ -1381,7 +1381,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         }
 
         // Enable sorts in some special cases.
-        if ($first_value && !array_key_exists($name, $special_fields)) {
+        if (($first_value !== NULL) && !array_key_exists($name, $special_fields)) {
           if (
             strpos($field_names[$name], 't') === 0 ||
             strpos($field_names[$name], 's') === 0
@@ -2647,11 +2647,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     if (empty($values)) {
       if ('text' !== $type || !$this->configuration['index_empty_text_fields']) {
         // Don't index empty values (i.e., when field is missing).
-        return '';
+        return NULL;
       }
     }
 
-    $first_value = '';
+    $first_value = NULL;
 
     // All fields.
     foreach ($values as $value) {
