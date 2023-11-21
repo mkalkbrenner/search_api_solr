@@ -1381,7 +1381,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         }
 
         // Enable sorts in some special cases.
-        if ($first_value && !array_key_exists($name, $special_fields)) {
+        if (($first_value !== NULL) && !array_key_exists($name, $special_fields)) {
           if (
             strpos($field_names[$name], 't') === 0 ||
             strpos($field_names[$name], 's') === 0
@@ -2636,7 +2636,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @param array $boost_terms
    *   Reference to an array where special boosts per term should be stored.
    *
-   * @return bool|float|int|string
+   * @return bool|float|int|string|null
    *   The first value of $values that has been added to the index.
    */
   protected function addIndexField(Document $doc, $key, array $values, $type, array &$boost_terms) {
@@ -2647,11 +2647,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     if (empty($values)) {
       if ('text' !== $type || !$this->configuration['index_empty_text_fields']) {
         // Don't index empty values (i.e., when field is missing).
-        return '';
+        return NULL;
       }
     }
 
-    $first_value = '';
+    $first_value = NULL;
 
     // All fields.
     foreach ($values as $value) {
