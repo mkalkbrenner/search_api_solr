@@ -9,6 +9,8 @@ use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
 use Solarium\Core\Query\QueryInterface;
+use Solarium\QueryType\Analysis\Query\AbstractQuery;
+use Solarium\QueryType\Analysis\Query\Field;
 use Solarium\QueryType\Extract\Result as ExtractResult;
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
@@ -380,6 +382,11 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   public function getExtractQuery();
 
   /**
+   * Creates a new Solarium analysis query.
+   */
+  public function getAnalysisQueryField(): Field;
+
+  /**
    * Returns a Solarium query helper object.
    *
    * @param \Solarium\Core\Query\QueryInterface|null $query
@@ -447,6 +454,21 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   public function autocomplete(AutocompleteQuery $query, ?Endpoint $endpoint = NULL);
+
+  /**
+   * Executes an analysis query and returns the raw response.
+   *
+   * @param \Solarium\QueryType\Analysis\Query\AbstractQuery $query
+   *   The Solarium select query object.
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
+   *
+   * @return \Solarium\Core\Query\Result\ResultInterface
+   *   The Solarium Result object.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function analyze(AbstractQuery $query, ?Endpoint $endpoint = NULL);
 
   /**
    * Executes any query.

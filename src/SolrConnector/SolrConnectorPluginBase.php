@@ -23,6 +23,8 @@ use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
 use Solarium\Core\Query\QueryInterface;
 use Solarium\Exception\HttpException;
+use Solarium\QueryType\Analysis\Query\AbstractQuery;
+use Solarium\QueryType\Analysis\Query\Field;
 use Solarium\QueryType\Extract\Result as ExtractResult;
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
@@ -894,6 +896,14 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getAnalysisQueryField(): Field {
+    $this->connect();
+    return $this->solr->createAnalysisField();
+  }
+
+  /**
    * Creates a CustomizeRequest object.
    *
    * @return \Solarium\Plugin\CustomizeRequest\CustomizeRequest|\Solarium\Core\Plugin\PluginInterface
@@ -997,6 +1007,21 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     if ($this->configuration['http_method'] === 'AUTO') {
       $this->solr->getPlugin('postbigrequest');
     }
+
+    return $this->execute($query, $endpoint);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function analyze(AbstractQuery $query, ?Endpoint $endpoint = NULL) {
+    $this->connect();
+
+    if (!$endpoint) {
+      $endpoint = $this->solr->getEndpoint();
+    }
+
+    $this->useTimeout(self::QUERY_TIMEOUT, $endpoint);
 
     return $this->execute($query, $endpoint);
   }
