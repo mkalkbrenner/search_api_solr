@@ -14,11 +14,11 @@ use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
+use Drupal\search_api_solr\Controller\SolrConfigSetController;
 use Drupal\search_api_solr\SearchApiSolrConflictingEntitiesException;
 use Drupal\search_api_solr\SearchApiSolrException;
-use Solarium\Client;
-use Drupal\search_api_solr\Controller\SolrConfigSetController;
 use Drupal\search_api_solr\Utility\Utility as SearchApiSolrUtility;
+use Solarium\Client;
 
 /**
  * Implements hook_requirements().
@@ -653,6 +653,7 @@ function search_api_solr_update_8202() {
 }
 
 // Removed search_api_solr_update_8203().
+
 /**
  * Enable phrase suggestions support.
  */
@@ -738,6 +739,7 @@ function search_api_solr_update_8208() {
 
 // Removed search_api_solr_update_8209().
 // Removed search_api_solr_update_8210().
+
 /**
  * Add default finalize timeout settings to existing configs.
  */

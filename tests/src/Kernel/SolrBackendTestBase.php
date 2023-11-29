@@ -4,9 +4,9 @@ namespace Drupal\Tests\search_api_solr\Kernel;
 
 use Drupal\search_api\Entity\Index;
 use Drupal\search_api\Entity\Server;
+use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\search_api_solr_test\Logger\InMemoryLogger;
 use Drupal\Tests\search_api\Kernel\BackendTestBase;
-use Drupal\search_api_solr\Utility\SolrCommitTrait;
 
 defined('SOLR_CLOUD') || define('SOLR_CLOUD', getenv('SOLR_CLOUD') ?: 'false');
 

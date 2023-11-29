@@ -3,10 +3,10 @@
 namespace Drupal\search_api_solr\Plugin\SolrConnector;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrCloudConnectorInterface;
 use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginBase;
-use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\search_api_solr\Utility\Utility;
 use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\State\ClusterState;

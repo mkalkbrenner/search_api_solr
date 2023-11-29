@@ -5,8 +5,8 @@ namespace Drupal\search_api_solr\Entity;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\search_api_solr\SolrBackendInterface;
-use Drupal\search_api_solr\Utility\Utility as SearchApiSolrUtility;
 use Drupal\search_api_solr\SolrFieldTypeInterface;
+use Drupal\search_api_solr\Utility\Utility as SearchApiSolrUtility;
 
 /**
  * Defines the SolrFieldType entity.

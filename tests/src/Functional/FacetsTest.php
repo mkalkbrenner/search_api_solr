@@ -3,12 +3,12 @@
 namespace Drupal\Tests\search_api_solr\Functional;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\search_api\Entity\Index;
+use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\Tests\facets\Functional\BlockTestTrait;
 use Drupal\Tests\facets\Functional\ExampleContentTrait;
 use Drupal\Tests\facets\Functional\TestHelperTrait;
-use Drupal\search_api\Entity\Index;
 use Drupal\Tests\search_api\Functional\SearchApiBrowserTestBase;
-use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\views\Entity\View;
 
 /**

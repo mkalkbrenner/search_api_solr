@@ -7,8 +7,8 @@ use Drupal\Core\Config\ConfigEvents;
 use Drupal\Core\Config\ConfigInstallerInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Messenger\MessengerInterface;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Provides a ConfigSubscriber that adds language-specific Solr Field Types.

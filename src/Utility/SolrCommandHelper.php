@@ -6,12 +6,12 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\search_api\ServerInterface;
+use Drupal\search_api\Utility\CommandHelper;
 use Drupal\search_api_solr\Controller\SolrConfigSetController;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use ZipStream\Option\Archive;
-use Drupal\search_api\Utility\CommandHelper;
 
 /**
  * Provides functionality to be used by CLI tools.
