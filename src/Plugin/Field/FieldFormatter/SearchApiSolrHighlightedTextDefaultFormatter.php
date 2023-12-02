@@ -36,7 +36,7 @@ class SearchApiSolrHighlightedTextDefaultFormatter extends FormatterBase {
     $elements = [];
 
     // The ProcessedText element already handles cache context & tag bubbling.
-    /** @see \Drupal\filter\Element\ProcessedText::preRenderText() */
+    // @see \Drupal\filter\Element\ProcessedText::preRenderText()
     foreach ($items as $delta => $item) {
       $cacheableMetadata = new CacheableMetadata();
       // The fulltext search keys are usually set via a GET parameter.

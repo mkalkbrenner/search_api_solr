@@ -98,12 +98,12 @@ class SolrFieldNamesTest extends KernelTestBase {
     $fields = $index->getFields();
     $cardinality = $this->invokeMethod($backend, 'getPropertyPathCardinality', [
       $fields['title']->getPropertyPath(),
-      $fields['title']->getDatasource()->getPropertyDefinitions()
+      $fields['title']->getDatasource()->getPropertyDefinitions(),
     ]);
     $this->assertEquals(FieldStorageConfigInterface::CARDINALITY_UNLIMITED, $cardinality);
     $cardinality = $this->invokeMethod($backend, 'getPropertyPathCardinality', [
       $fields['bio']->getPropertyPath(),
-      $fields['bio']->getDatasource()->getPropertyDefinitions()
+      $fields['bio']->getDatasource()->getPropertyDefinitions(),
     ]);
     $this->assertEquals(1, $cardinality);
 
