@@ -237,7 +237,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
         '6' => '6.x',
         '7' => '7.x',
         '8' => '8.x',
-        '9' => '9.x'
+        '9' => '9.x',
       ],
       '#default_value' => $this->configuration['solr_version'] ?? '',
     ];

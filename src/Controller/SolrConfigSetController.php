@@ -11,12 +11,12 @@ use Drupal\search_api_solr\Event\PostConfigSetGenerationEvent;
 use Drupal\search_api_solr\Event\PostConfigSetTemplateMappingEvent;
 use Drupal\search_api_solr\SearchApiSolrConflictingEntitiesException;
 use Drupal\search_api_solr\SearchApiSolrException;
-use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\Utility\Utility;
 use Drupal\search_api_solr\Utility\ZipStreamFactory;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
+use ZipStream\Option\Archive;
 use ZipStream\ZipStream;
 
 defined('SEARCH_API_SOLR_JUMP_START_CONFIG_SET') || define('SEARCH_API_SOLR_JUMP_START_CONFIG_SET', getenv('SEARCH_API_SOLR_JUMP_START_CONFIG_SET') ?: 0);
@@ -460,7 +460,7 @@ class SolrConfigSetController extends ControllerBase {
       $archive_options = NULL;
       if (class_exists('\ZipStream\Option\Archive')) {
         // Version 2.x. Version 3.x uses named parameters instead of options.
-        $archive_options = new \ZipStream\Option\Archive();
+        $archive_options = new Archive();
         $archive_options->setSendHttpHeaders(TRUE);
       }
       @ob_clean();
@@ -500,7 +500,7 @@ class SolrConfigSetController extends ControllerBase {
       $backend = $search_api_server->getBackend();
 
       if (class_exists('\ZipStream\Option\Archive')) {
-        $archive_options_or_ressource = new \ZipStream\Option\Archive();
+        $archive_options_or_ressource = new Archive();
         $archive_options_or_ressource->setSendHttpHeaders(TRUE);
       }
       else {

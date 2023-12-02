@@ -25,7 +25,7 @@ class ZipStreamFactory {
     }
 
     // In case of PHP 7.4 the ZipStream 3.x code leads to parse errors.
-    //So it has to moved to another file.
+    // So it has to moved to another file.
     return ZipStream3Factory::createInstance($name, $archive_options_or_ressource);
   }
 

@@ -3,7 +3,6 @@
 namespace Drupal\search_api_solr_admin\Utility;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Messenger\MessengerInterface;

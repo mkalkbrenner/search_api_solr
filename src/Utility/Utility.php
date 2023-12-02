@@ -184,7 +184,7 @@ class Utility {
     $backend = $server->getBackend();
     $response = $backend->getSolrConnector()->getFile($dir_name);
     if (is_array($response)) {
-      // A connector might return a prepared list;
+      // A connector might return a prepared list.
       return $response;
     }
 

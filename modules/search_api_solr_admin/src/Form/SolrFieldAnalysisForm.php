@@ -92,7 +92,7 @@ class SolrFieldAnalysisForm extends FormBase {
       $solr_fields[$solr_field_type->getFieldTypeName()] = $solr_field_type->label();
     }
 
-      $form['analysis_field'] = [
+    $form['analysis_field'] = [
       '#type' => 'select',
       '#options' => $solr_fields,
       '#required' => TRUE,
