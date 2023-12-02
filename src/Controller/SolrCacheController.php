@@ -42,7 +42,7 @@ class SolrCacheController extends AbstractSolrEntityController {
    * @param \Drupal\search_api\ServerInterface $search_api_server
    *   Search API server.
    * @param \Drupal\search_api_solr\SolrCacheInterface $solr_cache
-   *   Solr entity.
+   *   Solr cache.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   Redirect response.

@@ -46,7 +46,7 @@ class SolrRequestHandler extends AbstractSolrEntity implements SolrRequestHandle
    *
    * @var array
    */
-  protected $requestHandler;
+  protected $request_handler;
 
   /**
    * The targeted environments.

@@ -60,10 +60,11 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
   public function settingsSummary() {
     $summary = [];
     $summary[] = t('Highlighting: @prefixtext snippet@suffix',
-    [
-      '@prefix' => $this->getSetting('prefix'),
-      '@suffix' => $this->getSetting('suffix'),
-    ]);
+      [
+        '@prefix' => $this->getSetting('prefix'),
+        '@suffix' => $this->getSetting('suffix'),
+      ]
+    );
     return $summary;
   }
 
@@ -74,7 +75,7 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
    *   The field item.
    * @param string $value
    *   The filed item value.
-   * @param mixed $langcode
+   * @param string $langcode
    *   The requested language.
    * @param \Drupal\Core\Cache\RefinableCacheableDependencyInterface $cacheableMetadata
    *   The cache metadata for the highlighted field item value.

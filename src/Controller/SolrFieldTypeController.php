@@ -80,7 +80,7 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
    * @param \Drupal\search_api\ServerInterface $search_api_server
    *   Search API server.
    * @param \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type
-   *   Solr entity.
+   *   Solr field type.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   Redirect response.

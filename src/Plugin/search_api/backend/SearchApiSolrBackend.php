@@ -2306,51 +2306,6 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   }
 
   /**
-   * Returns whether the index only contains "solr_*" datasources.
-   *
-   * @param \Drupal\search_api\IndexInterface $index
-   *   The Search API index entity.
-   *
-   * @return bool
-   *   TRUE if the index only contains "solr_*" datasources, FALSE otherwise.
-   *
-   * @deprecated SearchApiSolrBackend::hasIndexJustSolrDatasources() is
-   *   deprecated in search_api_solr:4.2.0 and is removed from
-   *   search_api_solr:4.3.0. Use
-   *   Utility::hasIndexJustSolrDatasources() instead.
-   *
-   * @see https://www.drupal.org/project/search_api_solr/issues/3254767
-   * @see \Drupal\search_api_solr\Utility\Utility::hasIndexJustSolrDatasources()
-   */
-  protected function hasIndexJustSolrDatasources(IndexInterface $index) {
-    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDatasources() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0. Use Utility::hasIndexJustSolrDatasources() instead.', E_USER_DEPRECATED);
-    return Utility::hasIndexJustSolrDatasources($index);
-  }
-
-  /**
-   * Returns whether the index only contains "solr_document" datasources.
-   *
-   * @param \Drupal\search_api\IndexInterface $index
-   *   The Search API index entity.
-   *
-   * @return bool
-   *   TRUE if the index only contains "solr_document" datasources, FALSE
-   *   otherwise.
-   *
-   * @deprecated SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is
-   *   deprecated in search_api_solr:4.2.0 and is removed from
-   *   search_api_solr:4.3.0. Use
-   *   Utility::hasIndexJustSolrDocumentDatasource() instead.
-   *
-   * @see https://www.drupal.org/project/search_api_solr/issues/3254767
-   * @see \Drupal\search_api_solr\Utility\Utility::hasIndexJustSolrDocumentDatasource()
-   */
-  protected function hasIndexJustSolrDocumentDatasource(IndexInterface $index) {
-    @trigger_error('SearchApiSolrBackend::hasIndexJustSolrDocumentDatasource() is deprecated in search_api_solr:4.2.0 and is removed from search_api_solr:4.3.0.', E_USER_DEPRECATED);
-    return Utility::hasIndexJustSolrDocumentDatasource($index);
-  }
-
-  /**
    * Returns a language-specific mapping from Drupal to Solr field names.
    *
    * @param string $language_id

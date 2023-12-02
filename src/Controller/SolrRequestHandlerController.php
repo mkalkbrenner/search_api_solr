@@ -42,7 +42,7 @@ class SolrRequestHandlerController extends AbstractSolrEntityController {
    * @param \Drupal\search_api\ServerInterface $search_api_server
    *   Search API server.
    * @param \Drupal\search_api_solr\SolrRequestHandlerInterface $solr_request_handler
-   *   Solr entity.
+   *   Solr request.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   Redirect response.

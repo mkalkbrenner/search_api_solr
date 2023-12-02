@@ -971,7 +971,7 @@ class Utility {
    *
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  public static function flattenKeysToPayloadScore($keys, ParseModeInterface $parse_mode = NULL): string {
+  public static function flattenKeysToPayloadScore($keys, ?ParseModeInterface $parse_mode = NULL): string {
     $payload_scores = [];
     $conjunction = $parse_mode ? $parse_mode->getConjunction() : 'OR';
     if ('OR' === $conjunction) {

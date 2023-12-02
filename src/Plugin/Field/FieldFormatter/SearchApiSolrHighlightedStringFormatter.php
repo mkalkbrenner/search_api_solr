@@ -38,7 +38,7 @@ class SearchApiSolrHighlightedStringFormatter extends FormatterBase {
    *
    * @var \Drupal\Core\Template\TwigExtension
    */
-  protected $twig;
+  protected $twigExtension;
 
   /**
    * Constructs a new Date instance.
@@ -56,7 +56,7 @@ class SearchApiSolrHighlightedStringFormatter extends FormatterBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public function create(ContainerInterface $container) {
     return new static(
       $container->get('twig'),
       $container->get('twig.extension')
