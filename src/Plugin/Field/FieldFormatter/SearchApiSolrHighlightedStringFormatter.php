@@ -32,9 +32,9 @@ class SearchApiSolrHighlightedStringFormatter extends FormatterBase {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     /** @var \Drupal\Core\Template\TwigEnvironment $twig */
-    $twig = $this->twig;
+    $twig = \Drupal::service('twig');
     /** @var \Drupal\Core\Template\TwigExtension $twigExtension */
-    $twigExtension = $this->twigExtension;
+    $twigExtension = \Drupal::service('twig.extension');
 
     $elements = [];
 
