@@ -652,7 +652,9 @@ function search_api_solr_update_8202() {
   }
 }
 
-// Removed search_api_solr_update_8203().
+/**
+ * Removed search_api_solr_update_8203().
+ */
 
 /**
  * Enable phrase suggestions support.
@@ -737,8 +739,13 @@ function search_api_solr_update_8208() {
   $config->save(TRUE);
 }
 
-// Removed search_api_solr_update_8209().
-// Removed search_api_solr_update_8210().
+/**
+ * Removed search_api_solr_update_8209().
+ */
+
+/**
+ * Removed search_api_solr_update_8210().
+ */
 
 /**
  * Add default finalize timeout settings to existing configs.
