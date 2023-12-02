@@ -85,9 +85,7 @@ class SearchApiSolrAdminCommands extends DrushCommands implements StdinAwareInte
   }
 
   /**
-   * Upload a configset and reload the collection or create it.
-   *
-   * Using the given options.
+   * Upload a configset and reload the collection or create it using the given options.
    *
    * @param string $server_id
    *   The ID of the server.
