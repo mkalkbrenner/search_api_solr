@@ -46,9 +46,9 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    * into languages that should be available in all test and those only
    * required for special tests.
    *
-   * @see checkSchemaLanguages()
-   *
    * @var array
+   *
+   * @see checkSchemaLanguages()
    */
   protected $moreLanguageIds = [
     'ar' => 'ar',

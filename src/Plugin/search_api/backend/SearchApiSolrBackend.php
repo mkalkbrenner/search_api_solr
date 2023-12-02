@@ -47,7 +47,6 @@ use Drupal\search_api\Query\ConditionGroup;
 use Drupal\search_api\Query\ConditionGroupInterface;
 use Drupal\search_api\Query\ConditionInterface;
 use Drupal\search_api\Query\QueryInterface;
-use Drupal\search_api\Query\ResultSetInterface;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\Utility\DataTypeHelperInterface;
 use Drupal\search_api\Utility\FieldsHelperInterface;
@@ -2778,7 +2777,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
               $value = SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE;
             }
 
-          // No break, now we have a string.
+            // No break, now we have a string.
           case 'string':
           default:
             // Keep $value as it is. Keep '0' string.
@@ -3626,7 +3625,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * Format a value for filtering on a field of a specific type.
    *
    * All values that are used with text and string based Search API field types
-   * will be escaped. But for other types
+   * will be escaped. But for other types.
    *
    * @param bool|float|int|string|null $value
    *   The value to be formatted.
