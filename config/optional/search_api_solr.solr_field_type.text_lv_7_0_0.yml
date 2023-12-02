@@ -16,6 +16,7 @@ field_type:
   name: text_lv
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
@@ -24,7 +25,7 @@ field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_lv.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.StopFilterFactory
@@ -40,6 +41,8 @@ field_type:
           preserveOriginal: 1
           catenateAll: 0
           catenateWords: 1
+        -
+          class: solr.FlattenGraphFilterFactory
         -
           class: solr.LengthFilterFactory
           min: 2
@@ -57,7 +60,7 @@ field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_lv.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.StopFilterFactory
@@ -92,6 +95,7 @@ unstemmed_field_type:
   name: text_unstemmed_lv
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
@@ -100,7 +104,7 @@ unstemmed_field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_lv.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.StopFilterFactory
@@ -117,6 +121,8 @@ unstemmed_field_type:
           catenateAll: 0
           catenateWords: 1
         -
+          class: solr.FlattenGraphFilterFactory
+        -
           class: solr.LengthFilterFactory
           min: 2
           max: 100
@@ -131,7 +137,7 @@ unstemmed_field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_lv.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.StopFilterFactory
@@ -222,6 +228,9 @@ solr_configs:
               name: name
               VALUE: lv
             -
+              name: indexPath
+              VALUE: ./lv
+            -
               name: lookupImpl
               VALUE: AnalyzingInfixLookupFactory
             -
@@ -238,7 +247,7 @@ solr_configs:
               VALUE: sm_context_tags
             -
               name: buildOnCommit
-              VALUE: 'true'
+              VALUE: 'false'
             -
               name: buildOnStartup
               VALUE: 'false'

@@ -39,6 +39,10 @@ search_api_solr.solr_field_type.*:
         positionIncrementGap:
           type: integer
           label: 'Solr field attribute positionIncrementGap'
+        storeOffsetsWithPositions:
+          type: boolean
+          label: 'Solr field attribute storeOffsetsWithPositions'
+          nullable: true
         analyzer:
           type: mapping
           mapping:
@@ -127,6 +131,10 @@ search_api_solr.solr_common_field_type:
     positionIncrementGap:
       type: integer
       label: 'Solr field attribute positionIncrementGap'
+    storeOffsetsWithPositions:
+      type: boolean
+      label: 'Solr field attribute storeOffsetsWithPositions'
+      nullable: true
     analyzers:
       type: sequence
       sequence:

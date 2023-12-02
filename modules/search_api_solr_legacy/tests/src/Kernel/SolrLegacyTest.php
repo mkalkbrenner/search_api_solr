@@ -54,7 +54,9 @@ class SolrLegacyTest extends SearchApiSolrTest {
    */
   public function testConfigGeneration(array $files) {
     $server = $this->getServer();
-    $solr_major_version = $server->getBackend()->getSolrConnector()->getSolrMajorVersion();
+    /** @var SolrBackendInterface $backend */
+    $backend = $server->getBackend();
+    $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
     $backend_config = $server->getBackendConfig();
     $solr_configset_controller = new SolrConfigSetController(\Drupal::service('extension.list.module'));
     $solr_configset_controller->setServer($server);
@@ -68,7 +70,7 @@ class SolrLegacyTest extends SearchApiSolrTest {
       }
     }
 
-    $config_name = 'name="drupal-' . SolrBackendInterface::SEARCH_API_SOLR_SCHEMA_VERSION . '-solr-' . $solr_major_version . '.x-' . SEARCH_API_SOLR_JUMP_START_CONFIG_SET . '"';
+    $config_name = 'name="drupal-' . $backend->getPreferredSchemaVersion() . '-solr-' . $solr_major_version . '.x-' . SEARCH_API_SOLR_JUMP_START_CONFIG_SET . '"';
     $this->assertStringContainsString($config_name, $config_files['solrconfig.xml']);
     $this->assertStringContainsString($config_name, $config_files['schema.xml']);
     $this->assertStringContainsString($server->id(), $config_files['test.txt']);

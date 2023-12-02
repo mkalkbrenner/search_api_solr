@@ -62,7 +62,7 @@ class StandardSolrCloudConnector extends SolrConnectorPluginBase implements Solr
     $form['path']['#description'] = $this->t('The path that identifies the Solr instance to use on the node.');
 
     $form['core']['#title'] = $this->t('Default Solr collection');
-    $form['core']['#description'] = $this->t('The name that identifies the Solr default collection to use. The concrete collection to use could be overwritten per index.');
+    $form['core']['#description'] = $this->t('The name that identifies the Solr default collection to use. The concrete collection to use could be overwritten per index. The most common use-case is to leverage this default collection. Only sophisticated multi-site setups or foreign indexes accessed via Solr Document Datasources or specific requirements of your Solr hosting provider might require to leave this field empty. Because of that, the field is not marked as required as it should be for most use-cases.');
     $form['core']['#required'] = FALSE;
 
     $form['timeout']['#description'] = $this->t('The timeout in seconds for search queries sent to the Solr collection.');

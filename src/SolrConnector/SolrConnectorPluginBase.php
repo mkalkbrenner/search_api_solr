@@ -23,6 +23,8 @@ use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
 use Solarium\Core\Query\QueryInterface;
 use Solarium\Exception\HttpException;
+use Solarium\QueryType\Analysis\Query\AbstractQuery;
+use Solarium\QueryType\Analysis\Query\Field;
 use Solarium\QueryType\Extract\Result as ExtractResult;
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
@@ -235,6 +237,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
         '6' => '6.x',
         '7' => '7.x',
         '8' => '8.x',
+        '9' => '9.x'
       ],
       '#default_value' => $this->configuration['solr_version'] ?? '',
     ];
@@ -266,7 +269,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     $form['advanced']['jmx'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enable JMX'),
-      '#description' => $this->t('Enable JMX based monitoring.'),
+      '#description' => $this->t('Enable JMX based monitoring. Note: Only valid for Solr versions before Solr 9.'),
       '#default_value' => $this->configuration['jmx'] ?? FALSE,
     ];
 
@@ -481,6 +484,42 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
+  public function getLuceneVersion(): string {
+    $info = [];
+    try {
+      $info = $this->getCoreInfo();
+    }
+    catch (\Exception $e) {
+      try {
+        $info = $this->getServerInfo();
+      }
+      catch (SearchApiSolrException $e) {
+      }
+    }
+
+    if (isset($info['lucene']['lucene-spec-version'])) {
+      if (preg_match('/^(\d+\.\d+\.\d+)/', $info['lucene']['lucene-spec-version'], $matches)) {
+        return $matches[1];
+      }
+    }
+
+    $version = $this->getSolrVersion();
+    if (version_compare($version, '9.0.0', '<')) {
+      [$major, $minor] = explode('.', $version);
+      return $major . '.' . $minor;
+    }
+    else {
+      if (version_compare($version, '9.2.0', '>=')) {
+        return '9.4.2';
+      }
+    }
+
+    return '9.1.0';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getSolrMajorVersion($version = ''): int {
     [$major] = explode('.', $version ?: $this->getSolrVersion());
     return (int) $major;
@@ -496,9 +535,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
-  public function getLuceneMatchVersion($version = '') {
-    [$major, $minor] = explode('.', $version ?: $this->getSolrVersion());
-    return $major . '.' . $minor;
+  public function getLuceneMatchVersion($minimal_version = '') {
+    $preferred_version = $this->getLuceneVersion();
+    if ($minimal_version && version_compare($preferred_version, $minimal_version, '<=')) {
+      return $minimal_version;
+    }
+
+    return $preferred_version;
   }
 
   /**
@@ -854,6 +897,14 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function getAnalysisQueryField(): Field {
+    $this->connect();
+    return $this->solr->createAnalysisField();
+  }
+
+  /**
    * Creates a CustomizeRequest object.
    *
    * @return \Solarium\Plugin\CustomizeRequest\CustomizeRequest|\Solarium\Core\Plugin\PluginInterface
@@ -957,6 +1008,21 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     if ($this->configuration['http_method'] === 'AUTO') {
       $this->solr->getPlugin('postbigrequest');
     }
+
+    return $this->execute($query, $endpoint);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function analyze(AbstractQuery $query, ?Endpoint $endpoint = NULL) {
+    $this->connect();
+
+    if (!$endpoint) {
+      $endpoint = $this->solr->getEndpoint();
+    }
+
+    $this->useTimeout(self::QUERY_TIMEOUT, $endpoint);
 
     return $this->execute($query, $endpoint);
   }
@@ -1269,7 +1335,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
    * {@inheritdoc}
    */
   public function alterConfigFiles(array &$files, string $lucene_match_version, string $server_id = '') {
-    if (!empty($this->configuration['jmx'])) {
+    if (!empty($this->configuration['jmx']) && version_compare($this->getSolrVersion(), '9.0', '<')) {
       $files['solrconfig_extra.xml'] .= "<jmx />\n";
     }
 

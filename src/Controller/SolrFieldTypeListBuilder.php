@@ -38,10 +38,10 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
       $domains = ['generic'];
     }
 
-    $enabled_label = $solr_field_type->disabledOnServer ? $this->t('Disabled') : $this->t('Enabled');
+    $enabled_label = $solr_field_type->isDisabledOnServer() ? $this->t('Disabled') : $this->t('Enabled');
     $enabled_icon = [
       '#theme' => 'image',
-      '#uri' => !$solr_field_type->disabledOnServer ? 'core/misc/icons/73b355/check.svg' : 'core/misc/icons/e32700/error.svg',
+      '#uri' => !$solr_field_type->isDisabledOnServer() ? 'core/misc/icons/73b355/check.svg' : 'core/misc/icons/e32700/error.svg',
       '#width' => 18,
       '#height' => 18,
       '#alt' => $enabled_label,
@@ -110,7 +110,7 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
       $entity_ids = $this->getEntityIds();
       /** @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface $storage */
       $storage = $this->getStorage();
-      /** @var \Drupal\search_api_solr\Entity\SolrFieldType[] $entities */
+      /** @var \Drupal\search_api_solr\SolrFieldTypeInterface[] $entities */
       $entities = $storage->loadMultipleOverrideFree($entity_ids);
 
       // We filter those field types that are relevant for the current server.
@@ -118,8 +118,7 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
       // different values for minimum_solr_version and domains.
       $selection = [];
       foreach ($entities as $key => $solr_field_type) {
-        $entities[$key]->disabledOnServer = in_array($solr_field_type->id(), $disabled_field_types);
-        /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
+        $entities[$key]->setDisabledOnServer(in_array($solr_field_type->id(), $disabled_field_types));
         $version = $solr_field_type->getMinimumSolrVersion();
         $domains = $solr_field_type->getDomains();
         [$language] = explode('-', $solr_field_type->getFieldTypeLanguageCode());

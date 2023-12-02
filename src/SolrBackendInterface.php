@@ -18,16 +18,9 @@ use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 interface SolrBackendInterface extends AutocompleteBackendInterface {
 
   /**
-   * The current Solr schema version.
-   *
-   * @todo replace by an automatic detection when core provides module versions.
-   */
-  public const SEARCH_API_SOLR_SCHEMA_VERSION = '4.2.10';
-
-  /**
    * The minimum required Solr schema version.
    */
-  public const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.2.8';
+  public const SEARCH_API_SOLR_MIN_SCHEMA_VERSION = '4.3.0';
 
   /**
    * The separator to indicate the start of a language ID.
@@ -46,6 +39,20 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
   public const FIELD_PLACEHOLDER = 'FIELD_PLACEHOLDER';
 
   public const EMPTY_TEXT_FIELD_DUMMY_VALUE = 'aöbäcüdöeäfüg';
+
+  /**
+   * Get preferred schema version.
+   *
+   * @return string
+   */
+  public function getPreferredSchemaVersion(): string;
+
+  /**
+   * Get minmal required schema version.
+   *
+   * @return string
+   */
+  public function getMinimalRequiredSchemaVersion(): string;
 
   /**
    * Creates a list of all indexed field names mapped to their Solr field names.
@@ -213,24 +220,6 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * @throws \Drupal\search_api\SearchApiException
    */
   public function getCollectionEndpoint(IndexInterface $index);
-
-  /**
-   * Returns the Solr settings for the given index.
-   *
-   * @param \Drupal\search_api\IndexInterface $index
-   *   The Search API index entity.
-   *
-   * @return array
-   *   An associative array of settings.
-   *
-   * @deprecated in search_api_solr:4.2.0 and is removed from
-   *   search_api_solr:4.3.0. Use
-   *   Utility::getIndexSolrSettings() instead.
-   *
-   * @see https://www.drupal.org/project/search_api_solr/issues/3254767
-   * @see \Drupal\search_api_solr\Utility\Utility::getIndexSolrSettings()
-   */
-  public function getIndexSolrSettings(IndexInterface $index);
 
   /**
    * Prefixes an index ID as configured.

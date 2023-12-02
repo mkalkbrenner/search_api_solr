@@ -15,11 +15,12 @@ field_type:
   name: text_fa
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.LowerCaseFilterFactory
@@ -37,7 +38,7 @@ field_type:
     -
       type: query
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.LowerCaseFilterFactory
@@ -61,11 +62,12 @@ unstemmed_field_type:
   name: text_unstemmed_fa
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.LowerCaseFilterFactory
@@ -78,7 +80,7 @@ unstemmed_field_type:
     -
       type: query
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.LowerCaseFilterFactory
@@ -155,6 +157,9 @@ solr_configs:
               name: name
               VALUE: fa
             -
+              name: indexPath
+              VALUE: ./fa
+            -
               name: lookupImpl
               VALUE: AnalyzingInfixLookupFactory
             -
@@ -171,7 +176,7 @@ solr_configs:
               VALUE: sm_context_tags
             -
               name: buildOnCommit
-              VALUE: 'true'
+              VALUE: 'false'
             -
               name: buildOnStartup
               VALUE: 'false'

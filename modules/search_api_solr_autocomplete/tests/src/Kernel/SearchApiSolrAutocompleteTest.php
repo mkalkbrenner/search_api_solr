@@ -48,7 +48,15 @@ class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
 
     /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend $backend */
     $backend = Server::load($this->serverId)->getBackend();
+    $connector = $backend->getSolrConnector();
     $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
+
+    if (version_compare($solr_major_version, '6', '>=')) {
+      $query = $connector->getSuggesterQuery();
+      $query->addParam('suggest.buildAll', TRUE);
+      $connector->execute($query);
+    }
+
     $autocompleteSearch = new Search(['index_id' => $this->indexId], 'search_api_autocomplete_search');
 
     /** @var \Drupal\search_api_autocomplete\Utility\PluginHelper $plugin_helper */
@@ -90,13 +98,8 @@ class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
     $suggestions = $terms_plugin->getAutocompleteSuggestions($query, 'tre', 'article tre');
     $this->assertEquals('article tree', $suggestions[0]->getSuggestedKeys());
     $this->assertEquals(1, $suggestions[0]->getResultsCount());
-    // Having set preserveOriginal in WordDelimiter let punction remain.
-    $this->assertEquals('article tree.', $suggestions[1]->getSuggestedKeys());
+    $this->assertEquals('article trees', $suggestions[1]->getSuggestedKeys());
     $this->assertEquals(1, $suggestions[1]->getResultsCount());
-    $this->assertEquals('article trees', $suggestions[2]->getSuggestedKeys());
-    $this->assertEquals(1, $suggestions[2]->getResultsCount());
-    $this->assertEquals('article trees.', $suggestions[3]->getSuggestedKeys());
-    $this->assertEquals(1, $suggestions[3]->getResultsCount());
 
     // @todo spellcheck tests
     // @codingStandardsIgnoreStart

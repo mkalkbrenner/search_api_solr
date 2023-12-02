@@ -183,6 +183,10 @@ class Utility {
     /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $server->getBackend();
     $response = $backend->getSolrConnector()->getFile($dir_name);
+    if (is_array($response)) {
+      // A connector might return a prepared list;
+      return $response;
+    }
 
     // Search for directories and recursively merge directory files.
     $files_data = json_decode($response->getBody(), TRUE);
@@ -804,8 +808,8 @@ class Utility {
             // Using the 'phrase' or 'sloppy_phrase' parse mode, Search API
             // provides one big phrase as keys. Using the 'terms' parse mode,
             // Search API provides chunks of single terms as keys. But these
-            // chunks might contain not just real terms but again a phrase if
-            // you enter something like this in the search box:
+            // chunks might contain not just real terms but again an embedded
+            // phrase if you enter something like this in the search box:
             // term1 "term2 as phrase" term3.
             // This will be converted in this keys array:
             // ['term1', 'term2 as phrase', 'term3'].
@@ -848,6 +852,8 @@ class Utility {
     }
 
     if ($k) {
+      $k_without_fuzziness = $k;
+
       switch ($parse_mode_id) {
         case 'edismax':
           $query_parts[] = "({!edismax qf='" . implode(' ', $fields) . "'}" . $pre . implode(' ' . $pre, $k) . ')';
@@ -899,25 +905,37 @@ class Utility {
             if ($sloppiness && strpos($term_or_phrase, ' ') && strpos($term_or_phrase, '"') === 0) {
               $term_or_phrase .= $sloppiness;
             }
-            // Otherwise, just add fuzziness when if we really have a term.
-            elseif ($fuzziness && !strpos($term_or_phrase, ' ') && strpos($term_or_phrase, '"') !== 0) {
+            // Otherwise, just add fuzziness when if we really have a term with
+            // at least 3 characters.
+            elseif ($fuzziness && !strpos($term_or_phrase, ' ') && strpos($term_or_phrase, '"') !== 0 && mb_strlen($term_or_phrase) >= 3) {
               $term_or_phrase .= $fuzziness;
             }
             unset($term_or_phrase);
           }
 
           if (count($fields) > 0) {
-            foreach ($fields as $f) {
-              $field = $f;
+            foreach ($fields as $field) {
               $boost = '';
               // Split on operators:
               // - boost (^)
               // - fixed score (^=)
-              if ($split = preg_split('/([\^])/', $f, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)) {
+              if ($split = preg_split('/([\^])/', $field, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE)) {
                 $field = array_shift($split);
                 $boost = implode('', $split);
               }
-              $query_parts[] = $field . ':(' . $pre . implode(' ' . $pre, $k) . ')' . $boost;
+
+              // Fuzziness isn't "compatible" with analyzed fields. In fact, it turns off the analyzer. So we build the
+              // query part without fuzziness first and add a second query part with fuzziness applied. These parts will
+              // be combined using an OR conjunction. Additionally, fuzziness should never be applied to fields of
+              // "fulltext string" types. In case of embedded phrases (see above) we might get a duplicate query part.
+              // Therfore, an array_unique() is performed later.
+              // @see https://www.drupal.org/project/search_api_solr/issues/3404623
+              if ('fuzzy_terms' === $parse_mode_id) {
+                $query_parts[] = $field . ':(' . $pre . implode(' ' . $pre, $k_without_fuzziness) . ')' . $boost;
+              }
+              if ('fuzzy_terms' !== $parse_mode_id || !preg_match('/^t[^_]*string/', $field)) {
+                $query_parts[] = $field . ':(' . $pre . implode(' ' . $pre, $k) . ')' . $boost;
+              }
             }
           }
           else {
@@ -925,6 +943,8 @@ class Utility {
           }
       }
     }
+    // Remove duplicate query parts.
+    $query_parts = array_unique($query_parts);
 
     if (count($query_parts) === 1) {
       return $neg . reset($query_parts);
@@ -1322,7 +1342,17 @@ class Utility {
       $query->setLanguages(array_unique($language_ids));
     }
 
-    return array_unique(array_merge($language_ids, $fallback_languages));
+    $language_ids = array_unique(array_merge($language_ids, $fallback_languages));
+
+    // In case of wrong configurations of the site, it could happen that an
+    // index is limited to some languages but the fallback processor or an old
+    // link might request another language. Instead of returning an empty array
+    // we set language undefined to avoid exceptions.
+    if (empty($language_ids)) {
+      $language_ids[] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
+    }
+
+    return $language_ids;
   }
 
 }

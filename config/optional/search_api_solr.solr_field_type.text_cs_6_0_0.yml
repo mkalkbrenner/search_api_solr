@@ -16,6 +16,7 @@ field_type:
   name: text_cs
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
@@ -24,7 +25,7 @@ field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_cs.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterFilterFactory
@@ -61,7 +62,7 @@ field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_cs.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterFilterFactory
@@ -96,6 +97,7 @@ unstemmed_field_type:
   name: text_unstemmed_cs
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
@@ -104,7 +106,7 @@ unstemmed_field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_cs.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterFilterFactory
@@ -139,7 +141,7 @@ unstemmed_field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_cs.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterFilterFactory
@@ -230,6 +232,9 @@ solr_configs:
               name: name
               VALUE: cs
             -
+              name: indexPath
+              VALUE: ./cs
+            -
               name: lookupImpl
               VALUE: AnalyzingInfixLookupFactory
             -
@@ -246,7 +251,7 @@ solr_configs:
               VALUE: sm_context_tags
             -
               name: buildOnCommit
-              VALUE: 'true'
+              VALUE: 'false'
             -
               name: buildOnStartup
               VALUE: 'false'

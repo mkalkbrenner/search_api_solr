@@ -63,39 +63,67 @@ function search_api_solr_cron() {
   // (more or less) stay the same.
   if ($request_time - \Drupal::state()->get('search_api_solr.last_optimize') > 86340) {
     \Drupal::state()->set('search_api_solr.last_optimize', $request_time);
+    // Delete "cached" endpoint data and schema_parts once a day. We keep
+    // these in states instead of a caches because we might need to
+    // access this data even if Solr is temporarily not reachable and
+    // caches have been cleared or Solr itself is used as caching backend.
+    \Drupal::state()->delete('search_api_solr.endpoint.data');
+    \Drupal::state()->delete('search_api_solr.endpoint.schema_parts');
+
     $end_of_day = TRUE;
   }
 
-  foreach (search_api_solr_get_servers() as $server) {
+  foreach (search_api_solr_get_servers(TRUE) as $server) {
     try {
       /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
       $backend = $server->getBackend();
       $connector = $backend->getSolrConnector();
-      if ($indexes = $server->getIndexes()) {
+      $is_drupal_only_writeable = [];
+
+      if ($indexes = $server->getIndexes(['status' => TRUE])) {
         $document_counts[$server->id()] = $backend->getDocumentCounts();
+        $is_drupal_only_writeable[$server->id()] = TRUE;
+        $last_update_on_server[$server->id()] = 0;
 
         foreach ($indexes as $index) {
           if ($backend->finalizeIndex($index)) {
             $backend->getLogger()->info('Cron finalized Solr server @server.', ['@server' => $server->label()]);
           }
-        }
-
-        if ($end_of_day) {
-          $endpoint = $backend->getCollectionEndpoint($index);
-
-          // Delete "cached" endpoint data and schema_parts once a day. We keep
-          // these in states instead of a caches because we might need to
-          // access this data even if Solr is temporarily not reachable and
-          // caches have been cleared or Solr itself is used as caching backend.
-          \Drupal::state()->delete('search_api_solr.endpoint.data');
-          \Drupal::state()->delete('search_api_solr.endpoint.schema_parts');
-
-          if ($backend->isOptimizeEnabled()) {
-            $connector->optimize($endpoint);
-            $backend->getLogger()
-              ->info('Optimized Solr server @server.', ['@server' => $server->label()]);
+          $is_drupal_only_writeable[$server->id()] &= !Utility::hasIndexJustSolrDocumentDatasource($index);
+          $last_update = \Drupal::state()->get('search_api_solr.' . $index->id() . '.last_update', 0);
+          if ($last_update > $last_update_on_server[$server->id()]) {
+            $last_update_on_server[$server->id()] = $last_update;
           }
         }
+
+        if ($end_of_day && $backend->isOptimizeEnabled()) {
+          $endpoint = $backend->getCollectionEndpoint($index);
+          $connector->optimize($endpoint);
+          $backend->getLogger()
+            ->info('Optimized Solr server @server.', ['@server' => $server->label()]);
+        }
+      }
+      else {
+        $is_drupal_only_writeable[$server->id()] = FALSE;
+      }
+
+      if ($is_drupal_only_writeable[$server->id()] && \Drupal::state()->get('search_api_solr.' . $server->id() . '.last_build', 0) < $last_update_on_server[$server->id()]) {
+        $suggester = TRUE;
+
+        foreach ($backend->getDisabledRequestHandlers() as $disabledRequestHandler) {
+          if (str_starts_with($disabledRequestHandler, 'request_handler_suggest_')) {
+            $suggester = FALSE;
+            break;
+          }
+        }
+
+        if ($suggester) {
+          $query = $connector->getSuggesterQuery();
+          $query->addParam('suggest.buildAll', TRUE);
+          $connector->execute($query);
+        }
+
+        \Drupal::state()->set('search_api_solr.' . $server->id() . '.last_build', $request_time);
       }
     }
     catch (SearchApiException $e) {

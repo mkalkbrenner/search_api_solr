@@ -16,6 +16,7 @@ field_type:
   name: text_sk
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
@@ -24,7 +25,7 @@ field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_sk.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory
@@ -36,6 +37,8 @@ field_type:
           preserveOriginal: 1
           catenateAll: 0
           catenateWords: 0
+        -
+          class: solr.FlattenGraphFilterFactory
         -
           class: solr.LowerCaseFilterFactory
         -
@@ -56,7 +59,7 @@ field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_sk.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory
@@ -94,6 +97,7 @@ unstemmed_field_type:
   name: text_unstemmed_sk
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
@@ -102,7 +106,7 @@ unstemmed_field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_sk.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory
@@ -114,6 +118,8 @@ unstemmed_field_type:
           preserveOriginal: 1
           catenateAll: 0
           catenateWords: 0
+        -
+          class: solr.FlattenGraphFilterFactory
         -
           class: solr.LowerCaseFilterFactory
         -
@@ -129,7 +135,7 @@ unstemmed_field_type:
           class: solr.MappingCharFilterFactory
           mapping: accents_sk.txt
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory
@@ -220,6 +226,9 @@ solr_configs:
               name: name
               VALUE: sk
             -
+              name: indexPath
+              VALUE: ./sk
+            -
               name: lookupImpl
               VALUE: AnalyzingInfixLookupFactory
             -
@@ -236,7 +245,7 @@ solr_configs:
               VALUE: sm_context_tags
             -
               name: buildOnCommit
-              VALUE: 'true'
+              VALUE: 'false'
             -
               name: buildOnStartup
               VALUE: 'false'

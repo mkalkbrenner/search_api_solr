@@ -89,12 +89,8 @@ class SearchApiSolrAutocompleteTest extends SolrBackendTestBase {
     $suggestions = $backend->getAutocompleteSuggestions($query, $autocompleteSearch, 'fran', 'media fran');
     $this->assertEquals('media franchis', $suggestions[0]->getSuggestedKeys());
     $this->assertEquals(1, $suggestions[0]->getResultsCount());
-    $this->assertEquals('media franchise.', $suggestions[1]->getSuggestedKeys());
+    $this->assertEquals('media francia', $suggestions[1]->getSuggestedKeys());
     $this->assertEquals(1, $suggestions[1]->getResultsCount());
-    $this->assertEquals('media francia', $suggestions[2]->getSuggestedKeys());
-    $this->assertEquals(1, $suggestions[2]->getResultsCount());
-    $this->assertEquals('media francia.', $suggestions[3]->getSuggestedKeys());
-    $this->assertEquals(1, $suggestions[3]->getResultsCount());
   }
 
 }

@@ -9,6 +9,8 @@ use Solarium\Core\Client\Endpoint;
 use Solarium\Core\Client\Request;
 use Solarium\Core\Client\Response;
 use Solarium\Core\Query\QueryInterface;
+use Solarium\QueryType\Analysis\Query\AbstractQuery;
+use Solarium\QueryType\Analysis\Query\Field;
 use Solarium\QueryType\Extract\Result as ExtractResult;
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
@@ -104,9 +106,17 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *   An optional Solr version string.
    *
    * @return string
-   *   The lucene match version in V.V format.
+   *   The lucene match version in Major.Minor(.Patch) format.
    */
   public function getLuceneMatchVersion($version = '');
+
+  /**
+   * Gets the current Lucene version deployed on Solr server.
+   *
+   * @return string
+   *   The full Lucene version string.
+   */
+  public function getLuceneVersion();
 
   /**
    * Gets information about the Solr server.
@@ -330,7 +340,7 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   /**
    * Creates a new Solarium more like this query.
    *
-   * @return \Solarium\QueryType\MorelikeThis\Query
+   * @return \Solarium\QueryType\MoreLikeThis\Query
    *   The MoreLikeThis query.
    */
   public function getMoreLikeThisQuery();
@@ -374,6 +384,11 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *   The Extract query.
    */
   public function getExtractQuery();
+
+  /**
+   * Creates a new Solarium analysis query.
+   */
+  public function getAnalysisQueryField(): Field;
 
   /**
    * Returns a Solarium query helper object.
@@ -443,6 +458,21 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   public function autocomplete(AutocompleteQuery $query, ?Endpoint $endpoint = NULL);
+
+  /**
+   * Executes an analysis query and returns the raw response.
+   *
+   * @param \Solarium\QueryType\Analysis\Query\AbstractQuery $query
+   *   The Solarium select query object.
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
+   *
+   * @return \Solarium\Core\Query\Result\ResultInterface
+   *   The Solarium Result object.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function analyze(AbstractQuery $query, ?Endpoint $endpoint = NULL);
 
   /**
    * Executes any query.
@@ -550,7 +580,7 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    *   the directory contents are instead listed and returned. NULL represents
    *   the root config directory.
    *
-   * @return \Solarium\Core\Client\Response
+   * @return \Solarium\Core\Client\Response|array
    *   A Solarium response object containing either the file contents or a file
    *   list.
    *

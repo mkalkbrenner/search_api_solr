@@ -67,10 +67,10 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
       $options = [$this->default_option];
     }
 
-    $enabled_label = $solr_entity->disabledOnServer ? $this->t('Disabled') : $this->t('Enabled');
+    $enabled_label = $solr_entity->isDisabledOnServer() ? $this->t('Disabled') : $this->t('Enabled');
     $enabled_icon = [
       '#theme' => 'image',
-      '#uri' => !$solr_entity->disabledOnServer ? 'core/misc/icons/73b355/check.svg' : 'core/misc/icons/e32700/error.svg',
+      '#uri' => !$solr_entity->isDisabledOnServer() ? 'core/misc/icons/73b355/check.svg' : 'core/misc/icons/e32700/error.svg',
       '#width' => 18,
       '#height' => 18,
       '#alt' => $enabled_label,
@@ -105,7 +105,7 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
     /** @var \Drupal\search_api_solr\SolrConfigInterface[] $entities */
     $entities = $this->load();
     foreach ($entities as $solr_entity) {
-      if (!$solr_entity->disabledOnServer) {
+      if (!$solr_entity->isDisabledOnServer()) {
         $solr_entities[] = $solr_entity;
       }
     }
@@ -129,7 +129,7 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
     $operations = parent::getDefaultOperations($solr_entity);
     unset($operations['delete']);
 
-    if (!$solr_entity->disabledOnServer && $solr_entity->access('view') && $solr_entity->hasLinkTemplate('disable-for-server')) {
+    if (!$solr_entity->isDisabledOnServer() && $solr_entity->access('view') && $solr_entity->hasLinkTemplate('disable-for-server')) {
       $operations['disable_for_server'] = [
         'title' => $this->t('Disable'),
         'weight' => 10,
@@ -137,7 +137,7 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
       ];
     }
 
-    if ($solr_entity->disabledOnServer && $solr_entity->access('view') && $solr_entity->hasLinkTemplate('enable-for-server')) {
+    if ($solr_entity->isDisabledOnServer() && $solr_entity->access('view') && $solr_entity->hasLinkTemplate('enable-for-server')) {
       $operations['enable_for_server'] = [
         'title' => $this->t('Enable'),
         'weight' => 10,
@@ -196,7 +196,7 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
       // values for minimum_solr_version and environment.
       $selection = [];
       foreach ($entities as $key => $entity) {
-        $entities[$key]->disabledOnServer = in_array($entity->id(), $disabled_entities);
+        $entities[$key]->setDisabledOnServer(in_array($entity->id(), $disabled_entities));
         /** @var \Drupal\search_api_solr\SolrConfigInterface $entity
          */
         $version = $entity->getMinimumSolrVersion();

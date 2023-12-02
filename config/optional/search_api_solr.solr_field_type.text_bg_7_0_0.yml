@@ -16,11 +16,12 @@ field_type:
   name: text_bg
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory
@@ -32,6 +33,8 @@ field_type:
           preserveOriginal: 1
           catenateAll: 0
           catenateWords: 0
+        -
+          class: solr.FlattenGraphFilterFactory
         -
           class: solr.LowerCaseFilterFactory
         -
@@ -45,7 +48,7 @@ field_type:
     -
       type: query
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory
@@ -76,11 +79,12 @@ unstemmed_field_type:
   name: text_unstemmed_bg
   class: solr.TextField
   positionIncrementGap: 100
+  storeOffsetsWithPositions: true
   analyzers:
     -
       type: index
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory
@@ -93,6 +97,8 @@ unstemmed_field_type:
           catenateAll: 0
           catenateWords: 0
         -
+          class: solr.FlattenGraphFilterFactory
+        -
           class: solr.LowerCaseFilterFactory
         -
           class: solr.StopFilterFactory
@@ -103,7 +109,7 @@ unstemmed_field_type:
     -
       type: query
       tokenizer:
-        class: solr.WhitespaceTokenizerFactory
+        class: solr.StandardTokenizerFactory
       filters:
         -
           class: solr.WordDelimiterGraphFilterFactory
@@ -190,6 +196,9 @@ solr_configs:
               name: name
               VALUE: bg
             -
+              name: indexPath
+              VALUE: ./bg
+            -
               name: lookupImpl
               VALUE: AnalyzingInfixLookupFactory
             -
@@ -206,7 +215,7 @@ solr_configs:
               VALUE: sm_context_tags
             -
               name: buildOnCommit
-              VALUE: 'true'
+              VALUE: 'false'
             -
               name: buildOnStartup
               VALUE: 'false'
