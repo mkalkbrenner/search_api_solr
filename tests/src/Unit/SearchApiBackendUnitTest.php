@@ -258,9 +258,14 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
       ],
       [
         (new TextValue(''))->setTokens([new TextToken('')]),
-        'text', SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE,
+        'text',
+        SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE,
       ],
-      [NULL, 'text', SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE],
+      [
+        NULL,
+        'text',
+        SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE,
+      ],
     ];
   }
 
