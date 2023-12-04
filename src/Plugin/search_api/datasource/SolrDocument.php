@@ -230,6 +230,19 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
       }
     }
 
+    $form['enable_shards'] = [
+      '#type' => 'checkbox',
+      '#default_value' => $this->configuration['enable_shards'],
+      '#title' => 'Enable shards search',
+      '#description' => 'If enable, fields and results will be retrieve from shards configured servers.'
+    ];
+    $form['solrconfig'] = [
+      '#type' => 'textfield',
+      '#default_value' => $this->configuration['solrconfig'],
+      '#title' => $this->t('Solrconfig.xml file'),
+      '#description' => $this->t('The file from which the shard property will be read'),
+    ];
+
     $form['id_field'] = [
       '#type' => 'textfield',
       '#title' => $this->t('ID field'),
@@ -237,6 +250,7 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
       '#description' => $this->t('Enter the name of the field from your Solr schema that contains unique ID values.'),
       '#default_value' => $this->configuration['id_field'],
     ];
+
     // If there is already a valid server, we can transform the text field into
     // a select box.
     if ($single_valued_fields) {
@@ -282,8 +296,8 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
     // select boxes.
     if ($fields) {
       $fields = [
-        '' => $this->t('None'),
-      ] + $fields;
+          '' => $this->t('None'),
+        ] + $fields;
       $form['advanced']['label_field']['#type'] = 'select';
       $form['advanced']['label_field']['#options'] = $fields;
       $form['advanced']['label_field']['#description'] = $this->t('Select the Solr index field that should be considered the label (if any).');
