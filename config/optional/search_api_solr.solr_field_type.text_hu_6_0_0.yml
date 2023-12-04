@@ -243,7 +243,7 @@ solr_configs:
               VALUE: 'false'
 text_files:
   stopwords: |
-    ﻿a
+    a
     abba
     abban
     abból

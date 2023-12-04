@@ -251,7 +251,7 @@ solr_configs:
               VALUE: 'false'
 text_files:
   stopwords: |
-    ﻿a
+    a
     aby
     aj
     ak
