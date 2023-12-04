@@ -100,7 +100,7 @@ class Solr36TestConnector extends Solr36Connector {
   /**
    * Adjust a config for test cases.
    *
-   * @param $config_name
+   * @param string $config_name
    *   The name of the config.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException

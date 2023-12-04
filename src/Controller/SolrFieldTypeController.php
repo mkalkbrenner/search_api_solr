@@ -5,6 +5,7 @@ namespace Drupal\search_api_solr\Controller;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\SolrFieldTypeInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use ZipStream\Option\Archive;
 
 /**
  * Provides different listings of SolrFieldType.
@@ -32,7 +33,7 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
       $archive_options = NULL;
       if (class_exists('\ZipStream\Option\Archive')) {
         // Version 2.x. Version 3.x uses named parameters instead of options.
-        $archive_options = new \ZipStream\Option\Archive();
+        $archive_options = new Archive();
         $archive_options->setSendHttpHeaders(TRUE);
       }
       @ob_clean();
@@ -79,8 +80,8 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
    *
    * @param \Drupal\search_api\ServerInterface $search_api_server
    *   Search API server.
-   * @param \Drupal\search_api_solr\SolrConfigInterface $solr_field_type
-   *   Solr entity.
+   * @param \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type
+   *   Solr field type.
    *
    * @return \Symfony\Component\HttpFoundation\RedirectResponse
    *   Redirect response.

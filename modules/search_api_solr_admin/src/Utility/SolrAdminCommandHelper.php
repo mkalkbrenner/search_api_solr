@@ -3,7 +3,6 @@
 namespace Drupal\search_api_solr_admin\Utility;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Extension\ModuleExtensionList;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -41,12 +40,12 @@ class SolrAdminCommandHelper extends SolrCommandHelper {
    *   The module handler.
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
    *   The event dispatcher.
+   * @param \Drupal\search_api_solr\Controller\SolrConfigSetController $configset_controller
+   *   The configset controller.
    * @param \Drupal\Core\File\FileSystemInterface $fileSystem
    *   The file system.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   The messenger.
-   * @param \Drupal\search_api_solr\Controller\SolrConfigSetController $configset_controller
-   *   The configset controller.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    *   Thrown if the "search_api_index" or "search_api_server" entity types'
@@ -105,6 +104,7 @@ class SolrAdminCommandHelper extends SolrCommandHelper {
    * @param string $server_id
    *   The ID of the server.
    * @param array $collection_params
+   *   The collection of parameters.
    * @param bool $messages
    *   Indicate if messages should be displayed, default is FALSE.
    *

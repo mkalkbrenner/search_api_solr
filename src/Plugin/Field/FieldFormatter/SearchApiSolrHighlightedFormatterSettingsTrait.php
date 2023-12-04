@@ -14,7 +14,7 @@ use Drupal\search_api\Utility\Utility;
 trait SearchApiSolrHighlightedFormatterSettingsTrait {
 
   /**
-   *
+   * {@inheritdoc}
    */
   public static function defaultSettings() {
     return [
@@ -25,7 +25,7 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
   }
 
   /**
-   *
+   * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $form = parent::settingsForm($form, $form_state);
@@ -59,7 +59,12 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
    */
   public function settingsSummary() {
     $summary = [];
-    $summary[] = t('Highlighting: @prefixtext snippet@suffix', ['@prefix' => $this->getSetting('prefix'), '@suffix' => $this->getSetting('suffix')]);
+    $summary[] = t('Highlighting: @prefixtext snippet@suffix',
+      [
+        '@prefix' => $this->getSetting('prefix'),
+        '@suffix' => $this->getSetting('suffix'),
+      ]
+    );
     return $summary;
   }
 
@@ -68,9 +73,9 @@ trait SearchApiSolrHighlightedFormatterSettingsTrait {
    *
    * @param \Drupal\Core\Field\FieldItemInterface $item
    *   The field item.
-   * @param $value
+   * @param string $value
    *   The filed item value.
-   * @param $langcode
+   * @param string $langcode
    *   The requested language.
    * @param \Drupal\Core\Cache\RefinableCacheableDependencyInterface $cacheableMetadata
    *   The cache metadata for the highlighted field item value.

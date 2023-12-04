@@ -5,8 +5,8 @@ namespace Drupal\search_api_solr\Entity;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\search_api_solr\SolrBackendInterface;
-use Drupal\search_api_solr\Utility\Utility as SearchApiSolrUtility;
 use Drupal\search_api_solr\SolrFieldTypeInterface;
+use Drupal\search_api_solr\Utility\Utility as SearchApiSolrUtility;
 
 /**
  * Defines the SolrFieldType entity.
@@ -292,7 +292,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    */
   public function getSpellcheckFieldTypeAsJson(bool $pretty = FALSE) {
     if ($this->spellcheck_field_type) {
-      /** @noinspection PhpComposerExtensionStubsInspection */
+      /* @noinspection PhpComposerExtensionStubsInspection */
       return $pretty ?
         json_encode($this->spellcheck_field_type, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
         Json::encode($this->spellcheck_field_type);
@@ -315,7 +315,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
    */
   public function getCollatedFieldTypeAsJson(bool $pretty = FALSE) {
     if ($this->collated_field_type) {
-      /** @noinspection PhpComposerExtensionStubsInspection */
+      /* @noinspection PhpComposerExtensionStubsInspection */
       return $pretty ?
         json_encode($this->collated_field_type, JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) :
         Json::encode($this->collated_field_type);

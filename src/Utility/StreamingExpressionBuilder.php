@@ -31,6 +31,8 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
   protected $checkpointsCollection;
 
   /**
+   * The index filter query.
+   *
    * @var string
    */
   protected $indexFilterQuery;

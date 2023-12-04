@@ -5,11 +5,12 @@ namespace Drupal\search_api_solr\Utility;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\search_api\ServerInterface;
+use Drupal\search_api\Utility\CommandHelper;
 use Drupal\search_api_solr\Controller\SolrConfigSetController;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
-use Drupal\search_api\Utility\CommandHelper;
+use ZipStream\Option\Archive;
 
 /**
  * Provides functionality to be used by CLI tools.
@@ -88,7 +89,7 @@ class SolrCommandHelper extends CommandHelper {
 
     if (class_exists('\ZipStream\Option\Archive')) {
       // Version 2.x.
-      $archive_options_or_ressource = new \ZipStream\Option\Archive();
+      $archive_options_or_ressource = new Archive();
       $archive_options_or_ressource->setOutputStream($stream);
     }
     else {
@@ -166,7 +167,10 @@ class SolrCommandHelper extends CommandHelper {
   }
 
   /**
+   * Re-index the index.
+   *
    * @param \Drupal\search_api\ServerInterface $server
+   *   Defines the interface of server entities.
    *
    * @throws \Drupal\search_api\SearchApiException
    */

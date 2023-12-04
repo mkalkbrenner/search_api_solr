@@ -199,7 +199,7 @@ class SolrFieldManager implements SolrFieldManagerInterface {
           elseif (strpos($type, 'date') !== FALSE) {
             // The field config UI uses "date" but converts that to "timestamp"
             // internally. We handle this in the mapping.
-            /** @see \Drupal\search_api_solr\EventSubscriber\SearchApiSubscriber::onMappingViewsFieldHandlers() */
+            /* @see \Drupal\search_api_solr\EventSubscriber\SearchApiSubscriber::onMappingViewsFieldHandlers() */
             $field->setDataType('date');
           }
           elseif (strpos($type, 'int') !== FALSE) {

@@ -96,9 +96,15 @@ class SolrFieldNamesTest extends KernelTestBase {
     $this->assertSame('ss_bio', $fields['bio']);
 
     $fields = $index->getFields();
-    $cardinality = $this->invokeMethod($backend, 'getPropertyPathCardinality', [$fields['title']->getPropertyPath(), $fields['title']->getDatasource()->getPropertyDefinitions()]);
+    $cardinality = $this->invokeMethod($backend, 'getPropertyPathCardinality', [
+      $fields['title']->getPropertyPath(),
+      $fields['title']->getDatasource()->getPropertyDefinitions(),
+    ]);
     $this->assertEquals(FieldStorageConfigInterface::CARDINALITY_UNLIMITED, $cardinality);
-    $cardinality = $this->invokeMethod($backend, 'getPropertyPathCardinality', [$fields['bio']->getPropertyPath(), $fields['bio']->getDatasource()->getPropertyDefinitions()]);
+    $cardinality = $this->invokeMethod($backend, 'getPropertyPathCardinality', [
+      $fields['bio']->getPropertyPath(),
+      $fields['bio']->getDatasource()->getPropertyDefinitions(),
+    ]);
     $this->assertEquals(1, $cardinality);
 
     // Test Typed Data.

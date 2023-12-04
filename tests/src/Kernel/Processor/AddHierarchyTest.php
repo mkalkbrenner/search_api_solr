@@ -34,7 +34,7 @@ class AddHierarchyTest extends SearchApiAddHierarchyTest {
   }
 
   /**
-   *
+   * Tests regression.
    */
   public function testRegression3059312() {
     $this->markTestSkipped('This test makes no sense on Solr.');

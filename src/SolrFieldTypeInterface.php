@@ -282,6 +282,7 @@ interface SolrFieldTypeInterface extends SolrConfigInterface {
    * Gets a list of dynamic Solr fields that will use this Solr Field Type.
    *
    * @param int|null $solr_major_version
+   *   The solr major version.
    *
    * @return array
    *   An array of dynamic field definitions.

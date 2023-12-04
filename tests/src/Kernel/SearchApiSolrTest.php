@@ -11,10 +11,9 @@ use Drupal\search_api\Query\ResultSetInterface;
 use Drupal\search_api\Utility\Utility;
 use Drupal\search_api_solr\Controller\SolrConfigSetController;
 use Drupal\search_api_solr\SearchApiSolrException;
-use Drupal\search_api_solr\SolrBackendInterface;
-use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\search_api_solr\Utility\Utility as SolrUtility;
+use Drupal\Tests\search_api_solr\Traits\InvokeMethodTrait;
 use Drupal\user\Entity\User;
 
 /**
@@ -47,9 +46,9 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    * into languages that should be available in all test and those only
    * required for special tests.
    *
-   * @see checkSchemaLanguages()
-   *
    * @var array
+   *
+   * @see checkSchemaLanguages()
    */
   protected $moreLanguageIds = [
     'ar' => 'ar',
@@ -940,8 +939,8 @@ class SearchApiSolrTest extends SolrBackendTestBase {
 
     $index = $this->getIndex();
     $index->set('datasource_settings', $index->get('datasource_settings') + [
-        'entity:user' => [],
-      ]);
+      'entity:user' => [],
+    ]);
     $info = [
       'label' => 'uid',
       'type' => 'integer',
@@ -1423,7 +1422,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
    */
   public function testConfigGeneration(array $files) {
     $server = $this->getServer();
-    /** @var SolrBackendInterface $backend */
+    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $server->getBackend();
     $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
     $backend_config = $server->getBackendConfig();

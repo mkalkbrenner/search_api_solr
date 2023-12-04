@@ -3,12 +3,12 @@
 namespace Drupal\Tests\search_api_solr\Functional;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\search_api\Entity\Index;
+use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\Tests\facets\Functional\BlockTestTrait;
 use Drupal\Tests\facets\Functional\ExampleContentTrait;
 use Drupal\Tests\facets\Functional\TestHelperTrait;
-use Drupal\search_api\Entity\Index;
 use Drupal\Tests\search_api\Functional\SearchApiBrowserTestBase;
-use Drupal\search_api_solr\Utility\SolrCommitTrait;
 use Drupal\views\Entity\View;
 
 /**
@@ -156,7 +156,10 @@ class FacetsTest extends SearchApiBrowserTestBase {
       $this->assertTrue(TRUE, $message);
       return $this->drupalGet($url_target);
     }
-    $this->assertTrue(FALSE, new FormattableMarkup('Link %label does not exist on @url_before', ['%label' => $label, '@url_before' => $url_before]));
+    $this->assertTrue(FALSE, new FormattableMarkup('Link %label does not exist on @url_before', [
+      '%label' => $label,
+      '@url_before' => $url_before,
+    ]));
     return FALSE;
   }
 

@@ -35,8 +35,8 @@ class SearchApiSubscriber implements EventSubscriberInterface {
       ],
     ];
 
-    /** @see \Drupal\search_api_solr\SolrFieldManager::buildFieldDefinitionsFromSolr() */
-    /** @see \_search_api_views_get_field_handler_mapping() */
+    /* @see \Drupal\search_api_solr\SolrFieldManager::buildFieldDefinitionsFromSolr() */
+    /* @see \_search_api_views_get_field_handler_mapping() */
     $mapping['date'] = $mapping['timestamp'];
   }
 

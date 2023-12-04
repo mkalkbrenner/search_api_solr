@@ -2,8 +2,8 @@
 
 namespace Drupal\search_api_solr\Plugin\DataType;
 
-use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\Core\TypedData\TypedData;
+use Drupal\Core\TypedData\TypedDataInterface;
 use Drupal\search_api\Item\FieldInterface;
 
 /**

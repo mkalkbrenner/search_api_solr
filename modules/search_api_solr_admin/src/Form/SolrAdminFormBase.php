@@ -3,8 +3,8 @@
 namespace Drupal\search_api_solr_admin\Form;
 
 use Drupal\Core\Form\FormBase;
-use Drupal\search_api\LoggerTrait;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\search_api\LoggerTrait;
 use Drupal\search_api_solr_admin\Utility\SolrAdminCommandHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

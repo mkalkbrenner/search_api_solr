@@ -3,7 +3,6 @@
 namespace Drupal\Tests\search_api_solr_legacy\Kernel;
 
 use Drupal\search_api_solr\Controller\SolrConfigSetController;
-use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr_legacy_test\Plugin\SolrConnector\Solr36TestConnector;
 use Drupal\Tests\search_api_solr\Kernel\SearchApiSolrTest;
 
@@ -54,7 +53,7 @@ class SolrLegacyTest extends SearchApiSolrTest {
    */
   public function testConfigGeneration(array $files) {
     $server = $this->getServer();
-    /** @var SolrBackendInterface $backend */
+    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
     $backend = $server->getBackend();
     $solr_major_version = $backend->getSolrConnector()->getSolrMajorVersion();
     $backend_config = $server->getBackendConfig();

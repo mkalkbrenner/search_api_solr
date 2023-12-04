@@ -3,6 +3,7 @@
 namespace Drupal\search_api_solr\Plugin\SolrConnector;
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrCloudConnectorInterface;
 use Drupal\search_api_solr\SolrConnector\SolrConnectorPluginBase;
@@ -25,6 +26,8 @@ use Solarium\QueryType\Stream\Query as StreamQuery;
  * )
  */
 class StandardSolrCloudConnector extends SolrConnectorPluginBase implements SolrCloudConnectorInterface {
+
+  use StringTranslationTrait;
 
   /**
    * {@inheritdoc}
@@ -86,10 +89,10 @@ class StandardSolrCloudConnector extends SolrConnectorPluginBase implements Solr
       '#type' => 'select',
       '#title' => $this->t('StatsCache'),
       '#options' => [
-        'org.apache.solr.search.stats.LocalStatsCache' => 'LocalStatsCache',
-        'org.apache.solr.search.stats.ExactStatsCache' => 'ExactStatsCache',
-        'org.apache.solr.search.stats.ExactSharedStatsCache' => 'ExactSharedStatsCache',
-        'org.apache.solr.search.stats.LRUStatsCache' => 'LRUStatsCache',
+        'org.apache.solr.search.stats.LocalStatsCache' => $this->t('LocalStatsCache'),
+        'org.apache.solr.search.stats.ExactStatsCache' => $this->t('ExactStatsCache'),
+        'org.apache.solr.search.stats.ExactSharedStatsCache' => $this->t('ExactSharedStatsCache'),
+        'org.apache.solr.search.stats.LRUStatsCache' => $this->t('LRUStatsCache'),
       ],
       '#description' => $this->t('Document and term statistics are needed in order to calculate relevancy. Solr provides four implementations out of the box when it comes to document stats calculation. LocalStatsCache: This only uses local term and document statistics to compute relevance. In cases with uniform term distribution across shards, this works reasonably well. ExactStatsCache: This implementation uses global values (across the collection) for document frequency. ExactSharedStatsCache: This is exactly like the exact stats cache in its functionality but the global stats are reused for subsequent requests with the same terms. LRUStatsCache: This implementation uses an LRU cache to hold global stats, which are shared between requests. Formerly a limitation was that TF/IDF relevancy computations only used shard-local statistics. This is still the case by default or if LocalStatsCache is used. If your data isn’t randomly distributed, or if you want more exact statistics, then remember to configure the ExactStatsCache (or "better").'),
       '#default_value' => $this->configuration['stats_cache'] ?? 'org.apache.solr.search.stats.LRUStatsCache',

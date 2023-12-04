@@ -10,11 +10,11 @@
  * @{
  */
 
-use Drupal\search_api_solr\SolrBackendInterface;
-use Drupal\search_api_solr\Solarium\Autocomplete\Query;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\Query\ResultSetInterface;
+use Drupal\search_api_solr\Solarium\Autocomplete\Query;
+use Drupal\search_api_solr\SolrBackendInterface;
 use Solarium\Core\Query\QueryInterface as SolariumQueryInterface;
 use Solarium\QueryType\Select\Result\Result;
 use ZipStream\ZipStream;

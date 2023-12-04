@@ -184,7 +184,7 @@ class Utility {
     $backend = $server->getBackend();
     $response = $backend->getSolrConnector()->getFile($dir_name);
     if (is_array($response)) {
-      // A connector might return a prepared list;
+      // A connector might return a prepared list.
       return $response;
     }
 
@@ -1164,8 +1164,11 @@ class Utility {
    * collisions.
    *
    * @param string $checkpoint
+   *   The check point value.
    * @param string $index_id
+   *   The index-id.
    * @param string $site_hash
+   *   The site_hash.
    *
    * @return string
    *   The formatted checkpoint ID.
@@ -1240,6 +1243,7 @@ class Utility {
    *   The Search API Server.
    *
    * @return \Drupal\search_api_solr\SolrConnectorInterface
+   *   Returns the Solr connector used for this backend.
    *
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_solr\SearchApiSolrException
@@ -1260,6 +1264,7 @@ class Utility {
    *   The Search API Server.
    *
    * @return \Drupal\search_api_solr\SolrCloudConnectorInterface
+   *   The Solr Cloud connector interface.
    *
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_solr\SearchApiSolrException

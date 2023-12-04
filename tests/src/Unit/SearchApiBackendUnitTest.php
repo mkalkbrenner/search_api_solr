@@ -37,27 +37,35 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
   use InvokeMethodTrait;
 
   /**
+   * Provides the Solr entities list builder.
+   *
    * @var \Drupal\search_api_solr\Controller\AbstractSolrEntityListBuilder|\Prophecy\Prophecy\ObjectProphecy
    */
   protected $listBuilder;
 
   /**
+   * The entity type manager object.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface|\Prophecy\Prophecy\ObjectProphecy
    */
   protected $entityTypeManager;
 
   /**
+   * The query helper object.
+   *
    * @var \Solarium\Core\Query\Helper
    */
   protected $queryHelper;
 
   /**
+   * Apache Solr backend.
+   *
    * @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend
    */
   protected $backend;
 
   /**
-   *
+   * {@inheritdoc}
    */
   public function setUp(): void {
     parent::setUp();
@@ -190,7 +198,7 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
   }
 
   /**
-   *
+   * Provides test format date.
    */
   public function testFormatDate() {
     $this->assertFalse($this->backend->formatDate('asdf'));
@@ -243,9 +251,21 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
    */
   public function addIndexEmptyFieldDataProvider() {
     return [
-      [new TextValue(''), 'text', SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE],
-      [(new TextValue(''))->setTokens([new TextToken('')]), 'text', SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE],
-      [NULL, 'text', SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE],
+      [
+        new TextValue(''),
+        'text',
+        SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE,
+      ],
+      [
+        (new TextValue(''))->setTokens([new TextToken('')]),
+        'text',
+        SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE,
+      ],
+      [
+        NULL,
+        'text',
+        SolrBackendInterface::EMPTY_TEXT_FIELD_DUMMY_VALUE,
+      ],
     ];
   }
 
