@@ -31,17 +31,17 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function buildRow(EntityInterface $solr_field_type) {
-    /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $solr_field_type */
-    $domains = $solr_field_type->getDomains();
+  public function buildRow(EntityInterface $_field_type) {
+    /** @var \Drupal\search_api_solr\SolrFieldTypeInterface $_field_type */
+    $domains = $_field_type->getDomains();
     if (empty($domains)) {
       $domains = ['generic'];
     }
 
-    $enabled_label = $solr_field_type->isDisabledOnServer() ? $this->t('Disabled') : $this->t('Enabled');
+    $enabled_label = $_field_type->isDisabledOnServer() ? $this->t('Disabled') : $this->t('Enabled');
     $enabled_icon = [
       '#theme' => 'image',
-      '#uri' => !$solr_field_type->isDisabledOnServer() ? 'core/misc/icons/73b355/check.svg' : 'core/misc/icons/e32700/error.svg',
+      '#uri' => !$_field_type->isDisabledOnServer() ? 'core/misc/icons/73b355/check.svg' : 'core/misc/icons/e32700/error.svg',
       '#width' => 18,
       '#height' => 18,
       '#alt' => $enabled_label,
@@ -49,21 +49,21 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
     ];
 
     $row = [
-      'label' => $solr_field_type->label(),
-      'minimum_solr_version' => $solr_field_type->getMinimumSolrVersion(),
+      'label' => $_field_type->label(),
+      'minimum_solr_version' => $_field_type->getMinimumSolrVersion(),
       // @todo format
-      'managed_schema' => $solr_field_type->requiresManagedSchema(),
+      'managed_schema' => $_field_type->requiresManagedSchema(),
       // @todo format
-      'langcode' => $solr_field_type->getFieldTypeLanguageCode(),
+      'langcode' => $_field_type->getFieldTypeLanguageCode(),
       // @todo format
       'domains' => implode(', ', $domains),
-      'id' => $solr_field_type->id(),
+      'id' => $_field_type->id(),
       'enabled' => [
         'data' => $enabled_icon,
         'class' => ['checkbox'],
       ],
     ];
-    return $row + parent::buildRow($solr_field_type);
+    return $row + parent::buildRow($_field_type);
   }
 
   /**
@@ -71,7 +71,7 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
    *
    * @throws \Drupal\search_api\SearchApiException
    */
-  public function load() {
+  public function load(): array {
     static $entities;
 
     $active_languages = array_keys(\Drupal::languageManager()->getLanguages());

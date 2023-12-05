@@ -71,6 +71,8 @@ class DevelRouteSubscriber extends RouteSubscriberBase {
 
       return $route;
     }
+
+    return NULL;
   }
 
   /**

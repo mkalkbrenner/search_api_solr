@@ -87,7 +87,7 @@ class SolrRequestHandler extends AbstractSolrEntity implements SolrRequestHandle
   /**
    * {@inheritdoc}
    */
-  public function getOptions() {
+  public function getOptions(): array {
     return $this->getEnvironments();
   }
 

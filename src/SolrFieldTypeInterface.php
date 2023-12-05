@@ -136,13 +136,13 @@ interface SolrFieldTypeInterface extends SolrConfigInterface {
   public function setSpellcheckFieldTypeAsJson($spellcheck_field_type);
 
   /**
-   * Gets the Solr Spellcheck Spellcheck Field Type definition as XML fragment.
+   * Gets the Solr Spellcheck Field Type definition as XML fragment.
    *
    * The XML format is used as part of a classic Solr schema.
    *
    * @param bool $add_comment
-   *   Wether to add a comment to the XML or not to explain the purpose of this
-   *   Solr Field Type.
+   *   Add a comment to the XML or not to explain the purpose of this Solr Field
+   *   Type.
    *
    * @return string
    *   The Solr Spellcheck Field Type definition as XML, might be empty if it
