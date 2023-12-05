@@ -115,7 +115,7 @@ class Spellcheck extends SuggesterPluginBase implements PluginFormInterface {
         $this->filterDuplicateAutocompleteSuggestions($suggestions);
       }
       catch (SearchApiException $e) {
-        watchdog_exception('search_api_solr', $e);
+        $this->logException($e);
       }
     }
 

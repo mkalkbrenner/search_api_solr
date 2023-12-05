@@ -5,6 +5,7 @@ namespace Drupal\search_api_solr_devel\Controller;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Datetime\DateFormatterInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -15,6 +16,7 @@ use Drupal\search_api\Backend\BackendPluginManager;
 use Drupal\search_api\Event\IndexingItemsEvent;
 use Drupal\search_api\Event\SearchApiEvents;
 use Drupal\search_api\IndexInterface;
+use Drupal\search_api\Plugin\search_api\tracker\Basic;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api\Utility\FieldsHelperInterface;
 use Drupal\search_api\Utility\Utility;
@@ -146,6 +148,8 @@ class DevelController extends ControllerBase {
    *
    * @return array
    *   Array of page elements to render.
+   *
+   * @throws \Drupal\search_api\SearchApiException
    */
   public function entitySolr(RouteMatchInterface $route_match) {
     $output_details = [];
@@ -155,7 +159,7 @@ class DevelController extends ControllerBase {
     $parameter_name = $route_match->getRouteObject()->getOption('_devel_entity_type_id');
     $entity = $route_match->getParameter($parameter_name);
 
-    if ($entity && $entity instanceof EntityInterface) {
+    if ($entity instanceof ContentEntityInterface) {
       foreach ($this->getBackends() as $backend_id) {
         /** @var \Drupal\search_api\ServerInterface[] $servers */
         $servers = $this->storage->loadByProperties([
@@ -166,14 +170,13 @@ class DevelController extends ControllerBase {
           /** @var \Drupal\search_api\ServerInterface $server */
           /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
           $backend = $server->getBackend();
-          /** @var \Drupal\search_api\IndexInterface[] $indexes */
           $indexes = $server->getIndexes();
           $solr = $backend->getSolrConnector();
           foreach ($indexes as $index) {
             if ($index->status()) {
               foreach ($index->getDatasourceIds() as $datasource_id) {
                 [, $entity_type] = Utility::splitPropertyPath($datasource_id);
-                if ($entity->getEntityTypeId() == $entity_type) {
+                if ($entity->getEntityTypeId() === $entity_type) {
 
                   foreach (array_keys($entity->getTranslationLanguages()) as $langcode) {
                     // @todo improve that ID generation?
@@ -229,6 +232,7 @@ class DevelController extends ControllerBase {
                       $query->setFields('*');
                       try {
                         // @todo Run a timer on this process and report it?
+                        /** @var \Solarium\QueryType\Select\Result\Result $results */
                         $results = $solr->execute($query, $backend->getCollectionEndpoint($index));
                         $num_found = $results->getNumFound();
                         $summary_row['solr_exists'] = $this->t('yes');
@@ -243,7 +247,7 @@ class DevelController extends ControllerBase {
                       }
 
                       // If no item found in Solr, report it.
-                      if ($num_found == 0) {
+                      if ($num_found === 0) {
                         $summary_row['solr_exists'] = $this->t('no');
                         $output_details[$details_id][] = [
                           '#markup' => $this->t(
@@ -252,7 +256,7 @@ class DevelController extends ControllerBase {
                           ),
                         ];
                       }
-                      if ($num_found == 1) {
+                      if ($num_found === 1) {
                         // Show Solr documents for this item.
                         $solr_documents = $results->getDocuments();
                         $fields = $solr_documents[0]->getFields();
@@ -393,22 +397,28 @@ class DevelController extends ControllerBase {
 
     // Fetch tracker information.
     $tracker = $index->getTrackerInstance();
-    $select = $tracker->getDatabaseConnection()
-      ->select('search_api_item', 'sai');
-    $select->condition('index_id', $index->id());
-    $select->condition('datasource', $datasource_id);
-    $select->condition('item_id', $item_id);
-    $select->fields('sai', ['item_id', 'status', 'changed']);
-    $tracker_data = $select->execute()->fetch();
-    // Add tracker information to row.
-    if ($tracker_data) {
-      $base_row['tracked'] = $this->t('yes');
-      $base_row['changed'] = $this->showTimeAndTimeAgo($tracker_data->changed);
-      $base_row['status'] = $tracker_data->status ? $this->t('no') : $this->t('yes');
+    if ($tracker instanceof Basic) {
+      $select = $tracker->getDatabaseConnection()
+        ->select('search_api_item', 'sai');
+      $select->condition('index_id', $index->id());
+      $select->condition('datasource', $datasource_id);
+      $select->condition('item_id', $item_id);
+      $select->fields('sai', ['item_id', 'status', 'changed']);
+      $tracker_data = $select->execute()->fetch();
+      // Add tracker information to row.
+      if ($tracker_data) {
+        $base_row['tracked'] = $this->t('yes');
+        $base_row['changed'] = $this->showTimeAndTimeAgo($tracker_data->changed);
+        $base_row['status'] = $tracker_data->status ? $this->t('no') : $this->t('yes');
+      }
+      else {
+        $base_row['tracked'] = $this->t('no');
+      }
     }
     else {
-      $base_row['tracked'] = $this->t('no');
+      $base_row['tracked'] = $this->t('unsupported tracker');
     }
+
     return $base_row;
   }
 

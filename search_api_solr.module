@@ -74,19 +74,21 @@ function search_api_solr_cron() {
   }
 
   foreach (search_api_solr_get_servers(TRUE) as $server) {
+    /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
+    $backend = $server->getBackend();
     try {
-      /** @var \Drupal\search_api_solr\SolrBackendInterface $backend */
-      $backend = $server->getBackend();
       $connector = $backend->getSolrConnector();
-      $is_drupal_only_writeable = [];
+      $is_drupal_only_writeable[$server->id()] = FALSE;
+      $last_update_on_server[$server->id()] = 0;
 
       if ($indexes = $server->getIndexes(['status' => TRUE])) {
         $document_counts[$server->id()] = $backend->getDocumentCounts();
         $is_drupal_only_writeable[$server->id()] = TRUE;
-        $last_update_on_server[$server->id()] = 0;
+        $optimized = FALSE;
 
         foreach ($indexes as $index) {
           if ($backend->finalizeIndex($index)) {
+            /** @var \Drupal\search_api\Backend\BackendPluginBase $backend */
             $backend->getLogger()->info('Cron finalized Solr server @server.', ['@server' => $server->label()]);
           }
           $is_drupal_only_writeable[$server->id()] &= !Utility::hasIndexJustSolrDocumentDatasource($index);
@@ -94,17 +96,15 @@ function search_api_solr_cron() {
           if ($last_update > $last_update_on_server[$server->id()]) {
             $last_update_on_server[$server->id()] = $last_update;
           }
+          if (!$optimized && $end_of_day && $backend->isOptimizeEnabled()) {
+            $endpoint = $backend->getCollectionEndpoint($index);
+            $connector->optimize($endpoint);
+            $optimized = TRUE;
+            /** @var \Drupal\search_api\Backend\BackendPluginBase $backend */
+            $backend->getLogger()
+              ->info('Optimized Solr server @server.', ['@server' => $server->label()]);
+          }
         }
-
-        if ($end_of_day && $backend->isOptimizeEnabled()) {
-          $endpoint = $backend->getCollectionEndpoint($index);
-          $connector->optimize($endpoint);
-          $backend->getLogger()
-            ->info('Optimized Solr server @server.', ['@server' => $server->label()]);
-        }
-      }
-      else {
-        $is_drupal_only_writeable[$server->id()] = FALSE;
       }
 
       if ($is_drupal_only_writeable[$server->id()] && \Drupal::state()->get('search_api_solr.' . $server->id() . '.last_build', 0) < $last_update_on_server[$server->id()]) {
@@ -127,7 +127,8 @@ function search_api_solr_cron() {
       }
     }
     catch (SearchApiException $e) {
-      watchdog_exception('search_api', $e, '%type while maintaining Solr server @server: @message in %function (line %line of %file).', ['@server' => $server->label()]);
+      /** @var \Drupal\search_api\Backend\BackendPluginBase $backend */
+      \Drupal\Core\Utility\Error::logException($backend->getLogger(), $e, '%type while maintaining Solr server @server: @message in %function (line %line of %file).', ['@server' => $server->label()]);
     }
   }
 
@@ -231,8 +232,10 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
     }
 
     $settings = [];
+    /** @var \Drupal\Core\Entity\EntityFormInterface $form_object */
+    $form_object = $form_state->getFormObject();
     /** @var \Drupal\search_api\IndexInterface $index */
-    $index = $form_state->getFormObject()->getEntity();
+    $index = $form_object->getEntity();
     if (!$index->isNew()) {
       $settings = $index->getThirdPartySettings('search_api_solr');
     }
@@ -326,6 +329,7 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#default_value' => $settings['multilingual']['use_language_undefined_as_fallback_language'],
     ];
 
+    $langcode_options = [];
     foreach (\Drupal::languageManager()->getLanguages() as $language) {
       $langcode_options[$language->getId()] = $language->getName();
     }
@@ -595,13 +599,12 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#default_value' => $settings['advanced']['collection'],
     ];
 
-    $zones = system_time_zones(TRUE, TRUE);
     $form['third_party_settings']['search_api_solr']['advanced']['timezone'] = [
       '#type' => 'select',
       '#title' => t('Time zone'),
       '#description' => t("For correct date calculations the time zone to use is sent to the Solr server. By default the individual time zone of the current user will be used. If not available the site's default time zone will be used as fallback. But by setting a time zone here you can force a time zone for every query targeting this index."),
       '#default_value' => $settings['advanced']['timezone'],
-      '#options' => $zones,
+      '#options' => \Drupal\Core\Datetime\TimeZoneFormHelper::getOptionsList(TRUE),
     ];
   }
 }
@@ -649,7 +652,7 @@ function search_api_solr_form_search_api_index_form_validate_server(array &$elem
 function search_api_solr_form_search_api_index_fields_alter(&$form, FormStateInterface $form_state, $form_id) {
   /** @var \Drupal\Core\Entity\EntityFormInterface $form_object */
   $form_object = $form_state->getFormObject();
-  /** @var \Drupal\search_api\IndexInterface $this_index */
+  /** @var \Drupal\search_api\IndexInterface $index */
   $index = $form_object->getEntity();
 
   if (Utility::hasIndexSolrDatasources($index)) {

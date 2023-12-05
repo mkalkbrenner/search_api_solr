@@ -18,6 +18,7 @@ use Drupal\search_api_solr\Utility\Utility;
 use Drupal\search_api_solr_autocomplete\Event\PreSuggesterQueryEvent;
 use Solarium\Component\ComponentAwareQueryInterface;
 use Solarium\Core\Query\Result\ResultInterface;
+use Solarium\QueryType\Select\Result\Result;
 
 /**
  * Provides a suggester plugin that retrieves suggestions from the server.
@@ -184,7 +185,7 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
         $this->filterDuplicateAutocompleteSuggestions($suggestions);
       }
       catch (SearchApiException $e) {
-        watchdog_exception('search_api_solr', $e);
+        $this->logException($e);
       }
     }
 
@@ -258,7 +259,7 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
   /**
    * Get the term suggestions from the autocomplete query result.
    *
-   * @param \Solarium\Core\Query\Result\ResultInterface $result
+   * @param \Solarium\QueryType\Select\Result\Result $result
    *   An autocomplete query result.
    * @param \Drupal\search_api_autocomplete\Suggestion\SuggestionFactory $suggestion_factory
    *   The suggestion factory.
@@ -266,13 +267,12 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
    * @return \Drupal\search_api_autocomplete\Suggestion\SuggestionInterface[]
    *   An array of suggestions.
    */
-  protected function getAutocompleteSuggesterSuggestions(ResultInterface $result, SuggestionFactory $suggestion_factory) {
+  protected function getAutocompleteSuggesterSuggestions(Result $result, SuggestionFactory $suggestion_factory) {
     $suggestions = [];
     if ($phrases_result = $result->getComponent(ComponentAwareQueryInterface::COMPONENT_SUGGESTER)) {
       /** @var \Solarium\Component\Result\Suggester\Result $phrases_result */
       $dictionaries = array_keys($phrases_result->getResults());
       foreach ($phrases_result->getAll() as $dictionary_index => $phrases) {
-        /** @var \Solarium\QueryType\Suggester\Result\Term $phrases */
         foreach ($phrases->getSuggestions() as $phrase) {
           $suggestion = $suggestion_factory->createFromSuggestedKeys($phrase['term']);
           if (method_exists($suggestion, 'setDictionary')) {

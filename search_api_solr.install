@@ -1506,13 +1506,13 @@ function search_api_solr_update_8320() {
                   $save = TRUE;
                 }
               }
-            }
-            if ('str' === $key) {
-              // An previously erroneous implementation of
-              // search_api_solr_update_8315() added that entry which needs to
-              // be removed now.
-              unset($component['lst']['str']);
-              $save = TRUE;
+              if ('str' === $key) {
+                // A previously erroneous implementation of
+                // search_api_solr_update_8315() added that entry which needs to
+                // be removed now.
+                unset($component['lst']['str']);
+                $save = TRUE;
+              }
             }
           }
         }

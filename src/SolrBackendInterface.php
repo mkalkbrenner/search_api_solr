@@ -6,6 +6,7 @@ use Drupal\search_api\Contrib\AutocompleteBackendInterface;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\Item\ItemInterface;
 use Drupal\search_api\Query\QueryInterface;
+use Solarium\Component\ComponentAwareQueryInterface;
 use Solarium\Core\Client\Endpoint;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 
@@ -406,5 +407,21 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    * @see \Psr\EventDispatcher\EventDispatcherInterface
    */
   public function dispatch(object $event): void;
+
+  /**
+   * Adds spellcheck features to the search query.
+   *
+   * @param \Solarium\Component\ComponentAwareQueryInterface $solarium_query
+   *   The Solarium query.
+   * @param \Drupal\search_api\Query\QueryInterface $query
+   *   The Search API query.
+   * @param array $spellcheck_options
+   *   The spellcheck options to add.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function setSpellcheck(ComponentAwareQueryInterface $solarium_query, QueryInterface $query, array $spellcheck_options = []);
 
 }
