@@ -71,7 +71,7 @@ class SolrFieldTypeListBuilder extends AbstractSolrEntityListBuilder {
    *
    * @throws \Drupal\search_api\SearchApiException
    */
-  public function load() {
+  public function load(): array {
     static $entities;
 
     $active_languages = array_keys(\Drupal::languageManager()->getLanguages());
