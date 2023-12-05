@@ -195,7 +195,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
   /**
    * {@inheritdoc}
    */
-  public function getOptions() {
+  public function getOptions(): array {
     return $this->getDomains();
   }
 

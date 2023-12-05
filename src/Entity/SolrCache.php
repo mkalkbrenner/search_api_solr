@@ -78,7 +78,7 @@ class SolrCache extends AbstractSolrEntity implements SolrCacheInterface {
   /**
    * {@inheritdoc}
    */
-  public function getOptions() {
+  public function getOptions(): array {
     return $this->getEnvironments();
   }
 

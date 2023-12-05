@@ -85,7 +85,7 @@ class SolrRequestDispatcher extends AbstractSolrEntity implements SolrRequestDis
   /**
    * {@inheritdoc}
    */
-  public function getOptions() {
+  public function getOptions(): array {
     return $this->getEnvironments();
   }
 
