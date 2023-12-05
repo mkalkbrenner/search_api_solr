@@ -244,14 +244,6 @@ abstract class AbstractSolrEntity extends ConfigEntityBase implements SolrConfig
   }
 
   /**
-   * Get Options.
-   *
-   * @return string[]
-   *   An array of options as strings.
-   */
-  abstract public function getOptions();
-
-  /**
    * {@inheritdoc}
    */
   protected function urlRouteParameters($rel) {

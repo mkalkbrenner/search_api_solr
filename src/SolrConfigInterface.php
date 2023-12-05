@@ -117,4 +117,12 @@ interface SolrConfigInterface extends ConfigEntityInterface {
    */
   public function isDisabledOnServer(): bool;
 
+  /**
+   * Get Options.
+   *
+   * @return string[]
+   *   An array of options as strings.
+   */
+  public function getOptions(): array;
+
 }

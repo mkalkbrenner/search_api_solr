@@ -5,15 +5,7 @@ namespace Drupal\search_api_solr;
 /**
  * Provides an interface defining a SolrRequestHandler entity.
  */
-interface SolrRequestHandlerInterface extends SolrConfigInterface {
-
-  /**
-   * Gets the environments targeted by this Solr RequestHandler.
-   *
-   * @return string[]
-   *   Environments.
-   */
-  public function getEnvironments();
+interface SolrRequestHandlerInterface extends EnvironmentAwareSolrConfigInterface {
 
   /**
    * Gets the Solr RequestHandler definition as nested associative array.

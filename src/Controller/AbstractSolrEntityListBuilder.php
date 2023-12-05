@@ -60,17 +60,17 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
   /**
    * {@inheritdoc}
    */
-  public function buildRow(EntityInterface $solr_entity) {
-    /** @var \Drupal\search_api_solr\SolrConfigInterface $solr_entity */
-    $options = $solr_entity->getOptions();
+  public function buildRow(EntityInterface $entity) {
+    /** @var \Drupal\search_api_solr\SolrConfigInterface $entity */
+    $options = $entity->getOptions();
     if (empty($options)) {
       $options = [$this->default_option];
     }
 
-    $enabled_label = $solr_entity->isDisabledOnServer() ? $this->t('Disabled') : $this->t('Enabled');
+    $enabled_label = $entity->isDisabledOnServer() ? $this->t('Disabled') : $this->t('Enabled');
     $enabled_icon = [
       '#theme' => 'image',
-      '#uri' => !$solr_entity->isDisabledOnServer() ? 'core/misc/icons/73b355/check.svg' : 'core/misc/icons/e32700/error.svg',
+      '#uri' => !$entity->isDisabledOnServer() ? 'core/misc/icons/73b355/check.svg' : 'core/misc/icons/e32700/error.svg',
       '#width' => 18,
       '#height' => 18,
       '#alt' => $enabled_label,
@@ -78,17 +78,17 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
     ];
 
     $row = [
-      'label' => $solr_entity->label(),
-      'minimum_solr_version' => $solr_entity->getMinimumSolrVersion(),
+      'label' => $entity->label(),
+      'minimum_solr_version' => $entity->getMinimumSolrVersion(),
       // @todo format
       'options' => implode(', ', $options),
-      'id' => $solr_entity->id(),
+      'id' => $entity->id(),
       'enabled' => [
         'data' => $enabled_icon,
         'class' => ['checkbox'],
       ],
     ];
-    return $row + parent::buildRow($solr_entity);
+    return $row + parent::buildRow($entity);
   }
 
   /**
@@ -151,14 +151,17 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
   /**
    * Get all disabled entities.
    */
-  abstract protected function getDisabledEntities() : array;
+  abstract protected function getDisabledEntities(): array;
 
-  /**
+  /** @var \Drupal\search_api_solr\Entity\AbstractSolrEntity[] $entities /**
    * {@inheritdoc}
+   *
+   * @return \Drupal\search_api_solr\Entity\AbstractSolrEntity[]
+   *  Solr entities.
    *
    * @throws \Drupal\search_api\SearchApiException
    */
-  public function load() {
+  public function load(): array {
     static $entities;
 
     if (!$entities || $this->reset) {
@@ -186,9 +189,8 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
       // We need the whole list to work on.
       $this->limit = FALSE;
       $entity_ids = $this->getEntityIds();
-      /** @var \Drupal\Core\Config\Entity\ConfigEntityStorageInterface $storage */
       $storage = $this->getStorage();
-      /** @var \Drupal\search_api_solr\SolrConfigInterface[] $entities */
+      /** @var \Drupal\search_api_solr\EnvironmentAwareSolrConfigInterface[] $entities */
       $entities = $storage->loadMultipleOverrideFree($entity_ids);
 
       // We filter those entities that are relevant for the current server.
@@ -196,9 +198,7 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
       // values for minimum_solr_version and environment.
       $selection = [];
       foreach ($entities as $key => $entity) {
-        $entities[$key]->setDisabledOnServer(in_array($entity->id(), $disabled_entities));
-        /** @var \Drupal\search_api_solr\SolrConfigInterface $entity
-         */
+        $entity->setDisabledOnServer(in_array($entity->id(), $disabled_entities));
         $version = $entity->getMinimumSolrVersion();
         $environments = $entity->getEnvironments();
         if (
@@ -274,7 +274,7 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
    * @param \Drupal\search_api_solr\SolrConfigInterface $source
    *   The source Solr config entity.
    */
-  protected function mergeSolrConfigs(SolrConfigInterface $target, SolrConfigInterface $source) {
+  protected function mergeSolrConfigs(SolrConfigInterface $target, SolrConfigInterface $source): void {
     if (empty($target->getSolrConfigs()) && !empty($source->getSolrConfigs())) {
       $target->setSolrConfigs($source->getSolrConfigs());
     }
@@ -288,7 +288,7 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
    *
    * @throws \Drupal\search_api\SearchApiException
    */
-  public function getXml() {
+  public function getXml(): string {
     $xml = '';
     /** @var \Drupal\search_api_solr\SolrConfigInterface $solr_entities */
     foreach ($this->getEnabledEntities() as $solr_entities) {
@@ -346,6 +346,7 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
     // Bypass AbstractSolrEntityListBuilder::load() by calling the parent. But
     // don't use parent::load() in case someone copies this function in an
     // inherited class.
+    /** @var \Drupal\search_api_solr\Entity\AbstractSolrEntity[] $entities */
     $entities = ConfigEntityListBuilder::load();
     foreach ($entities as $key => $entity) {
       if (!$entity->isRecommended()) {
@@ -365,6 +366,7 @@ abstract class AbstractSolrEntityListBuilder extends ConfigEntityListBuilder {
     // Bypass AbstractSolrEntityListBuilder::load() by calling the parent. But
     // don't use parent::load() in case someone copies this function in an
     // inherited class.
+    /** @var \Drupal\search_api_solr\Entity\AbstractSolrEntity[] $entities */
     $entities = ConfigEntityListBuilder::load();
     foreach ($entities as $key => $entity) {
       if ($entity->isRecommended()) {

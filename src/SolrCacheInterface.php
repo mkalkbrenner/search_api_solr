@@ -3,17 +3,9 @@
 namespace Drupal\search_api_solr;
 
 /**
- * Provides an interface defining a SolrCache entity.
+ * Provides an interface defining a environment aware Solr entity.
  */
-interface SolrCacheInterface extends SolrConfigInterface {
-
-  /**
-   * Gets the environments targeted by this Solr Cache.
-   *
-   * @return string[]
-   *   Environments.
-   */
-  public function getEnvironments();
+interface SolrCacheInterface extends EnvironmentAwareSolrConfigInterface {
 
   /**
    * Gets the Solr Cache definition as nested associative array.
