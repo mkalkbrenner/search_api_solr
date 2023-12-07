@@ -106,6 +106,9 @@ search_api.index.*.third_party.search_api_solr:
         fuzzy:
           type: integer
           label: 'Damerau-Levenshtein Distance or Edit Distance for fuzzy searches.'
+        fuzzy_analyzer:
+          type: boolean
+          label: 'Run analyzers in parallel to fuzzy searches.'
     advanced:
       type: mapping
       label: 'advanced settings'

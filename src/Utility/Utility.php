@@ -930,10 +930,10 @@ class Utility {
               // "fulltext string" types. In case of embedded phrases (see above) we might get a duplicate query part.
               // Therfore, an array_unique() is performed later.
               // @see https://www.drupal.org/project/search_api_solr/issues/3404623
-              if ('fuzzy_terms' === $parse_mode_id) {
+              if (('fuzzy_terms' === $parse_mode_id && $options['fuzzy_analyzer']) || preg_match('/^t[^_]*string/', $field)) {
                 $query_parts[] = $field . ':(' . $pre . implode(' ' . $pre, $k_without_fuzziness) . ')' . $boost;
               }
-              if ('fuzzy_terms' !== $parse_mode_id || !preg_match('/^t[^_]*string/', $field)) {
+              if (!preg_match('/^t[^_]*string/', $field)) {
                 $query_parts[] = $field . ':(' . $pre . implode(' ' . $pre, $k) . ')' . $boost;
               }
             }

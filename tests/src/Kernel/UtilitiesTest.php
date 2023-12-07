@@ -149,6 +149,7 @@ class UtilitiesTest extends KernelTestBase {
         'term_modifiers' => [
           'slop' => 3,
           'fuzzy' => 1,
+          'fuzzy_analyzer' => TRUE,
         ],
         'debug_finalize' => FALSE,
       ],

@@ -190,6 +190,7 @@ function search_api_solr_default_index_third_party_settings() {
     'term_modifiers' => [
       'slop' => 3,
       'fuzzy' => 1,
+      'fuzzy_analyzer' => TRUE,
     ],
     'advanced' => [
       'index_prefix' => '',
@@ -577,6 +578,13 @@ function search_api_solr_form_search_api_index_form_alter(&$form, FormStateInter
       '#title' => t('Fuzzy search distance'),
       '#description' => t('Fuzzy searches discover terms that are similar to a specified term without necessarily being an exact match. The distance parameter specifies the maximum number of edits allowed, between 0 and 2. Used by the "Multiple words with fuzziness" query parser.'),
       '#default_value' => $settings['term_modifiers']['fuzzy'],
+    ];
+
+    $form['third_party_settings']['search_api_solr']['term_modifiers']['fuzzy_analyzer'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Fuzzy analyzer'),
+      '#description' => t('Fuzzy searches turn off field anlyzers by default. This option querys the analyzed fields withoput fuzziness in parallel.'),
+      '#default_value' => $settings['term_modifiers']['fuzzy_analyzer'],
     ];
 
     $form['third_party_settings']['search_api_solr']['advanced'] = [
