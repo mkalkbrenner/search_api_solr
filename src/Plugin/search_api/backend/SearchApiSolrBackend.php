@@ -3463,6 +3463,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     if (!is_array($value)) {
       $value = [$value];
     }
+    elseif (empty($value)) {
+      // An empty array is an invalid value, empty strings or NULL is already
+      // accepted above.
+      throw new \InvalidArgumentException('An empty array is not allowed as value.');
+    }
 
     foreach ($value as &$v) {
       if (NULL !== $v || !in_array($operator, ['=', '<>', 'IN', 'NOT IN'])) {
