@@ -930,8 +930,9 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     // Use the 'postbigrequest' plugin if no specific http method is
     // configured. The plugin needs to be loaded before the request is
     // created.
+    $plugin = NULL;
     if ($this->configuration['http_method'] === 'AUTO') {
-      $this->solr->getPlugin('postbigrequest');
+      $plugin = $this->solr->getPlugin('postbigrequest');
     }
 
     // Use the manual method of creating a Solarium request so we can control
@@ -946,7 +947,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       $request->setMethod(Request::METHOD_GET);
     }
 
-    return $this->executeRequest($request, $endpoint);
+    $result = $this->executeRequest($request, $endpoint);
+
+    if ($plugin) {
+      $this->solr->removePlugin($plugin);
+    }
+
+    return $result;
   }
 
   /**
@@ -1005,11 +1012,18 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     // Use the 'postbigrequest' plugin if no specific http method is
     // configured. The plugin needs to be loaded before the request is
     // created.
+    $plugin = NULL;
     if ($this->configuration['http_method'] === 'AUTO') {
-      $this->solr->getPlugin('postbigrequest');
+      $plugin = $this->solr->getPlugin('postbigrequest');
     }
 
-    return $this->execute($query, $endpoint);
+    $result = $this->execute($query, $endpoint);
+
+    if ($plugin) {
+      $this->solr->removePlugin($plugin);
+    }
+
+    return $result;
   }
 
   /**
@@ -1062,6 +1076,17 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       $this->handleHttpException($e, $endpoint);
     }
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fireAndForget(QueryInterface $query, ?Endpoint $endpoint = NULL): void {
+    $this->connect();
+    $plugin = $this->solr->getPlugin('nowaitforresponserequest');
+    $this->execute($query, $endpoint);
+    $this->solr->removePlugin($plugin);
+  }
+
 
   /**
    * Converts a HttpException in an easier to read SearchApiSolrException.

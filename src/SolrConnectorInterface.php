@@ -505,6 +505,18 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   public function executeRequest(Request $request, ?Endpoint $endpoint = NULL);
 
   /**
+   * Executes any query but don't wait for Solr's response.
+   *
+   * @param \Solarium\Core\Query\QueryInterface $query
+   *   The Solarium query object.
+   * @param \Solarium\Core\Client\Endpoint|null $endpoint
+   *   (optional) The Solarium endpoint object.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public function fireAndForget(QueryInterface $query, ?Endpoint $endpoint = NULL): void;
+
+  /**
    * Optimizes the Solr index.
    *
    * @param \Solarium\Core\Client\Endpoint|null $endpoint
