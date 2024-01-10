@@ -497,12 +497,17 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       }
     }
 
+    // If the APIs used above aren't blocked, we can use their result to get
+    // the exact lucene version.
     if (isset($info['lucene']['lucene-spec-version'])) {
       if (preg_match('/^(\d+\.\d+\.\d+)/', $info['lucene']['lucene-spec-version'], $matches)) {
         return $matches[1];
       }
     }
 
+    // Before Solr 9, the lucene and the Solr versions were in sync. If we don't
+    // have access to the exact lucene version above, we just can assume a
+    // lucene version.
     $version = $this->getSolrVersion();
     if (version_compare($version, '9.0.0', '<')) {
       [$major, $minor] = explode('.', $version);
@@ -510,7 +515,11 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     }
     else {
       if (version_compare($version, '9.2.0', '>=')) {
-        return '9.4.2';
+        if (version_compare($version, '9.4.0', '<')) {
+          return '9.4.2';
+        }
+        // Solr 9.4.0 uses lucene 9.8.0.
+        return '9.8.0';
       }
     }
 
@@ -930,8 +939,9 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     // Use the 'postbigrequest' plugin if no specific http method is
     // configured. The plugin needs to be loaded before the request is
     // created.
+    $plugin = NULL;
     if ($this->configuration['http_method'] === 'AUTO') {
-      $this->solr->getPlugin('postbigrequest');
+      $plugin = $this->solr->getPlugin('postbigrequest');
     }
 
     // Use the manual method of creating a Solarium request so we can control
@@ -946,7 +956,13 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       $request->setMethod(Request::METHOD_GET);
     }
 
-    return $this->executeRequest($request, $endpoint);
+    $result = $this->executeRequest($request, $endpoint);
+
+    if ($plugin) {
+      $this->solr->removePlugin($plugin);
+    }
+
+    return $result;
   }
 
   /**
@@ -1005,11 +1021,18 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     // Use the 'postbigrequest' plugin if no specific http method is
     // configured. The plugin needs to be loaded before the request is
     // created.
+    $plugin = NULL;
     if ($this->configuration['http_method'] === 'AUTO') {
-      $this->solr->getPlugin('postbigrequest');
+      $plugin = $this->solr->getPlugin('postbigrequest');
     }
 
-    return $this->execute($query, $endpoint);
+    $result = $this->execute($query, $endpoint);
+
+    if ($plugin) {
+      $this->solr->removePlugin($plugin);
+    }
+
+    return $result;
   }
 
   /**
@@ -1062,6 +1085,17 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       $this->handleHttpException($e, $endpoint);
     }
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fireAndForget(QueryInterface $query, ?Endpoint $endpoint = NULL): void {
+    $this->connect();
+    $plugin = $this->solr->getPlugin('nowaitforresponserequest');
+    $this->execute($query, $endpoint);
+    $this->solr->removePlugin($plugin);
+  }
+
 
   /**
    * Converts a HttpException in an easier to read SearchApiSolrException.

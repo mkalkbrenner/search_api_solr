@@ -285,7 +285,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   public function getPreferredSchemaVersion(): string {
     $installed_version = InstalledVersions::getPrettyVersion('drupal/search_api_solr');
 
-    if ('99.99.99' === $installed_version || !preg_match('/^\d+\.\d+\.\d+$/', $installed_version, $matches)) {
+    if (!preg_match('/^\d+\.\d+\.\d+$/', $installed_version, $matches)) {
       return self::SEARCH_API_SOLR_MIN_SCHEMA_VERSION;
     }
 
@@ -3462,6 +3462,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   protected function createFilterQuery($field, $value, $operator, FieldInterface $index_field, array &$options) {
     if (!is_array($value)) {
       $value = [$value];
+    }
+    elseif (empty($value)) {
+      // An empty array is an invalid value, empty strings or NULL is already
+      // accepted above.
+      throw new \InvalidArgumentException('An empty array is not allowed as value.');
     }
 
     foreach ($value as &$v) {
