@@ -497,12 +497,17 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
       }
     }
 
+    // If the APIs used above aren't blocked, we can use their result to get
+    // the exact lucene version.
     if (isset($info['lucene']['lucene-spec-version'])) {
       if (preg_match('/^(\d+\.\d+\.\d+)/', $info['lucene']['lucene-spec-version'], $matches)) {
         return $matches[1];
       }
     }
 
+    // Before Solr 9, the lucene and the Solr versions were in sync. If we don't
+    // have access to the exact lucene version above, we just can assume a
+    // lucene version.
     $version = $this->getSolrVersion();
     if (version_compare($version, '9.0.0', '<')) {
       [$major, $minor] = explode('.', $version);
@@ -510,7 +515,11 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     }
     else {
       if (version_compare($version, '9.2.0', '>=')) {
-        return '9.4.2';
+        if (version_compare($version, '9.4.0', '<')) {
+          return '9.4.2';
+        }
+        // Solr 9.4.0 uses lucene 9.8.0.
+        return '9.8.0';
       }
     }
 
