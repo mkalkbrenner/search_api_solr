@@ -54,16 +54,9 @@ To connect a Solr server, follow the Search API documentation to add a Search
 API Server and select Solr as backend.
 
 The Search API Solr Backend supports different Solr Connector Plugins. Choose
-and configure the one that matches your requirements (some Solr service
-providers require a special connector to be installed as third-party module):
-- Solr (built-in)
-- Solr Basic Auth (built-in)
-- Solr Cloud (built-in)
-- Solr Cloud Basic Auth (built-in)
-- [Hosted Solr](https://www.drupal.org/project/hosted_solr)
-- [SearchStax](https://www.drupal.org/project/search_api_searchstax)
-- [Pantheon](https://www.drupal.org/project/search_api_pantheon)
-- [Acquia](https://www.drupal.org/project/acquia_search)
+and configure the one that matches your requirements. Some Solr service
+providers require a special connector to be installed as third-party module.
+(See the Connectors section below.)
 
 
 ## Local Solr Instance: Solr Cloud - the modern way
@@ -342,8 +335,13 @@ This module includes:
   - Solr Cloud BasicAuth Connector
 
 There are service provider specific connectors available, for example from
-Acquia, Pantheon, hosted solr, platform.sh, and others. Please contact your
-provider for details if you don't run your own Solr server.
+Acquia, Pantheon, hosted solr, platform.sh, and others:
+  - [Hosted Solr](https://www.drupal.org/project/hosted_solr)
+  - [SearchStax](https://www.drupal.org/project/search_api_searchstax)
+  - [Pantheon](https://www.drupal.org/project/search_api_pantheon)
+  - [Acquia](https://www.drupal.org/project/acquia_search)
+
+Please contact your provider for details if you don't run your own Solr server.
 
 
 ## Customizing your Solr server
@@ -454,10 +452,10 @@ Therefore we leverage github workflows for our tests and had to establish a more
 complex workflow:
 
 1. Open an issue on drupal.org as usual
-1. Upload the patch for being reviewed to that issue on drupal.org as usual
-1. Fork https://github.com/mkalkbrenner/search_api_solr
-1. Apply your patch and file a PR on github
-1. Add a link to the github PR to the drupal.org issue
+2. Upload the patch for being reviewed to that issue on drupal.org as usual
+3. Fork https://github.com/mkalkbrenner/search_api_solr
+4. Apply your patch and file a PR on github
+5. Add a link to the github PR to the drupal.org issue
 
 The PR on github will automatically be tested on github and the test results
 will be reflected in the PR conversation.
