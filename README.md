@@ -8,7 +8,7 @@ The minimum support version Solr version is 6.4. Any version below might work
 if you use your own Solr config or if you enable the optional
 `search_api_solr_legacy` sub-module that is included in this module.
 
-In general it is highly recommended to run Solr in cloud mode (Solr Cloud)!
+In general, it is highly recommended to run Solr in cloud mode (Solr Cloud)!
 
 For a full description of the module, visit the
 [project page](https://www.drupal.org/project/search_api_solr).
@@ -16,14 +16,17 @@ For a full description of the module, visit the
 Submit bug reports and feature suggestions, or track changes in the
 [issue queue](https://www.drupal.org/project/issues/search_api_solr).
 
+Read the
+[Search API Solr Documentation](https://www.drupal.org/docs/extending-drupal/contributed-modules/contributed-module-documentation/search-api-solr).
+
 
 ## Table of contents
 
 - Requirements
 - Installation
-- Configuration: Solr Cloud - the modern way
-- Configuration: Solr (single core) - the classic way
-- Configuration: Solr Cloud - the classic way
+- Local Solr Instance: : Solr Cloud - the modern way
+- Local Solr Instance: : Solr (single core) - the classic way
+- Local Solr Instance: : Solr Cloud - the classic way
 - Using Jump-Start config-sets and docker images
 - Updating Solr
 - Search API Solr features
@@ -47,8 +50,16 @@ Install as you would normally install a contributed Drupal module. For further
 information, see
 [Installing Drupal Modules](https://www.drupal.org/docs/extending-drupal/installing-drupal-modules).
 
+To connect a Solr server, follow the Search API documentation to add a Search
+API Server and select Solr as backend.
 
-## Configuration: Solr Cloud - the modern way
+The Search API Solr Backend supports different Solr Connector Plugins. Choose
+and configure the one that matches your requirements. Some Solr service
+providers require a special connector to be installed as third-party module.
+(See the Connectors section below.)
+
+
+## Local Solr Instance: Solr Cloud - the modern way
 
 To setup Solr in Cloud mode locally you can either follow the instructions of
 the [Apache Solr Reference Guide](https://solr.apache.org/guide/) or use
@@ -80,10 +91,13 @@ details page (see installation steps below), or use `drush` to do this with
 
     $ ddev drush --numShards=1 search-api-solr:upload-configset SEARCH_API_SERVER_ID
 
-Note:  Replace `SEARCH_API_SERVER_ID` with your Search API server machine name.
+Note: Replace `SEARCH_API_SERVER_ID` with your Search API server machine name.
 The number of "shards" should always be "1" as this local installation only
 runs a single Solr node.
 
+Note: The `search_api_solr_admin` sub-module and its features are not limited to
+ddev! They work with any Solr Cloud instance as long as the required APIs are
+not blocked by the hosting provider.
 
 ### Installation steps
 
@@ -102,7 +116,7 @@ runs a single Solr node.
 5. Press `Upload`.Once Solr is running with DDEV you don't need to deal with any configset
 
 
-## Configuration: Solr (single core) - the classic way
+## Local Solr Instance: Solr (single core) - the classic way
 
 In order for this module to work, you need to set up a Solr server.
 For this, you can either purchase a server from a web Solr hosts or set up your
@@ -197,7 +211,7 @@ For configuring indexes and searches you have to follow the documentation of
 search_api.
 
 
-## Configuration: Solr Cloud - the classic way
+## Local Solr Instance: Solr Cloud - the classic way
 
 Instead of a single core you have to create a collection in your Solr Cloud
 instance. To do so you have to read the Solr handbook.
@@ -217,7 +231,7 @@ the instructions above as well. For some distributions a directory like
 _/var/solr_ or _/usr/local/solr_ exists.
 
 
-## Using Jump-Start config-sets and docker images
+## Local Solr Instance: Using Jump-Start config-sets and docker images
 
 This module contains a _jump-start_ directory where you'll find a
 docker-compose.yml files for various Solr versions. These use default
@@ -235,8 +249,8 @@ the need for advanced features or customizations.
 Whenever you update your Solr installation it is recommended that you generate a
 new config-set and deploy it. The deployment depends on the installation
 variation you choose before. It is also recommended to re-index yur content
-after an update. But if it is a minor update it should be save to just queue all
-contentfor re-indexing.
+after an update. But if it is a minor update it should be safe to just queue all
+content for re-indexing.
 
 When performing a major version update like from Solr 6 to Solr 8 it is
 recommended to delete the core or collection and recreate it like described in
@@ -321,8 +335,13 @@ This module includes:
   - Solr Cloud BasicAuth Connector
 
 There are service provider specific connectors available, for example from
-Acquia, Pantheon, hosted solr, platform.sh, and others. Please contact your
-provider for details if you don't run your own Solr server.
+Acquia, Pantheon, hosted solr, platform.sh, and others:
+  - [Hosted Solr](https://www.drupal.org/project/hosted_solr)
+  - [SearchStax](https://www.drupal.org/project/search_api_searchstax)
+  - [Pantheon](https://www.drupal.org/project/search_api_pantheon)
+  - [Acquia](https://www.drupal.org/project/acquia_search)
+
+Please contact your provider for details if you don't run your own Solr server.
 
 
 ## Customizing your Solr server
@@ -433,10 +452,10 @@ Therefore we leverage github workflows for our tests and had to establish a more
 complex workflow:
 
 1. Open an issue on drupal.org as usual
-1. Upload the patch for being reviewed to that issue on drupal.org as usual
-1. Fork https://github.com/mkalkbrenner/search_api_solr
-1. Apply your patch and file a PR on github
-1. Add a link to the github PR to the drupal.org issue
+2. Upload the patch for being reviewed to that issue on drupal.org as usual
+3. Fork https://github.com/mkalkbrenner/search_api_solr
+4. Apply your patch and file a PR on github
+5. Add a link to the github PR to the drupal.org issue
 
 The PR on github will automatically be tested on github and the test results
 will be reflected in the PR conversation.

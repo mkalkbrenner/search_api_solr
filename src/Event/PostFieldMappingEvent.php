@@ -6,7 +6,7 @@ use Drupal\Component\EventDispatcher\Event;
 use Drupal\search_api\IndexInterface;
 
 /**
- * Event after the Search API to Solr fileds mapping is generated.
+ * Event after the Search API to Solr fields mapping is generated.
  */
 final class PostFieldMappingEvent extends Event {
 
