@@ -223,11 +223,16 @@ function search_api_solr_requirements($phase) {
       }
     }
 
-    if (!Client::checkMinimal('6.2.3')) {
+    $filename = __DIR__ . '/composer.json';
+    $composer = json_decode(file_get_contents($filename), TRUE);
+    if (
+      !preg_match('/([0123456789.]+)/', $composer['require']['solarium/solarium'], $matches) ||
+      !Client::checkMinimal($matches[1])
+    ) {
       $requirements['search_api_solr_solarium'] = [
         'title' => t('Solarium library'),
         'value' => t('Solarium library'),
-        'description' => t('Solarium @version is too old!'),
+        'description' => t('Solarium @version is too old! Version required: @required', ['@version' => Client::getVersion(), '@required' => $matches[1] ?? t('Error reading composer.json')]),
         'severity' => REQUIREMENT_ERROR,
       ];
     }
