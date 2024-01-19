@@ -232,7 +232,11 @@ class Utility {
     $keys = [[]];
 
     foreach ($snippets as $snippet) {
-      if (preg_match_all('@\[HIGHLIGHT\](.+?)\[/HIGHLIGHT\]@', $snippet, $matches)) {
+      // Some filters like WordDelimiter seem to cause highlighted tokens like
+      // [HIGHLIGHT]foo[/HIGHLIGHT][HIGHLIGHT]bar[/HIGHLIGHT]. So we combine
+      // them to [HIGHLIGHT]foobar[/HIGHLIGHT] first, which is important for the
+      // highlighting field formatters in strict mode.
+      if (preg_match_all('@\[HIGHLIGHT](.+?)\[/HIGHLIGHT]@', preg_replace('@\[/HIGHLIGHT](\s*)\[HIGHLIGHT]@', '$1', $snippet), $matches)) {
         $keys[] = $matches[1];
       }
     }
