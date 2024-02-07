@@ -22,6 +22,8 @@ use Drupal\search_api\Utility\FieldsHelperInterface;
 use Drupal\search_api\Utility\Utility;
 use Drupal\search_api_solr\Controller\EventDispatcherTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\StringTranslation\ByteSizeMarkup;
+
 
 /**
  * Returns responses for devel module routes.
@@ -260,7 +262,7 @@ class DevelController extends ControllerBase {
                         // Show Solr documents for this item.
                         $solr_documents = $results->getDocuments();
                         $fields = $solr_documents[0]->getFields();
-                        $summary_row['solr_size'] = format_size(strlen(json_encode($fields)));
+                        $summary_row['solr_size'] = ByteSizeMarkup::create(strlen(json_encode($fields)));
                         if (!empty($fields['timestamp'])) {
                           $summary_row['solr_changed'] = $this->showTimeAndTimeAgo(strtotime($fields['timestamp']));
                         }
