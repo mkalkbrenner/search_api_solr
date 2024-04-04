@@ -192,7 +192,7 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
         ->addCondition('search_api_id', $ids, 'IN')
         ->execute()
         ->getResultItems();
-      foreach ($results as $id => $result) {
+      foreach ($results as $result) {
         $documents[$id] = $this->getSolrDocumentFactory()->create($result);
       }
     }
