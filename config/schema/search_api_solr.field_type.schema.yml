@@ -223,9 +223,9 @@ search_api_solr.solr_field_type_filters:
         label: 'WordDelimiterGraphFilter:: WordDelimiterFilter::generateWordParts'
         nullable: true
       preserveOriginal:
-        # @todo ASCIIFoldingFilter expects a boolean
+        # ASCIIFoldingFilter and EdgeNGramFilterFactory expect a boolean
         type: integer
-        label: 'WordDelimiterGraphFilter:: ASCIIFoldingFilter:: WordDelimiterFilter::preserveOriginal'
+        label: 'WordDelimiterGraphFilter:: ASCIIFoldingFilter:: EdgeNGramFilterFactory:: WordDelimiterFilter::preserveOriginal'
         nullable: true
       catenateAll:
         type: integer
