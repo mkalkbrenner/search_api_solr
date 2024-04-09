@@ -11,7 +11,7 @@ use Drupal\search_api\Plugin\search_api\data_type\TextDataType;
  *   id = "solr_text_custom",
  *   label = @Translation("Fulltext Custom"),
  *   description = @Translation("Custom full text field."),
- *   fallback_type = "text",
+ *   fallback_type = "search_api_text",
  *   prefix = "tc",
  *   deriver = "Drupal\search_api_solr\Plugin\Derivative\CustomTextDataType"
  * )

@@ -776,6 +776,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'solr_text_spellcheck',
       'solr_text_unstemmed',
       'solr_text_wstoken',
+      'solr_text_custom',
       'solr_date_range',
     ];
     if (in_array($type, $built_in_support)) {

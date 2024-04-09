@@ -9,7 +9,7 @@ namespace Drupal\search_api_solr\Plugin\search_api\data_type;
  *   id = "solr_text_suggester",
  *   label = @Translation("Suggester"),
  *   description = @Translation("Full text field to feed the suggester component."),
- *   fallback_type = "text",
+ *   fallback_type = "search_api_text",
  *   prefix = "tw"
  * )
  */

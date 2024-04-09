@@ -11,7 +11,7 @@ use Drupal\search_api\Plugin\search_api\data_type\TextDataType;
  *   id = "solr_text_unstemmed",
  *   label = @Translation("Fulltext Unstemmed"),
  *   description = @Translation("Full text field without stemming."),
- *   fallback_type = "text",
+ *   fallback_type = "search_api_text",
  *   prefix = "tu"
  * )
  */

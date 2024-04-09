@@ -11,7 +11,7 @@ use Drupal\search_api\Plugin\search_api\data_type\TextDataType;
  *   id = "solr_text_omit_norms",
  *   label = @Translation("Fulltext Omit norms"),
  *   description = @Translation("Full text field which omits norms."),
- *   fallback_type = "text",
+ *   fallback_type = "search_api_text",
  *   prefix = "to"
  * )
  */
