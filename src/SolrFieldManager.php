@@ -36,7 +36,7 @@ class SolrFieldManager implements SolrFieldManagerInterface {
    */
   protected $serverStorage;
 
-/**
+  /**
    * Constructs a new SorFieldManager.
    *
    * @param \Drupal\Core\Cache\CacheBackendInterface $cache_backend
