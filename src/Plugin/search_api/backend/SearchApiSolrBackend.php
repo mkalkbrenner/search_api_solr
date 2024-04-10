@@ -3475,7 +3475,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
 
     foreach ($value as &$v) {
-      if ('*' === $value) {
+      if ('*' === $v) {
         if (!in_array($operator, ['=', 'BETWEEN', 'NOT BETWEEN'])) {
           throw new SearchApiSolrException('Unsupported operator for wildcard searches');
         }
