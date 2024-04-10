@@ -3673,7 +3673,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       case 'date':
         $value = $this->formatDate($value);
         if ($value === FALSE) {
-          return 0;
+          throw new SearchApiSolrException('Unsupported date value');
         }
         break;
 
