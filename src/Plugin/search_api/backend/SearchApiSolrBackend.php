@@ -3484,9 +3484,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           $v = NULL;
         }
       }
+      elseif (NULL === $v && in_array($operator, ['BETWEEN', 'NOT BETWEEN'])) {
+        // Range queries treat NULL as '*' in solarium.
+      }
       elseif (NULL !== $v || !in_array($operator, ['=', '<>', 'IN', 'NOT IN'])) {
         $v = $this->formatFilterValue($v, $index_field);
-        // Remaining NULL values are now converted to empty strings.
+        // NULL values are now converted to empty strings.
       }
     }
     unset($v);
