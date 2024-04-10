@@ -1407,6 +1407,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                 $first_value = Unicode::truncate($first_value, 128);
               }
 
+              $sort_languages = [];
               if (!$use_universal_collation) {
                 // Copy fulltext and string fields to a dedicated sort fields
                 // for faster sorts and language specific collations. To
