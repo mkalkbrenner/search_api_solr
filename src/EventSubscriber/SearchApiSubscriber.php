@@ -3,6 +3,7 @@
 namespace Drupal\search_api_solr\EventSubscriber;
 
 use Drupal\search_api\Event\MappingViewsFieldHandlersEvent;
+use Drupal\search_api\Event\MappingViewsHandlersEvent;
 use Drupal\search_api\Event\SearchApiEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -12,7 +13,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class SearchApiSubscriber implements EventSubscriberInterface {
 
   /**
-   * Adds the mapping to treat some Solr special fields as fulltext in views.
+   * Adds the mapping how to treat some Solr special fields in views.
    *
    * @param \Drupal\search_api\Event\MappingViewsFieldHandlersEvent $event
    *   The Search API event.
@@ -20,24 +21,30 @@ class SearchApiSubscriber implements EventSubscriberInterface {
   public function onMappingViewsFieldHandlers(MappingViewsFieldHandlersEvent $event) {
     $mapping = & $event->getFieldHandlerMapping();
 
+    $mapping['solr_date'] = $mapping['datetime_iso8601'];
+  }
+
+  /**
+   * Adds the mapping how to treat some Solr special fields in views.
+   *
+   * @param \Drupal\search_api\Event\MappingViewsFieldHandlersEvent $event
+   *   The Search API event.
+   */
+  public function onMappingViewsHandlers(MappingViewsHandlersEvent $event) {
+    $mapping = & $event->getHandlerMapping();
+
     $mapping['solr_text_omit_norms'] =
     $mapping['solr_text_suggester'] =
+    $mapping['solr_text_spellcheck'] =
     $mapping['solr_text_unstemmed'] =
-    $mapping['solr_text_wstoken'] = [
-      'argument' => [
-        'id' => 'search_api',
-      ],
-      'filter' => [
-        'id' => 'search_api_fulltext',
-      ],
-      'sort' => [
-        'id' => 'search_api',
-      ],
-    ];
+    $mapping['solr_text_wstoken'] =
+    $mapping['solr_text_custom'] =
+    $mapping['solr_text_custom_omit_norms'] = $mapping['text'];
 
-    /* @see \Drupal\search_api_solr\SolrFieldManager::buildFieldDefinitionsFromSolr() */
-    /* @see \_search_api_views_get_field_handler_mapping() */
-    $mapping['date'] = $mapping['timestamp'];
+    $mapping['solr_string_storage'] = $mapping['string'];
+
+    // Views can't handle a 'solr_date_range' natively.
+    $mapping['solr_date_range'] = $mapping['string'];
   }
 
   /**
@@ -52,8 +59,7 @@ class SearchApiSubscriber implements EventSubscriberInterface {
 
     return [
       SearchApiEvents::MAPPING_VIEWS_FIELD_HANDLERS => 'onMappingViewsFieldHandlers',
+      SearchApiEvents::MAPPING_VIEWS_HANDLERS =>  'onMappingViewsHandlers',
     ];
-
   }
-
 }
