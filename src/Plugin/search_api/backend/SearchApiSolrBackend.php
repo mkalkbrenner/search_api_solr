@@ -3460,6 +3460,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *
    * @return string|null
    *   A filter query.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   protected function createFilterQuery($field, $value, $operator, FieldInterface $index_field, array &$options) {
     if (!is_array($value)) {
@@ -3472,7 +3474,16 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
 
     foreach ($value as &$v) {
-      if (NULL !== $v || !in_array($operator, ['=', '<>', 'IN', 'NOT IN'])) {
+      if ('*' === $value) {
+        if (!in_array($operator, ['=', 'BETWEEN', 'NOT BETWEEN'])) {
+          throw new SearchApiSolrException('Unsupported operator for wildcard searches');
+        }
+        elseif (in_array($operator, ['BETWEEN', 'NOT BETWEEN'])) {
+          // Range queries treat NULL as '*' in solarium.
+          $v = NULL;
+        }
+      }
+      elseif (NULL !== $v || !in_array($operator, ['=', '<>', 'IN', 'NOT IN'])) {
         $v = $this->formatFilterValue($v, $index_field);
         // Remaining NULL values are now converted to empty strings.
       }
@@ -3586,7 +3597,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           // @see https://stackoverflow.com/questions/4238609/how-to-query-solr-for-empty-fields/28859224#28859224
           return '(*:* -' . $this->queryHelper->rangeQuery($field, NULL, NULL) . ')';
         }
-        return $field . ':' . $this->queryHelper->escapePhrase($value);
+        return $field . ':' . ($value === '*' ? '*' : $this->queryHelper->escapePhrase($value));
     }
   }
 
