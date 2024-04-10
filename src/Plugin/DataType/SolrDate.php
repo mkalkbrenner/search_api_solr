@@ -27,7 +27,7 @@ class SolrDate extends DateTimeIso8601 {
    * {@inheritdoc}
    */
   public function setValue($value, $notify = TRUE) {
-    parent::setValue(trim($value, 'Z'), $notify);
+    parent::setValue(rtrim($value, 'Z'), $notify);
   }
 
 }
