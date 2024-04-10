@@ -65,9 +65,11 @@ class ConfigSubscriber implements EventSubscriberInterface {
 
     $saved_config = $event->getConfig();
 
+    // Unfortunately, we can't check for $saved_config->isNew() here anymore as
+    // it always returns false.
+    // @todo find a way to limit the the condition to new language configs.
     if (preg_match('@^language\.entity\.(.+)@', $saved_config->getName(), $matches) &&
-      $matches[1] != LanguageInterface::LANGCODE_NOT_SPECIFIED && $matches[1] != LanguageInterface::LANGCODE_NOT_APPLICABLE &&
-      $saved_config->isNew())
+      $matches[1] != LanguageInterface::LANGCODE_NOT_SPECIFIED && $matches[1] != LanguageInterface::LANGCODE_NOT_APPLICABLE)
     {
       $restrict_by_dependency = [
         'module' => 'search_api_solr',
