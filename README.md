@@ -161,7 +161,7 @@ But the Search API Solr Search module will create the correct configs for you!
    configuration directory is named `$CONF` in these instructions.
 
 **_Now_** you can create a Solr core using this config-set on a running Solr
-server. There're different ways to do so. For most Linux distributions you can
+server. There are different ways to do so. For most Linux distributions you can
 run
 
 `$ sudo -u solr $SOLR/bin/solr create_core -c $CORE -d $CONF -n $CORE`
@@ -195,7 +195,7 @@ Note: There's file called `solrcore.properties` within the set of generated
 config files. If you need to fine tune some setting you should do it within this
 file if possible instead of modifying `solrconf.xml`.
 
-Afterwards, go to `http://localhost:8983/solr/#/$CORE` in your web browser to
+Afterward, go to `http://localhost:8983/solr/#/$CORE` in your web browser to
 ensure Solr is running correctly.
 
 CAUTION! For production sites, it is vital that you somehow prevent outside
@@ -295,7 +295,7 @@ Regarding third-party features, the following are supported:
     - Introduced by module: search_api_solr_nlp
     - Adds more fulltext field types based on natural language processing, for
       example field types that filter all word which aren't nouns. This is great
-      for auto completion.
+      for auto-completion.
 
 If you feel some service option is missing, or have other ideas for improving
 this implementation, please file a feature request in the project's issue queue,
@@ -316,7 +316,7 @@ If you create a new index, such processors won't be offered anymore since
 But the remaining processors are useful and should be activated. For example the
 HTML filter or the Highlighting processor.
 
-By default the Highlighting processor provided by Search API uses PHP to create
+By default, the Highlighting processor provided by Search API uses PHP to create
 highlighted snippets or an excerpt based on the entities loaded from the
 database. Solr itself can do that much better, especially for different
 languages. If you check `Retrieve result data from Solr` and `Highlight
@@ -363,17 +363,17 @@ Such field types can target a specific Solr version and a "domain". For example
 
 When displaying search results from Solr in Views using the Search API Views
 integration, you have the choice to fetch the displayed values from Solr by
-enabling "Retrieve result data from Solr" on the server edit page. Otherwise
+enabling "Retrieve result data from Solr" on the server edit page. Otherwise,
 Solr will only return the IDs and Search API loads the values from the database.
 
 If you decide to retrieve the values from Solr you have to enable "Skip item
-access checks" in the query options in the views advanced settings. Otherwise
+access checks" in the query options in the views advanced settings. Otherwise,
 the database objects will be loaded again for this check.
 It's obvious that you have to apply required access checks during indexing in
 this setup. For example using the corresponding processor or by having different
 indexes for different user roles.
 
-In general it's recommended to *disable the Views cache*. By default the Solr
+In general, it's recommended to *disable the Views cache*. By default, the Solr
 search index is updated asynchronously from Drupal, and this interferes with the
 Views cache. Having the cache enabled will cause stale results to be shown, and
 new content might not show up at all.
@@ -400,7 +400,7 @@ single values differently via our API before the values get indexed, you'll
 notice that Views will randomly output the same value for all of these fields if
 you enabled "Retrieve result data from Solr". In this case you have to enable
 the "Solr dummy fields" processor and add as many dummy fields to the index as
-you require. Afterwards you should manipulate these fields via API.
+you require. Afterward you should manipulate these fields via API.
 
 
 ## Troubleshooting Facets
@@ -448,8 +448,8 @@ So these two lines are "similar":
 
 Our test suite includes integration tests that require a real Solr server. This
 requirement can't be provided by the drupal.org test infrastructure.
-Therefore we leverage github workflows for our tests and had to establish a more
-complex workflow:
+Therefore, we leverage github workflows for our tests and had to establish a
+more complex workflow:
 
 1. Open an issue on drupal.org as usual
 2. Upload the patch for being reviewed to that issue on drupal.org as usual

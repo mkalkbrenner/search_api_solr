@@ -166,11 +166,11 @@ class DateRangeTest extends ProcessorTestBase {
   /**
    * Tests date range queries.
    *
-   * @dataProvider rangeQueryDataProvider
+   * @dataProvider dateRangeFieldQueryDataProvider
    *
    * @throws \Drupal\search_api\SearchApiException
    */
-  public function testRangeQueries(string $field, string $date1, string $date2) {
+  public function testDateRangeFieldQueries(string $field, string $date1, string $date2) {
     $this->indexItems();
 
     $query_helper = \Drupal::getContainer()->get('search_api.query_helper');
@@ -200,9 +200,9 @@ class DateRangeTest extends ProcessorTestBase {
   }
 
   /**
-   * Data provider for testIndexField method.
+   * Data provider for testDateRangeFieldQueries method.
    */
-  public function rangeQueryDataProvider() {
+  public function dateRangeFieldQueryDataProvider() {
     return [
       ['field_date_range', '2016-11-12', '2016-10-20'],
       ['field_date_ranges', '2015-11-12', '2015-10-20'],

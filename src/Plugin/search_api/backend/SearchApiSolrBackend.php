@@ -759,7 +759,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   public function supportsDataType($type) {
     static $custom_codes = [];
 
-    if (strpos($type, 'solr_text_custom') === 0) {
+    if (str_starts_with($type, 'solr_text_custom')) {
       [, $custom_code] = explode(':', $type);
       if (empty($custom_codes)) {
         $custom_codes = SolrFieldType::getAvailableCustomCodes();
@@ -776,6 +776,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'solr_text_spellcheck',
       'solr_text_unstemmed',
       'solr_text_wstoken',
+      'solr_text_custom',
+      'solr_text_custom_omit_norms',
       'solr_date_range',
     ];
     if (in_array($type, $built_in_support)) {
@@ -1405,6 +1407,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                 $first_value = Unicode::truncate($first_value, 128);
               }
 
+              $sort_languages = [];
               if (!$use_universal_collation) {
                 // Copy fulltext and string fields to a dedicated sort fields
                 // for faster sorts and language specific collations. To
@@ -3458,6 +3461,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *
    * @return string|null
    *   A filter query.
+   *
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
   protected function createFilterQuery($field, $value, $operator, FieldInterface $index_field, array &$options) {
     if (!is_array($value)) {
@@ -3470,9 +3475,21 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
 
     foreach ($value as &$v) {
-      if (NULL !== $v || !in_array($operator, ['=', '<>', 'IN', 'NOT IN'])) {
+      if ('*' === $v) {
+        if (!in_array($operator, ['=', 'BETWEEN', 'NOT BETWEEN'])) {
+          throw new SearchApiSolrException('Unsupported operator for wildcard searches');
+        }
+        elseif (in_array($operator, ['BETWEEN', 'NOT BETWEEN'])) {
+          // Range queries treat NULL as '*' in solarium.
+          $v = NULL;
+        }
+      }
+      elseif (NULL === $v && in_array($operator, ['BETWEEN', 'NOT BETWEEN'])) {
+        // Range queries treat NULL as '*' in solarium.
+      }
+      elseif (NULL !== $v || !in_array($operator, ['=', '<>', 'IN', 'NOT IN'])) {
         $v = $this->formatFilterValue($v, $index_field);
-        // Remaining NULL values are now converted to empty strings.
+        // NULL values are now converted to empty strings.
       }
     }
     unset($v);
@@ -3584,7 +3601,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           // @see https://stackoverflow.com/questions/4238609/how-to-query-solr-for-empty-fields/28859224#28859224
           return '(*:* -' . $this->queryHelper->rangeQuery($field, NULL, NULL) . ')';
         }
-        return $field . ':' . $this->queryHelper->escapePhrase($value);
+        return $field . ':' . ($value === '*' ? '*' : $this->queryHelper->escapePhrase($value));
     }
   }
 
@@ -3660,7 +3677,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       case 'date':
         $value = $this->formatDate($value);
         if ($value === FALSE) {
-          return 0;
+          throw new SearchApiSolrException('Unsupported date value');
         }
         break;
 
