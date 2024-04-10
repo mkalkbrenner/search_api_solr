@@ -764,31 +764,31 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $query = $this->buildSearch();
     $query->addCondition('changed', ['2024-03-04', '2024-03-20'], 'BETWEEN');
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('ds_changed:[2024-03-04T00:00:00Z TO 2024-03-20T00:00:00Z]"', $fq[0]['query']);
+    $this->assertEquals('ds_changed:["2024-03-04T00:00:00Z" TO "2024-03-20T00:00:00Z"]', $fq[0]['query']);
     $this->assertArrayNotHasKey(1, $fq);
 
     $query = $this->buildSearch();
     $query->addCondition('changed', ['*', '2024-03-20'], 'BETWEEN');
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('ds_changed:[* TO 2024-03-20T00:00:00Z]"', $fq[0]['query']);
+    $this->assertEquals('ds_changed:[* TO "2024-03-20T00:00:00Z"]', $fq[0]['query']);
     $this->assertArrayNotHasKey(1, $fq);
 
     $query = $this->buildSearch();
     $query->addCondition('changed', ['2024-03-04', '*'], 'BETWEEN');
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('ds_changed:[2024-03-04T00:00:00Z TO *]"', $fq[0]['query']);
+    $this->assertEquals('ds_changed:["2024-03-04T00:00:00Z" TO *]', $fq[0]['query']);
     $this->assertArrayNotHasKey(1, $fq);
 
     $query = $this->buildSearch();
     $query->addCondition('changed', [NULL, '2024-03-20'], 'BETWEEN');
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('ds_changed:[* TO 2024-03-20T00:00:00Z]"', $fq[0]['query']);
+    $this->assertEquals('ds_changed:[* TO "2024-03-20T00:00:00Z"]', $fq[0]['query']);
     $this->assertArrayNotHasKey(1, $fq);
 
     $query = $this->buildSearch();
     $query->addCondition('changed', ['2024-03-04', NULL], 'BETWEEN');
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('ds_changed:[2024-03-04T00:00:00Z TO *]"', $fq[0]['query']);
+    $this->assertEquals('ds_changed:["2024-03-04T00:00:00Z" TO *]', $fq[0]['query']);
     $this->assertArrayNotHasKey(1, $fq);
   }
 
