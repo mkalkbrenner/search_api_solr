@@ -758,7 +758,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     $query = $this->buildSearch();
     $query->addCondition('changed', NULL, '=');
     $fq = $this->invokeMethod($backend, 'getFilterQueries', [$query, &$options]);
-    $this->assertEquals('(*:* -ds_changed:[* TO *]', $fq[0]['query']);
+    $this->assertEquals('(*:* -ds_changed:[* TO *])', $fq[0]['query']);
     $this->assertArrayNotHasKey(1, $fq);
 
     $query = $this->buildSearch();
