@@ -759,7 +759,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   public function supportsDataType($type) {
     static $custom_codes = [];
 
-    if (strpos($type, 'solr_text_custom') === 0) {
+    if (str_starts_with($type, 'solr_text_custom')) {
       [, $custom_code] = explode(':', $type);
       if (empty($custom_codes)) {
         $custom_codes = SolrFieldType::getAvailableCustomCodes();
@@ -777,6 +777,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'solr_text_unstemmed',
       'solr_text_wstoken',
       'solr_text_custom',
+      'solr_text_custom_omit_norms',
       'solr_date_range',
     ];
     if (in_array($type, $built_in_support)) {

@@ -38,7 +38,8 @@ class SearchApiSubscriber implements EventSubscriberInterface {
     $mapping['solr_text_spellcheck'] =
     $mapping['solr_text_unstemmed'] =
     $mapping['solr_text_wstoken'] =
-    $mapping['solr_text_custom'] = $mapping['text'];
+    $mapping['solr_text_custom'] =
+    $mapping['solr_text_custom_omit_norms'] = $mapping['text'];
 
     $mapping['solr_string_storage'] = $mapping['string'];
 

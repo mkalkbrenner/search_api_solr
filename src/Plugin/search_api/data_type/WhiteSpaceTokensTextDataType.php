@@ -11,7 +11,7 @@ use Drupal\search_api\Plugin\search_api\data_type\TextDataType;
  *   id = "solr_text_wstoken",
  *   label = @Translation("Fulltext Tokens"),
  *   description = @Translation("Full text field without any processing like stemming or stop word filters, just unmodified tokens from the text separated by white spaces."),
- *   fallback_type = "search_api_text",
+ *   fallback_type = "text",
  *   prefix = "tw"
  * )
  */
