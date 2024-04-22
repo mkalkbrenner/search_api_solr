@@ -170,7 +170,17 @@ jobs:
                 include:
                   - drupal: '11.0'
                     solr: '9'
+                    php: '8.3'
+                    solarium: 'solarium/solarium'
+                    experimental: true
+                  - drupal: '10.3'
+                    solr: '9'
                     php: '8.2'
+                    solarium: 'solarium/solarium'
+                    experimental: true
+                  - drupal: '10.3'
+                    solr: '9'
+                    php: '8.3'
                     solarium: 'solarium/solarium'
                     experimental: true
 
