@@ -69,6 +69,7 @@ jobs:
                 vendor/bin/drush language-add bg
                 vendor/bin/drush language-add ca
                 vendor/bin/drush language-add cs
+                vendor/bin/drush language-add cy
                 vendor/bin/drush language-add da
                 vendor/bin/drush language-add de
                 vendor/bin/drush language-add el
