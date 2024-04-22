@@ -5,7 +5,7 @@ namespace Drupal\search_api_solr\Plugin\search_api\backend;
 use Composer\InstalledVersions;
 use Composer\Semver\Comparator;
 use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
@@ -193,7 +193,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   /**
    * The event dispatcher.
    *
-   * @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
+   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
    */
   protected $eventDispatcher;
 
@@ -235,7 +235,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, Config $search_api_solr_settings, LanguageManagerInterface $language_manager, SolrConnectorPluginManager $solr_connector_plugin_manager, FieldsHelperInterface $fields_helper, DataTypeHelperInterface $dataTypeHelper, Helper $query_helper, EntityTypeManagerInterface $entityTypeManager, ContainerAwareEventDispatcher $eventDispatcher, TimeInterface $time, StateInterface $state, MessengerInterface $messenger, LockBackendInterface $lock, ModuleExtensionList $module_extension_list) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ModuleHandlerInterface $module_handler, Config $search_api_solr_settings, LanguageManagerInterface $language_manager, SolrConnectorPluginManager $solr_connector_plugin_manager, FieldsHelperInterface $fields_helper, DataTypeHelperInterface $dataTypeHelper, Helper $query_helper, EntityTypeManagerInterface $entityTypeManager, EventDispatcherInterface $eventDispatcher, TimeInterface $time, StateInterface $state, MessengerInterface $messenger, LockBackendInterface $lock, ModuleExtensionList $module_extension_list) {
     $this->moduleHandler = $module_handler;
     $this->searchApiSolrSettings = $search_api_solr_settings;
     $this->languageManager = $language_manager;

@@ -3,7 +3,7 @@
 namespace Drupal\Tests\search_api_solr\Unit;
 
 use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Drupal\Core\Config\Config;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleExtensionList;
@@ -90,7 +90,7 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
       $this->prophesize(DataTypeHelperInterface::class)->reveal(),
       $this->queryHelper,
       $this->entityTypeManager->reveal(),
-      $this->prophesize(ContainerAwareEventDispatcher::class)->reveal(),
+      $this->prophesize(EventDispatcher::class)->reveal(),
       $this->prophesize(TimeInterface::class)->reveal(),
       $this->prophesize(StateInterface::class)->reveal(),
       $this->prophesize(MessengerInterface::class)->reveal(),

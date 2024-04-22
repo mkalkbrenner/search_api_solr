@@ -2,7 +2,7 @@
 
 namespace Drupal\search_api_solr\Controller;
 
-use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Provides different listings of SolrFieldType.
@@ -12,17 +12,17 @@ trait EventDispatcherTrait {
   /**
    * The event dispatcher.
    *
-   * @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
+   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
    */
   protected $eventDispatcher;
 
   /**
    * Returns the event dispatcher.
    *
-   * @return \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
+   * @return \Symfony\Component\EventDispatcher\EventDispatcherInterface
    *   The event dispatcher.
    */
-  protected function eventDispatcher(): ContainerAwareEventDispatcher {
+  protected function eventDispatcher(): EventDispatcherInterface {
     if (!$this->eventDispatcher) {
       $this->eventDispatcher = \Drupal::getContainer()->get('event_dispatcher');
     }
