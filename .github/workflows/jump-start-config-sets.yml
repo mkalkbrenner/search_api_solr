@@ -69,6 +69,7 @@ jobs:
                 vendor/bin/drush language-add bg
                 vendor/bin/drush language-add ca
                 vendor/bin/drush language-add cs
+                vendor/bin/drush language-add cy
                 vendor/bin/drush language-add da
                 vendor/bin/drush language-add de
                 vendor/bin/drush language-add el
@@ -170,7 +171,17 @@ jobs:
                 include:
                   - drupal: '11.0'
                     solr: '9'
+                    php: '8.3'
+                    solarium: 'solarium/solarium'
+                    experimental: true
+                  - drupal: '10.3'
+                    solr: '9'
                     php: '8.2'
+                    solarium: 'solarium/solarium'
+                    experimental: true
+                  - drupal: '10.3'
+                    solr: '9'
+                    php: '8.3'
                     solarium: 'solarium/solarium'
                     experimental: true
 

@@ -2,7 +2,7 @@
 
 namespace Drupal\search_api_solr\SolrConnector;
 
-use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
@@ -68,7 +68,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * The event dispatcher.
    *
-   * @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
+   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
    */
   protected $eventDispatcher;
 
@@ -82,7 +82,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
-  public function setEventDispatcher(ContainerAwareEventDispatcher $eventDispatcher) : SolrConnectorInterface {
+  public function setEventDispatcher(EventDispatcherInterface $eventDispatcher) : SolrConnectorInterface {
     $this->eventDispatcher = $eventDispatcher;
     return $this;
   }

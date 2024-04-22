@@ -2,7 +2,7 @@
 
 namespace Drupal\search_api_solr;
 
-use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Drupal\Component\Plugin\ConfigurableInterface;
 use Drupal\search_api_solr\Solarium\Autocomplete\Query as AutocompleteQuery;
 use Solarium\Core\Client\Endpoint;
@@ -29,10 +29,10 @@ interface SolrConnectorInterface extends ConfigurableInterface {
   /**
    * Sets the event dispatcher.
    *
-   * @param \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher $eventDispatcher
+   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $eventDispatcher
    *   The container aware event dispatcher.
    */
-  public function setEventDispatcher(ContainerAwareEventDispatcher $eventDispatcher): SolrConnectorInterface;
+  public function setEventDispatcher(EventDispatcherInterface $eventDispatcher): SolrConnectorInterface;
 
   /**
    * Returns TRUE for Cloud.
