@@ -49,14 +49,11 @@ class IndexAddSolrDocumentFieldsForm extends IndexAddFieldsForm {
     ];
     $datasources += $this->entity->getDatasources();
     foreach ($datasources as $datasource_id => $datasource) {
-      if ($datasource instanceof SolrDocument || $datasource instanceof SolrMultisiteDocument) {
+      if ($datasource instanceof SolrDocument) {
         $item = $this->getDatasourceListItem($datasource);
         if ($item) {
-          foreach ($index->getFields() as $field) {
-            $id = $field->getFieldIdentifier();
-            if (isset($item[$id])) {
-              unset($item[$id]);
-            }
+          foreach ($index->getFieldsByDatasource($datasource_id) as $field) {
+            unset($item[$field->getPropertyPath()]);
           }
 
           $form['datasources']['datasource_' . $datasource_id] = $item;
