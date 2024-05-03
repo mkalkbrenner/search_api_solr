@@ -518,8 +518,11 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
         if (version_compare($version, '9.4.0', '<')) {
           return '9.4.2';
         }
-        // Solr 9.4.0 uses lucene 9.8.0.
-        return '9.8.0';
+        if (version_compare($version, '9.6.0', '<')) {
+          return '9.8.0';
+        }
+        // Solr 9.6.0 uses lucene 9.10.0.
+        return '9.10.0';
       }
     }
 

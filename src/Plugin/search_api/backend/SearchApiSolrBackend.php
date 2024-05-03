@@ -4467,7 +4467,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *   The Search API query.
    * @param array $grouping_options
    *   Grouping options array.
-   * @param array $index_fields
+   * @param \Drupal\search_api\Item\FieldInterface[] $index_fields
    *   Index fields array.
    * @param array $field_names
    *   Field names array.
@@ -4485,9 +4485,18 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         /** @var \Drupal\search_api\Item\Field $field */
         $field = $index_fields[$collapse_field];
         $type = $field->getType();
-        if ($this->dataTypeHelper->isTextType($type) || 's' !== Utility::getSolrFieldCardinality($first_name)) {
+        // For the Solr Document datasource, determining whether a field is
+        // single- or multivalued would be more complicated, so we just hope the
+        // user knows what they're doing in that case.
+        if (Utility::hasIndexJustSolrDocumentDatasource($query->getIndex())) {
+          $known_to_be_multi_valued = FALSE;
+        }
+        else {
+          $known_to_be_multi_valued = 's' !== Utility::getSolrFieldCardinality($first_name);
+        }
+        if ($this->dataTypeHelper->isTextType($type) || $known_to_be_multi_valued) {
           $this->getLogger()->error('Grouping is not supported for field @field. Only single-valued fields not indexed as "Fulltext" are supported.',
-            ['@field' => $index_fields[$collapse_field]['name']]);
+            ['@field' => $index_fields[$collapse_field]->getLabel()]);
         }
         else {
           $group_fields[] = $first_name;
