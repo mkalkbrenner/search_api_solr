@@ -42,6 +42,7 @@ class SearchApiSubscriber implements EventSubscriberInterface {
     $mapping['solr_text_custom_omit_norms'] = $mapping['text'];
 
     $mapping['solr_string_storage'] = $mapping['string'];
+    $mapping['solr_string_docvalues'] = $mapping['string'];
 
     // Views can't handle a 'solr_date_range' natively.
     $mapping['solr_date_range'] = $mapping['string'];
