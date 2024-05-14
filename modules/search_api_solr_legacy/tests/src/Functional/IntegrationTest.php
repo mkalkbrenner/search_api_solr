@@ -35,13 +35,13 @@ class IntegrationTest extends SearchApiSolrIntegrationTest {
    */
   protected function configureBackendAndSave(array $edit) {
     $this->submitForm($edit, 'Save');
-    $this->assertSession()->pageTextContains('Please configure the selected backend.');
+    $this->assertSession()->pageTextContains('Configure the selected backend.');
 
     $edit += [
       'backend_config[connector]' => 'solr_36',
     ];
     $this->submitForm($edit, 'Save');
-    $this->assertSession()->pageTextContains('Please configure the selected Solr connector.');
+    $this->assertSession()->pageTextContains('Configure the selected Solr connector.');
 
     $edit += [
       'backend_config[connector_config][host]' => 'dummy',

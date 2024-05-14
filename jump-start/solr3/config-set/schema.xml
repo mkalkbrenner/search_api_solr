@@ -163,6 +163,9 @@
   <dynamicField name="htm_*" type="tint"   indexed="true"  stored="true" multiValued="true"/>
 
   <!-- Unindexed string fields that can be used to store values that won't be searchable -->
+  <dynamicField name="zdvs_*" type="string" indexed="false" stored="true" multiValued="false"/>
+  <dynamicField name="zdvm_*" type="string" indexed="false" stored="true" multiValued="true"/>
+  <!-- Unindexed string fields that can be used to store values that won't be searchable -->
   <dynamicField name="zs_*" type="string"   indexed="false"  stored="true" multiValued="false"/>
   <dynamicField name="zm_*" type="string"   indexed="false"  stored="true" multiValued="true"/>
 
