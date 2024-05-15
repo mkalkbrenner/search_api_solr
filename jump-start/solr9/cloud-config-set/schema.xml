@@ -220,8 +220,8 @@
   <dynamicField name="htm_*" type="pints" indexed="true" stored="false" docValues="true"/>
 
   <!-- Unindexed string fields that can be used to store values that won't be searchable but have docValues -->
-  <dynamicField name="zdvs_*" type="string" indexed="false" stored="false" docValues="true"/>
-  <dynamicField name="zdvm_*" type="strings" indexed="false" stored="false" docValues="true"/>
+  <dynamicField name="zdvs_*" type="string" indexed="false" stored="true" docValues="true"/>
+  <dynamicField name="zdvm_*" type="strings" indexed="false" stored="true" docValues="true"/>
   <!-- Unindexed string fields that can be used to store values that won't be searchable -->
   <dynamicField name="zs_*" type="string" indexed="false" stored="true"/>
   <dynamicField name="zm_*" type="strings" indexed="false" stored="true"/>
