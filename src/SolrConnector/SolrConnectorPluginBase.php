@@ -1363,7 +1363,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
-  public function __sleep() {
+  public function __sleep(): array {
     // It's safe to unset the solr client completely before serialization
     // because connect() will set it up again correctly after deserialization.
     unset($this->solr);
