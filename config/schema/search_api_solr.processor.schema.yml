@@ -33,6 +33,9 @@ plugin.plugin_configuration.search_api_processor.solr_boost_more_recent:
           b:
             type: float
             label: 'b'
+          support_future_dates:
+            type: boolean
+            label: 'Support future dates'
 
 plugin.plugin_configuration.search_api_processor.solr_regex_replace:
   type: search_api.fields_processor_configuration
