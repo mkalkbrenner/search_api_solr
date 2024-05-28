@@ -203,7 +203,7 @@ class DevelController extends ControllerBase {
                       $summary_row = $base_summary_row;
                       $summary_row['num'] = $num + 1;
                       $fields = $document->getFields();
-                      $summary_row['object_size'] = \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.2.0', fn() => \\Drupal\Core\StringTranslation\ByteSizeMarkup::create(strlen(json_encode($fields))), fn() => format_size(strlen(json_encode($fields))));
+                      $summary_row['object_size'] = \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.2.0', fn() => \Drupal\Core\StringTranslation\ByteSizeMarkup::create(strlen(json_encode($fields))), fn() => format_size(strlen(json_encode($fields))));
                       ksort($fields);
                       $details_id = $fields['id'];
                       $output_details[$details_id] = [
