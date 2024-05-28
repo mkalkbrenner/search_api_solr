@@ -50,7 +50,7 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
       exit();
     }
     catch (\Exception $e) {
-      watchdog_exception('search_api', $e);
+      \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', fn() => \Drupal\Core\Utility\Error::logException(\Drupal::logger('search_api'), $e), fn() => watchdog_exception('search_api', $e));
       $this->messenger->addError($this->t('An error occured during the creation of the config.zip. Look at the logs for details.'));
     }
 

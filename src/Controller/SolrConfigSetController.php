@@ -478,7 +478,7 @@ class SolrConfigSetController extends ControllerBase {
       $this->messenger()->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
     }
     catch (\Exception $e) {
-      watchdog_exception('search_api', $e);
+      \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', fn() => \Drupal\Core\Utility\Error::logException(\Drupal::logger('search_api'), $e), fn() => watchdog_exception('search_api', $e));
       $this->messenger()->addError($this->t('An error occurred during the creation of the config.zip. Look at the logs for details.'));
     }
 
@@ -535,7 +535,7 @@ class SolrConfigSetController extends ControllerBase {
       exit();
     }
     catch (\Exception $e) {
-      watchdog_exception('search_api', $e);
+      \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', fn() => \Drupal\Core\Utility\Error::logException(\Drupal::logger('search_api'), $e), fn() => watchdog_exception('search_api', $e));
       $this->messenger()->addError($this->t('An error occurred during the creation of the config.zip. Look at the logs for details.'));
     }
 

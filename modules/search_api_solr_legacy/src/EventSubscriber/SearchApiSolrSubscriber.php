@@ -50,7 +50,7 @@ class SearchApiSolrSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     $events[SearchApiSolrEvents::POST_CONFIG_SET_TEMPLATE_MAPPING][] = ['postConfigSetTemplateMapping'];
 
     return $events;
