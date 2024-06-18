@@ -281,7 +281,7 @@ jobs:
       strategy:
         matrix:
           drupal: ['11']
-          solr: ['3', '4', '5', '6', '7', '8', '9']
+          solr: ['4', '5', '6', '7', '8', '9']
           php: ['8.3']
           solarium: ['solarium/solarium:"dev-master as 6.3.99"']
           experimental: [true]
