@@ -116,7 +116,7 @@ class SolrLegacyTest extends SearchApiSolrTest {
   /**
    * Data provider for testConfigGeneration method.
    */
-  public function configGenerationDataProvider() {
+  public static function configGenerationDataProvider() {
     // @codingStandardsIgnoreStart
     return [[[
       'schema.xml' => [

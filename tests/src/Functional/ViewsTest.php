@@ -29,7 +29,7 @@ class ViewsTest extends SearchApiViewsTest {
    * {@inheritdoc}
    */
   public function setUp(): void {
-    // Skip parent::setUp().
+    // Skip parent::setUp() to use Solr iunstead of the DB backend!
     SearchApiBrowserTestBase::setUp();
 
     // Add a second language.

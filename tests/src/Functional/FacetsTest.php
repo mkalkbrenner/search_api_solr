@@ -14,6 +14,7 @@ use Drupal\views\Entity\View;
 /**
  * Tests the facets functionality using the Solr backend.
  *
+ * @group facets
  * @group search_api_solr
  */
 class FacetsTest extends SearchApiBrowserTestBase {
