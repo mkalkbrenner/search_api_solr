@@ -265,8 +265,7 @@ jobs:
                 cd drupal
                 php -S localhost:8888 >& /dev/null &
                 vendor/bin/drush si standard --db-url=sqlite://sites/default/files/db.sqlite --yes
-                vendor/bin/drush en search_api_solr_admin,search_api_solr_devel,search_api_solr_legacy --yes
-                vendor/bin/drush en search_api_spellcheck,search_api_solr_autocomplete,facets,search_api_location --yes
+                vendor/bin/drush en search_api_solr_admin,search_api_solr_devel,search_api_solr_legacy,search_api_spellcheck,search_api_solr_autocomplete,search_api_solr_facets_tests,search_api_location --yes
                 vendor/bin/phpunit -v -c core --group search_api_solr --exclude-group not_drupal${{ matrix.drupal }},not_solr${{ matrix.solr }} modules/contrib/search_api_solr
                 vendor/bin/drush cim --partial --source=modules/contrib/search_api_solr/jump-start/drupal_configs --yes
                 vendor/bin/drush -v solr-gsc solr_cloud test-config-generation.zip
@@ -282,7 +281,7 @@ jobs:
       strategy:
         matrix:
           drupal: ['11']
-          solr: ['9']
+          solr: ['3', '4', '5', '6', '7', '8', '9']
           php: ['8.3']
           solarium: ['solarium/solarium:"dev-master as 6.3.99"']
           experimental: [true]
