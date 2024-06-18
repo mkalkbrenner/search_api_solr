@@ -392,7 +392,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#ajax' => [
         'callback' => [get_class($this), 'buildAjaxSolrConnectorConfigForm'],
         'wrapper' => 'search-api-solr-connector-config-form',
-        'method' => 'replace',
+        'method' => 'replaceWith',
         'effect' => 'fade',
       ],
     ];
