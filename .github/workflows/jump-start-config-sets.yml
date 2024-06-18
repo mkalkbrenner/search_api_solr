@@ -297,6 +297,10 @@ jobs:
           run: |
             sudo apt-get update
             sudo apt-get install sqlite3 libsqlite3-dev
+            download_link="https://www.sqlite.org/2024/sqlite-tools-linux-x64-3460000.zip"
+            wget "$download_link" -P /tmp
+            unzip "/tmp/$(basename "$download_link")" -d /tmp
+            sudo install /tmp/sqlite3 /usr/local/bin/
 
         - name: Setup PHP
           uses: shivammathur/setup-php@v2
