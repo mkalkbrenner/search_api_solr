@@ -301,6 +301,7 @@ jobs:
             wget "$download_link" -P /tmp
             unzip "/tmp/$(basename "$download_link")" -d /tmp
             sudo install /tmp/sqlite3 /usr/local/bin/
+            sudo systemctl restart sqlite3
 
         - name: Setup PHP
           uses: shivammathur/setup-php@v2
