@@ -315,7 +315,7 @@ jobs:
           run: |
             cd solr/solr${{ matrix.solr }}
             cat docker-compose.yml
-            docker-compose up -d
+            docker compose up -d
 
         - name: Checkout drupal
           uses: actions/checkout@v4
