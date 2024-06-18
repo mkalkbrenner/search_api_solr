@@ -1,7 +1,7 @@
 name: Jump Start Config-Sets
 
 env:
-  NEXT_MODULE_VERSION: 4.3.4
+  NEXT_MODULE_VERSION: 4.3.5
 
 on:
     push:
