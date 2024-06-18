@@ -1,9 +1,0 @@
-type: module
-name: 'Search API Solr Facets tests'
-description: 'Facets module integration tests.'
-core_version_requirement: ^10.1 || ^11.0
-package: Testing
-dependencies:
-  - drupal:search_api_solr
-  - drupal:facets
-hidden: true
