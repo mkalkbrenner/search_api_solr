@@ -51,6 +51,7 @@ class BoostMoreRecent extends ProcessorPluginBase implements PluginFormInterface
         $form['boosts'][$field_id] = [
           '#type' => 'details',
           '#title' => $field->getLabel(),
+          '#description' => $this->t('Boost more recent dates. Note that the boost factor gets applied only if you sort your results by "Search API Relevance" (or "score" if you perform low level queries).'),
         ];
 
         $form['boosts'][$field_id]['boost'] = [
