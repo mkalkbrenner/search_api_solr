@@ -208,7 +208,7 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
   /**
    * Data provider for testIndexField method.
    */
-  public function addIndexFieldDataProvider() {
+  public static function addIndexFieldDataProvider() {
     return [
       // addIndexField() should be called.
       ['0', 'boolean', 'false'],
@@ -249,7 +249,7 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
   /**
    * Data provider for testIndexEmptyField method.
    */
-  public function addIndexEmptyFieldDataProvider() {
+  public static function addIndexEmptyFieldDataProvider() {
     return [
       [
         new TextValue(''),

@@ -1570,7 +1570,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
   /**
    * Data provider for testConfigGeneration method.
    */
-  public function configGenerationDataProvider() {
+  public static function configGenerationDataProvider() {
     // @codingStandardsIgnoreStart
     return [[[
       'schema_extra_types.xml' => [

@@ -202,7 +202,7 @@ class DateRangeTest extends ProcessorTestBase {
   /**
    * Data provider for testDateRangeFieldQueries method.
    */
-  public function dateRangeFieldQueryDataProvider() {
+  public static function dateRangeFieldQueryDataProvider() {
     return [
       ['field_date_range', '2016-11-12', '2016-10-20'],
       ['field_date_ranges', '2015-11-12', '2015-10-20'],

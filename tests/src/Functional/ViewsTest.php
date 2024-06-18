@@ -29,6 +29,7 @@ class ViewsTest extends SearchApiViewsTest {
    * {@inheritdoc}
    */
   public function setUp(): void {
+    parent::setUp();
     // Skip parent::setUp().
     SearchApiBrowserTestBase::setUp();
 
