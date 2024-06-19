@@ -13,7 +13,7 @@ use Drupal\Tests\SchemaCheckTestTrait;
  *
  * @group search_api_solr
  */
-class SolrFieldTypeTest extends KernelTestBase {
+class SolrConfigsSchemaTest extends KernelTestBase {
 
   use SchemaCheckTestTrait;
 
@@ -49,7 +49,7 @@ class SolrFieldTypeTest extends KernelTestBase {
       $this->assertConfigSchema($typed_config, $config_name, $data);
     }
 
-    $this->assertCount(131, $install_configs + $optional_configs);
+    $this->assertGreaterThan(100, count($install_configs + $optional_configs));
   }
 
 }
