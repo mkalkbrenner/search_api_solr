@@ -84,7 +84,7 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
     $this->queryHelper = new Helper();
 
     $connector_manager = $this->prophesize(SolrConnectorPluginManager::class);
-    $connector_manager->createInstance(NULL, [])->willThrow(new SearchApiSolrException('no connector'))->reveal();
+    $connector_manager->createInstance(NULL, [])->willThrow(new SearchApiSolrException('no connector'));
 
     $this->backend = new SearchApiSolrBackend([], NULL, [],
       $this->prophesize(ModuleHandlerInterface::class)->reveal(),
