@@ -360,7 +360,7 @@ jobs:
           env:
             SOLR_INDEX_WAIT: 4
             SOLR_CLOUD: true
-            SYMFONY_DEPRECATIONS_HELPER: disabled
+            SYMFONY_DEPRECATIONS_HELPER: enabled
           run: |
             cp search_api_solr/tests/github.phpunit.xml drupal/core/phpunit.xml.dist
             cd drupal
