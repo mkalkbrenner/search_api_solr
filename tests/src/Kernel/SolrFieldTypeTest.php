@@ -10,27 +10,13 @@ use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\Tests\SchemaCheckTestTrait;
 
 /**
- * Provides tests for Solr field typa configs.
+ * Provides tests for Solr field type configs.
  *
  * @group search_api_solr
  */
 class SolrFieldTypeTest extends KernelTestBase {
 
   use SchemaCheckTestTrait;
-
-  /**
-   * Solr field type config names.
-   *
-   * @var array
-   */
-  protected $configNames = [];
-
-  /**
-   * Languages covered by Solr field type configs.
-   *
-   * @var array
-   */
-  protected $languageIds = [];
 
   /**
    * {@inheritdoc}
@@ -48,14 +34,15 @@ class SolrFieldTypeTest extends KernelTestBase {
   public function setUp(): void {
     parent::setUp();
 
-    $this->configNames = array_keys(\Drupal::service('file_system')->scanDirectory(__DIR__ . '/../../../config', '/search_api_solr.solr_field_type.text_/', ['key' => 'name']));
-    foreach ($this->configNames as $config_name) {
+    $languageIds = [];
+    $configNames = array_keys(\Drupal::service('file_system')->scanDirectory(__DIR__ . '/../../../config', '/search_api_solr.solr_field_type.text_/', ['key' => 'name']));
+    foreach ($configNames as $config_name) {
       preg_match('/search_api_solr.solr_field_type.text_(.*)_\d+_\d+_\d+/', $config_name, $matches);
-      $this->languageIds[] = $matches[1];
+      $languageIds[] = $matches[1];
     }
-    $this->languageIds = array_unique($this->languageIds);
+    $languageIds = array_unique($languageIds);
 
-    foreach ($this->languageIds as $language_id) {
+    foreach ($languageIds as $language_id) {
       if ('und' != $language_id) {
         ConfigurableLanguage::createFromLangcode($language_id)->save();
       }
@@ -72,16 +59,20 @@ class SolrFieldTypeTest extends KernelTestBase {
       \Drupal::service('config.storage'),
       new TestInstallStorage(InstallStorage::CONFIG_SCHEMA_DIRECTORY),
       \Drupal::service('cache.discovery'),
-      \Drupal::service('module_handler')
+      \Drupal::service('module_handler'),
+      \Drupal::service('class_resolver')
     );
+    $typed_config->setValidationConstraintManager(\Drupal::service('validation.constraint'));
+    // Avoid restricting to the config schemas discovered.
+    $this->container->get('cache.discovery')->delete('typed_config_definitions');
 
     // Create a configuration storage with access to default configuration in
     // every module, profile and theme.
-    $default_config_storage = new TestInstallStorage('test_search_api_solr_multilingual');
+    $default_config_storage = new TestInstallStorage('test_search_api_solr');
 
-    foreach ($this->configNames as $config_name) {
-      $data = $default_config_storage->read($config_name);
-      if ($data !== FALSE) {
+    foreach ($default_config_storage->listAll() as $config_name) {
+      if (str_starts_with($config_name, 'search_api_solr.')) {
+        $data = $default_config_storage->read($config_name);
         $this->assertConfigSchema($typed_config, $config_name, $data);
       }
     }

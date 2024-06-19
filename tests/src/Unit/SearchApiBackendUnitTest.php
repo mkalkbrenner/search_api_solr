@@ -3,6 +3,7 @@
 namespace Drupal\Tests\search_api_solr\Unit;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\search_api_solr\Plugin\SolrConnector\StandardSolrConnector;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Drupal\Core\Config\Config;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -81,11 +82,14 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
     // This helper is actually used.
     $this->queryHelper = new Helper();
 
+    $connector_manager = $this->prophesize(SolrConnectorPluginManager::class);
+    $connector_manager->getAllNotRecommendedEntities()->willReturn($this->prophesize(StandardSolrConnector::class)->reveal());
+
     $this->backend = new SearchApiSolrBackend([], NULL, [],
       $this->prophesize(ModuleHandlerInterface::class)->reveal(),
       $this->prophesize(Config::class)->reveal(),
       $this->prophesize(LanguageManagerInterface::class)->reveal(),
-      $this->prophesize(SolrConnectorPluginManager::class)->reveal(),
+      $connector_manager->reveal(),
       $this->prophesize(FieldsHelperInterface::class)->reveal(),
       $this->prophesize(DataTypeHelperInterface::class)->reveal(),
       $this->queryHelper,
