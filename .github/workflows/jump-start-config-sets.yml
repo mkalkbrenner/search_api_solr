@@ -362,7 +362,7 @@ jobs:
             SOLR_CLOUD: true
             SYMFONY_DEPRECATIONS_HELPER: enabled
           run: |
-            cp search_api_solr/tests/github.phpunit.xml drupal/core/phpunit.xml.dist
+            cp search_api_solr/tests/github.phpunit.d11.xml drupal/core/phpunit.xml.dist
             cd drupal
             # Workaround until these modules are D11 compatible.
             rm modules/contrib/search_api_solr/tests/src/Functional/FacetsTest.php
