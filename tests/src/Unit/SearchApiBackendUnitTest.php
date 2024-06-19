@@ -4,6 +4,7 @@ namespace Drupal\Tests\search_api_solr\Unit;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\search_api_solr\Plugin\SolrConnector\StandardSolrConnector;
+use Drupal\search_api_solr\SearchApiSolrException;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Drupal\Core\Config\Config;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -83,7 +84,7 @@ class SearchApiBackendUnitTest extends Drupal10CompatibilityUnitTestCase {
     $this->queryHelper = new Helper();
 
     $connector_manager = $this->prophesize(SolrConnectorPluginManager::class);
-    $connector_manager->createInstance(NULL, [])->willReturn($this->prophesize(StandardSolrConnector::class)->reveal());
+    $connector_manager->createInstance(NULL, [])->willThrow(new SearchApiSolrException('no connector'))->reveal();
 
     $this->backend = new SearchApiSolrBackend([], NULL, [],
       $this->prophesize(ModuleHandlerInterface::class)->reveal(),
