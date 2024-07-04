@@ -1,5 +1,5 @@
 plugin.plugin_configuration.search_api_solr_connector.standard:
-  type: config_object
+  type: mapping
   label: 'Search API Solr standard connector settings'
   mapping:
     scheme:
