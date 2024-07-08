@@ -91,6 +91,7 @@ use Solarium\Exception\ExceptionInterface;
 use Solarium\Exception\OutOfBoundsException;
 use Solarium\Exception\StreamException;
 use Solarium\Exception\UnexpectedValueException;
+use Solarium\QueryType\Extract\Query as ExtractQuery;
 use Solarium\QueryType\Select\Query\FilterQuery;
 use Solarium\QueryType\Select\Query\Query;
 use Solarium\QueryType\Select\Result\Result;
@@ -4573,7 +4574,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  public function extractContentFromFile($filepath) {
+  public function extractContentFromFile(string $filepath, string $extract_format = ExtractQuery::EXTRACT_FORMAT_XML) {
     $connector = $this->getSolrConnector();
 
     $solr_version = $connector->getSolrVersion();
@@ -4585,6 +4586,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     $query = $connector->getExtractQuery();
     $query->setExtractOnly(TRUE);
+    $query->setExtractFormat($extract_format);
     $query->setFile($filepath);
 
     // Execute the query.

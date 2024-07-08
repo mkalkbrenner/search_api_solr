@@ -8,6 +8,7 @@ use Drupal\search_api\Item\ItemInterface;
 use Drupal\search_api\Query\QueryInterface;
 use Solarium\Component\ComponentAwareQueryInterface;
 use Solarium\Core\Client\Endpoint;
+use Solarium\QueryType\Extract\Query;
 use Solarium\QueryType\Update\Query\Query as UpdateQuery;
 
 /**
@@ -154,13 +155,15 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    *
    * @param string $filepath
    *   The real path of the file to be extracted.
+   * @param string $extract_format
+   *   The format to extract the content in.
    *
    * @return string
    *   The text extracted from the file.
    *
    * @throws \Drupal\search_api\SearchApiException
    */
-  public function extractContentFromFile($filepath);
+  public function extractContentFromFile(string $filepath, string $extract_format = Query::EXTRACT_FORMAT_XML);
 
   /**
    * Returns the targeted content domain of the server.
