@@ -67,7 +67,7 @@ class DoubleQuoteWorkaround extends FieldsProcessorPluginBase implements SolrPro
 
     $replacement = trim($form_state->getValue('replacement'));
     if (mb_strlen($replacement) < 3) {
-      $form_state->setErrorByName('replacement', $this->t('The replacement should at least consist of three cahracters.'));
+      $form_state->setErrorByName('replacement', $this->t('The replacement should at least consist of three characters.'));
     }
   }
 

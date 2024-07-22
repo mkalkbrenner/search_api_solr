@@ -39,7 +39,7 @@ jobs:
               uses: actions/checkout@v4
               with:
                 repository: drupal/drupal
-                ref: 10.2.x
+                ref: 10.3.x
                 path: drupal
 
             - name: Checkout search_api_solr
@@ -163,9 +163,9 @@ jobs:
 
         strategy:
             matrix:
-                drupal: ['10.1', '10.2']
+                drupal: ['10.2', '10.3']
                 solr: ['4', '5', '6', '7', '8', '9']
-                php: ['8.1', '8.2']
+                php: ['8.2']
                 solarium: ['solarium/solarium:"dev-master as 6.3.99"']
                 experimental: [false]
                 include:
@@ -176,14 +176,9 @@ jobs:
                     experimental: true
                   - drupal: '10.3'
                     solr: '9'
-                    php: '8.2'
-                    solarium: 'solarium/solarium'
-                    experimental: true
-                  - drupal: '10.3'
-                    solr: '9'
                     php: '8.3'
                     solarium: 'solarium/solarium'
-                    experimental: true
+                    experimental: false
 
         name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
 
@@ -385,9 +380,9 @@ jobs:
 
       strategy:
         matrix:
-          drupal: ['10.1', '10.2']
+          drupal: ['10.2', '10.3']
           solr: ['3']
-          php: ['8.1', '8.2']
+          php: ['8.2']
           experimental: [false]
 
       name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
