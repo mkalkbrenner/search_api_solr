@@ -1,5 +1,5 @@
 plugin.plugin_configuration.search_api_backend.search_api_solr:
-  type: config_object
+  type: mapping
   label: 'Search API Solr settings'
   mapping:
     retrieve_data:
