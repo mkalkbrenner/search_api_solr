@@ -4,20 +4,25 @@ namespace Drupal\search_api_solr\Commands;
 
 use Consolidation\AnnotatedCommand\Input\StdinAwareInterface;
 use Consolidation\AnnotatedCommand\Input\StdinAwareTrait;
+use Consolidation\SiteAlias\SiteAliasManagerAwareInterface;
+use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Drupal\search_api\ConsoleException;
 use Drupal\search_api_solr\SearchApiSolrException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\SolrCloudConnectorInterface;
 use Drupal\search_api_solr\Utility\SolrCommandHelper;
+use Drush\Commands\core\BatchCommands;
 use Drush\Commands\DrushCommands;
+use Drush\Drush;
 use Psr\Log\LoggerInterface;
 
 /**
  * Defines Drush commands for the Search API Solr.
  */
-class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface {
+class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface, SiteAliasManagerAwareInterface {
 
   use StdinAwareTrait;
+  use SiteAliasManagerAwareTrait;
 
   /**
    * The command helper.
@@ -206,6 +211,65 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
     }
 
     throw new SearchApiSolrException('Server could not be loaded.');
+  }
+
+  /**
+   * Indexes items for one or all enabled search indexes.
+   *
+   * @param string $indexId
+   *   (optional) A search index ID, or NULL to index items for all enabled
+   *   indexes.
+   * @param array $options
+   *   (optional) An array of options.
+   *
+   * @throws \Exception
+   *   If a batch process could not be created.
+   *
+   * @command search-api-solr:index-parallel
+   *
+   * @option threads
+   *   The number of parallel threads. Defaults to 2.
+   * @option batch-size
+   *   The maximum number of items to index per batch run. Defaults to the "Cron
+   *   batch size" setting of the index if omitted or explicitly set to 0. Set
+   *   to a negative value to index all items in a single batch (not
+   *   recommended).
+   */
+  public function indexParallel($indexId = NULL, array $options = ['threads' => NULL, 'batch-size' => NULL]) {
+    $threads = (int) ($options['threads'] ?? 2);
+    $batch_size = $options['batch-size'];
+    $ids = $this->commandHelper->indexParallelCommand([$indexId], $threads, $batch_size);
+
+    $processes = [];
+    $siteAlias = $this->siteAliasManager()->getSelf();
+    foreach($ids as $id) {
+      $processes[$id] = Drush::drush($siteAlias, BatchCommands::PROCESS, [$id]);
+      $processes[$id]->start();
+
+      while (count($processes) >= $threads) {
+        foreach ($processes as $pid => $process) {
+          $this->output()->write($process->getIncrementalErrorOutput());
+          $this->output()->write($process->getIncrementalOutput());
+
+          if ($process->isTerminated()) {
+            unset($processes[$pid]);
+          }
+        }
+        sleep(2);
+      }
+    }
+
+    while (count($processes)) {
+      foreach ($processes as $pid => $process) {
+        $this->output()->write($process->getIncrementalErrorOutput());
+        $this->output()->write($process->getIncrementalOutput());
+
+        if ($process->isTerminated()) {
+          unset($processes[$pid]);
+        }
+      }
+      sleep(2);
+    }
   }
 
 }

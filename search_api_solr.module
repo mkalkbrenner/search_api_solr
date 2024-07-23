@@ -792,6 +792,7 @@ function search_api_solr_entity_operation(EntityInterface $entity) {
  */
 function search_api_solr_entity_type_alter(array &$entity_types) {
   /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
+  $entity_types['search_api_index']->setClass(\Drupal\search_api_solr\Entity\Index::class);
   $entity_types['search_api_index']->setFormClass('solr_multisite_clone', IndexSolrMultisiteCloneForm::class);
   $entity_types['search_api_index']->setFormClass('solr_multisite_update', IndexSolrMultisiteUpdateForm::class);
   $entity_types['search_api_index']->setFormClass('add_solr_document_fields', IndexAddSolrDocumentFieldsForm::class);
