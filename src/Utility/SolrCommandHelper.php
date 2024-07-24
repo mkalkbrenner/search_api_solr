@@ -267,13 +267,35 @@ class SolrCommandHelper extends CommandHelper {
 
       // Create the batch.
       try {
-        $ids = array_merge($ids, IndexParallelBatchHelper::create($index, $currentBatchSize, $currentThreads));
+        $ids[$index->id()] = IndexParallelBatchHelper::create($index, $currentBatchSize, $currentThreads);
       } catch (SearchApiException $e) {
         throw new ConsoleException($this->t("Couldn't create all batches, check the batch size and other parameters."), 0, $e);
       }
     }
 
-    return $ids;
+    // In case that multiple indexes get indexed, it makes sense to distribute
+    // the threads across the indexes instead of running multiple threads for
+    // the same index. That will distribute the load if one index requires a lot
+    // of processing in PHP while another one performs a lot of database or API
+    // queries.
+    $shuffled_ids = [];
+    $max_ids = 0;
+    foreach ($ids as $index_ids) {
+      $count = count($index_ids);
+      if ($count > $max_ids) {
+        $max_ids = $count;
+      }
+    }
+
+    for ($i = 0; $i < $max_ids; ++$i) {
+      foreach ($ids as $index_ids) {
+        if (isset($index_ids[$i])) {
+          $shuffled_ids[] = $index_ids[$i];
+        }
+      }
+    }
+
+    return $shuffled_ids;
   }
 
 
