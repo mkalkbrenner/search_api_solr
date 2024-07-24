@@ -19,7 +19,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class SolrConfigForm extends FormBase {
 
-  use LoggerTrait;
+  use LoggerTrait {
+    getLogger as getSearchApiLogger;
+  }
 
   /**
    * The date formatter service.
@@ -128,6 +130,19 @@ class SolrConfigForm extends FormBase {
    */
   public function access(ServerInterface $search_api_server) {
     return AccessResult::allowedIf($search_api_server->hasValidBackend() && $search_api_server->getBackend() instanceof SearchApiSolrBackend)->addCacheableDependency($search_api_server);
+  }
+
+  /**
+   * Get Logger.
+   *
+   * @param string $channel
+   *   The log channel.
+   *
+   * @return \Psr\Log\LoggerInterface
+   *   The logger.
+   */
+  protected function getLogger($channel = '') {
+    return $this->getSearchApiLogger();
   }
 
 }
