@@ -111,7 +111,7 @@ options:
 datasource_settings:
   'entity:entity_test_mulrev_changed': {  }
 tracker_settings:
-  'index-parallel': { }
+  'index_parallel': { }
 server: solr_search_server
 status: true
 langcode: en
