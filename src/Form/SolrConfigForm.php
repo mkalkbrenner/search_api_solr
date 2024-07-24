@@ -7,6 +7,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend;
@@ -17,6 +18,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * A basic form with a passed entity with an interface.
  */
 class SolrConfigForm extends FormBase {
+
+  use LoggerTrait;
 
   /**
    * The date formatter service.
@@ -99,8 +102,8 @@ class SolrConfigForm extends FormBase {
       }
     }
     catch (SearchApiException $e) {
-      \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', fn() => \Drupal\Core\Utility\Error::logException(\Drupal::logger('search_api_solr'), $e, '%type while retrieving config files of Solr server @server: @message in %function (line %line of %file).', ['@server' => $search_api_server->label()]), fn() => watchdog_exception('search_api_solr', $e, '%type while retrieving config files of Solr server @server: @message in %function (line %line of %file).', ['@server' => $search_api_server->label()]));
-      $form['info']['#markup'] = $this->t('An error occured while trying to load the list of files.');
+      $this->logException($e, '%type while retrieving config files of Solr server @server: @message in %function (line %line of %file).', ['@server' => $search_api_server->label()]);
+      $form['info']['#markup'] = $this->t('An error occurred while trying to load the list of files.');
     }
 
     return $form;

@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_solr\Controller;
 
+use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\SolrFieldTypeInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -11,6 +12,8 @@ use ZipStream\Option\Archive;
  * Provides different listings of SolrFieldType.
  */
 class SolrFieldTypeController extends AbstractSolrEntityController {
+
+  use LoggerTrait;
 
   /**
    * Entity type id.
@@ -50,7 +53,7 @@ class SolrFieldTypeController extends AbstractSolrEntityController {
       exit();
     }
     catch (\Exception $e) {
-      \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', fn() => \Drupal\Core\Utility\Error::logException(\Drupal::logger('search_api'), $e), fn() => watchdog_exception('search_api', $e));
+      $this->logException($e);
       $this->messenger->addError($this->t('An error occured during the creation of the config.zip. Look at the logs for details.'));
     }
 

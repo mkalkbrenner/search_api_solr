@@ -5,6 +5,7 @@ namespace Drupal\search_api_solr\Plugin\search_api\backend;
 use Composer\InstalledVersions;
 use Composer\Semver\Comparator;
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\search_api\LoggerTrait;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Unicode;
@@ -124,6 +125,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
   use SolrSpellcheckBackendTrait;
 
   use StringTranslationTrait;
+
+  use LoggerTrait;
 
   /**
    * The module handler.
@@ -1184,7 +1187,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
                 $ret[] = $id;
               }
               catch (\Exception $e) {
-                \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', fn() => \Drupal\Core\Utility\Error::logException(\Drupal::logger('search_api_solr'), $e, '%type while indexing item %id: @message in %function (line %line of %file).', ['%id' => $id]), fn() => watchdog_exception('search_api_solr', $e, '%type while indexing item %id: @message in %function (line %line of %file).', ['%id' => $id]));
+                $this->logException($e, '%type while indexing item %id: @message in %function (line %line of %file).', ['%id' => $id]);
                 // We must not throw an exception because we might have indexed
                 // some documents successfully now and need to return these ids.
               }
@@ -1195,12 +1198,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
           }
         }
         else {
-          \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', fn() => \Drupal\Core\Utility\Error::logException(\Drupal::logger('search_api_solr'), $e, "%type while indexing: @message in %function (line %line of %file)."), fn() => watchdog_exception('search_api_solr', $e, "%type while indexing: @message in %function (line %line of %file)."));
+          $this->logException($e, "%type while indexing: @message in %function (line %line of %file).");
           throw $e;
         }
       }
       catch (\Exception $e) {
-        \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', fn() => \Drupal\Core\Utility\Error::logException(\Drupal::logger('search_api_solr'), $e, "%type while indexing: @message in %function (line %line of %file)."), fn() => watchdog_exception('search_api_solr', $e, "%type while indexing: @message in %function (line %line of %file)."));
+        $this->logException($e, "%type while indexing: @message in %function (line %line of %file).");
         throw new SearchApiSolrException($e->getMessage(), $e->getCode(), $e);
       }
 
@@ -3894,7 +3897,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
         $this->filterDuplicateAutocompleteSuggestions($suggestions);
       }
       catch (SearchApiException $e) {
-        \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', fn() => \Drupal\Core\Utility\Error::logException(\Drupal::logger('search_api_solr'), $e), fn() => watchdog_exception('search_api_solr', $e));
+        $this->logException($e);
       }
     }
 

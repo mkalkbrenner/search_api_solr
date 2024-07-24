@@ -5,6 +5,7 @@ namespace Drupal\search_api_solr\Controller;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Extension\ModuleExtensionList;
+use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\Event\PostConfigFilesGenerationEvent;
 use Drupal\search_api_solr\Event\PostConfigSetGenerationEvent;
@@ -28,6 +29,7 @@ class SolrConfigSetController extends ControllerBase {
 
   use BackendTrait;
   use EventDispatcherTrait;
+  use LoggerTrait;
 
   /**
    * The event dispatcher.
@@ -478,7 +480,7 @@ class SolrConfigSetController extends ControllerBase {
       $this->messenger()->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
     }
     catch (\Exception $e) {
-      \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', fn() => \Drupal\Core\Utility\Error::logException(\Drupal::logger('search_api'), $e), fn() => watchdog_exception('search_api', $e));
+      $this->logException($e);
       $this->messenger()->addError($this->t('An error occurred during the creation of the config.zip. Look at the logs for details.'));
     }
 
@@ -535,7 +537,7 @@ class SolrConfigSetController extends ControllerBase {
       exit();
     }
     catch (\Exception $e) {
-      \Drupal\Component\Utility\DeprecationHelper::backwardsCompatibleCall(\Drupal::VERSION, '10.1.0', fn() => \Drupal\Core\Utility\Error::logException(\Drupal::logger('search_api'), $e), fn() => watchdog_exception('search_api', $e));
+      $this->logException($e);
       $this->messenger()->addError($this->t('An error occurred during the creation of the config.zip. Look at the logs for details.'));
     }
 
