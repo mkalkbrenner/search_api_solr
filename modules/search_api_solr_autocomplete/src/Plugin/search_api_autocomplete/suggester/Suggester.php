@@ -5,6 +5,7 @@ namespace Drupal\search_api_solr_autocomplete\Plugin\search_api_autocomplete\sug
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Plugin\PluginFormInterface;
+use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\Plugin\PluginFormTrait;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\search_api\SearchApiException;
@@ -36,6 +37,7 @@ class Suggester extends SuggesterPluginBase implements PluginFormInterface {
   use PluginFormTrait;
   use BackendTrait;
   use SolrAutocompleteBackendTrait;
+  use LoggerTrait;
 
   /**
    * {@inheritdoc}
