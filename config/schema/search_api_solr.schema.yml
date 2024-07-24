@@ -222,3 +222,44 @@ field.formatter.settings.solr_highlighted_text_default:
     strict:
       type: boolean
       label: 'Strict'
+
+plugin.plugin_configuration.search_api_tracker.index_parallel:
+  type: plugin.plugin_configuration.search_api_tracker.default
+  label: "Index parallel tracker"
+
+plugin.plugin_configuration.search_api_datasource.solr_document:
+  type: mapping
+  label: "Solr document datasource configuration"
+  mapping:
+    id_field:
+      type: string
+      label: "ID field"
+    request_handler:
+      type: string
+      label: "Request handler"
+    default_query:
+      type: string
+      label: "Default query"
+    label_field:
+      type: string
+      label: "Label field"
+    language_field:
+      type: string
+      label: "Language field"
+    url_field:
+      type: string
+      label: "URL field"
+
+plugin.plugin_configuration.search_api_datasource.solr_multisite_document:
+  type: plugin.plugin_configuration.search_api_datasource.solr_document
+  label: "Solr multisite document datasource configuration"
+  mapping:
+    target_index:
+      type: string
+      label: "Targeted index"
+    target_index_machine_name:
+      type: string
+      label: "Targeted index"
+    target_hash:
+      type: string
+      label: "Targeted site hash"
