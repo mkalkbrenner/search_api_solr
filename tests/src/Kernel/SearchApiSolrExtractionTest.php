@@ -3,6 +3,7 @@
 namespace Drupal\Tests\search_api_solr\Kernel;
 
 use Drupal\search_api\Entity\Server;
+use Solarium\QueryType\Extract\Query;
 
 /**
  * Test tika extension based PDF extraction.
@@ -36,6 +37,11 @@ class SearchApiSolrExtractionTest extends SolrBackendTestBase {
     /** @var \Drupal\search_api_solr\Plugin\search_api\backend\SearchApiSolrBackend $backend */
     $backend = Server::load($this->serverId)->getBackend();
     $content = $backend->extractContentFromFile($filepath);
+    $this->assertStringStartsWith('<?xml version="1.0" encoding="UTF-8"?>', $content);
+    $this->assertStringContainsString('The extraction seems working!', $content);
+
+    $content = $backend->extractContentFromFile($filepath, Query::EXTRACT_FORMAT_TEXT);
+    $this->assertStringStartsNotWith('<?xml version="1.0" encoding="UTF-8"?>', $content);
     $this->assertStringContainsString('The extraction seems working!', $content);
   }
 
