@@ -2,7 +2,6 @@
 
 namespace Drupal\search_api_solr\Controller;
 
-use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\SolrFieldTypeInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -12,8 +11,6 @@ use ZipStream\Option\Archive;
  * Provides different listings of SolrFieldType.
  */
 class SolrFieldTypeController extends AbstractSolrEntityController {
-
-  use LoggerTrait;
 
   /**
    * Entity type id.

@@ -4,6 +4,7 @@ namespace Drupal\search_api_solr\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\search_api\LoggerTrait;
 use Drupal\search_api\ServerInterface;
 use Drupal\search_api_solr\SolrConfigInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -13,6 +14,10 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
  * Provides different listings of Solr Entities.
  */
 abstract class AbstractSolrEntityController extends ControllerBase {
+
+  use LoggerTrait {
+    getLogger as getSearchApiLogger;
+  }
 
   /**
    * The messenger.
@@ -127,6 +132,19 @@ abstract class AbstractSolrEntityController extends ControllerBase {
     $search_api_server->setBackendConfig($backend_config);
     $search_api_server->save();
     return new RedirectResponse($solr_entity->toUrl('collection')->toString());
+  }
+
+  /**
+   * Get Logger.
+   *
+   * @param string $channel
+   *   The log channel.
+   *
+   * @return \Psr\Log\LoggerInterface
+   *   The logger.
+   */
+  protected function getLogger($channel = '') {
+    return $this->getSearchApiLogger();
   }
 
 }

@@ -29,7 +29,9 @@ class SolrConfigSetController extends ControllerBase {
 
   use BackendTrait;
   use EventDispatcherTrait;
-  use LoggerTrait;
+  use LoggerTrait {
+    getLogger as getSearchApiLogger;
+  }
 
   /**
    * The event dispatcher.
@@ -589,6 +591,19 @@ class SolrConfigSetController extends ControllerBase {
       $list_builder->setBackend($this->getBackend());
     }
     return $list_builder;
+  }
+
+  /**
+   * Get Logger.
+   *
+   * @param string $channel
+   *   The log channel.
+   *
+   * @return \Psr\Log\LoggerInterface
+   *   The logger.
+   */
+  protected function getLogger($channel = '') {
+    return $this->getSearchApiLogger();
   }
 
 }
