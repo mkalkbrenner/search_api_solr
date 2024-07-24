@@ -2969,7 +2969,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
       $language_id = '';
 
-      if ($fallback_language_field && !empty($languages)) {
+      if ($fallback_language_field && !empty($languages) && isset($doc_fields[$fallback_language_field])) {
         $fallback_languages = $doc_fields[$fallback_language_field];
         $language_id = array_intersect($languages, $fallback_languages);
       }
