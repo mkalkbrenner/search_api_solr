@@ -149,7 +149,7 @@ abstract class SolrBackendTestBase extends BackendTestBase {
     $this->assertInstanceOf(Index::class, $index, 'The index was successfully created.');
 
     $this->assertEquals(["entity:entity_test_mulrev_changed"], $index->getDatasourceIds(), 'Datasources are set correctly.');
-    $this->assertEquals('index-parallel', $index->getTrackerId(), 'Tracker is set correctly.');
+    $this->assertEquals('index_parallel', $index->getTrackerId(), 'Tracker is set correctly.');
 
     $this->assertEquals(5, $index->getTrackerInstance()->getTotalItemsCount(), 'Correct item count.');
     $this->assertEquals(0, $index->getTrackerInstance()->getIndexedItemsCount(), 'All items still need to be indexed.');
