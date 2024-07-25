@@ -270,6 +270,29 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
       }
       sleep(2);
     }
+
+    $this->commandHelper->resetEmptyIndexState([$indexId]);
+  }
+
+  /**
+   * Reset empty index state to FALSE.
+   *
+   * Important if drush search-api-solr:index-parallel crashed or has been
+   * interrupted. That might cause to block deletes on an index for one hour
+   * unless you run this command.
+   *
+   * @param string $indexId
+   *   (optional) A search index ID, or NULL to index items for all enabled
+   *   indexes.
+   * @param array $options
+   *   (optional) An array of options.
+   *
+   * @command search-api-solr:reset-empty-index-state
+   *
+   * @default $options []
+   */
+  public function resetEmptyIndexState($indexId = NULL, array $options = []) {
+    $this->commandHelper->resetEmptyIndexState([$indexId]);
   }
 
 }

@@ -216,12 +216,14 @@ class SolrCommandHelper extends CommandHelper {
 
     $ids = [];
 
+    /** @var \Drupal\search_api_solr\Entity\Index $index */
     foreach ($indexes as $index) {
       if (!$index->status() || $index->isReadOnly()) {
         continue;
       }
       $tracker = $index->getTrackerInstance();
-      $remaining = $tracker->getTotalItemsCount() - $tracker->getIndexedItemsCount();
+      $indexed = (int) $tracker->getIndexedItemsCount();
+      $remaining = $tracker->getTotalItemsCount() - $indexed;
 
       if (!$remaining) {
         $this->logSuccess($this->t("The index @index is up to date.", ['@index' => $index->label()]));
@@ -258,12 +260,15 @@ class SolrCommandHelper extends CommandHelper {
         $currentThreads = 1;
       }
 
+      $index->setIndexingEmptyIndex($indexed === 0);
+
       $arguments = [
         '@index' => $index->label(),
         '@threads' => $currentThreads,
         '@batch_size' => $currentBatchSize,
+        '@empty' => $index->isIndexingEmptyIndex() ? $this->t('empty') : $this->t('not empty'),
       ];
-      $this->logSuccess($this->t("Indexing parallel with @threads threads (@batch_size items per batch run) for the index '@index'.", $arguments));
+      $this->logSuccess($this->t("Indexing parallel with @threads threads (@batch_size items per batch run) for the index '@index'. The index is @empty", $arguments));
 
       // Create the batch.
       try {
@@ -298,5 +303,13 @@ class SolrCommandHelper extends CommandHelper {
     return $shuffled_ids;
   }
 
+  public function resetEmptyIndexState(array $indexIds): void {
+    if ($indexes = $this->loadIndexes($indexIds)) {
+      /** @var \Drupal\search_api_solr\Entity\Index $index */
+      foreach ($indexes as $index) {
+        $index->setIndexingEmptyIndex(FALSE);
+      }
+    }
+  }
 
 }

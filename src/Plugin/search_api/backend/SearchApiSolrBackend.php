@@ -1467,6 +1467,11 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @throws \Drupal\search_api\SearchApiException
    */
   public function deleteItems(IndexInterface $index, array $ids) {
+    /** @var \Drupal\search_api_solr\Entity\Index $index */
+    if ($index->isIndexingEmptyIndex()) {
+      return;
+    }
+
     try {
       $index_id = $this->getTargetedIndexId($index);
       $site_hash = $this->getTargetedSiteHash($index);
