@@ -13,7 +13,7 @@ on:
 
 jobs:
     generate-config-sets:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
 
         name: Generate Solr jump-start config-sets
 
@@ -155,7 +155,7 @@ jobs:
                 path: search_api_solr/jump-start
 
     run-tests:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-24.04
 
         needs: generate-config-sets
 
@@ -163,9 +163,9 @@ jobs:
 
         strategy:
             matrix:
-                drupal: ['10.2', '10.3']
+                drupal: ['10.3']
                 solr: ['4', '5', '6', '7', '8', '9']
-                php: ['8.2']
+                php: ['8.2', '8.3']
                 solarium: ['solarium/solarium:"dev-master as 6.3.99"']
                 experimental: [false]
                 include:
@@ -174,11 +174,6 @@ jobs:
                     php: '8.3'
                     solarium: 'solarium/solarium'
                     experimental: true
-                  - drupal: '10.3'
-                    solr: '9'
-                    php: '8.3'
-                    solarium: 'solarium/solarium'
-                    experimental: false
 
         name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
 
@@ -208,7 +203,7 @@ jobs:
               run: |
                 cd solr/solr${{ matrix.solr }}
                 cat docker-compose.yml
-                docker-compose up -d
+                docker compose up -d
 
             - name: Checkout drupal
               uses: actions/checkout@v4
