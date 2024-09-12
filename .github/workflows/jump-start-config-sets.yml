@@ -367,7 +367,7 @@ jobs:
             vendor/bin/drush -v cron
 
     run-legacy-tests:
-      runs-on: ubuntu-latest
+      runs-on: ubuntu-24.04
 
       needs: generate-config-sets
 
@@ -375,9 +375,9 @@ jobs:
 
       strategy:
         matrix:
-          drupal: ['10.2', '10.3']
+          drupal: ['10.3']
           solr: ['3']
-          php: ['8.2']
+          php: ['8.2', '8.3']
           experimental: [false]
 
       name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
@@ -407,7 +407,7 @@ jobs:
         - name: Start Solr ${{ matrix.solr }}
           run: |
             cd solr/solr${{ matrix.solr }}
-            docker-compose up -d
+            docker compose up -d
 
         - name: Checkout drupal
           uses: actions/checkout@v4
