@@ -571,7 +571,7 @@ class SolrFieldType extends AbstractSolrEntity implements SolrFieldTypeInterface
       foreach ($this->field_type['analyzers'] as $analyzer) {
         if (isset($analyzer['filters'])) {
           foreach ($analyzer['filters'] as $filter) {
-            if ($filter && str_starts_with($filter['class'], 'solr.Managed')) {
+            if (isset($filter['class']) && str_starts_with($filter['class'], 'solr.Managed')) {
               return TRUE;
             }
           }
