@@ -1,0 +1,8 @@
+<?php
+
+/**
+ * @file
+ * Implement hooks.
+ */
+
+// @todo implement cron to delete log entries.
