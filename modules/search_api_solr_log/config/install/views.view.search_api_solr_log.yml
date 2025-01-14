@@ -4,7 +4,6 @@ dependencies:
   config:
     - search_api.index.search_api_solr_log
     - system.menu.admin
-    - user.role.administrator
   module:
     - facets_exposed_filters
     - search_api
@@ -434,10 +433,9 @@ display:
           sort_asc_label: Asc
           sort_desc_label: Desc
       access:
-        type: role
+        type: perm
         options:
-          role:
-            administrator: administrator
+          perm: 'access site reports'
       cache:
         type: search_api_none
         options: {  }
@@ -588,12 +586,12 @@ display:
       contexts:
         - 'languages:language_interface'
         - url
-        - user.roles
+        - user.permissions
       tags:
         - 'config:search_api.index.search_api_solr_log'
         - 'search_api_list:search_api_solr_log'
-  search_api_solr_log_details_page:
-    id: search_api_solr_log_details_page
+  event_details:
+    id: event_details
     display_title: 'Event Details'
     display_plugin: page
     position: 1
@@ -1257,15 +1255,15 @@ display:
       contexts:
         - 'languages:language_interface'
         - url
-        - user.roles
+        - user.permissions
       tags:
         - 'config:search_api.index.search_api_solr_log'
         - 'search_api_list:search_api_solr_log'
-  serach_api_solr_log_page:
-    id: serach_api_solr_log_page
+  overview:
+    id: overview
     display_title: 'Recent Log Messages'
     display_plugin: page
-    position: 1
+    position: 0
     display_options:
       fields:
         id:
@@ -2135,7 +2133,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user.roles
+        - user.permissions
       tags:
         - 'config:search_api.index.search_api_solr_log'
         - 'search_api_list:search_api_solr_log'

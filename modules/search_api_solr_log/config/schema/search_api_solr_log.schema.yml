@@ -1,0 +1,6 @@
+search_api_solr_log.settings:
+  type: config_entity
+  mapping:
+    days_to_keep:
+      type: int
+      label: 'Days to keep logs'

@@ -138,4 +138,27 @@ class SolrLogger implements LoggerInterface {
 
     return NULL;
   }
+
+  /**
+   * Delete old log events.
+   *
+   * @param int|null $days Days to keep log entries.
+   *
+   * @throws \DateMalformedStringException
+   * @throws \Drupal\search_api\SearchApiException
+   * @throws \Drupal\search_api_solr\SearchApiSolrException
+   */
+  public static function delete(?int $days = 0): void {
+    if ($connector = self::getConnector()) {
+      $query = $connector->getUpdateQuery();
+
+      $date = new \DateTime();
+      $date->modify('-' . $days . ' days');
+      $solrDate = $date->format('Y-m-d\TH:i:s\Z');
+      $deleteCondition = sprintf("timestamp:[* TO %s] AND index_id:search_api_solr_log", $solrDate);
+      $query->addDeleteQuery($deleteCondition)->addCommit();
+
+      $connector->update($query);
+    }
+  }
 }

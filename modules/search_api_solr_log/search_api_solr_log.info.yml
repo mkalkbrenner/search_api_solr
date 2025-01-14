@@ -3,6 +3,7 @@ type: module
 description: 'Logs system events using Solr.'
 core_version_requirement: ^10.2 || ^11.0
 package: 'search_api'
+configure: 'search_api_solr_log.settings'
 dependencies:
   - facets:better_exposed_filters
   - search_api_solr:search_api_solr
