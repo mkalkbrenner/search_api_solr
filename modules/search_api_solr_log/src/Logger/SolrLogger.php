@@ -52,13 +52,12 @@ class SolrLogger implements LoggerInterface {
   /**
    * Constructor.
    *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   *   The entity type manager.
    * @param \Drupal\Core\Logger\LogMessageParserInterface $parser
    *   The parser to use when extracting message variables.
+   * @param \Solarium\Core\Query\Helper $helper
+   *   The solarium query helper
    */
   public function __construct(
-    protected EntityTypeManagerInterface $entityTypeManager,
     protected LogMessageParserInterface $parser,
     protected Helper $helper,
   ) {}
@@ -123,7 +122,7 @@ class SolrLogger implements LoggerInterface {
   public static function getConnector() : ?SolrConnectorInterface {
     try {
       $index = Index::load('search_api_solr_log');
-      if ($index && $index->isActive() && $index->hasValidServer()) {
+      if ($index && $index->hasValidServer() && $index->isServerEnabled()) {
         if ($server = $index->getServerInstance()) {
           $backend = $server->getBackend();
           if ($backend instanceof SolrBackendInterface) {

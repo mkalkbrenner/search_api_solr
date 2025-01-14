@@ -2,7 +2,7 @@ langcode: en
 status: true
 dependencies:
   config:
-    - search_api.server.jt_price_list_solr_server
+    - search_api.server.search_api_solr_log_server
   module:
     - search_api_solr
 third_party_settings:
@@ -157,4 +157,4 @@ options:
   delete_on_fail: true
   index_directly: false
   track_changes_in_references: false
-server: jt_price_list_solr_server
+server: search_api_solr_log_server

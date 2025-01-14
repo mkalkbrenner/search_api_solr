@@ -1,4 +1,0 @@
-search_api_solr_log.clear_logs:
-  title: 'Clear'
-  route_name: search_api_solr_log.confirm
-  base_route: view.search_api_solr_log.overview

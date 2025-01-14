@@ -1608,8 +1608,8 @@ display:
           label: User
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: '{{ uid | raw}}'
             make_link: false
             path: ''
             absolute: false
@@ -1659,6 +1659,28 @@ display:
           multi_type: separator
           multi_separator: ', '
           format_plural_values: {  }
+      pager:
+        type: full
+        options:
+          offset: 0
+          pagination_heading_level: h4
+          items_per_page: 50
+          total_pages: null
+          id: 0
+          tags:
+            next: 'Next ›'
+            previous: '‹ Previous'
+            first: '« First'
+            last: 'Last »'
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          quantity: 9
       filters:
         index_id:
           id: index_id
@@ -2114,6 +2136,7 @@ display:
         type: fields
         options: {  }
       defaults:
+        pager: false
         style: false
         row: false
         fields: false
