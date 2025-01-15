@@ -4,7 +4,6 @@ namespace Drupal\search_api_solr_log\Logger;
 
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\DependencyInjection\DependencySerializationTrait;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LogMessageParserInterface;
 use Drupal\Core\Logger\RfcLoggerTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
@@ -12,6 +11,7 @@ use Drupal\search_api\Entity\Index;
 use Drupal\search_api\SearchApiException;
 use Drupal\search_api_solr\SolrBackendInterface;
 use Drupal\search_api_solr\SolrConnectorInterface;
+use Drupal\search_api_solr\Utility\Utility;
 use Psr\Log\LoggerInterface;
 use Solarium\Core\Query\Helper;
 
@@ -40,6 +40,8 @@ class SolrLogger implements LoggerInterface {
     'referer' => 'ss_referer',
     'hostname' => 'ss_hostname',
     'timestamp' => 'dt_timestamp',
+    'site_hash' => 'ss_site_hash',
+    'tags' => 'sm_tags',
   ];
 
   /**
@@ -80,12 +82,14 @@ class SolrLogger implements LoggerInterface {
     if (!$connector) {
       return;
     }
+    $config = \Drupal::config('search_api_solr_log.settings');
     // Convert PSR3-style messages to \Drupal\Component\Render\FormattableMarkup
     // style, so they can be translated too in runtime.
     $message_placeholders = $this->parser->parseMessagePlaceholders($message, $context);
     $channel = mb_substr($context['channel'], 0, 64);
     $values = [
       'id' => 'search_api_solr_log:' . $channel . ':' . uniqid(),
+      static::$logFieldMappings['site_hash'] => Utility::getSiteHash(),
       // This helps to clear/filter the documents.
       'index_id' => 'search_api_solr_log',
       static::$logFieldMappings['uid'] => $context['uid'],
@@ -99,9 +103,13 @@ class SolrLogger implements LoggerInterface {
       static::$logFieldMappings['referer'] => $context['referer'],
       static::$logFieldMappings['hostname'] => mb_substr($context['ip'], 0, 128),
       static::$logFieldMappings['timestamp'] => $this->helper->formatDate($context['timestamp']),
+      static::$logFieldMappings['tags'] => $config->get('tags') ?? [],
     ];
     $query = $connector->getUpdateQuery();
-    $query->addDocument($query->createDocument($values))->addCommit();
+    $query->addDocument($query->createDocument($values));
+    if ('immediate' === (string) ($config->get('commit') ?? 'auto')) {
+      $query->addCommit();
+    }
     try {
       $connector->update($query);
     }
@@ -158,6 +166,22 @@ class SolrLogger implements LoggerInterface {
       $query->addDeleteQuery($deleteCondition)->addCommit();
 
       $connector->update($query);
+    }
+  }
+
+  /**
+   * Delete old log events.
+   */
+  public static function commit(): void {
+    try {
+      if ($connector = self::getConnector()) {
+        $query = $connector->getUpdateQuery();
+        $query->addCommit();
+        $connector->update($query);
+      }
+    }
+    catch (\Throwable $e) {
+      // Fall back to Solr's auto commit handling.
     }
   }
 }

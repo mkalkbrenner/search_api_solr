@@ -4,3 +4,14 @@ search_api_solr_log.settings:
     days_to_keep:
       type: int
       label: 'Days to keep logs'
+    commit:
+      type: string
+      label: 'Commit strategy: auto, immediate, request'
+    tags:
+      type: sequence
+      label: 'Days to keep logs'
+      sequence:
+        type: string
+    site_hash:
+      type: bool
+      label: 'Limit report to current site'

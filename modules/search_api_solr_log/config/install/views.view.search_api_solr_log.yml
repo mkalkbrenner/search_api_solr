@@ -78,346 +78,6 @@ display:
           use_highlighting: false
           multi_type: separator
           multi_separator: ', '
-        severity:
-          id: severity
-          table: search_api_index_search_api_solr_log
-          field: severity
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api_numeric
-          label: Severity
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ''
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          format_plural_values: {  }
-        type:
-          id: type
-          table: search_api_index_search_api_solr_log
-          field: type
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api
-          label: Type
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-        timestamp:
-          id: timestamp
-          table: search_api_index_search_api_solr_log
-          field: timestamp
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api_date
-          label: Date
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          date_format: short
-          custom_date_format: ''
-          timezone: ''
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-        variables:
-          id: variables
-          table: search_api_index_search_api_solr_log
-          field: variables
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api
-          label: Variables
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-        message:
-          id: message
-          table: search_api_index_search_api_solr_log
-          field: message
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api
-          label: Message
-          exclude: false
-          alter:
-            alter_text: true
-            text: '{{ message | raw }}'
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          replace_variables: 1
-        uid:
-          id: uid
-          table: search_api_index_search_api_solr_log
-          field: uid
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api_numeric
-          label: User
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ''
-          format_plural: false
-          format_plural_string: !!binary Aw==
-          prefix: ''
-          suffix: ''
-          link_to_item: false
-          use_highlighting: false
-          multi_type: separator
-          multi_separator: ', '
-          format_plural_values: {  }
       pager:
         type: none
         options:
@@ -487,77 +147,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        search_api_fulltext:
-          id: search_api_fulltext
-          table: search_api_index_search_api_solr_log
-          field: search_api_fulltext
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: search_api_fulltext
-          operator: and
-          value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: search_api_fulltext_op
-            label: 'Fulltext search'
-            description: ''
-            use_operator: false
-            operator: search_api_fulltext_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: search_api_fulltext
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              administrator: '0'
-              anonymous: '0'
-              basic_page_author: '0'
-              customer: '0'
-              customer_main_user: '0'
-              customer_masquerade: '0'
-              eventmanagement: '0'
-              shop_marketing_role: '0'
-              manufacturer_site_author: '0'
-              price_list_user: '0'
-              price_list_viewer: '0'
-              product_manager: '0'
-              technical_support_role: '0'
-              blog_author_special: '0'
-              webfaktura_system_role: '0'
-              azubi: '0'
-            expose_fields: false
-            placeholder: ''
-            searched_fields_id: search_api_fulltext_searched_fields
-            value_maxlength: 128
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          parse_mode: terms
-          min_length: null
-          fields: {  }
-        severity:
-          id: severity
-          table: search_api_index_search_api_solr_log
-          field: severity
-          plugin_id: search_api_numeric
-        type:
-          id: type
-          table: search_api_index_search_api_solr_log
-          field: type
-          plugin_id: search_api_string
       filter_groups:
         operator: AND
         groups:
@@ -1659,6 +1248,59 @@ display:
           multi_type: separator
           multi_separator: ', '
           format_plural_values: {  }
+        tags:
+          id: tags
+          table: search_api_index_search_api_solr_log
+          field: tags
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: search_api
+          label: Tags
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          link_to_item: false
+          use_highlighting: false
+          multi_type: separator
+          multi_separator: ', '
       pager:
         type: full
         options:
@@ -1752,22 +1394,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              administrator: '0'
-              anonymous: '0'
-              basic_page_author: '0'
-              customer: '0'
-              customer_main_user: '0'
-              customer_masquerade: '0'
-              eventmanagement: '0'
-              shop_marketing_role: '0'
-              manufacturer_site_author: '0'
-              price_list_user: '0'
-              price_list_viewer: '0'
-              product_manager: '0'
-              technical_support_role: '0'
-              blog_author_special: '0'
-              webfaktura_system_role: '0'
-              azubi: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1783,7 +1409,7 @@ display:
           hierarchy: false
           label_display: visible
           facet:
-            query_operator: and
+            query_operator: or
             min_count: 1
             show_numbers: true
             processor_configs: {  }
@@ -1813,22 +1439,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              administrator: '0'
-              anonymous: '0'
-              basic_page_author: '0'
-              customer: '0'
-              customer_main_user: '0'
-              customer_masquerade: '0'
-              eventmanagement: '0'
-              shop_marketing_role: '0'
-              manufacturer_site_author: '0'
-              price_list_user: '0'
-              price_list_viewer: '0'
-              product_manager: '0'
-              technical_support_role: '0'
-              blog_author_special: '0'
-              webfaktura_system_role: '0'
-              azubi: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1851,6 +1461,56 @@ display:
               display_value_widget_order:
                 weights:
                   sort: 40
+                settings:
+                  sort: ASC
+        facets_tags:
+          id: facets_tags
+          table: search_api_index_search_api_solr_log
+          field: facets_tags
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: facets_filter
+          operator: '='
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: Tags
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: tags
+            required: false
+            remember: false
+            multiple: true
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          hierarchy: false
+          label_display: visible
+          facet:
+            query_operator: and
+            min_count: 1
+            show_numbers: true
+            processor_configs:
+              raw_value_widget_order:
+                weights:
+                  sort: 50
                 settings:
                   sort: ASC
         facets_hostname:
@@ -1879,22 +1539,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              administrator: '0'
-              anonymous: '0'
-              basic_page_author: '0'
-              customer: '0'
-              customer_main_user: '0'
-              customer_masquerade: '0'
-              eventmanagement: '0'
-              shop_marketing_role: '0'
-              manufacturer_site_author: '0'
-              price_list_user: '0'
-              price_list_viewer: '0'
-              product_manager: '0'
-              technical_support_role: '0'
-              blog_author_special: '0'
-              webfaktura_system_role: '0'
-              azubi: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1945,23 +1589,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              0: '0'
-              administrator: '0'
-              anonymous: '0'
-              basic_page_author: '0'
-              customer: '0'
-              customer_main_user: '0'
-              customer_masquerade: '0'
-              eventmanagement: '0'
-              shop_marketing_role: '0'
-              manufacturer_site_author: '0'
-              price_list_user: '0'
-              price_list_viewer: '0'
-              product_manager: '0'
-              technical_support_role: '0'
-              blog_author_special: '0'
-              webfaktura_system_role: '0'
-              azubi: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -2021,22 +1648,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-              administrator: '0'
-              anonymous: '0'
-              basic_page_author: '0'
-              customer: '0'
-              customer_main_user: '0'
-              customer_masquerade: '0'
-              eventmanagement: '0'
-              shop_marketing_role: '0'
-              manufacturer_site_author: '0'
-              price_list_user: '0'
-              price_list_viewer: '0'
-              product_manager: '0'
-              technical_support_role: '0'
-              blog_author_special: '0'
-              webfaktura_system_role: '0'
-              azubi: '0'
             expose_fields: false
             placeholder: ''
             searched_fields_id: search_api_fulltext_searched_fields

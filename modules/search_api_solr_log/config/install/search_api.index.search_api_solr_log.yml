@@ -49,23 +49,7 @@ third_party_settings:
       limit_to_content_language: false
       include_language_independent: true
       use_language_undefined_as_fallback_language: false
-      specific_languages:
-        en: '0'
-        de: '0'
-        fr: '0'
-        pl: '0'
-        it: '0'
-        es: '0'
-        cs: '0'
-        hu: '0'
-        ro: '0'
-        bg: '0'
-        el: '0'
-        hr: '0'
-        sk: '0'
-        sl: '0'
-        sr: '0'
-        nl: '0'
+      specific_languages: {  }
       use_universal_collation: false
 id: search_api_solr_log
 name: 'Solr Log'
@@ -112,6 +96,16 @@ field_settings:
     datasource_id: solr_document
     property_path: its_severity
     type: integer
+  site_hash:
+    label: 'Site Hash'
+    datasource_id: solr_document
+    property_path: ss_site_hash
+    type: string
+  tags:
+    label: Tags
+    datasource_id: solr_document
+    property_path: sm_tags
+    type: string
   timestamp:
     label: Timestamp
     datasource_id: solr_document
