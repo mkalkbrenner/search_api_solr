@@ -86,6 +86,11 @@ field_settings:
     datasource_id: solr_document
     property_path: ts_X3b_en_message
     type: text
+  message_string:
+    label: 'Message String'
+    datasource_id: solr_document
+    property_path: ss_message
+    type: string
   referer:
     label: Referer
     datasource_id: solr_document

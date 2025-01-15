@@ -34,6 +34,7 @@ class SolrLogger implements LoggerInterface {
     'message' => 'tus_message',
     'variables' => 'zs_variables',
     'message_en' => 'ts_X3b_en_message',
+    'message_facet' => 'ss_message',
     'severity' => 'its_severity',
     'link' => 'ss_link',
     'location' => 'ss_location',
@@ -87,6 +88,8 @@ class SolrLogger implements LoggerInterface {
     // style, so they can be translated too in runtime.
     $message_placeholders = $this->parser->parseMessagePlaceholders($message, $context);
     $channel = mb_substr($context['channel'], 0, 64);
+    $message_en = $this->t(Xss::filterAdmin((string) $message), (array) $message_placeholders)->render();
+    $message_facet = mb_substr($message_en, 0, 255);
     $values = [
       'id' => 'search_api_solr_log:' . $channel . ':' . uniqid(),
       static::$logFieldMappings['site_hash'] => Utility::getSiteHash(),
@@ -96,7 +99,8 @@ class SolrLogger implements LoggerInterface {
       static::$logFieldMappings['type'] => $channel,
       static::$logFieldMappings['message'] => (string) $message,
       static::$logFieldMappings['variables'] => json_encode($message_placeholders, JSON_PRETTY_PRINT),
-      static::$logFieldMappings['message_en'] => $this->t(Xss::filterAdmin((string) $message), (array) $message_placeholders)->render(),
+      static::$logFieldMappings['message_en'] => $message_en,
+      static::$logFieldMappings['message_facet'] => $message_facet,
       static::$logFieldMappings['severity'] => $level,
       static::$logFieldMappings['link'] => $context['link'],
       static::$logFieldMappings['location'] => $context['request_uri'],
