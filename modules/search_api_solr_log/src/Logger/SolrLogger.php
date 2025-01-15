@@ -88,8 +88,11 @@ class SolrLogger implements LoggerInterface {
     // style, so they can be translated too in runtime.
     $message_placeholders = $this->parser->parseMessagePlaceholders($message, $context);
     $channel = mb_substr($context['channel'], 0, 64);
-    $message_en = $this->t(Xss::filterAdmin((string) $message), (array) $message_placeholders)->render();
+    $message_en = $this->t(Xss::filterAdmin((string) $message), $message_placeholders)->render();
     $message_facet = mb_substr($message_en, 0, 255);
+    if ('page not found' === $channel || 'access denied' === $channel) {
+      $message_facet = $message_placeholders['@uri'] ?? $message_facet;
+    }
     $values = [
       'id' => 'search_api_solr_log:' . $channel . ':' . uniqid(),
       static::$logFieldMappings['site_hash'] => Utility::getSiteHash(),
