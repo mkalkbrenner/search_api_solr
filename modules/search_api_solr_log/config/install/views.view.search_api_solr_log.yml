@@ -1148,8 +1148,8 @@ display:
           label: User
           exclude: false
           alter:
-            alter_text: false
-            text: ''
+            alter_text: true
+            text: '{{ uid | raw}}'
             make_link: false
             path: ''
             absolute: false
