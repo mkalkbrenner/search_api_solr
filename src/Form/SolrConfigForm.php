@@ -59,7 +59,7 @@ class SolrConfigForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ServerInterface $search_api_server = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?ServerInterface $search_api_server = NULL) {
     $form['#title'] = $this->t('List of configuration files found');
 
     try {

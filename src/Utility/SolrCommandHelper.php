@@ -123,7 +123,7 @@ class SolrCommandHelper extends CommandHelper {
    * @throws \Drupal\search_api\SearchApiException
    * @throws \Drupal\search_api_solr\SearchApiSolrException
    */
-  public function finalizeIndexCommand(array $indexIds = NULL, $force = FALSE) {
+  public function finalizeIndexCommand(?array $indexIds = NULL, $force = FALSE) {
     $servers = search_api_solr_get_servers();
 
     if ($force) {
@@ -208,7 +208,7 @@ class SolrCommandHelper extends CommandHelper {
    * @throws \Drupal\search_api\SearchApiException
    *   Thrown if one of the affected indexes had an invalid tracker set.
    */
-  public function indexParallelCommand(array $indexIds = NULL, $threads = 2, $batchSize = NULL): array {
+  public function indexParallelCommand(?array $indexIds = NULL, $threads = 2, $batchSize = NULL): array {
     $indexes = $this->loadIndexes($indexIds);
     if (!$indexes) {
       return [];

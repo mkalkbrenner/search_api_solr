@@ -892,7 +892,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   /**
    * {@inheritdoc}
    */
-  public function getQueryHelper(QueryInterface $query = NULL) {
+  public function getQueryHelper(?QueryInterface $query = NULL) {
     if ($query) {
       return $query->getHelper();
     }

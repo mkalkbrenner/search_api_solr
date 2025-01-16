@@ -399,7 +399,7 @@ interface SolrConnectorInterface extends ConfigurableInterface {
    * @return \Solarium\Core\Query\Helper
    *   A Solarium query helper.
    */
-  public function getQueryHelper(QueryInterface $query = NULL);
+  public function getQueryHelper(?QueryInterface $query = NULL);
 
   /**
    * Executes a search query and returns the raw response.

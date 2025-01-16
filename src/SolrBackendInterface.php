@@ -148,7 +148,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    *
    * @throws \Drupal\search_api\SearchApiException
    */
-  public function getDocuments(IndexInterface $index, array $items, UpdateQuery $update_query = NULL);
+  public function getDocuments(IndexInterface $index, array $items, ?UpdateQuery $update_query = NULL);
 
   /**
    * Extract a file's content using tika within a solr server.
