@@ -74,7 +74,7 @@ class SolrLogger implements LoggerInterface {
     }
     // Remove backtrace and exception since they may contain
     // an unserializable variable.
-    unset($context['exception']);
+    unset($context['backtrace'], $context['exception']);
     try {
       $connector = self::getConnector();
     } catch (SearchApiException $e) {

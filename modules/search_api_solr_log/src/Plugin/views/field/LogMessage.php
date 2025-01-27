@@ -63,10 +63,18 @@ class LogMessage extends FieldPluginBase {
       $variables_json = $values->{'solr_document/zs_variables'}[0] ?? '{}';
       $variables = json_decode($variables_json, TRUE);
 
+      if ($variables === NULL) {
+        return Xss::filterAdmin($value);
+      }
+
+      // Ensure backtrace strings are properly formatted.
       if (isset($variables['@backtrace_string'])) {
         $variables['@backtrace_string'] = new FormattableMarkup(
           '<pre class="backtrace">@backtrace_string</pre>', $variables
         );
+        if (!str_contains($value, '@backtrace_string')) {
+          $value .= ' @backtrace_string';
+        }
       }
 
       return $this->t(Xss::filterAdmin($value), (array) $variables)->render();
