@@ -162,13 +162,11 @@ class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
       $exp->_checkpoint('20_products'),
       'q="*:*"',
       'fl="' . $exp->_field('search_api_id') . '"',
-      // Rows per shard!
-      'rows="10"'
+      'rows="20"'
     );
     $query = $queryHelper->createQuery($index);
     $queryHelper->setStreamingExpression($query, $topic_expression);
     $results = $query->execute();
-    // We have two shards for techproducts. Both return 10 rows.
     $this->assertEquals(20, $results->getResultCount());
 
     $query = $queryHelper->createQuery($index);
@@ -190,7 +188,6 @@ class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
     $query = $queryHelper->createQuery($index);
     $queryHelper->setStreamingExpression($query, $topic_expression);
     $results = $query->execute();
-    // We have two shards for techproducts. Both return 10 rows.
     $this->assertEquals(20, $results->getResultCount());
   }
 
