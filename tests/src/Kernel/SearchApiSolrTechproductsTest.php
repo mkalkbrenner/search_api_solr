@@ -106,10 +106,14 @@ class SearchApiSolrTechproductsTest extends SolrBackendTestBase {
   /**
    * Tests streaming expressions.
    *
+   * Solr 7, 8 and early 9 versions contain a bug with checkpoints and shards.
+   * So the test runs with Solr 9 and above only.
+   *
    * @group not_solr3
    * @group not_solr4
    * @group not_solr5
    * @group not_solr7
+   * @group not_solr8
    */
   public function testStreamingExpressions() {
     if ('false' === SOLR_CLOUD) {
