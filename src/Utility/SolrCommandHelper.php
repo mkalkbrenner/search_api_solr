@@ -65,9 +65,9 @@ class SolrCommandHelper extends CommandHelper {
    *
    * @param string $server_id
    *   The ID of the server.
-   * @param string $file_name
+   * @param string|null $file_name
    *   The file name of the config zip that should be created.
-   * @param string $solr_version
+   * @param string|null $solr_version
    *   The targeted Solr version.
    *
    * @throws \Drupal\search_api\SearchApiException
@@ -75,7 +75,7 @@ class SolrCommandHelper extends CommandHelper {
    * @throws \ZipStream\Exception\FileNotReadableException
    * @throws \ZipStream\Exception\OverflowException
    */
-  public function getServerConfigCommand($server_id, $file_name = NULL, $solr_version = NULL) {
+  public function getServerConfigCommand($server_id, ?string $file_name = NULL, ?string $solr_version = NULL) {
     $server = $this->getServer($server_id);
 
     if ($solr_version) {

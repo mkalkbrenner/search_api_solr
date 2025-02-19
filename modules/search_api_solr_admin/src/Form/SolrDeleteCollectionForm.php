@@ -22,7 +22,7 @@ class SolrDeleteCollectionForm extends SolrAdminFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ServerInterface $search_api_server = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?ServerInterface $search_api_server = NULL) {
     $this->searchApiServer = $search_api_server;
 
     $core = $this->searchApiServer->getBackendConfig()['connector_config']['core'];

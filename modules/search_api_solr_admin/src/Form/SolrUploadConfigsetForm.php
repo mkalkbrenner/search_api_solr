@@ -23,7 +23,7 @@ class SolrUploadConfigsetForm extends SolrAdminFormBase {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state, ServerInterface $search_api_server = NULL) {
+  public function buildForm(array $form, FormStateInterface $form_state, ?ServerInterface $search_api_server = NULL) {
     $this->searchApiServer = $search_api_server;
 
     $connector = Utility::getSolrCloudConnector($this->searchApiServer);

@@ -45,7 +45,7 @@ class BasicAuthTestSolrConnector extends BasicAuthSolrConnector {
   /**
    * {@inheritdoc}
    */
-  public function execute(QueryInterface $query, Endpoint $endpoint = NULL) {
+  public function execute(QueryInterface $query, ?Endpoint $endpoint = NULL) {
     self::$query = $query;
 
     if ($this->intercept) {
@@ -59,7 +59,7 @@ class BasicAuthTestSolrConnector extends BasicAuthSolrConnector {
   /**
    * {@inheritdoc}
    */
-  public function executeRequest(Request $request, Endpoint $endpoint = NULL) {
+  public function executeRequest(Request $request, ?Endpoint $endpoint = NULL) {
     self::$request = $request;
 
     if ($this->intercept) {

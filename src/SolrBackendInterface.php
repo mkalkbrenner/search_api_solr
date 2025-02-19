@@ -140,7 +140,7 @@ interface SolrBackendInterface extends AutocompleteBackendInterface {
    *   The Search API index.
    * @param \Drupal\search_api\Item\ItemInterface[] $items
    *   An array of items to get documents for.
-   * @param \Solarium\QueryType\Update\Query\Query $update_query
+   * @param \Solarium\QueryType\Update\Query\Query|null $update_query
    *   The existing update query the documents should be added to.
    *
    * @return \Solarium\QueryType\Update\Query\Document[]
