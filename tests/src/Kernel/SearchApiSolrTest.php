@@ -148,12 +148,44 @@ class SearchApiSolrTest extends SolrBackendTestBase {
   }
 
   /**
+   * Regression tests for facets with counts of 0.
+   *
+   * @see https://www.drupal.org/node/1658964
+   */
+  protected function regressionTest1658964() {
+    return;
+
+    // @todo activate this regression test.
+    // @codingStandardsIgnoreStart
+    $query = $this->buildSearch();
+    $facets['type'] = [
+      'field' => 'type',
+      'limit' => 0,
+      'min_count' => 0,
+      'missing' => TRUE,
+    ];
+    $query->setOption('search_api_facets', $facets);
+    $query->addCondition('type', 'article');
+    $query->range(0, 0);
+    $results = $query->execute();
+    $expected = [
+      ['count' => 2, 'filter' => '"article"'],
+      ['count' => 0, 'filter' => '!'],
+      ['count' => 0, 'filter' => '"item"'],
+    ];
+    $facets = $results->getExtraData('search_api_facets', [])['type'];
+    usort($facets, [$this, 'facetCompare']);
+    $this->assertEquals($expected, $facets, 'Correct facets were returned');
+    // @codingStandardsIgnoreEnd
+  }
+
+  /**
    * Regression tests for #2469547.
    */
   protected function regressionTest2469547() {
     return;
 
-    // @todo Fix coding standard.
+    // @todo activate this regression test.
     // @codingStandardsIgnoreStart
     $query = $this->buildSearch();
     $facets = [];
