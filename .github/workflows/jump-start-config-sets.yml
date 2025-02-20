@@ -30,7 +30,7 @@ jobs:
             - name: Setup PHP
               uses: shivammathur/setup-php@v2
               with:
-                php-version: 8.2
+                php-version: 8.3
                 extensions: dom, curl, libxml, mbstring, zip, pdo, sqlite, pdo_sqlite, bcmath, intl, gd, iconv, json, simplexml
                 ini-values: memory_limit=256M,post_max_size=256M
                 coverage: none
@@ -276,7 +276,7 @@ jobs:
           solarium: ['solarium/solarium:"dev-master as 6.3.99"']
           experimental: [true]
 
-      name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
+      name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}, less contrib
 
       env:
         COMPOSER_MEMORY_LIMIT: -1
