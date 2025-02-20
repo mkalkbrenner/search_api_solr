@@ -341,6 +341,7 @@ jobs:
             php -v
             composer config platform.php ${{ matrix.php }}.0
             composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
+            composer install --no-interaction
             composer require ${{ matrix.solarium }} drupal/search_api_solr:${{ env.NEXT_MODULE_VERSION }} --no-interaction
             # search_api was installed as dependency above. This is a required check! Now switch to the latest dev version.
             composer require drupal/search_api:1.x-dev --no-interaction
