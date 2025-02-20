@@ -165,7 +165,7 @@ jobs:
             matrix:
                 drupal: ['10.4']
                 solr: ['4', '5', '6', '7', '8', '9']
-                php: ['8.2', '8.3']
+                php: ['8.2', '8.3', '8.4']
                 solarium: ['solarium/solarium:"dev-master as 6.3.99"']
                 experimental: [false]
                 include:
@@ -272,7 +272,7 @@ jobs:
         matrix:
           drupal: ['11.0']
           solr: ['4', '5', '6', '7', '8', '9']
-          php: ['8.3']
+          php: ['8.3', '8.4']
           solarium: ['solarium/solarium:"dev-master as 6.3.99"']
           experimental: [true]
 
@@ -377,7 +377,7 @@ jobs:
         matrix:
           drupal: ['10.4']
           solr: ['3']
-          php: ['8.2', '8.3']
+          php: ['8.2', '8.3', '8.4']
           experimental: [false]
 
       name: Drupal ${{ matrix.drupal }}, Solr ${{ matrix.solr }}, PHP ${{ matrix.php }}
