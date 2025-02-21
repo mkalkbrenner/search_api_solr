@@ -77,11 +77,6 @@
        startup parameter to define the modules to load globally.  For more info
        see https://solr.apache.org/guide/solr/latest/configuration-guide/solr-modules.html
     -->
-  <!-- <lib/> directives are deprecated and will be removed in Solr 10.0.
-    Please set the environment varibale: SOLR_MODULES="extraction,langid,ltr,analysis-extras"
-    
-  -->
-  <!--
   <lib dir="${solr.install.dir:../../../..}/modules/extraction/lib" regex=".*\.jar" />
 
   <lib dir="${solr.install.dir:../../../..}/modules/langid/lib/" regex=".*\.jar" />
@@ -89,8 +84,7 @@
   <lib dir="${solr.install.dir:../../../..}/modules/ltr/lib/" regex=".*\.jar" />
 
   <lib dir="${solr.install.dir:../../../..}/modules/analysis-extras/lib/" regex=".*\.jar" />
-  -->
-  
+
   <!-- an exact 'path' can be used instead of a 'dir' to specify a
        specific jar file.  This will cause a serious error to be logged
        if it can't be loaded.
