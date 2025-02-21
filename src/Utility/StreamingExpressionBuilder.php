@@ -764,7 +764,7 @@ class StreamingExpressionBuilder extends ExpressionBuilder {
    * a very high fixed value makes no sense as this would waste memory in Solr
    * Cloud and might lead to out of memory exceptions. The numbers are prepared
    * via search_api_solr_cron(). If the cron hasn't run yet the function return
-   * 1024 as fallback.
+   * 512 as fallback.
    *
    * @return int
    *   Integer of the row limit.

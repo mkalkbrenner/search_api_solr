@@ -4842,7 +4842,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     }
     catch (\Exception $e) {
       // For non drupal indexes we only use the implicit "count" aggregation.
-      // Therefore we need one random facet. The only field we can be 99% sure
+      // Therefore, we need one random facet. The only field we can be 99% sure
       // that it exists in any index is _version_. max(_version_) should be the
       // most minimalistic facet we can think of.
       $query = $connector->getSelectQuery()->setRows(1);
