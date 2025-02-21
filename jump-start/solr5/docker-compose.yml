@@ -1,4 +1,3 @@
-version: '3'
 services:
   solr5:
     image: solr:5

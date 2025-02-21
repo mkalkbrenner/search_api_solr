@@ -253,9 +253,9 @@ jobs:
               run: |
                 docker ps
                 docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 wait-for-solr.sh
-                docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c techproducts -s 1 -rf 1 -d server/solr/configsets/sample_techproducts_configs/conf -n sample_techproducts_configs
+                docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c techproducts -d server/solr/configsets/sample_techproducts_configs/conf -n sample_techproducts_configs
                 docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bash -c "bin/post -c techproducts example/exampledocs/*.xml"
-                docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c checkpoints -s 1 -rf 1
+                docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c checkpoints
 
             - name: Run tests
               env:
@@ -363,9 +363,9 @@ jobs:
           run: |
             docker ps
             docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 wait-for-solr.sh
-            docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c techproducts -s 1 -rf 1 -d server/solr/configsets/sample_techproducts_configs/conf -n sample_techproducts_configs
+            docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c techproducts -d server/solr/configsets/sample_techproducts_configs/conf -n sample_techproducts_configs
             docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bash -c "bin/post -c techproducts example/exampledocs/*.xml"
-            docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c checkpoints -s 1 -rf 1
+            docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c checkpoints
 
         - name: Run tests
           env:
@@ -454,7 +454,7 @@ jobs:
             php -v
             composer config platform.php ${{ matrix.php }}.0
             composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
-            composer require drupal/search_api_solr:${{ env.NEXT_MODULE_VERSION }}  --no-interaction
+            composer require drupal/search_api_solr:${{ env.NEXT_MODULE_VERSION }} --no-interaction
             # search_api was installed as dependency above. This is a required check! Now switch to the latest dev version.
             composer require drupal/search_api:1.x-dev --no-interaction            
             composer require \
