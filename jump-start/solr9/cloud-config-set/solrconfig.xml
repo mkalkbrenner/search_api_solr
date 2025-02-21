@@ -38,7 +38,7 @@
        that you fully re-index after changing this setting as it can
        affect both how text is indexed and queried.
     -->
-  <luceneMatchVersion>${solr.luceneMatchVersion:9.1.0}</luceneMatchVersion>
+  <luceneMatchVersion>${solr.luceneMatchVersion:9.10.0}</luceneMatchVersion>
 
   <!-- <lib/> directives can be used to instruct Solr to load any Jars
        identified and use them to resolve any "plugins" specified in
@@ -77,13 +77,21 @@
        startup parameter to define the modules to load globally.  For more info
        see https://solr.apache.org/guide/solr/latest/configuration-guide/solr-modules.html
     -->
-  <lib dir="${solr.install.dir:../../../..}/modules/extraction/lib" regex=".*\.jar" />
+  <!-- <lib/> directives are deprecated and will be removed in Solr 10.0.
+Ensure to load the required module in your Solr server, for example by appending it to the comma-separated module list enviroment variable like SOLR_MODULES="${SOLR_MODULES},extraction/" -->
+<!-- <lib dir="${solr.install.dir:../../../..}/modules/extraction/lib" regex=".*\.jar" /> -->
 
-  <lib dir="${solr.install.dir:../../../..}/modules/langid/lib/" regex=".*\.jar" />
+  <!-- <lib/> directives are deprecated and will be removed in Solr 10.0.
+Ensure to load the required module in your Solr server, for example by appending it to the comma-separated module list enviroment variable like SOLR_MODULES="${SOLR_MODULES},langid/" -->
+<!-- <lib dir="${solr.install.dir:../../../..}/modules/langid/lib/" regex=".*\.jar" /> -->
 
-  <lib dir="${solr.install.dir:../../../..}/modules/ltr/lib/" regex=".*\.jar" />
+  <!-- <lib/> directives are deprecated and will be removed in Solr 10.0.
+Ensure to load the required module in your Solr server, for example by appending it to the comma-separated module list enviroment variable like SOLR_MODULES="${SOLR_MODULES},ltr/" -->
+<!-- <lib dir="${solr.install.dir:../../../..}/modules/ltr/lib/" regex=".*\.jar" /> -->
 
-  <lib dir="${solr.install.dir:../../../..}/modules/analysis-extras/lib/" regex=".*\.jar" />
+  <!-- <lib/> directives are deprecated and will be removed in Solr 10.0.
+Ensure to load the required module in your Solr server, for example by appending it to the comma-separated module list enviroment variable like SOLR_MODULES="${SOLR_MODULES},analysis-extras/" -->
+<!-- <lib dir="${solr.install.dir:../../../..}/modules/analysis-extras/lib/" regex=".*\.jar" /> -->
 
   <!-- an exact 'path' can be used instead of a 'dir' to specify a
        specific jar file.  This will cause a serious error to be logged
