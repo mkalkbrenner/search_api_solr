@@ -231,7 +231,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     $form['workarounds']['solr_version'] = [
       '#type' => 'select',
       '#title' => $this->t('Solr version override'),
-      '#description' => $this->t('Specify the Solr version manually in case it cannot be retrived automatically. The version can be found in the Solr admin interface under "Solr Specification Version" or "solr-spec"'),
+      '#description' => $this->t('Specify the Solr version manually in case it cannot be retrieved automatically. The version can be found in the Solr admin interface under "Solr Specification Version" or "solr-spec"'),
       '#options' => [
         '' => $this->t('Determine automatically'),
         '6' => '6.x',
@@ -257,7 +257,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
     $form['workarounds']['skip_schema_check'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Skip schema verification'),
-      '#description' => $this->t('Skip the automatic check for schema-compatibillity. Use this override if you are seeing an error-message about an incompatible schema.xml configuration file, and you are sure the configuration is compatible.'),
+      '#description' => $this->t('Skip the automatic check for schema-compatibility. Use this override if you are seeing an error-message about an incompatible schema.xml configuration file, and you are sure the configuration is compatible.'),
       '#default_value' => $this->configuration['skip_schema_check'] ?? FALSE,
     ];
 
