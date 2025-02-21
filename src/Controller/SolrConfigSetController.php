@@ -398,11 +398,15 @@ class SolrConfigSetController extends ControllerBase {
 
     if ($connector->isCloud() && isset($files['solrconfig.xml'])) {
       // solrcore.properties won’t work in SolrCloud mode (it is not read from
-      // ZooKeeper). Therefore we go for a more specific fallback to keep the
+      // ZooKeeper). Therefore, we go for a more specific fallback to keep the
       // possibility to set the property as parameter of the virtual machine.
       // @see https://lucene.apache.org/solr/guide/8_6/configuring-solrconfig-xml.html
       $files['solrconfig.xml'] = preg_replace('/solr.luceneMatchVersion:LUCENE_\d+/', 'solr.luceneMatchVersion:' . $solrcore_properties['solr.luceneMatchVersion'], $files['solrconfig.xml']);
       unset($files['solrcore.properties']);
+    }
+
+    if (version_compare($connector->getSolrVersion(), '9.8.0', '>=')) {
+      $files['solrconfig.xml'] = preg_replace('@<lib .*?/modules/([^/]+/).*?/>@', "<!-- <lib/> directives are deprecated and will be removed in Solr 10.0.\nEnsure to load the required module in your Solr server, for example by appending it to the comma-separated module list enviroment variable like SOLR_MODULES=\"\${SOLR_MODULES},$1\" -->\n<!-- $0 -->", $files['solrconfig.xml']);
     }
 
     $connector->alterConfigFiles($files, $solrcore_properties['solr.luceneMatchVersion'], $this->serverId);

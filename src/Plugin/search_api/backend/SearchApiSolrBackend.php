@@ -905,11 +905,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       ];
 
       if ($ping_server || $ping) {
+        $version = $connector->getSolrVersion(TRUE);
         $info[] = [
           'label' => $this->t('Detected Solr Version'),
-          'info' => $connector->getSolrVersion(TRUE),
+          'info' => $version,
           'status' => 'ok',
         ];
+        if (version_compare($connector->getSolrVersion(), '9.8.0', '>=')) {
+          $this->messenger()->addWarning($this->t('"lib" directives in solrconfig.xml are deprecated and will be removed in Solr 10.0. Ensure to load the required modules in your Solr 9.8 or higher server. One way is to set the SOLR_MODULES environment variable to include the modules required by Search API Solr per default: SOLR_MODULES="extraction,langid,ltr,analysis-extras".'));
+        }
 
         try {
           $endpoints[0] = $connector->getEndpoint();
