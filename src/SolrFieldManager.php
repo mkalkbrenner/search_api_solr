@@ -36,6 +36,8 @@ class SolrFieldManager implements SolrFieldManagerInterface {
    */
   protected $serverStorage;
 
+  protected bool $writeCache = TRUE;
+
   /**
    * Constructs a new SorFieldManager.
    *
@@ -79,7 +81,9 @@ class SolrFieldManager implements SolrFieldManagerInterface {
       }
       else {
         $field_definitions = $this->buildFieldDefinitions($index);
-        $this->cacheSet($cid, $field_definitions, Cache::PERMANENT, $index->getCacheTagsToInvalidate());
+        if ($this->writeCache) {
+          $this->cacheSet($cid, $field_definitions, Cache::PERMANENT, $index->getCacheTagsToInvalidate());
+        }
       }
 
       $this->fieldDefinitions[$index_id] = $field_definitions;
@@ -189,7 +193,7 @@ class SolrFieldManager implements SolrFieldManagerInterface {
           // The Search API can't deal with arbitrary item types. To make things
           // easier, just use one of those known to the Search API. Using strpos
           // matches point and trie variants as well, for example int, pint and
-          // tint. Finally this function only feeds the presets for the config
+          // tint. Finally, this function only feeds the presets for the config
           // form, so mismatches aren't critical.
           $type = $field->getDataType();
           if (strpos($type, 'text') !== FALSE) {
@@ -223,11 +227,14 @@ class SolrFieldManager implements SolrFieldManagerInterface {
         }
       }
       catch (SearchApiSolrException $e) {
-        $this->getLogger()
-          ->error('Could not connect to server %server, %message', [
-            '%server' => $server->id(),
-            '%message' => $e->getMessage(),
-          ]);
+        if (PHP_SAPI !== 'cli') {
+          $this->getLogger()
+            ->error('Could not connect to server %server, %message', [
+              '%server' => $server->id(),
+              '%message' => $e->getMessage(),
+            ]);
+        }
+        $this->writeCache = FALSE;
       }
     }
     return $fields;

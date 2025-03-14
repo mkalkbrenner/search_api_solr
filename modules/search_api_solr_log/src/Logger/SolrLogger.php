@@ -75,11 +75,7 @@ class SolrLogger implements LoggerInterface {
     // Remove backtrace and exception since they may contain
     // an unserializable variable.
     unset($context['backtrace'], $context['exception']);
-    try {
-      $connector = self::getConnector();
-    } catch (SearchApiException $e) {
-      return;
-    }
+    $connector = self::getConnector();
     if (!$connector) {
       return;
     }
@@ -131,8 +127,6 @@ class SolrLogger implements LoggerInterface {
    *
    * @return \Drupal\search_api_solr\SolrConnectorInterface|null
    *   Solr connector.
-   *
-   * @throws \Drupal\search_api\SearchApiException
    */
   public static function getConnector() : ?SolrConnectorInterface {
     try {
