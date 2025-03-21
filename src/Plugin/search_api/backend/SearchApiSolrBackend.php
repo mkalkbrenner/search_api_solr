@@ -284,7 +284,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * {@inheritdoc}
    */
   public function getPreferredSchemaVersion(): string {
-    $installed_version = InstalledVersions::getPrettyVersion('drupal/search_api_solr');
+    try {
+      $installed_version = InstalledVersions::getPrettyVersion('drupal/search_api_solr');
+    }
+    catch (\Exception $e) {
+      return self::SEARCH_API_SOLR_MIN_SCHEMA_VERSION;
+    }
 
     if (!preg_match('/^\d+\.\d+\.\d+$/', $installed_version, $matches)) {
       return self::SEARCH_API_SOLR_MIN_SCHEMA_VERSION;
