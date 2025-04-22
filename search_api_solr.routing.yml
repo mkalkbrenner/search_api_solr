@@ -57,6 +57,7 @@ entity.solr_field_type.disable_for_server:
     _controller: '\Drupal\search_api_solr\Controller\SolrFieldTypeController::disableOnServer'
   requirements:
     _permission: 'administer search_api'
+    _csrf_token: 'TRUE'
   options:
     _admin_route: true
     parameters:
@@ -73,6 +74,7 @@ entity.solr_field_type.enable_for_server:
     _controller: '\Drupal\search_api_solr\Controller\SolrFieldTypeController::enableOnServer'
   requirements:
     _permission: 'administer search_api'
+    _csrf_token: 'TRUE'
   options:
     _admin_route: true
     parameters:
@@ -202,6 +204,7 @@ entity.solr_cache.disable_for_server:
     _controller: '\Drupal\search_api_solr\Controller\SolrCacheController::disableOnServer'
   requirements:
     _permission: 'administer search_api'
+    _csrf_token: 'TRUE'
   options:
     _admin_route: true
     parameters:
@@ -218,6 +221,7 @@ entity.solr_cache.enable_for_server:
     _controller: '\Drupal\search_api_solr\Controller\SolrCacheController::enableOnServer'
   requirements:
     _permission: 'administer search_api'
+    _csrf_token: 'TRUE'
   options:
     _admin_route: true
     parameters:
@@ -249,6 +253,7 @@ entity.solr_request_handler.disable_for_server:
     _controller: '\Drupal\search_api_solr\Controller\SolrRequestHandlerController::disableOnServer'
   requirements:
     _permission: 'administer search_api'
+    _csrf_token: 'TRUE'
   options:
     _admin_route: true
     parameters:
@@ -265,6 +270,7 @@ entity.solr_request_handler.enable_for_server:
     _controller: '\Drupal\search_api_solr\Controller\SolrRequestHandlerController::enableOnServer'
   requirements:
     _permission: 'administer search_api'
+    _csrf_token: 'TRUE'
   options:
     _admin_route: true
     parameters:
@@ -296,6 +302,7 @@ entity.solr_request_dispatcher.disable_for_server:
     _controller: '\Drupal\search_api_solr\Controller\SolrRequestDispatcherController::disableOnServer'
   requirements:
     _permission: 'administer search_api'
+    _csrf_token: 'TRUE'
   options:
     _admin_route: true
     parameters:
@@ -312,6 +319,7 @@ entity.solr_request_dispatcher.enable_for_server:
     _controller: '\Drupal\search_api_solr\Controller\SolrRequestDispatcherController::enableOnServer'
   requirements:
     _permission: 'administer search_api'
+    _csrf_token: 'TRUE'
   options:
     _admin_route: true
     parameters:
