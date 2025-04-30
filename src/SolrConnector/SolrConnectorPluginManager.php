@@ -2,6 +2,7 @@
 
 namespace Drupal\search_api_solr\SolrConnector;
 
+use Drupal\Component\Plugin\Factory\FactoryInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\DefaultPluginManager;
@@ -35,4 +36,14 @@ class SolrConnectorPluginManager extends DefaultPluginManager {
     parent::__construct('Plugin/SolrConnector', $namespaces, $module_handler, 'Drupal\search_api_solr\SolrConnectorInterface', 'Drupal\search_api_solr\Annotation\SolrConnector');
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  protected function getFactory() : FactoryInterface {
+    if (!$this->factory) {
+      $this->factory = new SolrConnectorFactory($this, $this->pluginInterface);
+    }
+
+    return $this->factory;
+  }
 }
