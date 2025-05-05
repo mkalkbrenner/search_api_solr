@@ -2,7 +2,9 @@
 
 namespace Drupal\search_api_solr\Utility;
 
+use Drupal\search_api\Query\Query;
 use Drupal\search_api\Query\QueryInterface;
+use Drupal\search_api\Query\ResultSetInterface;
 use Drupal\search_api\Utility\QueryHelper;
 
 /**
@@ -33,6 +35,10 @@ class StreamingExpressionQueryHelper extends QueryHelper {
       self::$instances[$index_id] = new StreamingExpressionBuilder($query->getIndex());
     }
 
+    if ($query instanceof Query) {
+      $query->setQueryHelper($this);
+    }
+
     return self::$instances[$index_id];
   }
 
@@ -51,6 +57,45 @@ class StreamingExpressionQueryHelper extends QueryHelper {
       $query->setOption('solr_streaming_expression_comment', $comment);
     }
     $query->setOption('solr_streaming_expression', $streaming_expression);
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * The original implementation becomes slow if you run a lot of streaming
+   * expressions in a script. Usually, nobody needs the result cache in
+   * combination with streaming expressions. But the edge case of replacing a
+   * view's query with a streaming expression is covered by "caching" the last
+   * result only.
+   */
+  public function addResults(ResultSetInterface $results): void {
+    $this->results[$this] = $results;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getResults($search_id): ?ResultSetInterface {
+    if (isset($this->results[$this]) && $this->results[$this]->getQuery()->getSearchId(FALSE) !== $search_id) {
+      throw new \LogicException('The streaming expression query results are not cached.');
+    }
+    return $this->results[$this]?: NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getAllResults(): array {
+    return [$this->results[$this]];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function removeResults($search_id): void {
+    if (isset($this->results[$this]) && $this->results[$this]->getQuery()->getSearchId(FALSE) === $search_id) {
+      $this->results[$this] = NULL;
+    }
   }
 
 }
