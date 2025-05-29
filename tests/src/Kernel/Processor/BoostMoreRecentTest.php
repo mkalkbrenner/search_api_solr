@@ -199,4 +199,78 @@ class BoostMoreRecentTest extends ProcessorTestBase {
     ], array_keys($result->getResultItems()));
   }
 
+  /**
+   * Tests month resolution.
+   */
+  public function testMonthResolution(): void {
+    $this->nodes[0]->set('field_date', date('Y-m-d', strtotime('now -12 months')))->save();
+    $this->nodes[1]->set('field_date', date('Y-m-d', strtotime('now -11 days')))->save();
+    $this->indexItems();
+
+    // Try with default configuration.
+    $processor = $this->index->getProcessor('solr_boost_more_recent');
+    $configuration = [
+      'boosts' => [
+        'field_date' => [
+          'boost' => 1,
+          'resolution' => 'NOW/HOUR',
+          'm' => '3.16e-11',
+          'a' => 0.1,
+          'b' => 0.05,
+        ],
+      ],
+    ];
+    $processor->setConfiguration($configuration);
+    $this->index->setProcessors(['solr_boost_more_recent' => $processor]);
+    $this->index->save();
+
+    $query = new Query($this->index);
+    $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
+    $query->sort('search_api_id');
+    $result = $query->execute();
+
+    $this->assertGreaterThan(0, $result->getResultItems()['entity:node/1:en']->getScore());
+    $this->assertGreaterThan(0, $result->getResultItems()['entity:node/2:en']->getScore());
+
+    $this->assertEquals([
+      'entity:node/2:en',
+      'entity:node/1:en',
+    ], array_keys($result->getResultItems()));
+
+    // Change resolution to month and try again.
+    $configuration['boosts']['field_date']['resolution'] = 'NOW/MONTH';
+    $processor->setConfiguration($configuration);
+    $this->index->setProcessors(['solr_boost_more_recent' => $processor]);
+    $this->index->save();
+
+    $query = new Query($this->index);
+    $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
+    $query->sort('search_api_id');
+    $result = $query->execute();
+
+    $this->assertGreaterThan(0, $result->getResultItems()['entity:node/1:en']->getScore());
+    $this->assertGreaterThan(0, $result->getResultItems()['entity:node/2:en']->getScore());
+
+    $this->assertEquals([
+      'entity:node/2:en',
+      'entity:node/1:en',
+    ], array_keys($result->getResultItems()));
+
+    // Change date to 10 days ago and try again.
+    $this->nodes[1]->set('field_date', date('Y-m-d', strtotime('now -10 days')))->save();
+    $this->indexItems();
+
+    $query = new Query($this->index);
+    $query->sort('search_api_relevance', QueryInterface::SORT_DESC);
+    $query->sort('search_api_id');
+    $result = $query->execute();
+
+    $this->assertGreaterThan(0, $result->getResultItems()['entity:node/1:en']->getScore());
+    $this->assertGreaterThan(0, $result->getResultItems()['entity:node/2:en']->getScore());
+    $this->assertEquals([
+      'entity:node/2:en',
+      'entity:node/1:en',
+    ], array_keys($result->getResultItems()));
+  }  
+
 }
