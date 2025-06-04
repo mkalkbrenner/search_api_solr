@@ -69,7 +69,7 @@ https://github.com/docker-solr/docker-solr-examples/blob/master/docker-compose/d
 The preferred way for local development is to use DDEV where you can easily add
 [ddev-solr](https://github.com/ddev/ddev-solr) using this command:
 
-    $ ddev get ddev/ddev-solr
+    $ ddev add-on get ddev/ddev-solr
     $ ddev restart
 
 For Drupal and Search API Solr you need to configure a Search API server using
