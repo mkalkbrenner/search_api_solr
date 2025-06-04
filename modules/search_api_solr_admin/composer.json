@@ -17,13 +17,6 @@
     "support": {
         "issues": "https://www.drupal.org/project/issues/search_api_solr",
         "chat": "https://drupalchat.me/channel/search",
-        "source": "http://git.drupal.org/project/search_api_solr.git"
+        "source": "https://git.drupal.org/project/search_api_solr.git"
     },
-    "extra": {
-        "drush": {
-            "services": {
-                "drush.services.yml": ">=9"
-            }
-        }
-    }
 }
