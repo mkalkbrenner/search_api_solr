@@ -218,7 +218,8 @@ class SolrCommandHelper extends CommandHelper {
 
     /** @var \Drupal\search_api_solr\Entity\Index $index */
     foreach ($indexes as $index) {
-      if (!$index->status() || $index->isReadOnly()) {
+      if (!$index->status() || $index->isReadOnly() || (empty($indexIds) && !($index->getServerInstance()->getBackend() instanceof SolrBackendInterface))) {
+        // If the list of indexes is not limited, only handle Solr backends.
         continue;
       }
       $tracker = $index->getTrackerInstance();
