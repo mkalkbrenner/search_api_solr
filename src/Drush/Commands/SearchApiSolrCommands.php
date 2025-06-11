@@ -179,7 +179,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
   #[Usage(name: 'drush search-api-solr:finalize-index node_index', description: 'Finalize the index with the ID node_index.')]
   #[Usage(name: 'drush search-api-solr:finalize-index node_index --force', description: 'Index a maximum number of 100 items for the index with the ID node_index.')]
   public function finalizeIndex(?string $indexId = NULL, bool $force = FALSE): void {
-    $this->commandHelper->finalizeIndexCommand($indexId ? [$indexId] : $indexId, $force);
+    $this->commandHelper->finalizeIndexCommand($indexId ? [$indexId] : NULL, $force);
     $this->logger()->success('Solr %index_id finalized.', ['%index_id' => $indexId]);
   }
 
@@ -285,7 +285,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
     ?int $threads = 3,
     ?int $batchSize = -999, // @todo Real default is NULL.
   ): void {
-    $ids = $this->commandHelper->indexParallelCommand([$indexId], $threads, -999 === $batchSize ? NULL : $batchSize);
+    $ids = $this->commandHelper->indexParallelCommand($indexId ? [$indexId] : NULL, $threads, -999 === $batchSize ? NULL : $batchSize);
 
     $processes = [];
     $siteAlias = $this->siteAliasManager()->getSelf();
