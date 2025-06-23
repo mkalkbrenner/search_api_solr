@@ -79,7 +79,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    *
    * @aliases solr-reinstall-ft,sasm-reinstall-ft,search-api-solr-delete-and-reinstall-all-field-types,search-api-solr-multilingual-delete-and-reinstall-all-field-types
    */
-  #[Command(name: 'earch-api-solr:reinstall-fieldtypes', aliases: ['solr-reinstall-ft', 'sasm-reinstall-ft', 'search-api-solr-delete-and-reinstall-all-field-types', 'search-api-solr-multilingual-delete-and-reinstall-all-field-types'])]
+  #[Command(name: 'search-api-solr:reinstall-fieldtypes', aliases: ['solr-reinstall-ft', 'sasm-reinstall-ft', 'search-api-solr-delete-and-reinstall-all-field-types', 'search-api-solr-multilingual-delete-and-reinstall-all-field-types'])]
   #[Help(description: 'Re-install Solr Field Types from their yml files.')]
   #[Usage(name: 'drush search-api-solr:reinstall-fieldtypes', description: 'Deletes all Solr Field Type and re-installs them from their yml files.')]
   public function reinstallFieldtypes(): void {
