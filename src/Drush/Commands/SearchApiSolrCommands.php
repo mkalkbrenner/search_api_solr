@@ -95,7 +95,7 @@ class SearchApiSolrCommands extends DrushCommands implements StdinAwareInterface
    * @usage drush search-api-solr:install-missing-fieldtypes
    *   Install missing Solr Field Types.
    */
-  #[Command(name: 'earch-api-solr:install-missing-fieldtypes')]
+  #[Command(name: 'search-api-solr:install-missing-fieldtypes')]
   #[Help(description: 'Install missing Solr Field Types from their yml files.')]
   #[Usage(name: 'drush search-api-solr:install-missing-fieldtypes', description: 'Install missing Solr Field Types.')]
   public function installMissingFieldtypes(): void {
