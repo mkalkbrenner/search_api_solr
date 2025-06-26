@@ -93,7 +93,7 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   public function defaultConfiguration() {
     return [
       'scheme' => 'http',
-      'host' => 'localhost',
+      'host' => 'solr',
       'port' => 8983,
       'path' => '/',
       'core' => '',
