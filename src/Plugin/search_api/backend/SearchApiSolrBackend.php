@@ -1481,6 +1481,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       return;
     }
 
+    // Check connector availability.
+    if (!$this->isAvailable()) {
+      $this->getLogger()->error($this->t('Server %server is not available.', [
+        '%server' => $this->getServer()->label(),
+      ]));
+
+      return;
+    }
+
     try {
       $index_id = $this->getTargetedIndexId($index);
       $site_hash = $this->getTargetedSiteHash($index);
@@ -1514,6 +1523,15 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
    * @throws \Drupal\search_api\SearchApiException
    */
   public function deleteAllIndexItems(IndexInterface $index, $datasource_id = NULL) {
+    // Check connector availability.
+    if (!$this->isAvailable()) {
+      $this->getLogger()->error($this->t('Server %server is not available.', [
+        '%server' => $this->getServer()->label(),
+      ]));
+
+      return;
+    }
+
     // Since the index ID we use for indexing can contain arbitrary
     // prefixes, we have to escape it for use in the query.
     $connector = $this->getSolrConnector();
