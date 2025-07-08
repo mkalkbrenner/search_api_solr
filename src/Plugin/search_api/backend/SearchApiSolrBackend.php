@@ -326,6 +326,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'rows' => 10,
       'index_single_documents_fallback_count' => 10,
       'index_empty_text_fields' => FALSE,
+      'index_items_with_warnings' => TRUE,
       'suppress_missing_languages' => FALSE,
     ];
   }
@@ -374,6 +375,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $configuration['rows'] = (int) ($configuration['rows'] ?? 10);
     $configuration['index_single_documents_fallback_count'] = (int) ($configuration['index_single_documents_fallback_count'] ?? 10);
     $configuration['index_empty_text_fields'] = (bool) ($configuration['index_empty_text_fields'] ?? FALSE);
+    $configuration['index_items_with_warnings'] = (bool) ($configuration['index_items_with_warnings'] ?? TRUE);
     $configuration['suppress_missing_languages'] = (bool) ($configuration['suppress_missing_languages'] ?? FALSE);
 
     parent::setConfiguration($configuration);
@@ -439,6 +441,13 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#title' => $this->t('Index empty Fulltext fields'),
       '#description' => $this->t('By default, empty fields of type fulltext will be removed from the indexed document. In some cases like multilingual searches across different language-specific fields that might impact the IDF similarity and therefore the scoring in an unwanted way. By indexing a dummy value instead you can "normalize" the IDF by ensuring the same number of total documents for each field (per language).'),
       '#default_value' => $this->configuration['index_empty_text_fields'],
+    ];
+
+    $form['advanced']['index_items_with_warnings'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Index items with warnings'),
+      '#description' => $this->t('By default, an item will be indexed even if a Search API Processor, an event subscriber or something else added a warning to the item. That behaviour could be turned off. The item remains in the tracker for the next indexing run.'),
+      '#default_value' => $this->configuration['index_items_with_warnings'],
     ];
 
     $form['advanced']['retrieve_data'] = [
@@ -1258,6 +1267,10 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
 
     /** @var \Drupal\search_api\Item\ItemInterface[] $items */
     foreach ($items as $id => $item) {
+      if (!$this->configuration['index_items_with_warnings'] && $item->hasWarnings()) {
+        continue;
+      }
+
       $language_id = $item->getLanguage();
       if (
         $language_id === LanguageInterface::LANGCODE_NOT_APPLICABLE ||

@@ -60,6 +60,9 @@ plugin.plugin_configuration.search_api_backend.search_api_solr:
     index_empty_text_fields:
       type: boolean
       label: 'Indexes a dummy value instead removing the field.'
+    index_items_with_warnings:
+      type: boolean
+      label: 'Index items with warnings.'
     suppress_missing_languages:
       type: boolean
       label: 'Suppress warnings about missing languages.'
