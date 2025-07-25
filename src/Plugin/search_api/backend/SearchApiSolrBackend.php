@@ -2816,8 +2816,8 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             if (!$value && $value !== '0') {
               continue 2;
             }
-
-            if (is_object($value)) {
+            // Check whether it is an object that can be converted to string.
+            if (is_object($value) && method_exists($value, '__toString')) {
               // It might happen that we get TranslatableMarkup here.
               $value = (string) $value;
             }
