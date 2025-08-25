@@ -43,6 +43,7 @@ services:
   search_api_solr.streaming_expression_query_helper:
     class: Drupal\search_api_solr\Utility\StreamingExpressionQueryHelper
     arguments: ['@request_stack', '@module_handler', '@plugin.manager.search_api.parse_mode']
+  Drupal\search_api_solr\Utility\StreamingExpressionQueryHelper: '@search_api_solr.streaming_expression_query_helper'
 
   search_api_solr.configset_controller:
     class: Drupal\search_api_solr\Controller\SolrConfigSetController
