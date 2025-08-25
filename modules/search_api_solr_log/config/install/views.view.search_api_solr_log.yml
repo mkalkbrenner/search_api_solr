@@ -653,16 +653,19 @@ display:
                   post_query: 50
                 settings:
                   replacements: "7|debug\r\n6|info\r\n5|notice\r\n4|warning\r\n3|error\r\n2|critical\r\n1|alert\r\n0|emergency\r\n"
+                processor_id: replace
               raw_value_widget_order:
                 weights:
                   sort: 50
                 settings:
                   sort: ASC
+                processor_id: raw_value_widget_order
               display_value_widget_order:
                 weights:
                   sort: 40
                 settings:
                   sort: ASC
+                processor_id: display_value_widget_order
         facets_tags:
           id: facets_tags
           table: search_api_index_search_api_solr_log
@@ -713,6 +716,7 @@ display:
                   sort: 50
                 settings:
                   sort: ASC
+                processor_id: raw_value_widget_order
         facets_hostname:
           id: facets_hostname
           table: search_api_index_search_api_solr_log
@@ -763,6 +767,7 @@ display:
                   sort: 50
                 settings:
                   sort: ASC
+                processor_id: raw_value_widget_order
         facets_uid:
           id: facets_uid
           table: search_api_index_search_api_solr_log
@@ -813,11 +818,13 @@ display:
                   post_query: 50
                 settings:
                   keep_uid: 1
+                processor_id: search_api_solr_log_user
               raw_value_widget_order:
                 weights:
                   sort: 50
                 settings:
                   sort: ASC
+                processor_id: raw_value_widget_order
         facets_timestamp:
           id: facets_timestamp
           table: search_api_index_search_api_solr_log
@@ -867,6 +874,7 @@ display:
                 weights:
                   build: 100
                 settings: {  }
+                processor_id: hierarchy_processor
               date_item:
                 weights:
                   build: 35
@@ -875,6 +883,7 @@ display:
                   granularity: '2'
                   hierarchy: 1
                   date_format: ''
+                processor_id: date_item
             hierarchy: date_items
             expand_hierarchy: 0
         search_api_fulltext:
@@ -998,6 +1007,7 @@ display:
           empty_table: false
           caption: ''
           description: ''
+          class: ''
       row:
         type: fields
         options: {  }
@@ -1802,6 +1812,7 @@ display:
           empty_table: false
           caption: ''
           description: ''
+          class: ''
       row:
         type: fields
         options: {  }
@@ -1956,23 +1967,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              0: '0'
-              administrator: '0'
-              anonymous: '0'
-              basic_page_author: '0'
-              customer: '0'
-              customer_main_user: '0'
-              customer_masquerade: '0'
-              eventmanagement: '0'
-              shop_marketing_role: '0'
-              manufacturer_site_author: '0'
-              price_list_user: '0'
-              price_list_viewer: '0'
-              product_manager: '0'
-              technical_support_role: '0'
-              blog_author_special: '0'
-              webfaktura_system_role: '0'
-              azubi: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1997,6 +1991,7 @@ display:
                   sort: 30
                 settings:
                   sort: DESC
+                processor_id: count_widget_order
         facets_tags:
           id: facets_tags
           table: search_api_index_search_api_solr_log
@@ -2047,6 +2042,7 @@ display:
                   sort: 50
                 settings:
                   sort: ASC
+                processor_id: raw_value_widget_order
         facets_hostname:
           id: facets_hostname
           table: search_api_index_search_api_solr_log
@@ -2097,6 +2093,7 @@ display:
                   sort: 50
                 settings:
                   sort: ASC
+                processor_id: raw_value_widget_order
         facets_uid:
           id: facets_uid
           table: search_api_index_search_api_solr_log
@@ -2147,11 +2144,13 @@ display:
                   post_query: 50
                 settings:
                   keep_uid: 1
+                processor_id: search_api_solr_log_user
               raw_value_widget_order:
                 weights:
                   sort: 50
                 settings:
                   sort: ASC
+                processor_id: raw_value_widget_order
         facets_timestamp:
           id: facets_timestamp
           table: search_api_index_search_api_solr_log
@@ -2201,6 +2200,7 @@ display:
                 weights:
                   build: 100
                 settings: {  }
+                processor_id: hierarchy_processor
               date_item:
                 weights:
                   build: 35
@@ -2209,6 +2209,7 @@ display:
                   granularity: '2'
                   hierarchy: 1
                   date_format: ''
+                processor_id: date_item
             hierarchy: date_items
             expand_hierarchy: 0
         search_api_fulltext:
@@ -2409,23 +2410,6 @@ display:
             multiple: true
             remember_roles:
               authenticated: authenticated
-              0: '0'
-              administrator: '0'
-              anonymous: '0'
-              basic_page_author: '0'
-              customer: '0'
-              customer_main_user: '0'
-              customer_masquerade: '0'
-              eventmanagement: '0'
-              shop_marketing_role: '0'
-              manufacturer_site_author: '0'
-              price_list_user: '0'
-              price_list_viewer: '0'
-              product_manager: '0'
-              technical_support_role: '0'
-              blog_author_special: '0'
-              webfaktura_system_role: '0'
-              azubi: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -2450,6 +2434,7 @@ display:
                   sort: 30
                 settings:
                   sort: DESC
+                processor_id: count_widget_order
         facets_tags:
           id: facets_tags
           table: search_api_index_search_api_solr_log
@@ -2500,6 +2485,7 @@ display:
                   sort: 50
                 settings:
                   sort: ASC
+                processor_id: raw_value_widget_order
         facets_uid:
           id: facets_uid
           table: search_api_index_search_api_solr_log
@@ -2550,11 +2536,13 @@ display:
                   post_query: 50
                 settings:
                   keep_uid: 1
+                processor_id: search_api_solr_log_user
               raw_value_widget_order:
                 weights:
                   sort: 50
                 settings:
                   sort: ASC
+                processor_id: raw_value_widget_order
         facets_timestamp:
           id: facets_timestamp
           table: search_api_index_search_api_solr_log
@@ -2604,6 +2592,7 @@ display:
                 weights:
                   build: 100
                 settings: {  }
+                processor_id: hierarchy_processor
               date_item:
                 weights:
                   build: 35
@@ -2612,6 +2601,7 @@ display:
                   granularity: '2'
                   hierarchy: 1
                   date_format: ''
+                processor_id: date_item
             hierarchy: date_items
             expand_hierarchy: 0
         search_api_fulltext:
