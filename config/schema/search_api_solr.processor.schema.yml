@@ -57,6 +57,10 @@ plugin.plugin_configuration.search_api_processor.solr_regex_replace:
       type: boolean
       label: 'Preserve original'
 
+plugin.plugin_configuration.search_api_processor.unique_filter:
+  type: search_api.fields_processor_configuration
+  label: 'Unique values filter'
+
 search_api.property_configuration.dummy_field:
   type: mapping
   label: 'Dummy field'
