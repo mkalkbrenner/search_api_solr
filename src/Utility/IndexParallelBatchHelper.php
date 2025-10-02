@@ -32,7 +32,12 @@ class IndexParallelBatchHelper extends IndexBatchHelper {
    * @throws \Drupal\search_api\SearchApiException
    *   Thrown if the batch could not be created.
    */
-  public static function create(IndexInterface $index, $batch_size = NULL, $limit = -1): array {
+  public static function create(
+    IndexInterface $index,
+    $batch_size = NULL,
+    $limit = -1,
+    int $time_limit = -1,
+  ): array {
     // Make sure that the indexing lock is available.
     if (!\Drupal::lock()->lockMayBeAvailable($index->getLockId())) {
       throw new SearchApiException("Items are being indexed in a different process.");
@@ -54,7 +59,8 @@ class IndexParallelBatchHelper extends IndexBatchHelper {
               [
                 $index,
                 $batch_size,
-                $thread
+                $thread,
+                -1,
               ]
             ],
           ],
@@ -109,11 +115,20 @@ class IndexParallelBatchHelper extends IndexBatchHelper {
    *   The maximum number of items to index per batch pass.
    * @param int $limit
    *   The maximum number of items to index in total, or -1 to index all items.
+   * @param int $time_limit
+   *   (optional) The maximum number of seconds allowed to run indexing, or -1
+   *   to not have any limit. Defaults to -1 (no limit).
    * @param array|\ArrayAccess $context
    *   The context of the current batch, as defined in the @link batch Batch
    *   operations @endlink documentation.
    */
-  public static function process(IndexInterface $index, $batch_size, $limit, &$context): void {
+  public static function process(
+    IndexInterface $index,
+    $batch_size,
+    $limit,
+    int $time_limit,
+    &$context,
+  ): void {
     // Check if the sandbox should be initialized.
     if (!isset($context['sandbox']['limit'])) {
       $context['sandbox']['limit'] = -1;
@@ -130,13 +145,13 @@ class IndexParallelBatchHelper extends IndexBatchHelper {
       }
     }
 
-    IndexBatchHelper::process($index, $batch_size, -1, $context);
+    IndexBatchHelper::process($index, $batch_size, -1, $time_limit, $context);
   }
 
   /**
    * Finishes an index batch.
    */
-  public static function finish($success, $results, $operations) {
+  public static function finish($success, $results, $operations): void {
     // Check if the batch job was successful.
     if ($success) {
       // Display the number of items indexed.
