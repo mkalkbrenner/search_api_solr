@@ -968,7 +968,7 @@ class SearchApiSolrTest extends SolrBackendTestBase {
     foreach ($results as $result) {
       $this->assertStringContainsString('<strong>foobar</strong>', (string) $result->getExtraData('highlighted_fields', ['body' => ['']])['body'][0]);
       $this->assertEquals(['foobar'], $result->getExtraData('highlighted_keys', []));
-      $this->assertEquals('… bar … test <strong>foobar</strong> Case …', $result->getExcerpt());
+      $this->assertEquals('… test <strong>foobar</strong> Case …', $result->getExcerpt());
     }
 
     // Test highlghting with stemming.
