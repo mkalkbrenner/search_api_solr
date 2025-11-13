@@ -3,7 +3,7 @@
 namespace Drupal\search_api_solr\Utility;
 
 use Drupal\Core\Batch\BatchStorageInterface;
-use Drupal\Core\Utility\Error;
+use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\search_api\IndexBatchHelper;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\SearchApiException;
@@ -13,6 +13,53 @@ use Drupal\search_api_solr\Plugin\search_api\tracker\IndexParallel;
  * Provides helper methods for indexing items using Drupal's Batch API.
  */
 class IndexParallelBatchHelper extends IndexBatchHelper {
+
+  /**
+   * The translation manager service.
+   *
+   * @var \Drupal\Core\StringTranslation\TranslationInterface
+   */
+  protected static $translationManager;
+
+  /**
+   * Gets the translation manager.
+   *
+   * @return \Drupal\Core\StringTranslation\TranslationInterface
+   *   The translation manager.
+   */
+  protected static function getStringTranslation() {
+    if (!static::$translationManager) {
+      static::$translationManager = \Drupal::service('string_translation');
+    }
+    return static::$translationManager;
+  }
+
+  /**
+   * Sets the translation manager.
+   *
+   *   The new translation manager.
+   */
+  public static function setStringTranslation(TranslationInterface $translation_manager) {
+    static::$translationManager = $translation_manager;
+  }
+
+  /**
+   * Translates a string to the current language or to a given language.
+   *
+   * @see \Drupal\Core\StringTranslation\TranslationInterface::translate()
+   */
+  protected static function t($string, array $args = [], array $options = []) {
+    return static::getStringTranslation()->translate($string, $args, $options);
+  }
+
+  /**
+   * Formats a string containing a count of items.
+   *
+   * @see \Drupal\Core\StringTranslation\TranslationInterface::formatPlural()
+   */
+  protected static function formatPlural($count, $singular, $plural, array $args = [], array $options = []) {
+    return static::getStringTranslation()->formatPlural($count, $singular, $plural, $args, $options);
+  }
 
   /**
    * Creates an indexing batch for a given search index.
