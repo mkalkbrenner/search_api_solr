@@ -100,9 +100,11 @@ class SolrConfigSetController extends ControllerBase {
       return $this->streamXml('schema_extra_types.xml', $this->getSchemaExtraTypesXml($search_api_server));
     }
     catch (SearchApiSolrConflictingEntitiesException $e) {
-      $this->messenger()->addError($this->t('Some enabled parts of the configuration conflict with others: :conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
+      $this->messenger()
+        ->addError($this->t('Some enabled parts of the configuration conflict with others: :conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
     }
-    return new RedirectResponse($search_api_server->toUrl('canonical')->toString());
+    return new RedirectResponse($search_api_server->toUrl('canonical')
+      ->toString());
   }
 
   /**
@@ -145,9 +147,11 @@ class SolrConfigSetController extends ControllerBase {
       return $this->streamXml('schema_extra_fields.xml', $this->getSchemaExtraFieldsXml($search_api_server));
     }
     catch (SearchApiSolrConflictingEntitiesException $e) {
-      $this->messenger()->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
+      $this->messenger()
+        ->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
     }
-    return new RedirectResponse($search_api_server->toUrl('canonical')->toString());
+    return new RedirectResponse($search_api_server->toUrl('canonical')
+      ->toString());
   }
 
   /**
@@ -187,9 +191,11 @@ class SolrConfigSetController extends ControllerBase {
       return $this->streamXml('solrconfig_extra.xml', $this->getSolrconfigExtraXml($search_api_server));
     }
     catch (SearchApiSolrConflictingEntitiesException $e) {
-      $this->messenger()->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
+      $this->messenger()
+        ->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
     }
-    return new RedirectResponse($search_api_server->toUrl('canonical')->toString());
+    return new RedirectResponse($search_api_server->toUrl('canonical')
+      ->toString());
   }
 
   /**
@@ -239,9 +245,11 @@ class SolrConfigSetController extends ControllerBase {
       return $this->streamXml('solrconfig_query.xml', $this->getSolrconfigQueryXml($search_api_server));
     }
     catch (SearchApiSolrConflictingEntitiesException $e) {
-      $this->messenger()->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
+      $this->messenger()
+        ->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
     }
-    return new RedirectResponse($search_api_server->toUrl('canonical')->toString());
+    return new RedirectResponse($search_api_server->toUrl('canonical')
+      ->toString());
   }
 
   /**
@@ -277,9 +285,11 @@ class SolrConfigSetController extends ControllerBase {
       return $this->streamXml('solrconfig_requestdispatcher.xml', $this->getSolrconfigRequestDispatcherXml($search_api_server));
     }
     catch (SearchApiSolrConflictingEntitiesException $e) {
-      $this->messenger()->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
+      $this->messenger()
+        ->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
     }
-    return new RedirectResponse($search_api_server->toUrl('canonical')->toString());
+    return new RedirectResponse($search_api_server->toUrl('canonical')
+      ->toString());
   }
 
   /**
@@ -297,6 +307,7 @@ class SolrConfigSetController extends ControllerBase {
     if (!$backend) {
       throw new SearchApiSolrException('Backend not set on SolrConfigSetController.');
     }
+    $backend_configuration = $backend->getConfiguration();
     $connector = $backend->getSolrConnector();
     $solr_major_version = $connector->getSolrMajorVersion($this->assumedMinimumVersion);
     if (!$solr_major_version) {
@@ -337,7 +348,8 @@ class SolrConfigSetController extends ControllerBase {
     ];
 
     if (!$backend->isNonDrupalOrOutdatedConfigSetAllowed() && (empty($files['schema_extra_types.xml']) || empty($files['schema_extra_fields.xml']))) {
-      throw new SearchApiSolrException(sprintf('The configs of the essential Solr field types are missing or broken for server "%s".', $backend->getServer()->id()));
+      throw new SearchApiSolrException(sprintf('The configs of the essential Solr field types are missing or broken for server "%s".', $backend->getServer()
+        ->id()));
     }
 
     if (version_compare($solr_major_version, '7', '>=')) {
@@ -381,11 +393,22 @@ class SolrConfigSetController extends ControllerBase {
               'SEARCH_API_SOLR_SCHEMA_VERSION',
               'SEARCH_API_SOLR_BRANCH',
               'SEARCH_API_SOLR_JUMP_START_CONFIG_SET',
+              'SEARCH_API_SOLR_VECTOR_DIMENSION',
+              'SEARCH_API_SOLR_SIMILARITY_FUNCTION',
+              'SEARCH_API_SOLR_KNN_ALGORITHM',
+              'SEARCH_API_SOLR_HNSW_MAX_CONNECTIONS',
+              'SEARCH_API_SOLR_HSNW_BEAM_WIDTH',
             ],
             [
               $backend->getPreferredSchemaVersion(),
               $real_solr_branch,
               SEARCH_API_SOLR_JUMP_START_CONFIG_SET,
+              $backend_configuration['vectorDimension'],
+              $backend_configuration['similarityFunction'],
+              $backend_configuration['knnAlgorithm'],
+              $backend_configuration['vectorEncoding'],
+              $backend_configuration['hnswMaxConnections'],
+              $backend_configuration['hnswBeamWidth'],
             ],
             file_get_contents($search_api_solr_conf_path . '/' . $file)
           );
@@ -483,14 +506,17 @@ class SolrConfigSetController extends ControllerBase {
       exit();
     }
     catch (SearchApiSolrConflictingEntitiesException $e) {
-      $this->messenger()->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
+      $this->messenger()
+        ->addError($this->t('Some enabled parts of the configuration conflict with others: @conflicts', ['@conflicts' => new FormattableMarkup($e, [])]));
     }
     catch (\Exception $e) {
       $this->logException($e);
-      $this->messenger()->addError($this->t('An error occurred during the creation of the config.zip. Look at the logs for details.'));
+      $this->messenger()
+        ->addError($this->t('An error occurred during the creation of the config.zip. Look at the logs for details.'));
     }
 
-    return new RedirectResponse($search_api_server->toUrl('canonical')->toString());
+    return new RedirectResponse($search_api_server->toUrl('canonical')
+      ->toString());
   }
 
   /**
@@ -544,10 +570,12 @@ class SolrConfigSetController extends ControllerBase {
     }
     catch (\Exception $e) {
       $this->logException($e);
-      $this->messenger()->addError($this->t('An error occurred during the creation of the config.zip. Look at the logs for details.'));
+      $this->messenger()
+        ->addError($this->t('An error occurred during the creation of the config.zip. Look at the logs for details.'));
     }
 
-    return new RedirectResponse($search_api_server->toUrl('canonical')->toString());
+    return new RedirectResponse($search_api_server->toUrl('canonical')
+      ->toString());
   }
 
   /**

@@ -328,6 +328,12 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'index_empty_text_fields' => FALSE,
       'index_items_with_warnings' => TRUE,
       'suppress_missing_languages' => FALSE,
+      'vectorDimension' => 1024,
+      'similarityFunction' => 'cosine',
+      'knnAlgorithm' => 'hnsw',
+      'vectorEncoding' => 'cosine',
+      'hnswMaxConnections' => 16,
+      'hnswBeamWidth' => 100,
     ];
   }
 
@@ -377,6 +383,9 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     $configuration['index_empty_text_fields'] = (bool) ($configuration['index_empty_text_fields'] ?? FALSE);
     $configuration['index_items_with_warnings'] = (bool) ($configuration['index_items_with_warnings'] ?? TRUE);
     $configuration['suppress_missing_languages'] = (bool) ($configuration['suppress_missing_languages'] ?? FALSE);
+    $configuration['vectorDimension'] = (int) ($configuration['vectorDimension'] ?? 1024);
+    $configuration['hnswMaxConnections'] = (int) ($configuration['hnswMaxConnections'] ?? 16);
+    $configuration['hnswBeamWidth'] = (int) ($configuration['hnswBeamWidth'] ?? 100);
 
     parent::setConfiguration($configuration);
 
@@ -532,6 +541,77 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       '#default_value' => $this->configuration['site_hash'],
     ];
 
+      $form['dense_vector'] = [
+          '#type' => 'details',
+          '#title' => $this->t('Dense Vector Search'),
+      ];
+
+      $form['dense_vector']['vectorDimension'] = [
+          '#type' => 'number',
+          '#min' => 1,
+          '#max' => 10000,
+          '#title' => $this->t('Vector Dimension'),
+          '#description' => $this->t('The dimension of the dense vector to pass in.'),
+          '#default_value' => $this->configuration['vectorDimension'] ?: 1024,
+          '#required' => TRUE,
+      ];
+
+      $form['dense_vector']['similarityFunction'] = [
+          '#type' => 'select',
+          '#options' => [
+              'euclidean' => 'Euclidean',
+              'dot_product' => 'Dot Product',
+              'cosine' => 'Cosine',
+          ],
+          '#title' => $this->t('Similarity Function'),
+          '#description' => $this->t('Vector similarity function. Used in search to return top K most similar vectors to a target vector.'),
+          '#default_value' => $this->configuration['similarityFunction'] ?? 'cosine',
+          '#required' => TRUE,
+      ];
+
+      $form['dense_vector']['knnAlgorithm'] = [
+          '#type' => 'select',
+          '#options' => [
+            'hnsw' => 'hnsw',
+          ],
+          '#title' => $this->t('knn Algorithm'),
+          '#description' => $this->t('Specifies the underlying knn algorithm to use.'),
+          '#default_value' => $this->configuration['knnAlgorithm'] ?? 'hnsw',
+          '#required' => TRUE,
+      ];
+
+      $form['dense_vector']['vectorEncoding'] = [
+          '#type' => 'select',
+          '#options' => [
+              'FLOAT32' => 'FLOAT32',
+              'BYTE' => 'BYTE',
+          ],
+          '#title' => $this->t('Vector Encoding'),
+          '#description' => $this->t('Specifies the underlying encoding of the dense vector elements. This affects memory/disk impact for both the indexed and stored fields (if enabled).'),
+          '#default_value' => $this->configuration['vectorEncoding'] ?? 'FLOAT32',
+          '#required' => TRUE,
+      ];
+
+      $form['dense_vector']['hnswMaxConnections'] = [
+          '#type' => 'number',
+          '#min' => 1,
+          '#max' => 10000,
+          '#title' => $this->t('hnsw Max Connections'),
+          '#description' => $this->t('This parameter is specific for the hnsw knn algorithm: Controls how many of the nearest neighbor candidates are connected to the new node. It has the same meaning as M from the 2018 paper.'),
+          '#default_value' => $this->configuration['hnswMaxConnections'] ?: 16,
+          '#required' => TRUE,
+      ];
+
+      $form['dense_vector']['hnswBeamWidth'] = [
+          '#type' => 'number',
+          '#min' => 1,
+          '#max' => 10000,
+          '#title' => $this->t('hnsw Beam Width'),
+          '#description' => $this->t('This parameter is specific for the hnsw knn algorithm: It is the number of nearest neighbor candidates to track while searching the graph for each newly inserted node. It has the same meaning as efConstruction from the 2018 paper.'),
+          '#default_value' => $this->configuration['hnswBeamWidth'] ?: 100,
+          '#required' => TRUE,
+      ];
+
     $form['disabled_field_types'] = [
       '#type' => 'value',
       '#value' => $this->getDisabledFieldTypes(),
@@ -678,6 +758,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     // unnecessary dependency on internal implementation.)
     $values += $values['advanced'];
     $values += $values['multisite'];
+    $values += $values['dense_vector'];
     $values['optimize'] &= $values['i_know_what_i_do'];
 
     foreach ($values as $key => $value) {
@@ -687,6 +768,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
     // Clean-up the form to avoid redundant entries in the stored configuration.
     $form_state->unsetValue('advanced');
     $form_state->unsetValue('multisite');
+    $form_state->unsetValue('dense_vector');
     // The server description is a #type item element, which means it has a
     // value, do not save it.
     $form_state->unsetValue('server_description');
@@ -786,6 +868,7 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
       'location',
       'rpt',
       'solr_date_range',
+      'solr_dense_vector',
       'solr_string_storage',
       'solr_string_docvalues',
       'solr_text_omit_norms',
