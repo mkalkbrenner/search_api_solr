@@ -52,3 +52,7 @@ services:
   search_api_solr.command_helper:
     class: Drupal\search_api_solr\Utility\SolrCommandHelper
     arguments: ['@entity_type.manager', '@module_handler', '@event_dispatcher', '@search_api_solr.configset_controller']
+
+  search_api_solr.index_parallel_batch_helper:
+    class: Drupal\search_api_solr\Utility\IndexParallelBatchHelper
+    parent: search_api.indexing_batch_helper

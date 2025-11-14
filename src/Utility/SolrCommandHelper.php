@@ -279,7 +279,9 @@ class SolrCommandHelper extends CommandHelper {
 
       // Create the batch.
       try {
-        $ids[$index->id()] = IndexParallelBatchHelper::create($index, $currentBatchSize, $currentThreads);
+        $batchHelper = \Drupal::getContainer()->get('search_api_solr.index_parallel_batch_helper');
+        $batchHelper->createBatch($index, $currentBatchSize, $currentThreads);
+        $ids[$index->id()] = $batchHelper->getBatchIds();
       } catch (SearchApiException $e) {
         throw new ConsoleException($this->t("Couldn't create all batches, check the batch size and other parameters."), 0, $e);
       }

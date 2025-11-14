@@ -3,63 +3,17 @@
 namespace Drupal\search_api_solr\Utility;
 
 use Drupal\Core\Batch\BatchStorageInterface;
-use Drupal\Core\StringTranslation\TranslationInterface;
-use Drupal\search_api\IndexBatchHelper;
 use Drupal\search_api\IndexInterface;
 use Drupal\search_api\SearchApiException;
+use Drupal\search_api\Utility\IndexingBatchHelper;
 use Drupal\search_api_solr\Plugin\search_api\tracker\IndexParallel;
 
 /**
  * Provides helper methods for indexing items using Drupal's Batch API.
  */
-class IndexParallelBatchHelper extends IndexBatchHelper {
+class IndexParallelBatchHelper extends IndexingBatchHelper {
 
-  /**
-   * The translation manager service.
-   *
-   * @var \Drupal\Core\StringTranslation\TranslationInterface
-   */
-  protected static $translationManager;
-
-  /**
-   * Gets the translation manager.
-   *
-   * @return \Drupal\Core\StringTranslation\TranslationInterface
-   *   The translation manager.
-   */
-  protected static function getStringTranslation() {
-    if (!static::$translationManager) {
-      static::$translationManager = \Drupal::service('string_translation');
-    }
-    return static::$translationManager;
-  }
-
-  /**
-   * Sets the translation manager.
-   *
-   *   The new translation manager.
-   */
-  public static function setStringTranslation(TranslationInterface $translation_manager) {
-    static::$translationManager = $translation_manager;
-  }
-
-  /**
-   * Translates a string to the current language or to a given language.
-   *
-   * @see \Drupal\Core\StringTranslation\TranslationInterface::translate()
-   */
-  protected static function t($string, array $args = [], array $options = []) {
-    return static::getStringTranslation()->translate($string, $args, $options);
-  }
-
-  /**
-   * Formats a string containing a count of items.
-   *
-   * @see \Drupal\Core\StringTranslation\TranslationInterface::formatPlural()
-   */
-  protected static function formatPlural($count, $singular, $plural, array $args = [], array $options = []) {
-    return static::getStringTranslation()->formatPlural($count, $singular, $plural, $args, $options);
-  }
+  protected array $batchIds = [];
 
   /**
    * Creates an indexing batch for a given search index.
@@ -73,21 +27,18 @@ class IndexParallelBatchHelper extends IndexBatchHelper {
    *   (optional) Maximum number of items to index. Defaults to indexing all
    *   remaining items.
    *
-   * @return int[]
-   *   The batch IDs.
-   *
    * @throws \Drupal\search_api\SearchApiException
    *   Thrown if the batch could not be created.
    */
-  public static function create(
+  public function createBatch(
     IndexInterface $index,
-    $batch_size = NULL,
-    $limit = -1,
+    ?int $batch_size = NULL,
+    int $limit = -1,
     int $time_limit = -1,
-  ): array {
+  ): void {
     // Make sure that the indexing lock is available.
-    if (!\Drupal::lock()->lockMayBeAvailable($index->getLockId())) {
-      throw new SearchApiException("Items are being indexed in a different process.");
+    if (!$this->lockBackend->lockMayBeAvailable($index->getLockId())) {
+      throw new SearchApiException('Items are being indexed in a different process.');
     }
 
     $ids = [];
@@ -102,7 +53,7 @@ class IndexParallelBatchHelper extends IndexBatchHelper {
         $batch_definition = [
           'operations' => [
             [
-              [__CLASS__, 'process'],
+              [$this, 'process'],
               [
                 $index,
                 $batch_size,
@@ -111,8 +62,8 @@ class IndexParallelBatchHelper extends IndexBatchHelper {
               ]
             ],
           ],
-          'finished' => [__CLASS__, 'finish'],
-          'progress_message' => static::t('Completed about @percentage% of the indexing operation (@current of @total).'),
+          'finished' => [$this, 'finish'],
+          'progress_message' => $this->t('Completed about @percentage% of the indexing operation (@current of @total).'),
         ];
 
         batch_set($batch_definition);
@@ -124,11 +75,6 @@ class IndexParallelBatchHelper extends IndexBatchHelper {
             'current_set' => 0,
           ];
           $batch += $process_info;
-
-          // The batch is now completely built. Allow other modules to make changes
-          // to the batch so that it is easier to reuse batch processes in other
-          // environments.
-          \Drupal::moduleHandler()->alter('batch', $batch);
 
           $ids[] = $batch['id'] = $batchStorage->getId();
 
@@ -150,7 +96,17 @@ class IndexParallelBatchHelper extends IndexBatchHelper {
       throw new SearchApiException("Failed to create a batch with batch size '$batch_size' and threads '$limit' for index '$index_label'.");
     }
 
-    return array_reverse($ids);
+    $this->batchIds = array_reverse($ids);
+  }
+
+  /**
+   * Get batch IDs.
+   *
+   * @return int[]
+   *   The batch IDs.
+   */
+  public function getBatchIds(): array {
+    return $this->batchIds;
   }
 
   /**
@@ -169,12 +125,12 @@ class IndexParallelBatchHelper extends IndexBatchHelper {
    *   The context of the current batch, as defined in the @link batch Batch
    *   operations @endlink documentation.
    */
-  public static function process(
+  public function process(
     IndexInterface $index,
-    $batch_size,
-    $limit,
+    int $batch_size,
+    int $limit,
     int $time_limit,
-    &$context,
+    array|\ArrayAccess &$context,
   ): void {
     // Check if the sandbox should be initialized.
     if (!isset($context['sandbox']['limit'])) {
@@ -192,30 +148,30 @@ class IndexParallelBatchHelper extends IndexBatchHelper {
       }
     }
 
-    IndexBatchHelper::process($index, $batch_size, -1, $time_limit, $context);
+    parent::process($index, $batch_size, -1, $time_limit, $context);
   }
 
   /**
    * Finishes an index batch.
    */
-  public static function finish($success, $results, $operations): void {
+  public function finish($success, $results, $operations): void {
     // Check if the batch job was successful.
     if ($success) {
       // Display the number of items indexed.
       if (!empty($results['indexed'])) {
         // Build the indexed message.
-        $indexed_message = static::formatPlural($results['indexed'], 'Thread successfully indexed 1 item.', 'Thread successfully indexed @count items.');
+        $indexed_message = $this->formatPlural($results['indexed'], 'Thread successfully indexed 1 item.', 'Thread successfully indexed @count items.');
         // Notify user about indexed items.
-        \Drupal::messenger()->addStatus($indexed_message);
+        $this->messenger->addStatus($indexed_message);
       }
       else {
         // Notify user about failure to index items.
-        \Drupal::messenger()->addError(static::t("Couldn't index items. Check the logs for details."));
+        $this->messenger->addError($this->t("Couldn't index items. Check the logs for details."));
       }
     }
     else {
       // Notify user about batch job failure.
-      \Drupal::messenger()->addError(static::t('An error occurred while trying to index items. Check the logs for details.'));
+      $this->messenger->addError($this->t('An error occurred while trying to index items. Check the logs for details.'));
     }
   }
 
