@@ -53,7 +53,7 @@ trait SolrAutocompleteBackendTrait {
     /** @var \Drupal\search_api_autocomplete\Suggestion\SuggestionInterface $suggestion */
     foreach ($suggestions as $key => $suggestion) {
       if (
-        !in_array($suggestion->getSuggestedKeys(), $added_suggestions, TRUE) ||
+        !in_array($suggestion->getSuggestedKeys(), $added_suggestions, TRUE) &&
         !in_array($suggestion->getUrl(), $added_urls, TRUE)
       ) {
         $added_suggestions[] = $suggestion->getSuggestedKeys();
