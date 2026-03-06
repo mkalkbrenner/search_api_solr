@@ -148,6 +148,9 @@ jobs:
                 vendor/bin/drush -v solr-gsc solr_cloud config.zip 9.8
                 rm ../search_api_solr/jump-start/solr9/cloud-config-set/*
                 unzip -o -d ../search_api_solr/jump-start/solr9/cloud-config-set config.zip
+                vendor/bin/drush -v solr-gsc solr_cloud config.zip 10
+                rm ../search_api_solr/jump-start/solr10/cloud-config-set/*
+                unzip -o -d ../search_api_solr/jump-start/solr10/cloud-config-set config.zip
 
             - uses: actions/upload-artifact@v4
               with:
@@ -164,7 +167,7 @@ jobs:
         strategy:
             matrix:
                 drupal: ['10.4', '11.1']
-                solr: ['4', '5', '6', '7', '8', '9']
+                solr: ['4', '5', '6', '7', '8', '9', '10']
                 php: ['8.3', '8.4']
                 solarium: ['solarium/solarium:"dev-master as 6.4.99"']
                 experimental: [false]
