@@ -252,12 +252,22 @@ jobs:
                 # patch -p1 < 3318187-19--fix_views_filter_regressions.patch
                 # cd -
 
-            - name: Create Solr collections
+            - name: Create Solr collections (< 10)
+              if: ${{ matrix.solr < 10 }}
               run: |
                 docker ps
                 docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 wait-for-solr.sh
                 docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c techproducts -d server/solr/configsets/sample_techproducts_configs/conf -n sample_techproducts_configs
                 docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bash -c "bin/post -c techproducts example/exampledocs/*.xml"
+                docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c checkpoints
+
+            - name: Create Solr collections (>= 10)
+              if: ${{ matrix.solr >= 10 }}
+              run: |
+                docker ps
+                docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 wait-for-solr.sh
+                docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c techproducts -d server/solr/configsets/sample_techproducts_configs/conf -n sample_techproducts_configs
+                docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr post -c techproducts example/exampledocs/*.xml
                 docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c checkpoints
 
             - name: Run tests
@@ -345,7 +355,7 @@ jobs:
             composer config repositories.search_api_solr '{"type": "vcs", "url": "../search_api_solr"}'
             composer require drupal/search_api_solr:${{ env.NEXT_MODULE_VERSION }} --no-interaction
             # search_api was installed as dependency above. This is a required check! Now switch to the latest dev version.
-            composer require drupal/search_api:1.x-dev --no-interaction            
+            composer require drupal/search_api:1.x-dev --no-interaction
             composer require \
               drupal/search_api_autocomplete:1.x-dev \
               drupal/search_api_spellcheck:4.0.x-dev \
