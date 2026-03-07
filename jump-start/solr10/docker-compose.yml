@@ -8,4 +8,4 @@ services:
     environment:
       SOLR_MODULES: "extraction,langid,ltr,analysis-extras"
       JDK_JAVA_OPTIONS: "-Djdk.xml.maxGeneralEntitySizeLimit=0 -Djdk.xml.totalEntitySizeLimit=0"
-    command: docker-entrypoint.sh bash -c "solr start --verbose && solr create --verbose -c drupal -d server/solr/configsets/drupal/conf -n drupal && solr restart -f"
+    command: bash -c "docker-entrypoint.sh solr start; solr create --verbose -c drupal -d server/solr/configsets/drupal/conf -n drupal; solr restart -f"
