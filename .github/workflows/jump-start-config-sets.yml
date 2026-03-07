@@ -267,7 +267,7 @@ jobs:
                 docker ps
                 docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 wait-for-solr.sh
                 docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c techproducts -d server/solr/configsets/sample_techproducts_configs/conf -n sample_techproducts_configs
-                docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr post -c techproducts example/exampledocs/*.xml
+                docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr post -c techproducts "example/exampledocs/*.xml"
                 docker exec solr${{ matrix.solr }}-solr${{ matrix.solr }}-1 bin/solr create -c checkpoints
 
             - name: Run tests
