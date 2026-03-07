@@ -286,6 +286,11 @@ jobs:
                 vendor/bin/drush -v solr-gsc solr_cloud test-config-generation.zip
                 vendor/bin/drush -v cron
 
+            - name: Dump solr container logs
+              if: always()
+              run: |
+                docker logs solr${{ matrix.solr }}-solr${{ matrix.solr }}-1
+
     run-legacy-tests:
       runs-on: ubuntu-24.04
 
