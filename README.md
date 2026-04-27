@@ -1,3 +1,7 @@
+# Since Drupal.org is able to run the Solr integration Tests, this repository is not needed anymore!
+
+Use https://www.drupal.org/project/search_api_solr for the issue workflow now.
+
 # Search API Solr
 
 This module provides an implementation of the Search API which uses an Apache
