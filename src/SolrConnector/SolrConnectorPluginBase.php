@@ -1390,4 +1390,15 @@ abstract class SolrConnectorPluginBase extends ConfigurablePluginBase implements
   public function alterConfigZip(ZipStream $zip, string $lucene_match_version, string $server_id = '') {
   }
 
+  /**
+   * Removes Solarium plugin listeners from the shared event dispatcher.
+   */
+  public function __destruct() {
+    if ($this->solr) {
+      foreach ($this->solr->getPlugins() as $plugin) {
+        $this->solr->removePlugin($plugin);
+      }
+    }
+  }
+
 }
