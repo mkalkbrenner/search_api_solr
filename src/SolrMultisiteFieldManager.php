@@ -22,10 +22,17 @@ class SolrMultisiteFieldManager extends SolrFieldManager {
   protected function buildFieldDefinitions(IndexInterface $index) {
     $fields = [];
     foreach ($index->getFields() as $index_field) {
+      $type = $index_field->getType();
+      if ($type === 'text' || str_starts_with($type, 'solr_text_')) {
+        $type = 'search_api_text';
+      }
+      elseif ($type === 'date') {
+        $type = 'solr_date';
+      }
       $solr_field = $index_field->getPropertyPath();
       $field = new SolrMultisiteFieldDefinition(['multivalued' => preg_match('/^[a-z]+m_/', $solr_field)]);
       $field->setLabel($index_field->getLabel());
-      $field->setDataType($index_field->getType());
+      $field->setDataType($type);
       $fields[$solr_field] = $field;
     }
     return $fields;
