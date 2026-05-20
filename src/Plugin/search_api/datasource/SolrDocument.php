@@ -138,7 +138,19 @@ class SolrDocument extends DatasourcePluginBase implements PluginFormInterface {
    */
   public function getItemUrl(ComplexDataInterface $item) {
     try {
-      return Url::fromUri($this->getFieldValue($item, 'url_field'));
+      $url_value = $this->getFieldValue($item, 'url_field');
+
+      if (!$url_value) {
+        return NULL;
+      }
+  
+      // If the value is an absolute URL, we can return it directly.
+      if (parse_url($url_value, PHP_URL_SCHEME) !== NULL) {
+        return Url::fromUri($url_value);
+      }
+
+      // If the value is a relative URL, treat it as an internal path.
+      return Url::fromUri('internal:' . $url_value);
     }
     catch (\InvalidArgumentException $e) {
       // Log the exception and return NULL.
