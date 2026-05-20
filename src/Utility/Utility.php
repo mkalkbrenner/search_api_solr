@@ -91,6 +91,9 @@ class Utility {
         'uri' => [
           'prefix' => 's',
         ],
+        'map' => [
+          'prefix' => 's',
+        ],
       ]);
 
       // Extra data type info.
