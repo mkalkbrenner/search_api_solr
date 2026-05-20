@@ -1920,9 +1920,21 @@ class SearchApiSolrBackend extends BackendPluginBase implements SolrBackendInter
             if (isset($sorts[$relevance_field])) {
               if ($boosts = $query->getOption('solr_document_boost_factors', [])) {
                 $sum[] = 'boost_document';
-                foreach ($boosts as $field_id => $boost) {
-                  $boostable_solr_field_name = Utility::getBoostableSolrField($field_id, $field_names, $query);
-                  $sum[] = str_replace(self::FIELD_PLACEHOLDER, $boostable_solr_field_name, $boost);
+                foreach ($boosts as $field_id => $inner_boosts) {
+                  // Check to see if $inner_boosts is an array to
+                  // allow mulitple boosts per field.
+                  if (is_array($inner_boosts)) {
+                      foreach ($inner_boosts as $boost) {
+                          $boostable_solr_field_name = Utility::getBoostableSolrField($field_id, $field_names, $query);
+                          $sum[] = str_replace(self::FIELD_PLACEHOLDER, $boostable_solr_field_name, $boost);
+                      }
+                  }
+                  else {
+                      // Set back the variable $boost in case we use it later.
+                      $boost = $inner_boosts;
+                      $boostable_solr_field_name = Utility::getBoostableSolrField($field_id, $field_names, $query);
+                      $sum[] = str_replace(self::FIELD_PLACEHOLDER, $boostable_solr_field_name, $boost);
+                  }
                 }
                 $flatten_query[] = '{!boost b=sum(' . implode(',', $sum) . ')}';
               }
