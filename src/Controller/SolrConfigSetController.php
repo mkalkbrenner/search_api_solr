@@ -310,6 +310,7 @@ class SolrConfigSetController extends ControllerBase {
       '7.x' => $template_path . '7.x',
       '8.x' => $template_path . '8.x',
       '9.x' => $template_path . '9.x',
+      '10.x' => $template_path . '10.x',
     ];
 
     $event = new PostConfigSetTemplateMappingEvent($solr_configset_template_mapping);
